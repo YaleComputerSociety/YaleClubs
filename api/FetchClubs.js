@@ -5,10 +5,9 @@ export const fetchClubs = async () => {
     try {
         const requestPayload = {
             filters: {
-                category: ["Cultural"],
             },
             page: 1,
-            page_size: 10,
+            page_size: 20,
         };
 
         const response = await fetch(url, {
