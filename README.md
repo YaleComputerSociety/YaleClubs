@@ -8,3 +8,5 @@ Run ```npm install```
 Create a `.env` file
 
 To launch, run ```npx expo start```
+
+To use tailwind, use NativeWindStyleSheet Objects (Example in Api.js)
