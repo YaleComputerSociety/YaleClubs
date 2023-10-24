@@ -4,3 +4,7 @@ YaleClubs, in collaboration with YaleConnects, provides Yale students with a use
 
 ### Setup
 Run ```npm install```
+
+Create a `.env` file
+
+To launch, run ```npx expo start```
