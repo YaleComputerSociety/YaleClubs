@@ -14,4 +14,8 @@ API_KEY=<YOUR_API_KEY>
 
 To launch, run ```npx expo start```
 
-To use tailwind, use NativeWindStyleSheet Objects (Example in Api.js)
+### Style
+To get theme data:
+```
+const theme = useContext(ThemeContext);
+```
