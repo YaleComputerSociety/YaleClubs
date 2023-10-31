@@ -5,7 +5,12 @@ YaleClubs, in collaboration with YaleConnects, provides Yale students with a use
 ### Setup
 Run ```npm install```
 
-Create a `.env` file
+Go to `https://yalies.io/apidocs` to get an API key
+
+Create a `.env` file. Add the API key into the file as follows:
+```
+API_KEY=<YOUR_API_KEY>
+```
 
 To launch, run ```npx expo start```
 
