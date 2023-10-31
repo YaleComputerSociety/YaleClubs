@@ -57,7 +57,7 @@ const App = () => {
         <Text className="font-normal mb-1">{item.website}</Text>
         <Text className="font-normal mb-1">{item.address}</Text>
         <Text className="font-normal mb-1">{item.category}</Text>
-        <Text className="font-normal mb-1">{item.leaders}</Text>
+        // <Text className="font-normal mb-1">{item.leaders}</Text>
         <Image source={{ uri: item.logo }} />
         <Text className="font-normal mb-1">{item.mission}</Text>
         <Text className="font-normal mb-1">{item.type}</Text>
