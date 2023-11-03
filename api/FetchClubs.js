@@ -1,22 +1,16 @@
-import {API_KEY} from "@env"
+import { API_KEY } from "@env";
+
 const url = "https://yalies.io/api/groups";
 
-export const fetchClubs = async () => {
+export const fetchClubs = async (defaultPayload) => {
     try {
-        const requestPayload = {
-            filters: {
-            },
-            page: 1,
-            page_size: 20,
-        };
-
         const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${API_KEY}`,
             },
-            body: JSON.stringify(requestPayload),
+            body: JSON.stringify(defaultPayload),
         });
 
         if (!response.ok) {
