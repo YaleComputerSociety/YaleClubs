@@ -1,21 +1,20 @@
-
-// NativeWind Canvas & Engine
 import { NativeWindStyleSheet } from "nativewind";
-
 import { useRef, useState } from "react";
 import { SafeAreaView, ScrollView, StatusBar, useWindowDimensions } from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { View } from "react-native-web";
 
 import Catalog from "./pages/catalog/Catalog";
+import ClubDetails from "./pages/clubDetails/ClubDetails";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-
 
 NativeWindStyleSheet.setOutput({
   default: "native",
 });
 
+const Stack = createNativeStackNavigator();
 
 const App = () => {
   const { height: windowHeight } = useWindowDimensions();
@@ -38,9 +37,12 @@ const App = () => {
           ref={scrollViewRef}
         >
           <View className="flex-col w-full min-h-screen">
-            <Header /> {/* In Development */}
-            <Catalog currPage={currPage} loade />
-            <Footer /> {/* In Development */}
+            <Header />
+            <Stack.Navigator>
+              <Stack.Screen name="Catalog" component={Catalog} initialParams={{ currPage: currPage }} options={{ title: 'Catalog' }} />
+              <Stack.Screen name="ClubDetails" component={ClubDetails} options={{ title: 'Club Details' }} />
+            </Stack.Navigator>
+            <Footer />
           </View>
         </ScrollView>
       </SafeAreaView>
