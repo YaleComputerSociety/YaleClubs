@@ -69,7 +69,18 @@ const Catalog = ({currPage}) => {
 
     const renderItem = ({ item }) => (
         // In Development
-        <TouchableOpacity key={item.id} className="relative">
+        <TouchableOpacity
+            key={item.id}
+            className="relative"
+            onPress={() => {
+                navigation.navigate('ClubDetails', {
+                    id: item.id,
+                    email: item.email,
+                    name: item.name,
+                    mission: item.mission,
+                });
+            }}
+        >
             <View className="rounded-md shadow-sm w-full h-[300] p-5 flex bg-white">
                 <Text className="font-bold text-lg mt-2 w-[80%]">{item.name}...</Text>
                 <Image source={{uri: item.logo}} className="h-20 right-5 w-20 rounded-full absolute"/>
