@@ -1,11 +1,14 @@
-module.exports = function(api) {
+module.exports = function (api) {
   api.cache(true);
   return {
     presets: [
-      'babel-preset-expo',
-      'module:metro-react-native-babel-preset',
+      "babel-preset-expo",
     ],
     plugins: [
+      "@babel/plugin-proposal-export-namespace-from",
+      "nativewind/babel",
+      "react-native-reanimated/plugin",
+      require.resolve("expo-router/babel"),
       ["module:react-native-dotenv", {
         "moduleName": "@env",
         "path": ".env",
@@ -14,7 +17,6 @@ module.exports = function(api) {
         "safe": false,
         "allowUndefined": true
       }],
-      ["nativewind/babel"],
-    ]
-  }
+    ],
+  };
 };
