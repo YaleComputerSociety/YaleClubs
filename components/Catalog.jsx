@@ -1,19 +1,20 @@
 
-import React, { useEffect, useState } from 'react';
 import { NativeWindStyleSheet } from "nativewind";
-import { useNavigation } from '@react-navigation/native';
-import { Text, View, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
-import { fetchClubs } from '../../api/fetchClubs';
-import { FlatGrid } from 'react-native-super-grid';
-import SearchBar from '../../components/SearchBar';
 
 NativeWindStyleSheet.setOutput({
   default: "native",
 });
 
+import React, { useEffect, useState } from 'react';
+import { Text, View, Image, ActivityIndicator } from 'react-native';
+import { fetchClubs } from '../api/FetchClubs';
+import { FlatGrid } from 'react-native-super-grid';
+
+import SearchBar from './SearchBar';
+import ClubItem from "./ClubItem";
+
 
 const Catalog = ({currPage}) => {
-    const navigation = useNavigation();
     const numColumns = 2;
 
     const [searchValue, setSearchValue] = useState('');
@@ -69,12 +70,7 @@ const Catalog = ({currPage}) => {
 
     const renderItem = ({ item }) => (
         // In Development
-        <TouchableOpacity key={item.id} className="relative">
-            <View className="rounded-md shadow-sm w-full h-[300] p-5 flex bg-white">
-                <Text className="font-bold text-lg mt-2 w-[80%]">{item.name}...</Text>
-                <Image source={{uri: item.logo}} className="h-20 right-5 w-20 rounded-full absolute"/>
-            </View>
-        </TouchableOpacity>
+        <ClubItem item={item} />
     );
 
     const onChange = (text) => {
@@ -86,7 +82,7 @@ const Catalog = ({currPage}) => {
         <View className="py-10 mb-10 w-full flex items-center">
             <View className="w-[920px]">
                 <View className="absolute z-[-10] h-[400] w-[470] left-[-150]">
-                    <Image source={require("../../assets/decorator.png")} className="h-full" />
+                    <Image source="../assets/decorator.png" className="h-full" />
                 </View>
 
                 <View className="p-5">

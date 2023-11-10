@@ -1,29 +1,13 @@
 {
   "expo": {
-    "name": "Yale Clubs",
-    "slug": "YaleClubs",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "dark",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#ffffff"
-      }
-    },
+    "scheme": "acme",
     "web": {
-      "favicon": "./assets/icon.png"
-    }
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "name": "YaleClubs",
+    "slug": "YaleClubs"
   }
 }
