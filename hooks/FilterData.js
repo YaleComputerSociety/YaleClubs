@@ -5,7 +5,7 @@ const useFilteredData = (initialData) => {
   const [searchValue, setSearchValue] = useState('');
   const [filteredGroups, setFilteredGroups] = useState([]);
   const [found, setFound] = useState(0);
-  const similarityThreshold = 3;
+  const similarityThreshold = 2;
 
   useEffect(() => {
     const searchableKeys = [
@@ -29,7 +29,7 @@ const useFilteredData = (initialData) => {
         for (const key of searchableKeys) {
           if (
             typeof group[key] === 'string' &&
-            levenshtein.get(group[key].toLowerCase(), searchValue.toLowerCase()) <= similarityThreshold
+            levenshtein.get(group[key].toLowerCase(), searchValue.toLowerCase()) / group[key].length >= similarityThreshold
           ) {
             return true;
           }
