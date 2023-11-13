@@ -30,12 +30,15 @@ const SearchBar = ({onChange, searchValue, found}) => {
                     value={searchValue}
                     style={{ outlineStyle: 'none' }}
                     className="text-black"
-                    placeholder="Clever Tags-Names-Description-Members SearchBar..."
+                    placeholder="Cleverer than Levenshtein Distance..."
                     placeholderTextColor="gray"
                 />
             </View>
 
-            <Text className="mt-9 ml-6 text-gray-400">Showing {found} results</Text>
+            <View className="mt-6">
+                <Text className="ml-6 text-gray-400">Showing {found} results</Text>
+                <Text className="ml-6 text-gray-400">(faster than Coursetable)</Text>
+            </View>
         </View>
     );
 
