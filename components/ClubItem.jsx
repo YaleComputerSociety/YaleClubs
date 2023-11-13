@@ -10,11 +10,6 @@ import { useRouter } from 'expo-router';
 
 const ClubItem = ({ item }) => {
     const navigation = useRouter();
-
-    const handlePress = () => {
-        // ./club/{item.id} route
-        navigation.navigate('ClubDetails', );
-    };
     
     return (
         // In Progress
