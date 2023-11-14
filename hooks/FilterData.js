@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import * as levenshtein from 'fast-levenshtein';
+import similarity from 'similarity';
 
 const useFilteredData = (initialData) => {
   const [searchValue, setSearchValue] = useState('');
   const [filteredGroups, setFilteredGroups] = useState([]);
   const [found, setFound] = useState(0);
-  const similarityThreshold = 2;
+  const similarityThreshold = 0.4;
 
   useEffect(() => {
     const searchableKeys = [
@@ -18,6 +18,7 @@ const useFilteredData = (initialData) => {
       'type',
       'benefits',
       'constitution',
+      'leaders'
     ];
 
     if (searchValue === '') {
@@ -29,14 +30,15 @@ const useFilteredData = (initialData) => {
         for (const key of searchableKeys) {
           if (
             typeof group[key] === 'string' &&
-            levenshtein.get(group[key].toLowerCase(), searchValue.toLowerCase()) / group[key].length >= similarityThreshold
+            (similarity(group[key].toLowerCase(), searchValue.toLowerCase()) >= similarityThreshold ||
+            group[key].toLowerCase().includes(searchValue.toLowerCase()))
           ) {
             return true;
-          }
+          }          
         }
-
+      
         return false;
-      });
+      });      
 
       setFound(filtered.length);
       setFilteredGroups(filtered);

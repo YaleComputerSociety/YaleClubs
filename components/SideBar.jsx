@@ -1,7 +1,8 @@
 import { NativeWindStyleSheet } from 'nativewind';
+import { Linking } from 'react-native';
 import { useState } from 'react';
 
-import { Image, Pressable, Text, View} from 'react-native';
+import { Pressable, Text, View} from 'react-native';
 
 NativeWindStyleSheet.setOutput({
     default: "native",
@@ -10,6 +11,14 @@ NativeWindStyleSheet.setOutput({
 
 const SideBar = ({data}) => {
     const [saved, setSaved] = useState(false);
+
+    const openWebsite = (url) => {
+        Linking.openURL(url).catch((err) => console.error('Error opening website:', err));
+    };
+
+    const sendEmail = (url) => {
+        Linking.openURL("mailto:"+url).catch((err) => console.error('Error opening email:', err));
+    };
 
     return (
         <View className='w-[220]'>
@@ -50,8 +59,22 @@ const SideBar = ({data}) => {
                                 {value !== null && (
                                     <View className="mb-7">
                                         <Text className='text-gray-400'>{key.charAt(0).toUpperCase() + key.slice(1)}</Text>
-                                        <Pressable className='mt-2'>
-                                            <Text numberOfLines={1} className={key === "website" ? 'text-sky-500' : 'text-black'}>{value}</Text>
+                                        <Pressable
+                                            onPress={
+                                                key === "website"
+                                                ? () => openWebsite(`https://${value.split("//")[1].replace("www.", "")}`)
+                                                : key === "email"
+                                                ? () => sendEmail(value)
+                                                : undefined
+                                            }
+                                            className='mt-2'
+                                        >
+                                            <Text
+                                                numberOfLines={1}
+                                                className={key === "website" ? 'text-sky-500' : 'text-black'}
+                                            >
+                                                {value}
+                                            </Text>
                                         </Pressable>
                                     </View>
                                 )}
