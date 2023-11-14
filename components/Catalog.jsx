@@ -34,7 +34,6 @@ const Catalog = () => {
                 if (storedData) {
                     // Use stored data if available
                     setAllGroups(JSON.parse(storedData));
-                    console.log(allGroups);
                 } else {
                     // Fetch data from the API if not stored
                     const all = await fetchClubs({});
