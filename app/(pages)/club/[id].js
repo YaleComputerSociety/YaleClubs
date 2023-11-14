@@ -58,7 +58,8 @@ const ClubPage = () => {
                                     <Text>Group Data Requested by ID: {JSON.stringify(groupData)}</Text>
                                 </View>
                             </View>
-                            <SideBar 
+
+                            <SideBar
                                 data={{
                                     website: groupData.website, 
                                     phone: groupData.phone, 
