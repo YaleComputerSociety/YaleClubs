@@ -18,6 +18,7 @@ const useFilteredData = (initialData) => {
       'type',
       'benefits',
       'constitution',
+      'leaders'
     ];
 
     if (searchValue === '') {
