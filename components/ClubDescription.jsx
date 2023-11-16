@@ -22,7 +22,7 @@ const ClubDescription = ({groupData}) => {
             <View>
                 <Text className="leading-5">{ groupData.mission }</Text>
             </View>
-            
+
             <Leaders leaders={groupData.leaders} />
         </View>
     );
