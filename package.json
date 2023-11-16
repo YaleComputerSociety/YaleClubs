@@ -33,6 +33,7 @@
     "react-native-screens": "~3.22.0",
     "react-native-super-grid": "^5.0.0",
     "react-native-web": "~0.19.6",
+    "react-router-dom": "^6.19.0",
     "similarity": "^1.2.1",
     "typescript": "^5.1.3"
   },

@@ -4,27 +4,14 @@ NativeWindStyleSheet.setOutput({
     default: "native",
 });
 
-import { useState } from 'react';
 import { FlatList, Image, Pressable, Text, View} from 'react-native';
+import parseCategories from '../actions/parseCategories';
 import { useRouter } from 'expo-router';
 
 
 const ClubItem = ({ item }) => {
-    const [saved, setSaved] = useState(false);
     const navigation = useRouter();
-    let categories = [];
-
-
-    if (item.category !== null) {
-        categories = item.category.split(/[\/,]/).slice(0, 2).map((category, index) => ({
-            id: index,
-            name: category.trim(),
-        }));
-    }
-
-    if (categories.length === 0) {
-        categories = [{ id: 0, name: "All Categories" }];
-    }
+    const categories = parseCategories(item.category).slice(0, 2);
     
     return (
         // In Progress
