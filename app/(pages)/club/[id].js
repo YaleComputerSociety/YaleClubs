@@ -11,6 +11,7 @@ import { fetchClubs } from '../../../api/FetchClubs';
 import SideBar from '../../../components/SideBar';
 import ClubDescription from '../../../components/ClubDescription';
 import AuthWrapper from '../../../components/AuthWrapper';
+import Wrapper from '../../../components/Wrapper';
 
 NativeWindStyleSheet.setOutput({
     default: 'native',
@@ -26,7 +27,6 @@ const ClubPage = () => {
                 const data = await fetchClubs({ filters: { id: id } });
                 setGroupData(data[0]);
             } catch (error) {
-                // Log Values (In Development)
                 console.error('Error fetching club data:', error);
             }
         };
@@ -36,12 +36,11 @@ const ClubPage = () => {
     
     return (
         <AuthWrapper>
-            <SafeAreaView className="w-ful">
+            <SafeAreaView className="w-full">
                 <View className="flex-col w-full min-h-screen">
                     <Header />
-                    <View className="py-10 mb-10 w-full flex items-center">
-                        <View className="w-[920px]">
-
+                    <View className="mb-10 w-full flex items-center">
+                        <Wrapper>
                             <View className="w-full flex-row">
                                 <View className="w-full flex-shrink mr-10 flex-row">
                                     <View className="mr-5 w-16">
@@ -60,7 +59,7 @@ const ClubPage = () => {
                                     }} 
                                 />
                             </View>
-                        </View>
+                        </Wrapper>
                     </View>
                     <Footer />
                 </View>
