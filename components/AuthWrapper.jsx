@@ -1,4 +1,4 @@
-// AuthWrapper.js
+// AuthWrapper.jsx
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
@@ -23,7 +23,7 @@ const AuthWrapper = ({ children }) => {
 
   useEffect(() => {
     if (isAuthenticated === false) {
-      navigation.push('/login');
+      // navigation.push('/login');
     }
   }, [isAuthenticated, navigation]);
 

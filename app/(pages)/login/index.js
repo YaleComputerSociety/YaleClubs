@@ -10,7 +10,7 @@ NativeWindStyleSheet.setOutput({
 
 const LoginScreen = () => {
     // catch the id and finish login
-    const route = useRouter();
+    const navigation = useRouter();
     const { id } = useGlobalSearchParams();
     
     return (

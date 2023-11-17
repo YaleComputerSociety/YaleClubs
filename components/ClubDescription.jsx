@@ -3,6 +3,7 @@ import { NativeWindStyleSheet } from 'nativewind';
 import { Text, View } from 'react-native';
 
 import Leaders from './Leaders';
+import Comments from './Comments';
 
 NativeWindStyleSheet.setOutput({
     default: 'native',
@@ -24,6 +25,7 @@ const ClubDescription = ({groupData}) => {
             </View>
 
             <Leaders leaders={groupData.leaders} />
+            <Comments />
         </View>
     );
 }
