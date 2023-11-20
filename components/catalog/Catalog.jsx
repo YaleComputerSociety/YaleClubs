@@ -1,30 +1,34 @@
 
 import { NativeWindStyleSheet } from "nativewind";
 
-NativeWindStyleSheet.setOutput({
-  default: "native",
-});
-
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Text, View, Image, ActivityIndicator, Pressable } from 'react-native';
-import { fetchClubs } from '../api/FetchClubs';
+import { Text, View, ActivityIndicator, Pressable } from 'react-native';
+import { fetchClubs } from '../../api/FetchClubs';
 import { FlatGrid } from 'react-native-super-grid';
 
-import useFilteredData from "../hooks/FilterData";
-import SearchBar from './SearchBar';
-import ClubItem from "./ClubItem";
-import Wrapper from "./Wrapper";
+import useFilteredData from "../../hooks/FilterData";
+import SearchBar from '../catalog/SearchBar';
+import ClubItem from "../club/ClubItem";
+import Wrapper from "../Wrapper";
+import DecoratorSVG from "../../assets/decorator";
 
 
 const Catalog = () => {
     const numColumns = 2;
     const navigation = useRouter();
+
+    // Native Wind
+    NativeWindStyleSheet.setOutput({
+        default: "native",
+    });
     
     const [isLoading, setIsLoading] = useState(true);
     const [allGroups, setAllGroups] = useState([]);
     const [fetchError, setFetchError] = useState(null);
+
+    const { searchValue, onChange, found, filteredGroups } = useFilteredData(allGroups);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -35,6 +39,7 @@ const Catalog = () => {
                 if (storedData) {
                     // Use stored data if available
                     setAllGroups(JSON.parse(storedData));
+                    console.log(JSON.parse(storedData));
                 } else {
                     // Fetch data from the API if not stored
                     const all = await fetchClubs({});
@@ -58,13 +63,11 @@ const Catalog = () => {
         fetchData();
     }, []);
     
-    const { searchValue, onChange, found, filteredGroups } = useFilteredData(allGroups);
-
     const renderItem = ({ item }) => (
-        // In Development
         <ClubItem item={item} />
     );
-
+    
+    // Catch Errors
     if (fetchError) {
         return (
             <View>
@@ -75,8 +78,8 @@ const Catalog = () => {
 
     return (
         <Wrapper>
-            <View className="absolute z-[-10] h-[400] w-[470] left-[-150] top-[-20]">
-                <Image source="../assets/decorator.png" className="h-full" />
+            <View className="absolute z-[-10] h-[400] w-[470] left-[-210] top-[-20]">
+                <DecoratorSVG />
             </View>
 
             <View className="px-5">
@@ -107,6 +110,7 @@ const Catalog = () => {
             )}
         </Wrapper>
     );
+    
 }
 
 export default Catalog;
