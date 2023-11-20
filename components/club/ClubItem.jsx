@@ -1,17 +1,18 @@
 import { NativeWindStyleSheet } from 'nativewind';
 
-NativeWindStyleSheet.setOutput({
-    default: "native",
-});
-
 import { FlatList, Image, Pressable, Text, View} from 'react-native';
-import parseCategories from '../actions/parseCategories';
+import parseCategories from '../../actions/parseCategories';
 import { useRouter } from 'expo-router';
 
 
 const ClubItem = ({ item }) => {
     const navigation = useRouter();
     const categories = parseCategories(item.category).slice(0, 2);
+
+    NativeWindStyleSheet.setOutput({
+        default: "native",
+    });
+
     
     return (
         // In Progress

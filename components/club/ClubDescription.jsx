@@ -3,12 +3,16 @@ import { NativeWindStyleSheet } from 'nativewind';
 import { Text, View } from 'react-native';
 
 import Leaders from './Leaders';
+import Comments from './Comments';
 
-NativeWindStyleSheet.setOutput({
-    default: 'native',
-});
 
-const ClubDescription = ({groupData}) => {
+const ClubDescription = ({groupData}) => {    
+
+    // Native Wind
+    NativeWindStyleSheet.setOutput({
+        default: "native",
+    });
+    
     return (
         <View className="w-full flex-shrink">
             <View className='flex-row items-start'>
@@ -22,10 +26,28 @@ const ClubDescription = ({groupData}) => {
             <View>
                 <Text className="leading-5">{ groupData.mission }</Text>
             </View>
+            <View className='flex-row justify-between mt-6'>
+                <View className='flex-row gap-5'>
+                    <View className='flex-row items-center'>
+                        <View className='mr-2 h-3 w-3 rounded-full bg-sky-500'></View>
+                        <Text className='text-[14px]'>Joined</Text>
+                    </View>
+                    <View className='flex-row items-center'>
+                        <View className='mr-2 h-3 w-3 rounded-full bg-green-500'></View>
+                        <Text className='text-[14px]'>Opened</Text>
+                    </View>
+                </View>
+                <View>
+                    <Text>{groupData.leaders?.length} Members</Text>
+                </View>
+            </View>
 
-            <Leaders leaders={groupData.leaders} />
+            {groupData.leaders?.length > 0 && <Leaders leaders={groupData.leaders} />}
+
+            <Comments />
         </View>
     );
+    
 }
 
 export default ClubDescription;

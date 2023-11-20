@@ -20,36 +20,30 @@ const useFilteredData = (initialData) => {
       'constitution',
       'leaders'
     ];
-
+  
     if (searchValue === '') {
       // If no search value is provided, show all data
       setFound(initialData.length);
       setFilteredGroups(initialData);
     } else {
-      const filtered = initialData.filter((group) => {
-        for (const key of searchableKeys) {
-          if (
-            typeof group[key] === 'string' &&
-            (similarity(group[key].toLowerCase(), searchValue.toLowerCase()) >= similarityThreshold ||
+      const filtered = initialData.filter((group) =>
+        searchableKeys.some((key) =>
+          typeof group[key] === 'string' &&
+          (similarity(group[key].toLowerCase(), searchValue.toLowerCase()) >= similarityThreshold ||
             group[key].toLowerCase().includes(searchValue.toLowerCase()))
-          ) {
-            return true;
-          }          
-        }
-      
-        return false;
-      });      
-
+        )
+      );
+  
       setFound(filtered.length);
       setFilteredGroups(filtered);
     }
-  }, [searchValue, initialData, similarityThreshold]);
+  }, [searchValue, initialData, similarityThreshold]);  
 
   const onChange = (text) => {
     setSearchValue(text);
   };
 
   return { searchValue, onChange, found, filteredGroups };
-}
+};
 
 export default useFilteredData;
