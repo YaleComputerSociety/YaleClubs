@@ -1,3 +1,4 @@
+
 import { NativeWindStyleSheet } from 'nativewind';
 
 import React, { useEffect, useState } from 'react';
@@ -5,22 +6,25 @@ import { Image, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGlobalSearchParams } from 'expo-router';
 
-import Header from '../../../components/Header';
-import Footer from '../../../components/Footer';
+import Header from '../../../components/header/Header';
+import Footer from '../../../components/footer/Footer';
 import { fetchClubs } from '../../../api/FetchClubs';
-import SideBar from '../../../components/SideBar';
-import ClubDescription from '../../../components/ClubDescription';
+import SideBar from '../../../components/club/SideBar';
+import ClubDescription from '../../../components/club/ClubDescription';
 import AuthWrapper from '../../../components/AuthWrapper';
 import Wrapper from '../../../components/Wrapper';
 
-NativeWindStyleSheet.setOutput({
-    default: 'native',
-});
 
 const ClubPage = () => {
     const { id } = useGlobalSearchParams();
-    const [groupData, setGroupData] = useState([]);
+    const [groupData, setGroupData] = useState([]);    
 
+    // Native Wind SetUp
+    NativeWindStyleSheet.setOutput({
+        default: 'native',
+    });
+
+    // Fetch Clubs
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -54,8 +58,7 @@ const ClubPage = () => {
                                     data={{
                                         website: groupData?.website, 
                                         phone: groupData?.phone, 
-                                        email: groupData?.email, 
-                                        category: groupData?.category
+                                        email: groupData?.email
                                     }} 
                                 />
                             </View>

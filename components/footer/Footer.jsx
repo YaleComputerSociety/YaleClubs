@@ -1,15 +1,15 @@
+
 import { NativeWindStyleSheet } from 'nativewind';
-
-NativeWindStyleSheet.setOutput({
-    default: "native",
-});
-
 import { Text, View} from 'react-native';
 
-
 const Footer = () => {
+
+    // Native Wind SetUp
+    NativeWindStyleSheet.setOutput({
+        default: "native",
+    });
+
     return (
-        // In Progress
         <View className="
             w-full 
             absolute 
@@ -22,6 +22,7 @@ const Footer = () => {
             <Text className='text-gray-300'>Copyrights Preserved © {new Date().getFullYear()} Yale Clubs</Text>
         </View>
     );
+
 }
 
 export default Footer;

@@ -1,3 +1,4 @@
+
 // AuthWrapper.jsx
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -23,6 +24,7 @@ const AuthWrapper = ({ children }) => {
 
   useEffect(() => {
     if (isAuthenticated === false) {
+      // uncomment on auth page done
       // navigation.push('/login');
     }
   }, [isAuthenticated, navigation]);
