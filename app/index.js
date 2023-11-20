@@ -4,27 +4,26 @@ import { NativeWindStyleSheet } from "nativewind";
 import { 
     View, 
     SafeAreaView, 
-    ScrollView, 
-    useWindowDimensions } from "react-native";
+    ScrollView,
+} from "react-native";
     
 import AuthWrapper from '../components/AuthWrapper';
-import Catalog from "../components/Catalog";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-    
-// NativeWind Canvas & Engine
-NativeWindStyleSheet.setOutput({
-    default: "native",
-});
+import Header from "../components/header/Header";
+import Footer from "../components/footer/Footer";
+import Catalog from "../components/catalog/Catalog";
   
 
 const App = () => {
-    const { height: windowHeight } = useWindowDimensions();
+
+    // Native Wind
+    NativeWindStyleSheet.setOutput({
+        default: "native",
+    });
 
     return (
         <AuthWrapper>
             <SafeAreaView className="w-full">
-                <ScrollView style={{ height: windowHeight }}>
+                <ScrollView>
                     <View className="flex-col w-full min-h-screen">
                         <Header />
                         <Catalog />
@@ -34,6 +33,7 @@ const App = () => {
             </SafeAreaView>
         </AuthWrapper>
     );
+
 }
 
 export default App;

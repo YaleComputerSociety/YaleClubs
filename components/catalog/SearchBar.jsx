@@ -1,13 +1,13 @@
+
 import { NativeWindStyleSheet } from "nativewind";
-
-NativeWindStyleSheet.setOutput({
-    default: "native",
-});
-
 import { View, TextInput, Text } from "react-native";
 
-
 const SearchBar = ({onChange, searchValue, found}) => {
+
+    // Native Wind
+    NativeWindStyleSheet.setOutput({
+        default: "native",
+    });    
 
     return (
         <View className="
