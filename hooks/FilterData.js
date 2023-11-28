@@ -1,5 +1,6 @@
+
 import { useEffect, useState } from 'react';
-import similarity from 'similarity';
+import { distance } from 'fastest-levenshtein';
 
 const useFilteredData = (initialData) => {
   const [searchValue, setSearchValue] = useState('');
@@ -20,24 +21,23 @@ const useFilteredData = (initialData) => {
       'constitution',
       'leaders'
     ];
-  
+
     if (searchValue === '') {
-      // If no search value is provided, show all data
       setFound(initialData.length);
       setFilteredGroups(initialData);
     } else {
       const filtered = initialData.filter((group) =>
         searchableKeys.some((key) =>
           typeof group[key] === 'string' &&
-          (similarity(group[key].toLowerCase(), searchValue.toLowerCase()) >= similarityThreshold ||
-            group[key].toLowerCase().includes(searchValue.toLowerCase()))
+          (group[key]?.toLowerCase().includes(searchValue.toLowerCase()) ||
+            (group[key] !== null && 1 / (1 + distance(group[key].toLowerCase(), searchValue.toLowerCase())) >= similarityThreshold))
         )
       );
-  
+
       setFound(filtered.length);
       setFilteredGroups(filtered);
     }
-  }, [searchValue, initialData, similarityThreshold]);  
+  }, [searchValue, initialData, similarityThreshold]);
 
   const onChange = (text) => {
     setSearchValue(text);

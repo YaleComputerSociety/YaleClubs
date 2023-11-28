@@ -1,6 +1,9 @@
 
 import { NativeWindStyleSheet } from 'nativewind';
 import { Linking, Pressable, Text, View } from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
+
+import CopySVG from '../../assets/copy';
 
 const AsideItem = ({data}) => {
     NativeWindStyleSheet.setOutput({
@@ -23,7 +26,10 @@ const AsideItem = ({data}) => {
                     <View key={key}>
                         {value !== null && (
                             <View className="mb-7">
-                                <Text className='text-gray-400'>{key.charAt(0).toUpperCase() + key.slice(1)}</Text>
+                                <View className='flex-row justify-between'>
+                                    <Text className='text-gray-400'>{key.charAt(0).toUpperCase() + key.slice(1)}</Text>
+                                    <Pressable onPress={() => {Clipboard.setString(value)}}><CopySVG /></Pressable>
+                                </View>
                                 <Pressable
                                     onPress={
                                         key === "website"

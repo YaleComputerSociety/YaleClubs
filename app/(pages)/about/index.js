@@ -1,7 +1,7 @@
 
 import { NativeWindStyleSheet } from 'nativewind';
 
-import { Text, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlatGrid } from 'react-native-super-grid';
 
@@ -9,7 +9,7 @@ import AuthWrapper from '../../../components/AuthWrapper';
 import Footer from '../../../components/footer/Footer';
 import Header from '../../../components/header/Header';
 import Wrapper from '../../../components/Wrapper';
-import membersData from './members.json';
+import membersData from './members';
 
 
 const About = () => {   
@@ -20,8 +20,10 @@ const About = () => {
     });
 
     const renderItem = ({ item }) => (
-        <View className='border-[1px] border-gray-100 rounded-md p-5 pr-16 flex-row'>
-            <View className='bg-gray-100 rounded-md mr-5 h-20 w-20'></View>
+        <View key={item.id} className='border-[1px] border-gray-100 rounded-md p-5 pr-16 flex-row'>
+            <View className='bg-gray-100 rounded-md mr-5 h-20 w-20 overflow-hidden'>
+                <Image source={{uri: item.src}} className='w-full h-full' />
+            </View>
             <View className='w-full flex-shrink'>
                 <Text className='font-semibold'>{item.name} - {item.role}</Text>
                 <Text className='mt-2'>{item.description}</Text>
