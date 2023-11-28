@@ -1,7 +1,8 @@
 
 import { NativeWindStyleSheet } from 'nativewind';
 
-import { Text, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import AuthWrapper from '../../../components/AuthWrapper';
@@ -10,12 +11,30 @@ import Header from '../../../components/header/Header';
 import Wrapper from '../../../components/Wrapper';
 
 
-const QuestionBlock = () => {   
+const QuestionBlock = () => {  
+    const [openIndex, setOpenIndex] = useState(null); 
 
     // Native Wind SetUp
     NativeWindStyleSheet.setOutput({
         default: 'native',
     });
+
+    const questions = [
+        { id: 1, question: 'How much time do members spend every week?', answer: 'Other question to ansert here here here. Other question to ansert here here here Other question to ansert heHow much time do members spend every week?re  Other question to anseHow much time do members spend every week?rt here here here here here Other question to ansert here here here.' },
+        { id: 2, question: 'Time time time time time time', answer: 'Other question to ansert here here here. Other question to ansert here here here Other question to ansert heHow much time do members spend every week?re  Other question to anseHow much time do members spend every week?rt here here here here here Other question to ansert here here here.' },
+        { id: 3, question: 'Other question to ansert here here here', answer: 'Other question to ansert here here here. Other question to ansert here here here Other question to ansert heHow much time do members spend every week?re  Other question to anseHow much time do members spend every week?rt here here here here here Other question to ansert here here here.' },
+        { id: 4, question: 'Question 4', answer: 'Answer 2' },
+        { id: 5, question: 'Question 5', answer: 'Answer 1' },
+        { id: 6, question: 'Question 6', answer: 'Answer 2' },
+        { id: 7, question: 'Question 7', answer: 'Answer 1' },
+        { id: 8, question: 'Question 8', answer: 'Answer 2' },
+        { id: 9, question: 'Question 9', answer: 'Answer 1' },
+        { id: 10, question: 'Question 10', answer: 'Answer 2' },
+    ];
+
+    const handleItemClick = (index) => {
+        setOpenIndex(openIndex === index ? null : index);
+    };
     
     return (
         <AuthWrapper>
@@ -25,13 +44,18 @@ const QuestionBlock = () => {
                     <Wrapper>
                         <View className="mb-10 w-full flex items-center">
                             <View className="w-[920px]">
-                                <Text className='text-2xl font-bold mb-10'>Questions & Answers</Text>
-                                <View className='gap-y-5'>
-                                    <Text>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</Text>
-                                    <Text>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</Text>
-                                    <Text>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</Text>
-                                    <Text>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</Text>
-                                </View>
+                                <Text className='text-2xl text-sky-500 font-bold mb-10'>Frequently Asked Questions</Text>
+                                {questions.map((item, index) => (
+                                    <Pressable
+                                        key={item.id}
+                                        onPress={() => handleItemClick(index)}
+                                        activeOpacity={0.7}
+                                        className="py-4 w-full"
+                                    >
+                                        <Text className="text-[16px]">{item.question}</Text>
+                                        {openIndex === index && <Text className='mt-4 leading-6 pr-[200]'>{item.answer}</Text>}
+                                    </Pressable>
+                                ))}
                             </View>
                         </View>
                     </Wrapper>

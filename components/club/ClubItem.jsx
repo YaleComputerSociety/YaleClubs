@@ -41,7 +41,10 @@ const ClubItem = ({ item }) => {
     
                 </View>
                 <View className='relative flex-col items-end'>
-                    <Image source={{uri: item.logo}} className="h-20 w-20 rounded-full"/>
+                    <Image 
+                        source={{uri: item.logo}} 
+                        className="h-20 w-20 rounded-full"
+                    />
                 </View>
             </View>
         </Pressable>

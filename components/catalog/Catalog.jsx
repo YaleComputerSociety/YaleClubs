@@ -2,7 +2,7 @@
 import { NativeWindStyleSheet } from "nativewind";
 
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Text, View, ActivityIndicator, Pressable } from 'react-native';
 import { fetchClubs } from '../../api/FetchClubs';
@@ -15,7 +15,7 @@ import Wrapper from "../Wrapper";
 import DecoratorSVG from "../../assets/decorator";
 
 
-const Catalog = () => {
+const Catalog = ({page, setPage}) => {
     const numColumns = 2;
     const navigation = useRouter();
 
@@ -63,8 +63,9 @@ const Catalog = () => {
         fetchData();
     }, []);
     
-    const renderItem = ({ item }) => (
-        <ClubItem item={item} />
+    const renderItem = useMemo(
+        () => ({ item }) => <ClubItem item={item} />,
+        []
     );
     
     // Catch Errors
@@ -86,7 +87,7 @@ const Catalog = () => {
                 <Text className="font-bold text-2xl">Browse Clubs</Text>
                 <Text className="text-1xl">Shopping has never been easier.</Text>
 
-                <SearchBar onChange={onChange} searchValue={searchValue} found={found} />
+                <SearchBar onChange={(text) => { onChange(text); setPage(1); }} searchValue={searchValue} found={found} />
             </View>
 
             {isLoading ? (
@@ -99,7 +100,7 @@ const Catalog = () => {
             ) : (
                 <View>
                     <FlatGrid
-                        data={filteredGroups}
+                        data={filteredGroups.slice(0, page * 100)}
                         renderItem={renderItem}
                         itemContainerStyle={{ justifyContent: 'flex-start' }}
                         spacing={20}
