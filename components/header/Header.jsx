@@ -43,19 +43,19 @@ const Header = () => {
 
     const heightTransform = menuHeight.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, 140]
+        outputRange: [0, 200]
     });
 
 
     return (
-        <View className="w-full flex-row absolute z-10 justify-between bg-white py-5 px-[110px]">
+        <View className="w-full flex-row absolute z-10 justify-between bg-white py-5 ph:px-5 lg:px-[110px]">
             <Pressable className="flex-row items-center" onPress={() => route.push(`/`)}>
                 <LogoSVG/>
                 <Text selectable={false} className="ml-5 font-semibold text-[16px]">Yale Clubs</Text>
             </Pressable>
 
             <View className="flex-row items-center">
-                <View className="mr-10 flex-row items-center gap-x-11">
+                <View className="ph:hidden md:flex mr-10 flex-row items-center gap-x-11">
                     <Pressable onPress={() => route.push(`/`)}>
                         <Text selectable={false} className="text-[15px]">Catalog</Text>
                     </Pressable>

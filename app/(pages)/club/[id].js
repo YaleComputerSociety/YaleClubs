@@ -45,9 +45,9 @@ const ClubPage = () => {
                     <Header />
                     <View className="mb-10 w-full flex items-center">
                         <Wrapper>
-                            <View className="w-full flex-row">
-                                <View className="w-full flex-shrink mr-10 flex-row">
-                                    <View className="mr-5 w-16">
+                            <View className="w-full ph:flex-col-reverse lg:flex-row ph:px-5 lg:p-0">
+                                <View className="w-full flex-shrink mr-10 ph:flex-col lg:flex-row">
+                                    <View className="w-16 mr-5 ph:hidden lg:flex shadow-none">
                                         <Image className="h-16 w-16 rounded-full" source={{ uri: groupData?.logo }} />
                                     </View>
 

@@ -37,11 +37,11 @@ const About = () => {
                 <View className="flex-col w-full min-h-screen">
                     <Header />
                     <Wrapper>
-                        <View className="mb-10 w-full flex items-center">
-                            <View className="w-[920px]">
+                        <View className="ph:mb-0 md:mb-10 w-full flex items-center">
+                            <View className="ph:w-full lg:w-[920px]">
                                 <Text className='text-2xl font-bold px-5'>About Us</Text>
                                 <Text className='mb-5 px-5'>From Student To Students</Text>
-                                <Text className='px-5 mb-10 pr-60'>
+                                <Text className='px-5 ph:mb-4 md:mb-10 ph:pr-20 md:pr-60'>
                                     Y/CS is lorem Ipsum is simply dummy text of the printing and typesetting industry. From development mentorship to hacking nights, we create a community for programmers of all skill levels.
                                 </Text>
                                 <View>

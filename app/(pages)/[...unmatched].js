@@ -48,7 +48,7 @@ const Unmatched = () => {
                     Page not found
                 </Text>
                 <Text style={styles.mt2}>
-                    If you think this is an error, please <Pressable style={styles.textSky500}>let us know</Pressable> and we will take a look.
+                    If you think this is an error, please <Pressable style={styles.textSky500}>let us know.</Pressable>
                 </Text>
             </View>
             <Footer />

@@ -9,8 +9,8 @@ const Wrapper = ({ children }) => {
     });
     
     return (
-        <View className="py-10 mt-20 mb-10 w-full flex items-center">
-            <View className="w-[920px]">
+        <View className="py-10 ph:mt-14 md:mt-20 w-full flex items-center">
+            <View className="w-full lg:w-[920px]">
                 {children}
             </View>
         </View>

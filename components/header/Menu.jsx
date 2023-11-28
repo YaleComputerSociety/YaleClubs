@@ -1,8 +1,10 @@
 
+import { useRouter } from 'expo-router';
 import { NativeWindStyleSheet } from 'nativewind';
 import { Pressable, Text, View } from 'react-native';
 
 const Menu = ({ navigation }) => {
+    const route = useRouter();
 
     // Native Wind
     NativeWindStyleSheet.setOutput({
@@ -21,6 +23,12 @@ const Menu = ({ navigation }) => {
             "
         >
             <View className='flex-col gap-y-3 items-start'>
+                <Pressable onPress={() => route.push(`/`)} className='ph:flex md:hidden'>
+                    <Text selectable={false} className="text-[15px]">Catalog</Text>
+                </Pressable>
+                <Pressable onPress={() => route.push(`/worksheet`)} className='ph:flex md:hidden'>
+                    <Text selectable={false} className="text-[15px]">Worksheet</Text>
+                </Pressable>
                 <Pressable
                     className="flex-row justify-end"
                     onPress={() => navigation.push("/about")}
