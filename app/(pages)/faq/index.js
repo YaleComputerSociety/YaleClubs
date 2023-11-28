@@ -1,7 +1,8 @@
 
 import { NativeWindStyleSheet } from 'nativewind';
 
-import { Text, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import AuthWrapper from '../../../components/AuthWrapper';
@@ -10,12 +11,26 @@ import Header from '../../../components/header/Header';
 import Wrapper from '../../../components/Wrapper';
 
 
-const QuestionBlock = () => {   
+const QuestionBlock = () => {  
+    const [openIndex, setOpenIndex] = useState(null); 
 
     // Native Wind SetUp
     NativeWindStyleSheet.setOutput({
         default: 'native',
     });
+
+    const questions = [
+        { id: 1, question: 'How much time do members spend every week?', answer: 'Other question to ansert here here here. Other question to ansert here here here Other question to ansert heHow much time do members spend every week?re  Other question to anseHow much time do members spend every week?rt here here here here here Other question to ansert here here here.' },
+        { id: 2, question: 'Time time time time time time', answer: 'Other question to ansert here here here. Other question to ansert here here here Other question to ansert heHow much time do members spend every week?re  Other question to anseHow much time do members spend every week?rt here here here here here Other question to ansert here here here.' },
+        { id: 3, question: 'Other question to ansert here here here', answer: 'Other question to ansert here here here. Other question to ansert here here here Other question to ansert heHow much time do members spend every week?re  Other question to anseHow much time do members spend every week?rt here here here here here Other question to ansert here here here.' },
+        { id: 4, question: 'How much time do members spend every week?', answer: 'Other question to ansert here here here. Other question to ansert here here here Other question to ansert heHow much time do members spend every week?re  Other question to anseHow much time do members spend every week?rt here here here here here Other question to ansert here here here.' },
+        { id: 5, question: 'Time time time time time time', answer: 'Other question to ansert here here here. Other question to ansert here here here Other question to ansert heHow much time do members spend every week?re  Other question to anseHow much time do members spend every week?rt here here here here here Other question to ansert here here here.' },
+        { id: 6, question: 'Other question to ansert here here here', answer: 'Other question to ansert here here here. Other question to ansert here here here Other question to ansert heHow much time do members spend every week?re  Other question to anseHow much time do members spend every week?rt here here here here here Other question to ansert here here here.' },
+    ];
+
+    const handleItemClick = (index) => {
+        setOpenIndex(openIndex === index ? null : index);
+    };
     
     return (
         <AuthWrapper>
@@ -23,16 +38,20 @@ const QuestionBlock = () => {
                 <View className="flex-col w-full min-h-screen">
                     <Header />
                     <Wrapper>
-                        <View className="mb-10 w-full flex items-center">
-                            <View className="w-[920px]">
-                                <Text className='text-2xl font-bold mb-10'>Questions & Answers</Text>
-                                <View className='gap-y-5'>
-                                    <Text>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</Text>
-                                    <Text>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</Text>
-                                    <Text>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</Text>
-                                    <Text>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</Text>
-                                </View>
-                            </View>
+                        <View className="ph:mb-4 md:mb-10 px-5 w-full">
+                            <Text className='text-2xl text-black font-bold'>Frequently Asked Questions</Text>
+                            <Text className='ph:mb-4 md:mb-10'>All other questions by <Pressable className='text-sky-500'>yaleclubs@gmail.com</Pressable> email.</Text>
+                            {questions.map((item, index) => (
+                                <Pressable
+                                    key={item.id}
+                                    onPress={() => handleItemClick(index)}
+                                    activeOpacity={0.7}
+                                    className="ph:py-2 md:py-4 w-full"
+                                >
+                                    <Text className="text-[16px]">{item.question}</Text>
+                                    {openIndex === index && <Text className='mt-4 leading-6 ph:pr-[40] md:pr-[200]'>{item.answer}</Text>}
+                                </Pressable>
+                            ))}
                         </View>
                     </Wrapper>
                     <Footer />
