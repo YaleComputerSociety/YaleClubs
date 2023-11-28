@@ -79,7 +79,7 @@ const Catalog = ({page, setPage}) => {
 
     return (
         <Wrapper>
-            <View className="absolute z-[-10] h-[400] w-[470] left-[-210] top-[-20]">
+            <View className="absolute z-[-10] ph:hidden lg:flex h-[400] left-[-210] top-[-20]">
                 <DecoratorSVG />
             </View>
 

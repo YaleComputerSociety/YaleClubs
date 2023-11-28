@@ -16,7 +16,7 @@ const SideBar = ({data}) => {
     });
 
     return (
-        <View className='w-[220]'>
+        <View className='w-[220] ph:hidden lg:flex'>
 
             {/* <View>
                 <Text className='text-5xl text-green-500'><Text className='font-bold'>9.7</Text>/10</Text>

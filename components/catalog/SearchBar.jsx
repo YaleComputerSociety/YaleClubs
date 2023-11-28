@@ -12,18 +12,22 @@ const SearchBar = ({onChange, searchValue, found}) => {
     return (
         <View className="
             flex-row 
-            items-start">
+            items-start
+            ph:flex-col 
+            md:flex-row">
 
             <View
                 className="
                 shadow-sm
                 inline-flex 
-                w-[480] 
+                ph:w-full 
+                sm:w-[480]
                 rounded-md 
                 py-[10] px-5
                 bg-white
                 mt-5
-                mb-10"
+                ph:mb-0
+                md:mb-10"
             >
                 <TextInput
                     onChangeText={onChange}
@@ -35,9 +39,9 @@ const SearchBar = ({onChange, searchValue, found}) => {
                 />
             </View>
 
-            <View className="mt-6">
-                <Text className="ml-6 text-gray-400">Showing {found} results</Text>
-                <Text className="ml-6 text-gray-400">(faster than Coursetable)</Text>
+            <View className="ph:mt-4 ph:mb-4 md:mb-0 md:mt-6 ph:flex-row md:flex-col">
+                <Text className="ph:ml-0 md:ml-6 text-gray-400">Showing {found} results</Text>
+                <Text className="ph:ml-2 md:ml-6 text-gray-400">(faster than Coursetable)</Text>
             </View>
         </View>
     );
