@@ -43,12 +43,12 @@ const Unmatched = () => {
             <AuthWrapper>
                 <Header />
             </AuthWrapper>
-            <View  style={styles.flexCol}>
+            <View style={styles.flexCol}>
                 <Text style={styles.text4xl}>
                     Page not found
                 </Text>
                 <Text style={styles.mt2}>
-                    If you think this is an error, please <Pressable style={styles.textSky500}>let us know.</Pressable>
+                    If you think this is an error, please <Pressable style={styles.textSky500}><Text>let us know.</Text></Pressable>
                 </Text>
             </View>
             <Footer />

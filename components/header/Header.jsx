@@ -48,7 +48,7 @@ const Header = () => {
 
 
     return (
-        <View className="w-full flex-row absolute z-10 justify-between bg-white py-5 ph:px-5 lg:px-[110px]">
+        <View className="w-full flex-row absolute z-10 justify-between bg-white py-5 ph:px-5 xl:px-[110px]">
             <Pressable className="flex-row items-center" onPress={() => route.push(`/`)}>
                 <LogoSVG/>
                 <Text selectable={false} className="ml-5 font-semibold text-[16px]">Yale Clubs</Text>
@@ -73,7 +73,7 @@ const Header = () => {
                         </Pressable>
 
                         <Animated.View
-                            className="overflow-hidden absolute top-14 right-0"
+                            className="overflow-hidden absolute top-14 w-[120] right-0"
                             style={{
                                 height: heightTransform,
                             }}

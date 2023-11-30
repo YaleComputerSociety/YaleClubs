@@ -1,7 +1,6 @@
 
 import { NativeWindStyleSheet } from 'nativewind';
 import { Linking, Pressable, Text, View } from 'react-native';
-import Clipboard from '@react-native-clipboard/clipboard';
 
 import CopySVG from '../../assets/copy';
 
@@ -28,7 +27,7 @@ const AsideItem = ({data}) => {
                             <View className="mb-7">
                                 <View className='flex-row justify-between'>
                                     <Text className='text-gray-400'>{key.charAt(0).toUpperCase() + key.slice(1)}</Text>
-                                    <Pressable onPress={() => {Clipboard.setString(value)}}><CopySVG /></Pressable>
+                                    <Pressable onPress={() => null}><CopySVG /></Pressable>
                                 </View>
                                 <Pressable
                                     onPress={

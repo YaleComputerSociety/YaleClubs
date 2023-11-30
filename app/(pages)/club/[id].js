@@ -8,7 +8,7 @@ import { useGlobalSearchParams } from 'expo-router';
 
 import Header from '../../../components/header/Header';
 import Footer from '../../../components/footer/Footer';
-import { fetchClubs } from '../../../api/FetchClubs';
+import { fetchClubsAPI } from '../../../api/ManageClubs';
 import SideBar from '../../../components/club/SideBar';
 import ClubDescription from '../../../components/club/ClubDescription';
 import AuthWrapper from '../../../components/AuthWrapper';
@@ -28,7 +28,7 @@ const ClubPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = await fetchClubs({ filters: { id: id } });
+                const data = await fetchClubsAPI({ filters: { id: id } });
                 setGroupData(data[0]);
             } catch (error) {
                 console.error('Error fetching club data:', error);
