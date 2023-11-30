@@ -51,7 +51,7 @@ const ClubPage = () => {
                                         <Image className="h-16 w-16 rounded-full" source={{ uri: groupData?.logo }} />
                                     </View>
 
-                                    <ClubDescription groupData={groupData} />
+                                    <ClubDescription id={id} groupData={groupData} />
                                 </View>
 
                                 <SideBar

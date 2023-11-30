@@ -38,7 +38,11 @@ const Catalog = ({page, setPage}) => {
                 // Check the last reload time from AsyncStorage
                 const lastReloadTime = await AsyncStorage.getItem('lastReloadTime');
 
+<<<<<<< Updated upstream
                 // Reload JSON Every 6 hours Automatically
+=======
+                // Reload Every 6 hours Automatically
+>>>>>>> Stashed changes
                 if (!lastReloadTime || Date.now() - new Date(lastReloadTime).getTime() > 6 * 60 * 60 * 1000) {
                     await reloadClubs();
 

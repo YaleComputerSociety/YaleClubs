@@ -6,7 +6,7 @@ import Leaders from './Leaders';
 import Comments from './Comments';
 
 
-const ClubDescription = ({groupData}) => {    
+const ClubDescription = ({id, groupData}) => {    
 
     // Native Wind
     NativeWindStyleSheet.setOutput({
@@ -49,7 +49,11 @@ const ClubDescription = ({groupData}) => {
 
             {groupData.leaders?.length > 0 && <Leaders leaders={groupData.leaders} />}
 
+<<<<<<< Updated upstream
             <Comments />    
+=======
+            <Comments clubId={id} />    
+>>>>>>> Stashed changes
         </View>
     );
     
