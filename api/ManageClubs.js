@@ -1,4 +1,8 @@
 import axios from "axios";
+<<<<<<< Updated upstream
+=======
+import _shuffle from 'lodash/shuffle';
+>>>>>>> Stashed changes
 import { API_KEY } from "@env";
 
 const serverUrl = "https://yalies.io/api/groups";
@@ -16,10 +20,21 @@ export const fetchClubsJSON = async () => {
       const response = await axios.get('http://localhost:8081/api/data');
 
       // Extract the data from the response
+<<<<<<< Updated upstream
       const data = response.data;
       
       if (data !== undefined) {
         return data;
+=======
+      const data =  response.data;
+      const exclude = "https://yaleconnect.yale.edu/images/Redirect_arrow_small.png";
+      const shuffledData = _shuffle(data.filter(item => item.logo !== null && item.logo !== exclude));
+      const nullLogoData = data.filter(item => item.logo === null || item.logo === exclude);
+      const final = shuffledData.concat(nullLogoData);
+      
+      if (data !== undefined) {
+        return final;
+>>>>>>> Stashed changes
       }
 
       // Log or use the retrieved data as needed
