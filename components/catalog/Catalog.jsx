@@ -2,10 +2,10 @@
 import { NativeWindStyleSheet } from "nativewind";
 
 import { useRouter } from "expo-router";
-import React, { useEffect, useMemo, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Text, View, ActivityIndicator, Pressable } from 'react-native';
-import { fetchClubs } from '../../api/FetchClubs';
+import { reloadClubs, fetchClubsJSON } from '../../api/ManageClubs';
 import { FlatGrid } from 'react-native-super-grid';
 
 import useFilteredData from "../../hooks/FilterData";
@@ -33,28 +33,26 @@ const Catalog = ({page, setPage}) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const storedData = await AsyncStorage.getItem('allGroupData');
                 setIsLoading(true);
 
-                if (storedData) {
-                    // Use stored data if available
-                    setAllGroups(JSON.parse(storedData));
-                    console.log(JSON.parse(storedData));
-                } else {
-                    // Fetch data from the API if not stored
-                    const all = await fetchClubs({});
-                    const excludedLogoURL = 'https://yaleconnect.yale.edu/images/Redirect_arrow_small.png';
-                    data = all.filter((item) => item.logo !== null && item.logo !== excludedLogoURL);
-                    setAllGroups(data);
+                // Check the last reload time from AsyncStorage
+                const lastReloadTime = await AsyncStorage.getItem('lastReloadTime');
 
-                    // Save fetched data to AsyncStorage
-                    await AsyncStorage.setItem('allGroupData', JSON.stringify(data));
+                // Reload JSON Every 6 hours Automatically
+                if (!lastReloadTime || Date.now() - new Date(lastReloadTime).getTime() > 6 * 60 * 60 * 1000) {
+                    await reloadClubs();
+
+                    // Update the last reload time in AsyncStorage
+                    await AsyncStorage.setItem('lastReloadTime', new Date().toISOString());
                 }
+
+                const clubs = await fetchClubsJSON({});
+                console.log(clubs);
+                setAllGroups(clubs);
 
                 setIsLoading(false);
             } catch (error) {
-                // Log Values (In Development)
-                console.error('Error fetching club data:', error);
+                console.error('Error fetching or saving data:', error);
                 setFetchError(error);
                 setIsLoading(false);
             }
@@ -62,13 +60,12 @@ const Catalog = ({page, setPage}) => {
     
         fetchData();
     }, []);
-    
+
     const renderItem = useMemo(
         () => ({ item }) => <ClubItem item={item} />,
         []
     );
-    
-    // Catch Errors
+
     if (fetchError) {
         return (
             <View>
@@ -91,7 +88,7 @@ const Catalog = ({page, setPage}) => {
             </View>
 
             {isLoading ? (
-                <ActivityIndicator size="large" color="#aaa" />
+                <ActivityIndicator className="mx-auto" color="#aaa" />
             ) : found === 0 ? (
                 <View className="p-5">
                     <Text>Sorry. No results has been found by your request.</Text>
@@ -102,11 +99,13 @@ const Catalog = ({page, setPage}) => {
                     <FlatGrid
                         data={filteredGroups.slice(0, page * 100)}
                         renderItem={renderItem}
+                        scrollEnabled={false}
                         itemContainerStyle={{ justifyContent: 'flex-start' }}
                         spacing={20}
                         itemDimension={350}
                         maxItemsPerRow={numColumns}
                     />
+                    {page * 100 < found && <ActivityIndicator className="mx-auto mb-10" />}
                 </View>
             )}
         </Wrapper>
