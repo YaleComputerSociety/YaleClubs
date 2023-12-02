@@ -3,7 +3,7 @@
 YaleClubs, in collaboration with YaleConnects, provides Yale students with a user-friendly platform to explore, rank, and leave reviews for various clubs, fostering a vibrant community of club enthusiasts.
 
 ### Setup
-Run ```npm install```
+Run ```npm install``` for both client and server
 
 Go to `https://yalies.io/apidocs` to get an API key
 
@@ -12,7 +12,16 @@ Create a `.env` file. Add the API key into the file as follows:
 API_KEY=<YOUR_API_KEY>
 ```
 
-To launch, run ```npx expo start```
+To launch, first, open ./server folder
+
+Run ```node server```
+
+Only after that, launch by returning back to the base folder
+
+Run ```npx expo start```
+
+Accept another PORT configurations (Y/n)
+
 
 ### Style
 To get theme data:
