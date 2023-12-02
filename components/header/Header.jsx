@@ -3,7 +3,7 @@ import React, { useRef, useState } from "react";
 import { useRouter } from "expo-router";
 import { NativeWindStyleSheet } from "nativewind";
 
-import { View, Text, Pressable, Animated, TouchableWithoutFeedback } from "react-native";
+import { View, Text, Pressable, Animated } from "react-native";
 
 import Menu from "./Menu";
 import ModesSVG from "../../assets/modes";
@@ -48,7 +48,7 @@ const Header = () => {
 
 
     return (
-        <View className="w-full flex-row absolute z-10 justify-between bg-white py-5 ph:px-5 lg:px-[110px]">
+        <View className="w-full flex-row absolute z-10 justify-between bg-white py-5 ph:px-5 xl:px-[110px]">
             <Pressable className="flex-row items-center" onPress={() => route.push(`/`)}>
                 <LogoSVG/>
                 <Text selectable={false} className="ml-5 font-semibold text-[16px]">Yale Clubs</Text>
@@ -56,6 +56,9 @@ const Header = () => {
 
             <View className="flex-row items-center">
                 <View className="ph:hidden md:flex mr-10 flex-row items-center gap-x-11">
+                    <Pressable onPress={() => route.push(`/events`)}>
+                        <Text selectable={false} className="text-[15px]">Events</Text>
+                    </Pressable>
                     <Pressable onPress={() => route.push(`/`)}>
                         <Text selectable={false} className="text-[15px]">Catalog</Text>
                     </Pressable>
@@ -73,7 +76,7 @@ const Header = () => {
                         </Pressable>
 
                         <Animated.View
-                            className="overflow-hidden absolute top-14 right-0"
+                            className="overflow-hidden absolute top-14 w-[120] right-0"
                             style={{
                                 height: heightTransform,
                             }}

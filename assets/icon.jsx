@@ -2,7 +2,11 @@
 import { NativeWindStyleSheet } from 'nativewind';
 
 import React from 'react';
-import Svg, { Defs, LinearGradient, Stop } from 'react-native-svg';
+<<<<<<< Updated upstream
+import { View } from 'react-native';
+=======
+>>>>>>> Stashed changes
+import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
 
 const IconSVG = () => {
     // Native Wind
@@ -18,7 +22,7 @@ const IconSVG = () => {
                     <Stop offset="100%" style={{ stopColor: "#5897FF", stopOpacity: 1 }} />
                 </LinearGradient>
             </Defs>
-            <rect width="100%" height="40" className='rounded-md' fill="url(#userGradient)" />
+            <Rect width="100%" height="40" rx="10" ry="10" fill="url(#userGradient)" />
         </Svg>
     );
 }
