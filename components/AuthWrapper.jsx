@@ -12,8 +12,8 @@ const AuthWrapper = ({ children }) => {
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
-        const userId = await AsyncStorage.getItem('userId');
-        setIsAuthenticated(!!userId);
+        const loginStatus = await AsyncStorage.getItem('login');
+        setIsAuthenticated(!!loginStatus);
       } catch (error) {
         console.error('Error checking authentication:', error);
       }
@@ -24,6 +24,7 @@ const AuthWrapper = ({ children }) => {
 
   useEffect(() => {
     if (isAuthenticated === false) {
+      // uncomment on auth page done
       // navigation.push('/login');
     }
   }, [isAuthenticated, navigation]);
