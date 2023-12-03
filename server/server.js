@@ -4,11 +4,11 @@ var path = require("path");
 var bodyParser = require("body-parser");
 var index = require("./routes/index");
 var data = require("./routes/data");
+var auth = require("./routes/auth");
 const cors = require('cors');
 const mongoose = require('mongoose');
 
 // MongoDB connection
-console.log(process.env.MONGODB_URI);
 mongoose.connect(process.env.MONGODB_URI);
 
 mongoose.connection.on('connected', () => {
@@ -37,7 +37,6 @@ var socket_io = require("socket.io");
 var io = socket_io();
 app.use(cors());
 
-
 //views
 
 app.set("views",  path.join(__dirname, "views"));
@@ -55,6 +54,7 @@ app.use("/", index);
 app.use("/api", data);
 app.use("/api", comment);
 app.use("/api", comments);
+app.use("/api", auth);
 
 
 io.listen(app.listen(port, function(){
