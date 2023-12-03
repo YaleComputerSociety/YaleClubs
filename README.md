@@ -7,9 +7,14 @@ Run ```npm install``` for both client and server
 
 Go to `https://yalies.io/apidocs` to get an API key
 
-Create a `.env` file. Add the API key into the file as follows:
+Create a `.env` file in the client subfolder. Add the API key into the file as follows:
 ```
 API_KEY=<YOUR_API_KEY>
+```
+
+Create a `.env` file in the server subfolder. Add the API link into the file as follows:
+```
+MONGODB_URI=<YOUR_URI_KEY>
 ```
 
 To launch, first, open ./server folder
