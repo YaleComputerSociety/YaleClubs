@@ -24,8 +24,7 @@ const AuthWrapper = ({ children }) => {
 
   useEffect(() => {
     if (isAuthenticated === false) {
-      // uncomment on auth page done
-      // navigation.push('/login');
+      navigation.push('/login');
     }
   }, [isAuthenticated, navigation]);
 
