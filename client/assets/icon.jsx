@@ -2,10 +2,6 @@
 import { NativeWindStyleSheet } from 'nativewind';
 
 import React from 'react';
-<<<<<<< Updated upstream
-import { View } from 'react-native';
-=======
->>>>>>> Stashed changes
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
 
 const IconSVG = () => {

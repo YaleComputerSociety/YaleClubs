@@ -49,11 +49,7 @@ const ClubDescription = ({id, groupData}) => {
 
             {groupData.leaders?.length > 0 && <Leaders leaders={groupData.leaders} />}
 
-<<<<<<< Updated upstream
-            <Comments />    
-=======
-            <Comments clubId={id} />    
->>>>>>> Stashed changes
+            <Comments clubId={id} />
         </View>
     );
     
