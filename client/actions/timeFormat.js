@@ -20,11 +20,7 @@ export const formatTimeElapsed = async () => {
         let elapsedString = 'Updated';
 
         if (hours > 0) {
-<<<<<<< Updated upstream
-            elapsedString += `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
-=======
             elapsedString += ` ${hours} ${hours === 1 ? 'hour' : 'hours'}`;
->>>>>>> Stashed changes
         }
 
         if (minutes > 0) {
@@ -32,11 +28,7 @@ export const formatTimeElapsed = async () => {
         }
 
         if (hours === 0 && minutes === 0) {
-<<<<<<< Updated upstream
-            elapsedString += 'a few seconds';
-=======
             elapsedString += ' a few seconds';
->>>>>>> Stashed changes
         }
 
         elapsedString += ' ago';

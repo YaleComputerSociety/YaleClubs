@@ -1,18 +1,14 @@
+require('dotenv').config();
 var express = require("express");
 var path = require("path");
-<<<<<<< Updated upstream
 var bodyParser = require("body-parser");
-const cors = require('cors');
-
 var index = require("./routes/index");
 var data = require("./routes/data");
-=======
-require('dotenv').config();
-var bodyParser = require("body-parser");
 const cors = require('cors');
 const mongoose = require('mongoose');
 
 // MongoDB connection
+console.log(process.env.MONGODB_URI);
 mongoose.connect(process.env.MONGODB_URI);
 
 mongoose.connection.on('connected', () => {
@@ -31,7 +27,6 @@ var index = require("./routes/index");
 var data = require("./routes/data");
 var comment = require("./routes/comment");
 var comments = require("./routes/comments");
->>>>>>> Stashed changes
 
 var app = express();
 
@@ -58,11 +53,8 @@ app.use(bodyParser.urlencoded({extended:true}));
 
 app.use("/", index);
 app.use("/api", data);
-<<<<<<< Updated upstream
-=======
 app.use("/api", comment);
 app.use("/api", comments);
->>>>>>> Stashed changes
 
 
 io.listen(app.listen(port, function(){
