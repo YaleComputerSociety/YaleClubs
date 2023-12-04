@@ -5,7 +5,7 @@ import parseCategories from '../../actions/parseCategories';
 import { useRouter } from 'expo-router';
 
 
-const ClubItem = ({ item }) => {
+const ClubItemWorksheet = ({ item }) => {
     const navigation = useRouter();
     const categories = parseCategories(item.category).slice(0, 2);
 
@@ -16,12 +16,14 @@ const ClubItem = ({ item }) => {
     
     return (
         <Pressable key={item.id} className="relative" onPress={() => navigation.push(`/club/${item.id}`)}>
-            <View className="rounded-md shadow-sm w-full p-5 py-6 flex-row bg-white">
+            <View className="rounded-md border-[1px] border-gray-100 mr-4 w-[500] p-5 py-6 flex-row bg-white">
                 <View className='w-full flex-col flex-shrink overflow-hidden'>
                     <Text numberOfLines={2} className="font-bold text-[24px] mt-2 w-[80%]">{item.name}</Text>
                     <FlatList
-                        className="flex-row"
+                        className="w-full flex-row"
                         data={categories}
+                        horizontal={true}
+                        contentContainerStyle={{ flexDirection: 'row' }}
                         keyExtractor={(category) => category.id.toString()}
                         renderItem={({ item: category }) => (
                             <View className="bg-gray-100 mt-3 mr-2 py-1 px-2 rounded-md" key={category.id}>
@@ -50,4 +52,4 @@ const ClubItem = ({ item }) => {
     );
 }
 
-export default ClubItem;
+export default ClubItemWorksheet;

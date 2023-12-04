@@ -2,6 +2,7 @@
 import { useRouter } from 'expo-router';
 import { NativeWindStyleSheet } from 'nativewind';
 import { Pressable, Text, View } from 'react-native';
+import axios from 'axios';
 
 const Menu = ({ navigation }) => {
     const route = useRouter();
@@ -10,6 +11,16 @@ const Menu = ({ navigation }) => {
     NativeWindStyleSheet.setOutput({
         default: "native",
     });    
+
+    const handleLogout = async () => {
+        try {
+            console.log(1);
+            await axios.get('/api/logout');
+            navigation.push('/login');
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
+    };
 
     return (
         <View
@@ -49,7 +60,7 @@ const Menu = ({ navigation }) => {
                 </Pressable>
                 <Pressable
                     className="flex-row justify-end"
-                    onPress={() => navigation.push("/logout")}
+                    onPress={handleLogout}
                 >
                     <Text selectable={false}>Log Out</Text>
                 </Pressable>

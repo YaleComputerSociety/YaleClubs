@@ -1,6 +1,7 @@
 
 import { NativeWindStyleSheet } from 'nativewind';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 import { Pressable, Text, View} from 'react-native';
 import AsideItem from './AsideItem';
@@ -15,26 +16,46 @@ const SideBar = ({data}) => {
         default: "native",
     });
 
+    const handleSave = async () => {
+        try {
+            if (saved) {
+                const response = await axios.delete(`/api/delete-club/${data.identity}`);
+                console.log('Delete successful:', response.data);
+                setSaved(false);
+            } else {
+                // If the club is not saved, save it
+                const response = await axios.post('/api/save-club', {
+                    clubId: data.identity,
+                });
+                console.log('Save successful:', response.data);
+                setSaved(true);
+            }
+        } catch (error) {
+            console.error('Error handling save/delete:', error);
+        }
+    };
+
+    useEffect(() => {
+        const checkClubSaved = async () => {
+            try {
+                const response = await axios.get(`/api/check-club/${data.identity}`);
+                setSaved(response.data.isClubSaved);
+            } catch (error) {
+                console.error('Error checking if club is saved:', error);
+            }
+        };
+
+        checkClubSaved();
+    }, [data.identity]);
+    
     return (
         <View className='w-[220] ph:hidden lg:flex'>
-
-            {/* <View>
-                <Text className='text-5xl text-green-500'><Text className='font-bold'>9.7</Text>/10</Text>
-                <Pressable className='flex-row items-end'>
-                    <Text className='mt-2 text-gray-400 mr-1'> How we calculated ratings </Text>
-                    <View className="mb-0.5">
-                        <svg height="14" viewBox="0 0 11 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M0 6H10M10 6L5 1M10 6L5 11" stroke="#ccc"/>
-                        </svg>
-                    </View>
-                </Pressable>
-            </View> */}
 
             <View className='flex-row'>
                 <Pressable className='w-full flex-shrink flex justify-center items-center border-[1px] border-sky-500 rounded-md'>
                     <Text className='text-sky-500'>Application From</Text>
                 </Pressable>
-                <Pressable onPress={() => setSaved(!saved)} className="w-7 ml-2 items-end">
+                <Pressable onPress={handleSave} className="w-7 ml-2 items-end">
                     <SavedSVG saved={saved} />
                 </Pressable>
             </View>
