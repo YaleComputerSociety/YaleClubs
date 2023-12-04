@@ -58,7 +58,8 @@ const ClubPage = () => {
                                     data={{
                                         website: groupData?.website, 
                                         phone: groupData?.phone, 
-                                        email: groupData?.email
+                                        email: groupData?.email,
+                                        identity: id
                                     }} 
                                 />
                             </View>

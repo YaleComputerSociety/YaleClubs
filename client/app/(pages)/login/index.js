@@ -18,7 +18,7 @@ const LoginScreen = () => {
         <SafeAreaView className="w-ful">
             <View className="flex-col w-full min-h-screen justify-center items-center">
                 <Text className="text-4xl font-semibold">
-                    Please <Pressable className='text-sky-500' onPress={redirect_to_cas}>log in</Pressable></Text>
+                    Please <Pressable onPress={redirect_to_cas}><Text className='text-sky-500'>log in</Text></Pressable></Text>
                 <Text className='mt-2'>A valid Yale NetID is required to access club information.</Text>
             </View>
         </SafeAreaView>

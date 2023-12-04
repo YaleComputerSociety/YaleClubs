@@ -1,6 +1,6 @@
 
-module.exports = function(req, res, next) {
-    console.log(req.session.user);
+
+module.exports = function (req, res, next) {
     if (req.session && req.session.user) {
         next();
     } else {

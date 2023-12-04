@@ -1,21 +1,25 @@
+const express = require("express");
+const path = require("path");
 require('dotenv').config();
-var express = require("express");
-var path = require("path");
 const session = require('express-session');
-const cookieParser = require('cookie-parser');
-var bodyParser = require("body-parser");
+const bodyParser = require("body-parser");
 const cors = require('cors');
 const mongoose = require('mongoose');
 const {createProxyMiddleware} = require('http-proxy-middleware');
 const MongoStore = require('connect-mongo');
+const http = require('http');
+const WebSocket = require('ws');
 
 // Routes
 const authMiddleware = require('./middleware/authMiddleware');
-var index = require("./routes/index");
-var data = require("./routes/data");
-var comment = require("./routes/comment");
-var comments = require("./routes/comments");
-var auth = require("./routes/auth");
+const data = require("./routes/data");
+const comment = require("./routes/comment");
+const comments = require("./routes/comments");
+const auth = require("./routes/auth");
+const logout = require("./routes/logout");
+const save_club = require("./routes/save");
+const delete_club = require("./routes/delete");
+const events = require("./routes/event");
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI);
@@ -33,53 +37,42 @@ mongoose.connection.on('disconnected', () => {
 });
 
 
-var app = express();
-var port = 8081;
+const app = express();
+const port = process.env.PORT || 8081;
+const server = http.createServer(app);
+const socketServer = new WebSocket.Server({ noServer: true });
 
-var socket_io = require("socket.io");
-var io = socket_io();
 app.use(cors());
 
 
 // Session
 app.use(session({
 	secret: "yaleclubs",
-	// store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI}),
 	saveUninitialized: false,
-	resave: false
+	resave: false,
+	store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI}),
 }));
 
-
+// Middleware
 app.use((req, res, next) => {
-	console.log(req.url);
-	if (req.url.startsWith('/login')) {
-		next();
-	}
-
-	if (req.url.startsWith('/api/auth/redirect')) {
-		next();
-	}
-  
-	authMiddleware(req, res, next);
+	if (!req.url.startsWith('/api')) {
+		authMiddleware(req, res, next);
+    } else {
+        next();
+    }
 });
 
-// Proxies
+// Proxies (Move Client to 8082)
 app.use((req, res, next) => {
-	if (req.url.startsWith('/api')) {
-		next();
-	}
-	
-	console.log(req.url);
-	createProxyMiddleware({
-		target: 'http://localhost:8082',
-		changeOrigin: true,
-	})(req, res, next);
+    if (!req.url.startsWith('/api')) {
+        createProxyMiddleware({
+            target: 'http://localhost:8082/',
+            changeOrigin: true,
+        })(req, res, next);
+    } else {
+        next();
+    }
 });
-
-
-// Use on the deployment
-// app.use(express.static(path.join(__dirname, "dist")));
-
 
 // Views
 app.set("views",  path.join(__dirname, "views"));
@@ -91,17 +84,40 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 
 // Routes
-app.use("/", index);
 app.use("/api", data);
 app.use("/api", comment);
 app.use("/api", comments);
 app.use("/api", auth);
+app.use("/api", logout);
+app.use("/api", save_club);
+app.use("/api", delete_club);
+app.use("/api", events);
 
-// Server Listeners
-io.listen(app.listen(port, function(){
-	console.log("Server running on port", port);
-}));
 
-app.io = io.on("connection", function(socket){
-	console.log("Socket connected: " + socket.id);
+// WebSocket server handling upgrades
+server.on('upgrade', (request, socket, head) => {
+    socketServer.handleUpgrade(request, socket, head, (ws) => {
+        socketServer.emit('connection', ws, request);
+    });
 });
+
+// Server Listener
+server.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});
+
+socketServer.on('connection', (socket) => {
+    console.log(`WebSocket connected: ${socket}`);
+
+    // Handle WebSocket events here
+    socket.on('message', (message) => {
+        console.log(`Received WebSocket message: ${message}`);
+    });
+
+    socket.on('close', () => {
+        console.log('WebSocket disconnected');
+    });
+});
+
+// Make the WebSocket server available to other parts of your application
+app.io = socketServer;

@@ -22,7 +22,6 @@ router.get('/data', async (req, res) => {
     }
 });
 
-
 // Delete Everythign from the JSON File
 router.delete('/data', async (req, res) => {
     try {
