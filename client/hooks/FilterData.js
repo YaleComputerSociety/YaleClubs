@@ -22,10 +22,12 @@ const useFilteredData = (initialData) => {
       'leaders'
     ];
 
+    if (!initialData) return;
     if (searchValue === '') {
       setFound(initialData.length);
       setFilteredGroups(initialData);
     } else {
+
       const filtered = initialData.filter((group) =>
         searchableKeys.some((key) =>
           typeof group[key] === 'string' &&
