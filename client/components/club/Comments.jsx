@@ -9,6 +9,7 @@ import CommentItem from './CommentItem';
 const Comments = ({clubId}) => {
     const [text, setText] = useState('');
     const [comments, setComments] = useState([]);
+    const [anonymous, setAnonymous] = useState(false);
 
     // Native Wind
     NativeWindStyleSheet.setOutput({
@@ -18,7 +19,8 @@ const Comments = ({clubId}) => {
     const handleCommentSubmit = async () => {
         try {
             // Submit comment
-            await axios.post('http://localhost:8081/api/comment', { text, clubId });
+            console.log(anonymous);
+            await axios.post('http://localhost:8081/api/comment', { text, clubId, anonymous });
             console.log('Comment submitted successfully!');
             setText('');
         } catch (error) {
@@ -43,7 +45,7 @@ const Comments = ({clubId}) => {
     }, []);
 
     const renderCommentItem = ({ item }) => (
-        <CommentItem text={item.text} />
+        <CommentItem item={item} />
     );
 
     return (
@@ -71,9 +73,9 @@ const Comments = ({clubId}) => {
                         <View>
                             <Text>Rating Here</Text>
                         </View>
-                        <Pressable className='flex-row items-center'>
-                            <View className='h-4 w-4 mr-2 rounded-md border-[1px] border-black'></View>
-                            <Text>Anonymous</Text>
+                        <Pressable className='flex-row items-center' onPress={() => setAnonymous(prevState => !prevState)}>
+                            <View className={`h-4 w-4 mr-2 rounded-md border-[1px] border-black ${anonymous ? 'bg-black' : ''}`}></View>
+                            <Text selectable={false}>Anonymous</Text>
                         </Pressable>
                     </View>
                 </View>

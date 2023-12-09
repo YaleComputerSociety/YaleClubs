@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 const Comment = require('../models/comment');
 
-// GET route to get all comments
+// POST route to get all comments
 router.post("/comments", async (req, res) => {
     const { clubId } = req.body;
 
