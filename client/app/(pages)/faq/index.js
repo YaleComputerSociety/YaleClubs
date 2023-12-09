@@ -20,12 +20,12 @@ const QuestionBlock = () => {
     });
 
     const questions = [
-        { id: 1, question: 'How much time do members spend every week?', answer: 'Other question to ansert here here here. Other question to ansert here here here Other question to ansert heHow much time do members spend every week?re  Other question to anseHow much time do members spend every week?rt here here here here here Other question to ansert here here here.' },
-        { id: 2, question: 'Time time time time time time', answer: 'Other question to ansert here here here. Other question to ansert here here here Other question to ansert heHow much time do members spend every week?re  Other question to anseHow much time do members spend every week?rt here here here here here Other question to ansert here here here.' },
-        { id: 3, question: 'Other question to ansert here here here', answer: 'Other question to ansert here here here. Other question to ansert here here here Other question to ansert heHow much time do members spend every week?re  Other question to anseHow much time do members spend every week?rt here here here here here Other question to ansert here here here.' },
-        { id: 4, question: 'How much time do members spend every week?', answer: 'Other question to ansert here here here. Other question to ansert here here here Other question to ansert heHow much time do members spend every week?re  Other question to anseHow much time do members spend every week?rt here here here here here Other question to ansert here here here.' },
-        { id: 5, question: 'Time time time time time time', answer: 'Other question to ansert here here here. Other question to ansert here here here Other question to ansert heHow much time do members spend every week?re  Other question to anseHow much time do members spend every week?rt here here here here here Other question to ansert here here here.' },
-        { id: 6, question: 'Other question to ansert here here here', answer: 'Other question to ansert here here here. Other question to ansert here here here Other question to ansert heHow much time do members spend every week?re  Other question to anseHow much time do members spend every week?rt here here here here here Other question to ansert here here here.' },
+        { id: 1, question: 'What is the purpose of the Yale Clubs website?', answer: 'The Yale Clubs website serves as a centralized platform for Yale University clubs, providing information about various organizations, events, and opportunities available to the Yale community.' },
+        { id: 2, question: 'How can I join a Yale club?', answer: "To join a Yale club, navigate to the club's page on the website, where you'll find information on how to become a member or participate in club activities. Contact the club directly for more details." },
+        { id: 3, question: 'Do I need an account to access Yale Clubs features?', answer: 'While some features are accessible without an account, creating an account allows you to engage more fully with club activities, receive updates, and manage your club memberships.' },
+        { id: 4, question: 'How do I update information about my club?', answer: "Club administrators can log in, navigate to the club's dashboard, and edit/update relevant information. Make sure to save changes to reflect the updated details." },
+        { id: 5, question: 'How can I edit upcoming events?', answer: 'Explore the "Events" section to discover upcoming activities hosted by Yale clubs. Each event page provides details, and you can RSVP if required.' },
+        { id: 6, question: "I'm experiencing technical issues. How can I get help?", answer: "Contact our support team by emailing [support@example.com]. Provide details about the issue you're facing, and we'll assist you promptly." },
     ];
 
     const handleItemClick = (index) => {
@@ -40,7 +40,7 @@ const QuestionBlock = () => {
                     <Wrapper>
                         <View className="ph:mb-4 md:mb-10 px-5 w-full">
                             <Text className='text-2xl text-black font-bold'>Frequently Asked Questions</Text>
-                            <Text className='ph:mb-4 md:mb-10'>All other questions by <Pressable className='text-sky-500'>yaleclubs@gmail.com</Pressable> email.</Text>
+                            <Text className='ph:mb-4 md:mb-10'>Have more questions? Use <Pressable className='text-sky-500'>yaleclubs@gmail.com</Pressable> email.</Text>
                             {questions.map((item, index) => (
                                 <Pressable
                                     key={item.id}
