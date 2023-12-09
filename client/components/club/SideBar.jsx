@@ -10,6 +10,7 @@ import SavedSVG from '../../assets/saved';
 
 const SideBar = ({data}) => {
     const [saved, setSaved] = useState(false);
+    const [subscribersCount, setSubscribersCount] = useState(0);
 
     // Native Wind
     NativeWindStyleSheet.setOutput({
@@ -35,6 +36,15 @@ const SideBar = ({data}) => {
         }
     };
 
+    const fetchSubscribersCount = async () => {
+        try {
+            const response = await axios.get(`../api/subscriptions/length/${data.identity}`);
+            setSubscribersCount(response.data.length);
+        } catch (error) {
+            console.error('Error fetching subscribers count:', error);
+        }
+    };
+
     useEffect(() => {
         const checkClubSaved = async () => {
             try {
@@ -46,6 +56,7 @@ const SideBar = ({data}) => {
         };
 
         checkClubSaved();
+        fetchSubscribersCount();
     }, [data.identity]);
     
     return (
@@ -63,6 +74,12 @@ const SideBar = ({data}) => {
             <View className='mt-10'>
                 <AsideItem data={data} />
             </View>
+
+            <Pressable className='border-[1px] py-1 mt-2 border-gray-200 justify-center items-center rounded-md'>
+                <Text className='text-gray-400'>
+                    All Subsribers ({subscribersCount})
+                </Text>
+            </Pressable>
         </View>
     );
 }

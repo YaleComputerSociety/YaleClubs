@@ -1,14 +1,85 @@
 
 import axios from "axios";
-import { useState } from "react";
 import { NativeWindStyleSheet } from 'nativewind';
 import { Linking, Pressable, Text, View } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
+import { useEffect, useState } from "react";
 
 import CopySVG from '../../assets/copy';
 
 const AsideItem = ({data}) => {
-    const [ doc, setDoc ] = useState();
+    const [doc, setDoc] = useState();
+
+    useEffect(() => {
+        const handleUpload = async () => {
+          try {
+            if (doc) {
+              const id = data.identity;
+    
+              const formData = new FormData();
+              formData.append('clubId', id);
+    
+              if (doc.uri) {
+                // Get the file name from the uri
+                const fileName = doc.uri.split('/').pop();
+                // Append file directly to FormData without wrapping it
+                formData.append('document', {
+                  uri: doc.uri,
+                  type: doc.type,
+                  name: fileName,
+                });
+              } else {
+                console.error('File information is undefined.');
+                return;
+              }
+    
+              formData.append('key', 'true');
+    
+              const axiosResponse = await axios.post('http://localhost:8081/api/event', formData, {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                },
+              });
+    
+              console.log('File uploaded successfully:', axiosResponse.data);
+            }
+          } catch (error) {
+            console.error('Error uploading file:', error);
+          }
+        };
+    
+        handleUpload();
+      }, [doc, data]);
+
+    const handleUploadEvents = async () => {
+        try {
+          const response = await DocumentPicker.getDocumentAsync({ type: "*/*", copyToCacheDirectory: true });
+    
+          if (response.type === 'success' || (response.assets && response.assets.length > 0)) {
+            const asset = response.type === 'success' ? response : response.assets[0];
+            const { name, size, uri } = asset;
+            let nameParts = name.split('.');
+            let fileType = nameParts[nameParts.length - 1];
+    
+            const blob = new Blob([uri], { type: "text/plain" });
+            const dataURI = URL.createObjectURL(blob);
+    
+            const fileToUpload = {
+              name: name,
+              size: size,
+              uri: dataURI,
+              type: "text/" + fileType
+            };
+    
+            console.log(fileToUpload, '...............file');
+            setDoc(fileToUpload);
+          } else {
+            console.error('Document picking failed:', response);
+          }
+        } catch (error) {
+          console.error('Error picking or uploading file:', error);
+        }
+    };
 
     NativeWindStyleSheet.setOutput({
         default: "native",
@@ -21,46 +92,8 @@ const AsideItem = ({data}) => {
     const sendEmail = (url) => {
         Linking.openURL("mailto:"+url).catch((err) => console.error('Error opening email:', err));
     };
-
-    const handleUploadEvents = async () => {
-        // In Development
-        try {
-            await DocumentPicker.getDocumentAsync({ type: "*/*", copyToCacheDirectory: true }).then(response => {
-                if (response.type == 'success') {          
-                    let { name, size, uri } = response;
-                    let nameParts = name.split('.');
-                    let fileType = nameParts[nameParts.length - 1];
-                    var fileToUpload = {
-                        name: name,
-                        size: size,
-                        uri: uri,
-                        type: "text/" + fileType
-                    };
-                    console.log(fileToUpload, '...............file')
-                    setDoc(fileToUpload);
-                } 
-            });
-        
-            const formData = new FormData();
-            const id = data.identity;
-
-            formData.append('clubId', id);
-            formData.append('document', doc);
-            formData.append('key', 'true')
-
-            const response = await axios.post('http://localhost:8081/api/event', formData, {
-                headers: {
-                    'Accept': 'multipart/form-data',
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-    
-            console.log('File uploaded successfully:', response.data);
-    
-        } catch (error) {
-            console.error('Error picking or uploading file:', error);
-        }
-    };
+      
+      
 
     return (
         <View>
