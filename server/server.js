@@ -20,6 +20,7 @@ const logout = require("./routes/logout");
 const save_club = require("./routes/save");
 const delete_club = require("./routes/delete");
 const events = require("./routes/event");
+const subscribe = require("./routes/subscribe");
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI);
@@ -80,6 +81,7 @@ app.set("view engine", "ejs");
 app.engine("html", require("ejs").renderFile);
 
 // Body parser MW
+app.use(bodyParser())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 
@@ -92,6 +94,7 @@ app.use("/api", logout);
 app.use("/api", save_club);
 app.use("/api", delete_club);
 app.use("/api", events);
+app.use("/api", subscribe);
 
 
 // WebSocket server handling upgrades

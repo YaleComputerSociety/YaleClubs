@@ -81,7 +81,7 @@ const Catalog = ({page, setPage}) => {
 
             <View className="px-5">
                 <Text className="font-bold text-2xl">Browse Clubs</Text>
-                <Text className="text-1xl">Shopping has never been easier.</Text>
+                <Text className="text-1xl">Shopping has never been easier</Text>
 
                 <SearchBar onChange={(text) => { onChange(text); setPage(1); }} searchValue={searchValue} found={found} />
             </View>
@@ -91,7 +91,7 @@ const Catalog = ({page, setPage}) => {
             ) : found === 0 ? (
                 <View className="p-5">
                     <Text>Sorry. No results has been found by your request.</Text>
-                    <Pressable onPress={() => navigation.push(`#`)} className="cursor-pointer mt-1"><Text className="text-blue-500">Request a new club?</Text></Pressable>
+                    <Pressable onPress={() => navigation.push(`https://yaleconnect.yale.edu/home_login`)} className="cursor-pointer mt-1"><Text className="text-sky-500">Request a new club?</Text></Pressable>
                 </View>
             ) : (
                 <View>

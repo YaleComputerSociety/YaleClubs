@@ -12,11 +12,10 @@ const ClubItemWorksheet = ({ item }) => {
     NativeWindStyleSheet.setOutput({
         default: "native",
     });
-
     
     return (
         <Pressable key={item.id} className="relative" onPress={() => navigation.push(`/club/${item.id}`)}>
-            <View className="rounded-md border-[1px] border-gray-100 mr-4 w-[500] p-5 py-6 flex-row bg-white">
+            <View className="rounded-md border-[1px] border-gray-100 mr-4 w-[430] p-5 py-6 flex-row bg-white">
                 <View className='w-full flex-col flex-shrink overflow-hidden'>
                     <Text numberOfLines={2} className="font-bold text-[24px] mt-2 w-[80%]">{item.name}</Text>
                     <FlatList
