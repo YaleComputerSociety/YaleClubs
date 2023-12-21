@@ -18,8 +18,7 @@ const comments = require("./routes/comments");
 const auth = require("./routes/auth");
 const logout = require("./routes/logout");
 const save_club = require("./routes/save");
-const delete_club = require("./routes/delete");
-const events = require("./routes/event");
+const events = require("./routes/events");
 const subscribe = require("./routes/subscribe");
 
 // MongoDB connection
@@ -81,7 +80,6 @@ app.set("view engine", "ejs");
 app.engine("html", require("ejs").renderFile);
 
 // Body parser MW
-app.use(bodyParser())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 
@@ -92,7 +90,6 @@ app.use("/api", comments);
 app.use("/api", auth);
 app.use("/api", logout);
 app.use("/api", save_club);
-app.use("/api", delete_club);
 app.use("/api", events);
 app.use("/api", subscribe);
 
