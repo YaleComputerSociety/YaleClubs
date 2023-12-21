@@ -1,8 +1,9 @@
 
 import { NativeWindStyleSheet } from "nativewind";
-import { View, TextInput } from "react-native";
+import { useEffect, useState } from "react";
+import { View, Text, TextInput } from "react-native";
 
-const SearchBar = ({onChange, searchValue}) => {
+const SearchBar = ({onChange, searchValue, found}) => {
 
     // Native Wind
     NativeWindStyleSheet.setOutput({
@@ -36,9 +37,14 @@ const SearchBar = ({onChange, searchValue}) => {
                         value={searchValue}
                         className="text-black ph:w-full md:w-auto"
                         style={{outline: 'none'}}
-                        placeholder="(Disabled)"
+                        placeholder="Search Events (e.g. Movies)..."
                         placeholderTextColor="gray"
                     />
+                </View>
+
+                <View className="ph:mt-4 ph:mb-4 md:mb-0 md:mt-6 ph:flex-row md:flex-col">
+                    <Text className="ph:ml-0 md:ml-6 text-gray-400">Showing {found} results</Text>
+                    <Text className="ph:ml-2 md:ml-6 text-gray-400">Filtered by date</Text>
                 </View>
 
             </View>
