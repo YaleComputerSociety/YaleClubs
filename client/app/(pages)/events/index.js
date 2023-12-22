@@ -1,30 +1,42 @@
 
-import { Linking } from 'react-native';
 import { useEffect, useState } from 'react';
 import { NativeWindStyleSheet } from 'nativewind';
 
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlatGrid } from 'react-native-super-grid';
+import Modal from 'react-native-modal';
 
+import { reloadEvents, fetchEventsJSON } from '../../../api/ManageEvents';
+import SearchBar from '../../../components/events/SearchBar';
+import EventItem from '../../../components/events/EventItem';
 import AuthWrapper from '../../../components/AuthWrapper';
 import Footer from '../../../components/footer/Footer';
 import Header from '../../../components/header/Header';
 import Wrapper from '../../../components/Wrapper';
-import SearchBar from '../../../components/events/SearchBar';
-import EmptySVG from '../../../assets/empty';
 import DecoratorSVG from '../../../assets/decorator';
+import Popup from './popup';
 
-import { reloadEvents, fetchEventsJSON } from '../../../api/ManageEvents';
 
 const Events = () => {   
     const [events, setEvents] = useState([]);
     const [page, setPage] = useState(1);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [isPopupVisible, setPopupVisible] = useState(false);
 
     // Native Wind SetUp
     NativeWindStyleSheet.setOutput({
         default: 'native',
     });
+
+    const handleEventItemClick = (event) => {
+        setSelectedEvent(event);
+        setPopupVisible(true);
+    };
+    
+    const closePopup = () => {
+        setPopupVisible(false);
+    };
 
     const handleScroll = (event) => {
         const { contentOffset, layoutMeasurement, contentSize } = event.nativeEvent;
@@ -50,28 +62,7 @@ const Events = () => {
     }, []);
 
     const renderItem = ({ item }) => (
-        <Pressable key={ item.uid } className="relative">
-            <View className="rounded-md shadow-sm w-full p-5 py-6 flex-row bg-white">
-                <View className='w-full flex-col flex-shrink overflow-hidden ml-4 items-start'>
-                    <Text numberOfLines={2} className="font-bold text-xl">{ item.summary }</Text>
-                    <Text numberOfLines={4} className='w-[90%] mt-2'>{ item.description }</Text>
-                    <View className='flex-row mt-3'>
-                        <View className='bg-sky-500 rounded-md'>
-                            <Text className='text-white py-0.5 px-3'>{ item.time }</Text>
-                        </View>
-                        <View className='border-[1px] ml-2 border-sky-500 rounded-md'>
-                            <Text className='text-sky-500 py-0.5 px-3'>{ item.date }</Text>
-                        </View>
-                    </View>
-                    <Pressable onPress={() => Linking.openURL(item.organizer)} className='flex-row w-[80%] mt-2'><Text numberOfLines={1} className='text-sky-500'>{ item.organizer }</Text></Pressable>
-                </View>
-                <View className='relative flex-col items-end'>
-                    <View className='bg-gray-100 h-20 w-20 items-center justify-center rounded-full'>
-                        <EmptySVG h={40} w={33} />
-                    </View>
-                </View>
-            </View>
-        </Pressable>
+        <EventItem item={item} popup={handleEventItemClick} />
     );
     
     return (
@@ -108,6 +99,12 @@ const Events = () => {
                         <Footer />
                     </View>
                 </ScrollView>
+                <Modal 
+                    isVisible={isPopupVisible} 
+                    onBackdropPress={closePopup}
+                >
+                    <Popup event={selectedEvent} closePopup={closePopup} />
+                </Modal>
             </SafeAreaView>
         </AuthWrapper>
     );

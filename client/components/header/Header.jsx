@@ -9,6 +9,7 @@ import Menu from "./Menu";
 import ModesSVG from "../../assets/modes";
 import LogoSVG from "../../assets/logo";
 import IconSVG from "../../assets/icon";
+import UserSVG from "../../assets/user";
 
 
 const Header = () => {
@@ -72,7 +73,7 @@ const Header = () => {
                 <View>
                     <View className={`group-isolate w-[40px] rounded-[9px]`}>
                         <Pressable onPress={() => toggleMenu()}>
-                            <IconSVG />
+                            <UserSVG />
                         </Pressable>
 
                         <Animated.View
