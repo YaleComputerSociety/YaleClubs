@@ -1,6 +1,7 @@
 
 import axios from "axios";
 import { NativeWindStyleSheet } from 'nativewind';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Linking, Pressable, Text, View } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { useEffect, useState } from "react";
@@ -11,45 +12,48 @@ const AsideItem = ({data}) => {
     const [doc, setDoc] = useState();
 
     useEffect(() => {
-        const handleUpload = async () => {
-          try {
-            if (doc) {
-              const id = data.identity;
-    
-              const formData = new FormData();
-              formData.append('clubId', id);
-    
-              if (doc.uri) {
-                // Get the file name from the uri
-                const fileName = doc.uri.split('/').pop();
-                // Append file directly to FormData without wrapping it
-                formData.append('document', {
-                  uri: doc.uri,
-                  type: doc.type,
-                  name: fileName,
-                });
-              } else {
-                console.error('File information is undefined.');
-                return;
-              }
-    
-              formData.append('key', 'true');
-    
-              const axiosResponse = await axios.post('http://localhost:8081/api/event', formData, {
-                headers: {
-                  'Content-Type': 'multipart/form-data',
-                },
+      const handleUpload = async () => {
+        try {
+          if (doc) {
+            const id = data.identity;
+  
+            const formData = new FormData();
+            formData.append('clubId', id);
+  
+            if (doc.uri) {
+              // Get the file name from the uri
+              const fileName = doc.uri.split('/').pop();
+              // Append file directly to FormData without wrapping it
+              formData.append('document', {
+                uri: doc.uri,
+                type: doc.type,
+                name: fileName,
               });
-    
-              console.log('File uploaded successfully:', axiosResponse.data);
+            } else {
+              console.error('File information is undefined.');
+              return;
             }
-          } catch (error) {
-            console.error('Error uploading file:', error);
+  
+            formData.append('key', 'true');
+
+            const token = await AsyncStorage.getItem('token');
+  
+            const axiosResponse = await axios.post(`${process.env.SERVER_URL}/event`, formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${token}`,
+              },
+            });
+  
+            console.log('File uploaded successfully:', axiosResponse.data);
           }
-        };
-    
-        handleUpload();
-      }, [doc, data]);
+        } catch (error) {
+          console.error('Error uploading file:', error);
+        }
+      };
+  
+      handleUpload();
+    }, [doc, data]);
 
     const handleUploadEvents = async () => {
         try {

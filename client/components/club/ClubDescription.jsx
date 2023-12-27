@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NativeWindStyleSheet } from 'nativewind';
 import { Image, Pressable, Text, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 import Leaders from './Leaders';
@@ -12,21 +13,39 @@ const ClubDescription = ({id, groupData}) => {
 
     useEffect(() => {
         const fetchSubscriptionStatus = async () => {
-          try {
-            const response = await axios.get(`../api/subscriptions/${id}`);
-            setIsSubscribed(response.data.isSubscribed);
-          } catch (error) {
-            console.error('Error fetching subscription status:', error.response?.data);
-          }
+            const token = await AsyncStorage.getItem('token');
+
+            try {
+                console.log("fsdfds"+token);
+                const response = await axios.get(`${process.env.SERVER_URL}/subscriptions/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                setIsSubscribed(response.data.isSubscribed);
+            } catch (error) {
+                console.error('Error fetching subscription status:', error.response?.data);
+            }
         };
     
         fetchSubscriptionStatus();
     }, [id]);
 
     const handleSubscribe = async () => {
+        const token = await AsyncStorage.getItem('token');
+
         try {
-            const response = await axios.post('../api/subscribe', { clubId: id });
-            console.log(response);
+            const response = await axios.post(
+                `${process.env.SERVER_URL}/subscribe`, 
+                { clubId: id },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
             setIsSubscribed(response);
         } catch (error) {
             console.error('Error subscribing:', error.response?.data);
@@ -34,8 +53,19 @@ const ClubDescription = ({id, groupData}) => {
     };
 
     const handleUnsubscribe = async () => {
+        const token = await AsyncStorage.getItem('token');
+        
         try {
-            const response = await axios.delete('../api/unsubscribe', { data: { clubId: id } });
+            const response = await axios.delete(`${process.env.SERVER_URL}/unsubscribe`, 
+                { 
+                    data: { 
+                        clubId: id 
+                    },
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }, 
+                }
+            );
         
             console.log(response.data.message);
             setIsSubscribed(!isSubscribed);

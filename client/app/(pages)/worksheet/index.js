@@ -2,20 +2,21 @@
 import { NativeWindStyleSheet } from 'nativewind';
 
 import { FlatList, Text, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-import AuthWrapper from '../../../components/AuthWrapper';
 import Footer from '../../../components/footer/Footer';
 import Header from '../../../components/header/Header';
 import Wrapper from '../../../components/Wrapper';
 import { fetchClubsJSON } from '../../../api/ManageClubs';
 import ClubItemWorksheet from '../../../components/worksheet/ClubItemWorksheet';
 import DecoratorSVG from '../../../assets/decorator';
+import AuthProvider from '../../../context/AuthProvider';
 
 
-const Worksheet = () => {   
+const Worksheet = () => {
 
     // Native Wind SetUp
     NativeWindStyleSheet.setOutput({
@@ -28,14 +29,22 @@ const Worksheet = () => {
 
     useEffect(() => {
         const fetchData = async () => {
+            const token = await AsyncStorage.getItem('token');
+            
             try {
-                const response = await axios.get('/api/get-saved-clubs');
+                const response = await axios.get(`${process.env.SERVER_URL}/get-saved-clubs`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+        
                 const savedClubIds = response.data.savedClubs;
                 setSavedClubIds(savedClubIds);
             } catch (error) {
                 console.error('Error fetching saved clubs:', error);
             }
         };
+        
 
         const fetchAllClubs = async () => {
             try {
@@ -56,7 +65,7 @@ const Worksheet = () => {
     }, [clubs, savedClubIds]);
     
     return (
-        <AuthWrapper>
+        <AuthProvider>
             <SafeAreaView className="w-full">
                 <View className="flex-col w-full min-h-screen">
                     <Header />
@@ -84,7 +93,7 @@ const Worksheet = () => {
                                         />
                                     </>
                                 ) : (
-                                    <View className='mt-4 flex-col'><Text>No results has been found.</Text><Text className='text-sky-500 mt-1'>How to register?</Text></View>
+                                    <View className='mt-4 flex-col'><Text>No results has been found, sorry.</Text><Text className='text-sky-500 mt-1'>How to save/create clubs?</Text></View>
                                 )}
                             </View>
                         </View>
@@ -92,7 +101,7 @@ const Worksheet = () => {
                     <Footer />
                 </View>
             </SafeAreaView>
-        </AuthWrapper>
+        </AuthProvider>
     );
 
 }

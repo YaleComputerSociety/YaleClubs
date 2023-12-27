@@ -1,6 +1,5 @@
 
 import { NativeWindStyleSheet } from "nativewind";
-import { useEffect, useState } from "react";
 import { View, Text, TextInput } from "react-native";
 
 const SearchBar = ({onChange, searchValue, found}) => {
@@ -26,7 +25,6 @@ const SearchBar = ({onChange, searchValue, found}) => {
                     ph:w-full 
                     sm:w-[480]
                     rounded-md 
-                    py-[10] px-5
                     bg-white
                     mt-5
                     ph:mb-0
@@ -35,9 +33,8 @@ const SearchBar = ({onChange, searchValue, found}) => {
                     <TextInput
                         onChangeText={onChange}
                         value={searchValue}
-                        className="text-black ph:w-full md:w-auto"
-                        style={{outline: 'none'}}
-                        placeholder="Search Events (e.g. Movies)..."
+                        className="text-black ph:w-full md:w-auto py-[10] px-5"
+                        placeholder="Faster than Levenshtein Distance..."
                         placeholderTextColor="gray"
                     />
                 </View>

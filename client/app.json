@@ -1,13 +1,15 @@
 {
   "expo": {
-    "scheme": "acme",
+    "scheme": "yaleclubs",
     "web": {
-      "bundler": "metro"
+      "bundler": "metro",
+      "favicon": "./assets/icon.png"
     },
     "plugins": [
       "expo-router"
     ],
+    "icon": "./assets/icon.png",
     "name": "YaleClubs",
-    "slug": "YaleClubs"
+    "slug": "yaleclubs"
   }
 }

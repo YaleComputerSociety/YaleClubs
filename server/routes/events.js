@@ -1,5 +1,4 @@
-// backend/routes/events.js
-
+// events.js
 const express = require('express');
 const axios = require('axios');
 const ICAL = require('ical.js');

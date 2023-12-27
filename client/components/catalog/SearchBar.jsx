@@ -42,8 +42,7 @@ const SearchBar = ({onChange, searchValue, found}) => {
                     inline-flex 
                     ph:w-full 
                     sm:w-[480]
-                    rounded-md 
-                    py-[10] px-5
+                    rounded-md
                     bg-white
                     mt-5
                     ph:mb-0
@@ -52,8 +51,7 @@ const SearchBar = ({onChange, searchValue, found}) => {
                     <TextInput
                         onChangeText={onChange}
                         value={searchValue}
-                        className="text-black ph:w-full md:w-auto"
-                        style={{outline: 'none'}}
+                        className="text-black ph:w-full md:w-auto py-[10] px-5"
                         placeholder="Cleverer than Levenshtein Distance..."
                         placeholderTextColor="gray"
                     />

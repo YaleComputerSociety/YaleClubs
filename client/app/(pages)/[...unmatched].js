@@ -3,9 +3,9 @@ import { NativeWindStyleSheet } from "nativewind";
 import { Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import AuthWrapper from "../../components/AuthWrapper";
 import Header from "../../components/header/Header";
 import Footer from "../../components/footer/Footer";
+import AuthProvider from "../../context/AuthProvider";
 
 const styles = {
     safeAreaView: {
@@ -39,20 +39,20 @@ const Unmatched = () => {
     });
 
     return (
-        <SafeAreaView style={styles.safeAreaView}>
-            <AuthWrapper>
+        <AuthProvider>
+            <SafeAreaView style={styles.safeAreaView}>
                 <Header />
-            </AuthWrapper>
-            <View style={styles.flexCol}>
-                <Text style={styles.text4xl}>
-                    Page not found
-                </Text>
-                <Text style={styles.mt2}>
-                    If you think this is an error, please <Pressable style={styles.textSky500}><Text>let us know.</Text></Pressable>
-                </Text>
-            </View>
-            <Footer />
-        </SafeAreaView>
+                <View style={styles.flexCol}>
+                    <Text style={styles.text4xl}>
+                        Page not found
+                    </Text>
+                    <Text style={styles.mt2}>
+                        If you think this is an error, please <Pressable style={styles.textSky500}><Text>let us know.</Text></Pressable>
+                    </Text>
+                </View>
+                <Footer />
+            </SafeAreaView>
+        </AuthProvider>
     );
     
 }

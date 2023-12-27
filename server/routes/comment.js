@@ -1,16 +1,17 @@
 var express = require("express");
 var router = express.Router();
-const Comment = require('../models/comment');
-const axios = require("axios");
 require('dotenv').config();
+const axios = require("axios");
+const Comment = require('../models/comment');
+const verifyToken = require("../middleware/verifyToken");
 
 const API_KEY = process.env.API_KEY;
 const serverUrl = "https://yalies.io/api/people";
 
 // POST route to add a comment
-router.post("/comment", async (req, res) => {
+router.post("/comment", verifyToken, async (req, res) => {
   const { text, clubId, anonymous } = req.body;
-  const userId = req.session.user;
+  const userId = req.userId;
   let name = "";
 
   const fetchUser = async (userId) => {

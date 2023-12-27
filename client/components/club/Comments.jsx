@@ -1,9 +1,10 @@
 
 import { useEffect, useState } from 'react';
 import { NativeWindStyleSheet } from 'nativewind';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FlatList, Pressable, Text, TextInput, View } from 'react-native';
 import axios from 'axios';
 
-import { FlatList, Pressable, Text, TextInput, View } from 'react-native';
 import CommentItem from './CommentItem';
 
 const Comments = ({clubId}) => {
@@ -18,22 +19,32 @@ const Comments = ({clubId}) => {
 
     const handleCommentSubmit = async () => {
         try {
-            // Submit comment
-            console.log(anonymous);
-            await axios.post('http://localhost:8081/api/comment', { text, clubId, anonymous });
+            const token = await AsyncStorage.getItem('token');
+
+            await axios.post(
+                `${process.env.SERVER_URL}/comment`,
+                { text, clubId, anonymous },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+    
             console.log('Comment submitted successfully!');
             setText('');
         } catch (error) {
             console.error('Error submitting comment:', error);
         }
-
-        // Fetch all comments
+    
+        // ReFetch all comments
         await requestAllComments();
     };
+    
 
     const requestAllComments = async () => {
         try {
-            const response = await axios.post('http://localhost:8081/api/comments', { clubId });
+            const response = await axios.post(`${process.env.SERVER_URL}/comments`, { clubId });
             setComments(response.data);
         } catch (error) {
             console.error('Error fetching all comments:', error);

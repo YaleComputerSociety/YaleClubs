@@ -2,7 +2,7 @@
 import { useRouter } from 'expo-router';
 import { NativeWindStyleSheet } from 'nativewind';
 import { Pressable, Text, View } from 'react-native';
-import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Menu = ({ navigation }) => {
     const route = useRouter();
@@ -13,13 +13,8 @@ const Menu = ({ navigation }) => {
     });    
 
     const handleLogout = async () => {
-        try {
-            console.log(1);
-            await axios.get('/api/logout');
-            navigation.push('/login');
-        } catch (error) {
-            console.error('Error logging out:', error);
-        }
+        AsyncStorage.removeItem('token');
+        navigation.push('/login');
     };
 
     return (

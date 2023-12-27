@@ -11,7 +11,6 @@ import Footer from '../../../components/footer/Footer';
 import { fetchClubsAPI } from '../../../api/ManageClubs';
 import SideBar from '../../../components/club/SideBar';
 import ClubDescription from '../../../components/club/ClubDescription';
-import AuthWrapper from '../../../components/AuthWrapper';
 import Wrapper from '../../../components/Wrapper';
 
 
@@ -39,36 +38,34 @@ const ClubPage = () => {
     }, [id]);
     
     return (
-        <AuthWrapper>
-            <SafeAreaView className="w-full">
-                <View className="flex-col w-full min-h-screen">
-                    <Header />
-                    <View className="mb-10 w-full flex items-center">
-                        <Wrapper>
-                            <View className="w-full ph:flex-col-reverse lg:flex-row ph:px-5 lg:p-0">
-                                <View className="w-full flex-shrink mr-10 ph:flex-col lg:flex-row">
-                                    <View className="w-16 mr-5 ph:hidden lg:flex shadow-none">
-                                        <Image className="h-16 w-16 rounded-full" source={{ uri: groupData?.logo }} />
-                                    </View>
-
-                                    <ClubDescription id={id} groupData={groupData} />
+        <SafeAreaView className="w-full">
+            <View className="flex-col w-full min-h-screen">
+                <Header />
+                <View className="mb-10 w-full flex items-center">
+                    <Wrapper>
+                        <View className="w-full ph:flex-col-reverse lg:flex-row ph:px-5 lg:p-0">
+                            <View className="w-full flex-shrink mr-10 ph:flex-col lg:flex-row">
+                                <View className="w-16 mr-5 ph:hidden lg:flex shadow-none">
+                                    <Image className="h-16 w-16 rounded-full" source={{ uri: groupData?.logo }} />
                                 </View>
 
-                                <SideBar
-                                    data={{
-                                        website: groupData?.website, 
-                                        phone: groupData?.phone, 
-                                        email: groupData?.email,
-                                        identity: id
-                                    }} 
-                                />
+                                <ClubDescription id={id} groupData={groupData} />
                             </View>
-                        </Wrapper>
-                    </View>
-                    <Footer />
+
+                            <SideBar
+                                data={{
+                                    website: groupData?.website, 
+                                    phone: groupData?.phone, 
+                                    email: groupData?.email,
+                                    identity: id
+                                }} 
+                            />
+                        </View>
+                    </Wrapper>
                 </View>
-            </SafeAreaView>
-        </AuthWrapper>
+                <Footer />
+            </View>
+        </SafeAreaView>
     );
 }
 

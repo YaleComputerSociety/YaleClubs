@@ -1,30 +1,46 @@
 
-import { Linking } from 'react-native';
 import { useEffect, useState } from 'react';
 import { NativeWindStyleSheet } from 'nativewind';
 
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlatGrid } from 'react-native-super-grid';
+import Modal from 'react-native-modal';
 
-import AuthWrapper from '../../../components/AuthWrapper';
+import { reloadEvents, fetchEventsJSON } from '../../../api/ManageEvents';
+import SearchBar from '../../../components/events/SearchBar';
+import EventItem from '../../../components/events/EventItem';
+import useFilteredEvents from '../../../hooks/FilterEvents';
+import AuthProvider from '../../../context/AuthProvider';
 import Footer from '../../../components/footer/Footer';
 import Header from '../../../components/header/Header';
 import Wrapper from '../../../components/Wrapper';
-import SearchBar from '../../../components/events/SearchBar';
-import EmptySVG from '../../../assets/empty';
 import DecoratorSVG from '../../../assets/decorator';
+import Popup from './popup';
 
-import { reloadEvents, fetchEventsJSON } from '../../../api/ManageEvents';
 
 const Events = () => {   
-    const [events, setEvents] = useState([]);
     const [page, setPage] = useState(1);
+    const [events, setEvents] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [isPopupVisible, setPopupVisible] = useState(false);
+
+    const { searchValue, onChange, found, filteredEvents } = useFilteredEvents(events);
 
     // Native Wind SetUp
     NativeWindStyleSheet.setOutput({
         default: 'native',
     });
+
+    const handleEventItemClick = (event) => {
+        setSelectedEvent(event);
+        setPopupVisible(true);
+    };
+    
+    const closePopup = () => {
+        setPopupVisible(false);
+    };
 
     const handleScroll = (event) => {
         const { contentOffset, layoutMeasurement, contentSize } = event.nativeEvent;
@@ -38,6 +54,7 @@ const Events = () => {
     useEffect(() => {
         const fetchEvents = async () => {
             try {
+                setIsLoading(true);
                 // await reloadEvents();
                 const res = await fetchEventsJSON();
                 setEvents(res);
@@ -47,35 +64,15 @@ const Events = () => {
         };
 
         fetchEvents();
+        setIsLoading(false);
     }, []);
 
     const renderItem = ({ item }) => (
-        <Pressable key={ item.uid } className="relative">
-            <View className="rounded-md shadow-sm w-full p-5 py-6 flex-row bg-white">
-                <View className='w-full flex-col flex-shrink overflow-hidden ml-4 items-start'>
-                    <Text numberOfLines={2} className="font-bold text-xl">{ item.summary }</Text>
-                    <Text numberOfLines={4} className='w-[90%] mt-2'>{ item.description }</Text>
-                    <View className='flex-row mt-3'>
-                        <View className='bg-sky-500 rounded-md'>
-                            <Text className='text-white py-0.5 px-3'>{ item.time }</Text>
-                        </View>
-                        <View className='border-[1px] ml-2 border-sky-500 rounded-md'>
-                            <Text className='text-sky-500 py-0.5 px-3'>{ item.date }</Text>
-                        </View>
-                    </View>
-                    <Pressable onPress={() => Linking.openURL(item.organizer)} className='flex-row w-[80%] mt-2'><Text numberOfLines={1} className='text-sky-500'>{ item.organizer }</Text></Pressable>
-                </View>
-                <View className='relative flex-col items-end'>
-                    <View className='bg-gray-100 h-20 w-20 items-center justify-center rounded-full'>
-                        <EmptySVG h={40} w={33} />
-                    </View>
-                </View>
-            </View>
-        </Pressable>
+        <EventItem item={item} popup={handleEventItemClick} />
     );
     
     return (
-        <AuthWrapper>
+        <AuthProvider>
             <SafeAreaView className="w-full">
                 <ScrollView onScroll={handleScroll} scrollEventThrottle={16} className="h-screen">
                     <View className="flex-col w-full min-h-screen">
@@ -90,26 +87,45 @@ const Events = () => {
                                     <Text className='text-2xl font-bold px-5'>Yale Events</Text>
                                     <Text className='px-5'>Learn, Connect, Have Fun</Text>
                                     <View className='px-5'>
-                                        <SearchBar found={events.length} />
+                                        <SearchBar onChange={(text) => { onChange(text); setPage(1); }} searchValue={searchValue} found={found} />
                                     </View>
-                                    <View>
-                                        <FlatGrid
-                                            data={events.slice(0, page * 100)}
-                                            renderItem={renderItem}
-                                            itemContainerStyle={{ justifyContent: 'flex-start' }}
-                                            spacing={20}
-                                            itemDimension={350}
-                                            maxItemsPerRow={4}
-                                        />
-                                    </View>
+
+                                    {isLoading ? (
+                                        <ActivityIndicator className="mx-auto" color="#aaa" />
+                                    ) : found === 0 ? (
+                                        <View className="p-5">
+                                            <Text>Sorry. No results has been found by your request.</Text>
+                                            <Pressable onPress={() => navigation.push(`https://yaleconnect.yale.edu/home_login`)} className="cursor-pointer mt-1"><Text className="text-sky-500">How to add new e?</Text></Pressable>
+                                        </View>
+                                    ) : (
+                                        <View>
+                                            <FlatGrid
+                                                data={filteredEvents.slice(0, page * 100)}
+                                                renderItem={renderItem}
+                                                itemContainerStyle={{ justifyContent: 'flex-start' }}
+                                                spacing={20}
+                                                itemDimension={350}
+                                                maxItemsPerRow={4}
+                                            />
+                                        </View>
+                                    )}
+
                                 </View>
                             </View>
                         </Wrapper>
                         <Footer />
                     </View>
                 </ScrollView>
+
+                <Modal 
+                    isVisible={isPopupVisible} 
+                    onBackdropPress={closePopup}
+                >
+                    {/* Modal Package has BackHandler Error [Fix/Change Later] */}
+                    <Popup event={selectedEvent} closePopup={closePopup} />
+                </Modal>
             </SafeAreaView>
-        </AuthWrapper>
+        </AuthProvider>
     );
 
 }

@@ -8,7 +8,7 @@ import { View, Text, Pressable, Animated } from "react-native";
 import Menu from "./Menu";
 import ModesSVG from "../../assets/modes";
 import LogoSVG from "../../assets/logo";
-import IconSVG from "../../assets/icon";
+import UserSVG from "../../assets/user";
 
 
 const Header = () => {
@@ -43,7 +43,7 @@ const Header = () => {
 
     const heightTransform = menuHeight.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, 200]
+        outputRange: [0, 210]
     });
 
 
@@ -55,24 +55,24 @@ const Header = () => {
             </Pressable>
 
             <View className="flex-row items-center">
-                <View className="ph:hidden md:flex mr-10 flex-row items-center gap-x-11">
-                    <Pressable onPress={() => route.push(`/events`)}>
+                <View className="ph:mr-4 md:mr-10 flex-row items-center gap-x-11">
+                    <Pressable onPress={() => route.push(`/events`)} className="ph:border-[1px] border-gray-100 rounded-md py-2 ph:px-4 md:px-0 md:border-0">
                         <Text selectable={false} className="text-[15px]">Events</Text>
                     </Pressable>
-                    <Pressable onPress={() => route.push(`/`)}>
+                    <Pressable onPress={() => route.push(`/`)} className="ph:hidden md:flex">
                         <Text selectable={false} className="text-[15px]">Catalog</Text>
                     </Pressable>
-                    <Pressable onPress={() => route.push(`/worksheet`)}>
+                    <Pressable onPress={() => route.push(`/worksheet`)} className="ph:hidden md:flex">
                         <Text selectable={false} className="text-[15px]">Worksheet</Text>
                     </Pressable>
-                    <Pressable onPress={() => null}>
+                    <Pressable onPress={() => null} className="ph:hidden md:flex">
                         <ModesSVG/>
                     </Pressable>
                 </View>
                 <View>
                     <View className={`group-isolate w-[40px] rounded-[9px]`}>
                         <Pressable onPress={() => toggleMenu()}>
-                            <IconSVG />
+                            <UserSVG />
                         </Pressable>
 
                         <Animated.View

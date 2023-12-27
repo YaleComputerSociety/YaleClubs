@@ -8,12 +8,11 @@ import {
     ScrollView,
 } from "react-native";
     
-import AuthWrapper from '../components/AuthWrapper';
 import Header from "../components/header/Header";
 import Footer from "../components/footer/Footer";
 import Catalog from "../components/catalog/Catalog";
+import AuthProvider from "../context/AuthProvider";
   
-
 const App = () => {
     const [page, setPage] = useState(1);
 
@@ -32,7 +31,7 @@ const App = () => {
     };
 
     return (
-        <AuthWrapper>
+        <AuthProvider>
             <SafeAreaView className="w-full">
                 <ScrollView onScroll={handleScroll} scrollEventThrottle={16} className="h-screen">
                     <View className="flex-col w-full min-h-screen">
@@ -42,9 +41,8 @@ const App = () => {
                     </View>
                 </ScrollView>
             </SafeAreaView>
-        </AuthWrapper>
+        </AuthProvider>
     );
-
 }
 
 export default App;
