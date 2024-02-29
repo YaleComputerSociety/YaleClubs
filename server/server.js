@@ -21,6 +21,7 @@ const save_club = require("./routes/save");
 const delete_club = require("./routes/delete");
 const events = require("./routes/event");
 const subscribe = require("./routes/subscribe");
+const crm = require("./routes/manager");
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI);
@@ -87,14 +88,17 @@ app.use(bodyParser.urlencoded({extended:true}));
 
 // Routes
 app.use("/api", data);
+app.use("/api", events);
 app.use("/api", comment);
 app.use("/api", comments);
+app.use("/api", subscribe);
+
 app.use("/api", auth);
 app.use("/api", logout);
+
+app.use("/api", crm);
 app.use("/api", save_club);
 app.use("/api", delete_club);
-app.use("/api", events);
-app.use("/api", subscribe);
 
 
 // WebSocket server handling upgrades
