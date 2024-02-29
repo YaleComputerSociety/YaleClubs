@@ -56,9 +56,6 @@ const Header = () => {
 
             <View className="flex-row items-center">
                 <View className="ph:hidden md:flex mr-10 flex-row items-center gap-x-11">
-                    <Pressable onPress={() => route.push(`/events`)}>
-                        <Text selectable={false} className="text-[15px]">Events</Text>
-                    </Pressable>
                     <Pressable onPress={() => route.push(`/`)}>
                         <Text selectable={false} className="text-[15px]">Catalog</Text>
                     </Pressable>
