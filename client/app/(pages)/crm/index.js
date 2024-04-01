@@ -95,6 +95,20 @@ const CRMManager = () => {
     };
 
     const submitClub = async () => {
+
+        // Regex to match "{name}.{name}@yale.edu" or "{name}.{middlename}.{name}@yale.edu"
+        const emailRegex = /^[a-zA-Z0-9._%+-]+(?:\.[a-zA-Z0-9._%+-]+)?\.[a-zA-Z0-9._%+-]+@yale\.edu$/;
+
+        if (!emailRegex.test(email)) {
+            alert('Email must be in the format "{name}.{name}@yale.edu" or "{name}.{middlename}.{name}@yale.edu"');
+            return; // Stop the function if the email doesn't match the pattern
+        }
+
+        if (!emailRegex.test(email)) {
+            alert('Email must be in the format "{name}@{name}yale.edu"');
+            return;
+        }
+
         try {
             const formData = {
                 clubName: clubName,
@@ -107,8 +121,9 @@ const CRMManager = () => {
                 clubLeaders: selectedLeaders,
                 logo: image,
             };
-
+            console.log(formData);
             const response = await axios.post('/api/create', formData);
+            
             console.log('Club submitted successfully:', response.data);
 
             setImage(null);
