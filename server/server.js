@@ -67,16 +67,18 @@ app.use((req, res, next) => {
 });
 
 // Proxies (Move Client to 8082)
-app.use((req, res, next) => {
-    if (!req.url.startsWith('/api')) {
-        createProxyMiddleware({
-            target: 'http://localhost:8082/',
-            changeOrigin: true,
-        })(req, res, next);
-    } else {
-        next();
-    }
-});
+if (process.env.DEV_ENV === 'true') {
+    app.use((req, res, next) => {
+        if (!req.url.startsWith('/api')) {
+            createProxyMiddleware({
+                target: 'http://localhost:8082/',
+                changeOrigin: true,
+            })(req, res, next);
+        } else {
+            next();
+        }
+    });
+}
 
 // Views
 app.set("views",  path.join(__dirname, "views"));
