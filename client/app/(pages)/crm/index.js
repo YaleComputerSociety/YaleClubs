@@ -20,12 +20,12 @@ import netIds from "./netids";
 import OfficialSVG from '../../../assets/official';
 
 const CRMManager = () => {
-    const [image, setImage] = useState(null);
-    const [clubName, setClubName] = useState('');
-    const [description, setDescription] = useState('');
-    const [instagram, setInstagram] = useState('');
     const [email, setEmail] = useState('');
+    const [image, setImage] = useState(null);
     const [website, setWebsite] = useState('');
+    const [clubName, setClubName] = useState('');
+    const [instagram, setInstagram] = useState('');
+    const [description, setDescription] = useState('');
     const [yaleConnect, setYaleConnect] = useState('');
 
     const [selectedMembers, setSelectedMembers] = useState([]);
@@ -64,7 +64,7 @@ const CRMManager = () => {
         default: 'native',
     });
 
-    const pickImage = async () => {
+    const pickImage = async (index) => {
         let result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.All,
           allowsEditing: true,
@@ -74,6 +74,7 @@ const CRMManager = () => {
       
         if (!result.cancelled) {
             const localUri = result.uri;
+            setImage(localUri);
         
             // Create a FormData object to send the image to the server
             const formData = new FormData();
@@ -85,14 +86,18 @@ const CRMManager = () => {
         
             // Send the image to the server
             try {
-                const response = await axios.post('/api/uploadimage', formData);
-                console.log('Image uploaded successfully:', response.data);
-                setImage(response.data.imagePath); // Set the image path received from the server
+                const response = await axios.post(`http://localhost:8081/api/uploadimage`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data', // Important to set this header for FormData
+                    },
+                });
+                
+                console.log('Image uploaded successfully. Image ID:', response.data.imageId);
             } catch (error) {
                 console.error('Error uploading image:', error.message);
             }
         }
-    };
+    };    
 
     const submitClub = async () => {
         try {
