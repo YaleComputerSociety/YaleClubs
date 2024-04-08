@@ -46,6 +46,8 @@ const socketServer = new WebSocket.Server({ noServer: true });
 
 app.use(cors());
 
+app.use('/', express.static(path.join(__dirname, 'dist')));
+
 
 // Session
 app.use(session({
