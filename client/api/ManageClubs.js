@@ -1,6 +1,6 @@
 import axios from "axios";
 import _shuffle from 'lodash/shuffle';
-import { API_KEY } from "@env";
+import { API_KEY, BASE_URL } from "@env";
 
 const serverUrl = "https://yalies.io/api/groups";
 
@@ -14,7 +14,7 @@ export const reloadClubs = async () => {
 export const fetchClubsJSON = async () => {
   try {
       // Make a GET request to the /data route
-      const response = await axios.get('http://localhost:8081/api/data');
+      const response = await axios.get(`http://${BASE_URL}/api/data`);
 
       // Extract the data from the response
       const data =  response.data;
@@ -53,7 +53,7 @@ export const updateData = async (newData) => {
     // Process each chunk and send a POST request
     for (const chunk of chunkedData) {
       // Make a POST request to the /data route with the chunk of data
-      const response = await axios.post('http://localhost:8081/api/data', chunk);
+      const response = await axios.post(`http://${BASE_URL}/api/data`, chunk);
 
       // Extract the data from the response
       const updatedData = response.data;
@@ -91,7 +91,7 @@ export const fetchClubsAPI = async (defaultPayload) => {
 export const deleteData = async () => {
   try {
     // Make a DELETE request to the /data route
-    const response = await axios.delete('http://localhost:8081/api/data');
+    const response = await axios.delete(`http://${BASE_URL}/api/data`);
 
     // Extract the data from the response
     const deletedData = response.data;
