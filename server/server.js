@@ -2,7 +2,6 @@ const express = require("express");
 const path = require("path");
 require('dotenv').config();
 const session = require('express-session');
-const bodyParser = require("body-parser");
 const mongoose = require('mongoose');
 const {createProxyMiddleware} = require('http-proxy-middleware');
 const MongoStore = require('connect-mongo');
@@ -28,13 +27,14 @@ mongoose.connection.on('disconnected', () => {
 
 const app = express();
 const port = process.env.PORT || 8081;
+app.use(express.json())
 
 // Session
 app.use(session({
 	secret: "yaleclubs",
-	saveUninitialized: false,
-	resave: false,
-	store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI}),
+    store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI}),
+    saveUninitialized: false,
+    resave: false,
 }));
 
 // Proxies (Move Client to 8082)
