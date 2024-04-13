@@ -8,7 +8,6 @@ const mongoose = require('mongoose');
 const {createProxyMiddleware} = require('http-proxy-middleware');
 const MongoStore = require('connect-mongo');
 const http = require('http');
-const WebSocket = require('ws');
 
 // Routes
 const authMiddleware = require('./middleware/authMiddleware');
@@ -80,7 +79,7 @@ if (process.env.DEV_ENV === 'true') {
         }
     });
 } else {
-    console.log("This is running on production.")
+    console.log("Serer running on production.")
 }
 
 // Views
@@ -106,3 +105,8 @@ app.use("/api", logout);
 app.use("/api", crm);
 app.use("/api", save_club);
 app.use("/api", delete_club);
+
+// Server Listener
+server.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});
