@@ -1,5 +1,3 @@
-
-import idb from 'idb';
 import axios from 'axios';
 import { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
