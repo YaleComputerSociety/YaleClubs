@@ -4,7 +4,6 @@ import { NativeWindStyleSheet } from 'nativewind';
 import { Linking, Pressable, Text, View } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { useEffect, useState } from "react";
-import {BASE_URL} from "@env";
 
 import CopySVG from '../../assets/copy';
 
@@ -36,7 +35,7 @@ const AsideItem = ({data}) => {
     
               formData.append('key', 'true');
     
-              const axiosResponse = await axios.post(`http://${BASE_URL}/api/event`, formData, {
+              const axiosResponse = await axios.post(`http://${process.env.BASE_URL}/api/event`, formData, {
                 headers: {
                   'Content-Type': 'multipart/form-data',
                 },
