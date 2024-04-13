@@ -1,6 +1,5 @@
 import axios from "axios";
-import _shuffle from 'lodash/shuffle';
-import { API_KEY, BASE_URL } from "@env";
+import _shuffle from 'lodash/shuffle';;
 
 const serverUrl = "https://yalies.io/api/groups";
 
@@ -14,7 +13,7 @@ export const reloadClubs = async () => {
 export const fetchClubsJSON = async () => {
   try {
       // Make a GET request to the /data route
-      const response = await axios.get(`http://${BASE_URL}/api/data`);
+      const response = await axios.get(`http://${process.env.BASE_URL}/api/data`);
 
       // Extract the data from the response
       const data =  response.data;
@@ -72,7 +71,7 @@ export const fetchClubsAPI = async (defaultPayload) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`,
+        'Authorization': `Bearer ${process.env.API_KEY}`,
       },
       body: JSON.stringify(defaultPayload),
     });
