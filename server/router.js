@@ -11,11 +11,9 @@ const delete_club = require("./routes/delete");
 
 const getRoutes = (router) => {
     // do a blanket barrier on all routes except login
-    router.get('*', async (req, res, next) => {
-        if (router.path === '/login') {
-            next();
-        }
 
+
+    router.get('/', async (req, res, next) => {
         if (req.session && req.session.user) {
             next();
         } else {
