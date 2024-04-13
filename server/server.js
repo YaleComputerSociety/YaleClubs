@@ -6,7 +6,6 @@ const bodyParser = require("body-parser");
 const mongoose = require('mongoose');
 const {createProxyMiddleware} = require('http-proxy-middleware');
 const MongoStore = require('connect-mongo');
-const http = require('http');
 const history = require('connect-history-api-fallback');
 
 const getRoutes = require('./router');
@@ -29,7 +28,6 @@ mongoose.connection.on('disconnected', () => {
 
 const app = express();
 const port = process.env.PORT || 8081;
-const server = http.createServer(app);
 
 // Session
 app.use(session({

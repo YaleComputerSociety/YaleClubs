@@ -10,11 +10,11 @@ const save_club = require("./routes/save");
 const delete_club = require("./routes/delete");
 
 const getRoutes = (router) => {
-
-    router.get('/', async (req, res, next) => {
-        // ignore login path or else we get into infinite redirections!
-
-        console.log(req.path);
+    // do a blanket barrier on all routes except login
+    router.get('*', async (req, res, next) => {
+        if (router.path === '/login') {
+            next();
+        }
 
         if (req.session && req.session.user) {
             next();
