@@ -42,7 +42,6 @@ mongoose.connection.on('disconnected', () => {
 const app = express();
 const port = process.env.PORT || 8081;
 const server = http.createServer(app);
-const socketServer = new WebSocket.Server({ noServer: true });
 
 app.use(cors());
 
@@ -68,6 +67,8 @@ app.use((req, res, next) => {
 
 // Proxies (Move Client to 8082)
 if (process.env.DEV_ENV === 'true') {
+    console.log("Dev mode enabled! Setting up proxy for expo")
+
     app.use((req, res, next) => {
         if (!req.url.startsWith('/api')) {
             createProxyMiddleware({
@@ -78,6 +79,8 @@ if (process.env.DEV_ENV === 'true') {
             next();
         }
     });
+} else {
+    console.log("This is running on production.")
 }
 
 // Views
@@ -103,32 +106,3 @@ app.use("/api", logout);
 app.use("/api", crm);
 app.use("/api", save_club);
 app.use("/api", delete_club);
-
-
-// WebSocket server handling upgrades
-server.on('upgrade', (request, socket, head) => {
-    socketServer.handleUpgrade(request, socket, head, (ws) => {
-        socketServer.emit('connection', ws, request);
-    });
-});
-
-// Server Listener
-server.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-});
-
-socketServer.on('connection', (socket) => {
-    console.log(`WebSocket connected: ${socket}`);
-
-    // Handle WebSocket events here
-    socket.on('message', (message) => {
-        console.log(`Received WebSocket message: ${message}`);
-    });
-
-    socket.on('close', () => {
-        console.log('WebSocket disconnected');
-    });
-});
-
-// Make the WebSocket server available to other parts of your application
-app.io = socketServer;
