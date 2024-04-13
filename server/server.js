@@ -57,23 +57,13 @@ if (process.env.DEV_ENV === 'true') {
 
 app.use(getRoutes(express.Router()));
 
-// Views
-app.set("views",  path.join(__dirname, "views"));
-app.set("view engine", "ejs");
-app.engine("html", require("ejs").renderFile);
-
-// Body parser MW
-app.use(bodyParser())
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended:true}));
-
 // allows for backwards and forwards navigation
 app.use(history({verbose: true}))
 app.use('/', express.static(path.join(__dirname, 'dist')));
 app.use(express.urlencoded({extended: false}));
 
 // Server Listener
-server.listen(port, () => {
+app.listen(port, () => {
     console.log(`Server running on ${process.env.BASE_URL}:${port}`);
 });
 
