@@ -46,7 +46,6 @@ app.use(cors());
 
 app.use('/', express.static(path.join(__dirname, 'dist')));
 
-
 // Session
 app.use(session({
 	secret: "yaleclubs",
@@ -108,5 +107,5 @@ app.use("/api", delete_club);
 
 // Server Listener
 server.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+    console.log(`Server running on ${process.env.BASE_URL}:${port}`);
 });
