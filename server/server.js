@@ -52,7 +52,7 @@ if (process.env.DEV_ENV === 'true') {
         }
     });
 } else {
-    console.log("Serer running on production.")
+    console.log("Server running on production.")
 }
 
 app.use(getRoutes(express.Router()));
