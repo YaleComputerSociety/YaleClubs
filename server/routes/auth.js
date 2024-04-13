@@ -9,7 +9,7 @@ const router = express.Router();
 
 const CAS_SERVER = 'https://secure.its.yale.edu';
 const CAS_VALIDATE_ROUTE = '/cas/serviceValidate';
-const CAS_SERVICE = `http://${process.env.BASE_URL}/api/auth/redirect`;
+const CAS_SERVICE = `http://${process.env.BASE_URL}:${process.env.PORT}/api/auth/redirect`;
 
 const get_ticket_validation_link = (ticket) => {
     const validateURL = new URL(CAS_VALIDATE_ROUTE, CAS_SERVER)
@@ -42,7 +42,7 @@ router.get('/auth/redirect', async (req, res) => {
     
         req.session.user = userId;
         req.session.redirected = true;
-        res.redirect(`http://${process.env.BASE_URL}`);
+        res.redirect(`http://${process.env.BASE_URL}:${process.env.PORT}`);
     } catch (error) {
         console.error('Error in CAS redirection:', error);
         res.status(500).send('Internal Server Error');
