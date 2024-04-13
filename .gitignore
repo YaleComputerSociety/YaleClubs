@@ -1,5 +1,7 @@
 package-lock.json
 
+dist
+
 # webstorm
 .idea
 
@@ -127,7 +129,6 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
 
 # Gatsby files
 .cache/
