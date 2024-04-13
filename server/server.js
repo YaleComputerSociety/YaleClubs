@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const {createProxyMiddleware} = require('http-proxy-middleware');
 const MongoStore = require('connect-mongo');
 const http = require('http');
+const history = require('connect-history-api-fallback');
 
 // Routes
 const authMiddleware = require('./middleware/authMiddleware');
@@ -44,7 +45,10 @@ const server = http.createServer(app);
 
 app.use(cors());
 
+// allows for backwards and forwards navigation
+app.use(history({verbose: true}))
 app.use('/', express.static(path.join(__dirname, 'dist')));
+app.use(express.urlencoded({extended: false}));
 
 // Session
 app.use(session({
