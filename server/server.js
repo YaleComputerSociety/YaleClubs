@@ -3,7 +3,6 @@ const path = require("path");
 require('dotenv').config();
 const session = require('express-session');
 const bodyParser = require("body-parser");
-const cors = require('cors');
 const mongoose = require('mongoose');
 const {createProxyMiddleware} = require('http-proxy-middleware');
 const MongoStore = require('connect-mongo');
@@ -42,13 +41,6 @@ mongoose.connection.on('disconnected', () => {
 const app = express();
 const port = process.env.PORT || 8081;
 const server = http.createServer(app);
-
-app.use(cors());
-
-// allows for backwards and forwards navigation
-app.use(history({verbose: true}))
-app.use('/', express.static(path.join(__dirname, 'dist')));
-app.use(express.urlencoded({extended: false}));
 
 // Session
 app.use(session({
@@ -109,7 +101,13 @@ app.use("/api", crm);
 app.use("/api", save_club);
 app.use("/api", delete_club);
 
+// allows for backwards and forwards navigation
+app.use(history({verbose: true}))
+app.use('/', express.static(path.join(__dirname, 'dist')));
+app.use(express.urlencoded({extended: false}));
+
 // Server Listener
 server.listen(port, () => {
     console.log(`Server running on ${process.env.BASE_URL}:${port}`);
 });
+
