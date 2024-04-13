@@ -5,6 +5,7 @@ module.exports = function (api) {
       "babel-preset-expo",
     ],
     plugins: [
+      ['module:react-native-dotenv'],
       "@babel/plugin-proposal-export-namespace-from",
       "nativewind/babel",
       "react-native-reanimated/plugin",
