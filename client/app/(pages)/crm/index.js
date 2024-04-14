@@ -14,7 +14,6 @@ import Wrapper from '../../../components/Wrapper';
 import EmptySVG from '../../../assets/empty';
 import DeleteSVG from '../../../assets/delete';
 
-import netIds from "./netids";
 import OfficialSVG from '../../../assets/official';
 
 const CRMManager = () => {
@@ -26,22 +25,31 @@ const CRMManager = () => {
     const [website, setWebsite] = useState('');
     const [yaleConnect, setYaleConnect] = useState('');
 
+    const [selectedMember, setSelectedMember] = useState("");
+    const [selectedLeader, setSelectedLeader] = useState("");
     const [selectedMembers, setSelectedMembers] = useState([]);
     const [selectedLeaders, setSelectedLeaders] = useState(["am3785"]);
 
-    const addMember = (id) => {
-        if (!selectedMembers.includes(id)) {
-            setSelectedMembers((prevMembers) => [...prevMembers, id]);
+    // This implementation is only a quick draft and must to be fixed in the future
+    // If you are planning on adding the code in here, please manage the structure first
+
+    const addMember = () => {
+        const netID = selectedMember.trim();
+        if (netID && !selectedMembers.includes(netID) && netID.length <= 6 && netID.length >= 4) {
+            setSelectedMembers((prevMembers) => [...prevMembers, netID]);
+            setSelectedMember("");
         } else {
-            alert("Already added.");
+            alert("Invalid NetID.");
         }
     };
     
-    const addLeader = (id) => {
-        if (!selectedLeaders.includes(id)) {
-            setSelectedLeaders((prevLeaders) => [...prevLeaders, id]);
+    const addLeader = () => {
+        const netID = selectedLeader.trim();
+        if (netID && !selectedLeaders.includes(netID) && netID.length <= 6 && netID.length >= 4) {
+            setSelectedLeaders((prevLeaders) => [...prevLeaders, netID]);
+            setSelectedLeader("");
         } else {
-            alert("Already added.");
+            alert("Invalid NetID.");
         }
     };
 
@@ -178,35 +186,35 @@ const CRMManager = () => {
                                     </View>
 
                                     {/* Fix Later: Manage Membership */}
-                                    <View className='flex-row gap-x-6 h-[270px] mt-7'>
+                                    <View className='flex-row gap-x-6 h-[170px] mt-7'>
                                         <View className='flex-col shrink w-96'>
                                             <Text className='text-md text-gray-500 mb-1'>Add Members</Text>
-                                            <View className='w-full border-[1px] border-gray-200 h-full shrink rounded-md'>
-                                                <TextInput placeholder='Search by NetID...' className='bg-white p-3 rounded-none border-b-[1px] border-gray-200'></TextInput>
-                                                <View className='overflow-scroll flex-col h-full shrink'>
-                                                    {netIds.map((id, index) => (
-                                                        <Pressable onPress={() => addMember(id)} className={`p-3 py-1.5 ${index % 2 === 1 ? 'bg-gray-50' : ''} flex-row justify-between`} key={id}>
-                                                            <Text className='w-28'>{id}</Text>
-                                                        </Pressable>
-                                                    ))}
-                                                </View>
+                                            <View className='w-full border-[1px] border-gray-200 shrink rounded-md justify-center'>
+                                                <TextInput 
+                                                    placeholder='Search by NetID...'
+                                                    onChangeText={setSelectedMember} 
+                                                    className='bg-white p-3'
+                                                />
+                                                <Pressable className='absolute right-3 w-4 h-4 bg-gray-300 items-center rounded-md justify-center' onPress={addMember}>
+                                                    <Text className='text-white mb-0.5'>+</Text>
+                                                </Pressable>
                                             </View>
                                         </View>
 
                                         <View className='flex-col shrink w-96'>
-                                            <Text className='text-md text-gray-500 mb-1'>Add Leaders</Text>
-                                            <View className='w-full border-[1px] border-gray-200 h-full shrink rounded-md'>
-                                                <TextInput placeholder='Search by NetID...' className='bg-white p-3 rounded-none border-b-[1px] border-gray-200'></TextInput>
-                                                <View className='overflow-scroll flex-col h-full shrink'>
-                                                    {netIds.map((id, index) => (
-                                                        <Pressable onPress={() => addLeader(id)} className={`p-3 py-1.5 ${index % 2 === 1 ? 'bg-gray-50' : ''} flex-row justify-between`} key={id}>
-                                                            <Text className='w-28'>{id}</Text>
-                                                        </Pressable>
-                                                    ))}
-                                                </View>
+                                        <Text className='text-md text-gray-500 mb-1'>Add Leaders</Text>
+                                            <View className='w-full border-[1px] border-gray-200 shrink rounded-md justify-center'>
+                                                <TextInput 
+                                                    placeholder='Search by NetID...'
+                                                    onChangeText={setSelectedLeader} 
+                                                    className='bg-white p-3'
+                                                />
+                                                <Pressable className='absolute right-3 w-4 h-4 bg-gray-300 items-center rounded-md justify-center' onPress={addLeader}>
+                                                    <Text className='text-white mb-0.5'>+</Text>
+                                                </Pressable>
                                             </View>
                                         </View>
-
+                                        
                                         <View className='flex-col w-full shrink'>
                                             <Text className='text-md text-gray-500 mb-1'>Membership ({selectedMembers.length})</Text>
                                             <View className='w-full border-[1px] border-gray-200 shrink rounded-md overflow-scroll'>
@@ -219,6 +227,7 @@ const CRMManager = () => {
                                                                 <Text className='text-white font-bold text-[9px]'>R</Text>
                                                             </View>
                                                         </View>
+
                                                         <Pressable onPress={() => removeLeader(id)} className='h-4 w-4 rounded-md justify-center items-center'>
                                                             <DeleteSVG />
                                                         </Pressable>
@@ -228,6 +237,7 @@ const CRMManager = () => {
                                                     <View className={`p-3 py-1.5 ${index % 2 === 1 ? 'bg-gray-50' : ''} flex-row justify-between`} key={id}>
                                                         <Text className='w-28'>{id}</Text>
                                                         <Text className='w-full'>Name Surname</Text>
+
                                                         <Pressable onPress={() => removeMember(id)} className='h-4 w-4 rounded-md justify-center items-center'>
                                                             <DeleteSVG />
                                                         </Pressable>
