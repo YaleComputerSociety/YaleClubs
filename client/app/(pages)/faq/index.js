@@ -1,4 +1,3 @@
-
 import { NativeWindStyleSheet } from 'nativewind';
 
 import { useState } from 'react';

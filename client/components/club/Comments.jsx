@@ -19,7 +19,7 @@ const Comments = ({clubId}) => {
         try {
             // Submit comment
             console.log(anonymous);
-            await axios.post(`http://${process.env.BASE_URL}/api/comment`, { text, clubId, anonymous });
+            await axios.post(`http://${process.env.BASE_URL}:${process.env.PORT}/api/comment`, { text, clubId, anonymous });
             console.log('Comment submitted successfully!');
             setText('');
         } catch (error) {
@@ -32,7 +32,7 @@ const Comments = ({clubId}) => {
 
     const requestAllComments = async () => {
         try {
-            const response = await axios.post(`http://${process.env.BASE_URL}/api/comments`, { clubId });
+            const response = await axios.post(`http://${process.env.BASE_URL}:${process.env.PORT}/api/comments`, { clubId });
             setComments(response.data);
         } catch (error) {
             console.error('Error fetching all comments:', error);

@@ -35,7 +35,7 @@ const AsideItem = ({data}) => {
     
               formData.append('key', 'true');
     
-              const axiosResponse = await axios.post(`http://${process.env.BASE_URL}/api/event`, formData, {
+              const axiosResponse = await axios.post(`http://${process.env.BASE_URL}:${process.env.PORT}/api/event`, formData, {
                 headers: {
                   'Content-Type': 'multipart/form-data',
                 },
