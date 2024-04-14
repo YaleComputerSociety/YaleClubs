@@ -8,7 +8,7 @@ const membersData = [
     },
     {
         id: 2,
-        name: "Name Surname",
+        name: "Ian Lim",
         src: 'https://picsum.photos/400/600',
         role: "FullStack",
         description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor."
