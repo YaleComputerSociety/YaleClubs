@@ -6,6 +6,7 @@ import {
     View, 
     SafeAreaView, 
     ScrollView,
+    Text,
 } from "react-native";
     
 import AuthWrapper from '../components/AuthWrapper';

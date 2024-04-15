@@ -2,20 +2,17 @@
 
 const express = require('express');
 const router = express.Router();
-const path = require('path');
 const fs = require('fs/promises');
 
-const jsonFilePath = path.join(__dirname, '../savedData.json');
+const Club = require("../models/club");
 
 // Route the Club JSON Data File
 router.get('/data', async (req, res) => {
     try {
         // Read the content
-        const fileContent = await fs.readFile(jsonFilePath, 'utf-8');
-        const jsonData = JSON.parse(fileContent);
-    
+        const clubs = await Club.find({});
         // Send the JSON data
-        res.json(jsonData);
+        res.json(clubs);
     } catch (error) {
         console.error('Error reading savedData.json:', error);
         res.status(500).json({ error: 'Internal Server Error' });
