@@ -65,10 +65,6 @@ const SearchBar = ({onChange, searchValue, found}) => {
                 </View>
 
             </View>
-{/* 
-            <Pressable className="border-[1px] mt-5 border-gray-200 py-2 w-9 justify-center items-center rounded-md" onPress={() => Linking.openURL("https://yaleconnect.yale.edu/club_signup")}>
-                <Text className="text-gray-300">YC</Text>
-            </Pressable> */}
         </View>
     );
 
