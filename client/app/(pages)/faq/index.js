@@ -19,7 +19,7 @@ const QuestionBlock = () => {
     });
 
     const questions = [
-        { id: 1, question: 'What is the purpose of the Yale Clubs website?', answer: 'The Yale Clubs website serves as a centralized platform for Yale University clubs, providing information about various organizations, events, and opportunities available to the Yale community.' },
+        { id: 1, question: 'What is YaleClubs?', answer: 'The Yale Clubs website serves as a centralized platform for Yale University clubs, providing information about various organizations, events, and opportunities available to the Yale community.' },
         { id: 2, question: 'How can I join a Yale club?', answer: "To join a Yale club, navigate to the club's page on the website, where you'll find information on how to become a member or participate in club activities. Contact the club directly for more details." },
         { id: 3, question: 'Do I need an account to access Yale Clubs features?', answer: 'While some features are accessible without an account, creating an account allows you to engage more fully with club activities, receive updates, and manage your club memberships.' },
         { id: 4, question: 'How do I update information about my club?', answer: "Club administrators can log in, navigate to the club's dashboard, and edit/update relevant information. Make sure to save changes to reflect the updated details." },

@@ -5,7 +5,7 @@ const comments = require("./routes/comments");
 const subscribe = require("./routes/subscribe");
 const auth = require("./routes/auth");
 const logout = require("./routes/logout");
-const crm = require("./routes/manager");
+const crm = require("./routes/create");
 const save_club = require("./routes/save");
 const delete_club = require("./routes/delete");
 

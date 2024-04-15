@@ -1,10 +1,11 @@
 import axios from 'axios';
-import { useState } from 'react';
+import {useState} from 'react';
 import * as ImagePicker from 'expo-image-picker';
-import { NativeWindStyleSheet } from 'nativewind';
+import {NativeWindStyleSheet} from 'nativewind';
+import Toast from 'react-native-toast-message';
 
-import { Image, Pressable, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {Image, Pressable, Text, TextInput, View} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 import AuthWrapper from '../../../components/AuthWrapper';
 import InputBox from "../../../components/crm/InputBox";
@@ -15,6 +16,7 @@ import EmptySVG from '../../../assets/empty';
 import DeleteSVG from '../../../assets/delete';
 
 import OfficialSVG from '../../../assets/official';
+import {useRouter} from "expo-router";
 
 const CRMManager = () => {
     const [image, setImage] = useState(null);
@@ -28,7 +30,7 @@ const CRMManager = () => {
     const [selectedMember, setSelectedMember] = useState("");
     const [selectedLeader, setSelectedLeader] = useState("");
     const [selectedMembers, setSelectedMembers] = useState([]);
-    const [selectedLeaders, setSelectedLeaders] = useState(["am3785"]);
+    const [selectedLeaders, setSelectedLeaders] = useState([]);
 
     // This implementation is only a quick draft and must to be fixed in the future
     // If you are planning on adding the code in here, please manage the structure first
@@ -42,7 +44,7 @@ const CRMManager = () => {
             alert("Invalid NetID.");
         }
     };
-    
+
     const addLeader = () => {
         const netID = selectedLeader.trim();
         if (netID && !selectedLeaders.includes(netID) && netID.length <= 6 && netID.length >= 4) {
@@ -72,15 +74,15 @@ const CRMManager = () => {
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.All,
-          allowsEditing: true,
-          aspect: [4, 3],
-          quality: 1,
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
         });
-      
+
         if (!result.cancelled) {
             const localUri = result.uri;
-        
+
             // Create a FormData object to send the image to the server
             const formData = new FormData();
             formData.append('image', {
@@ -88,7 +90,7 @@ const CRMManager = () => {
                 name: 'image.jpg',
                 type: 'image/jpg',
             });
-        
+
             // Send the image to the server
             try {
                 const response = await axios.post('/api/uploadimage', formData);
@@ -101,21 +103,29 @@ const CRMManager = () => {
     };
 
     const submitClub = async () => {
-        try {
-            const formData = {
-                clubName: clubName,
-                description: description,
-                instagram: instagram,
-                email: email,
-                website: website,
-                yaleConnect: yaleConnect,
-                clubMembers: selectedMembers,
-                clubLeaders: selectedLeaders,
-                logo: image,
-            };
 
-            const response = await axios.post('/api/create', formData);
-            console.log('Club submitted successfully:', response.data);
+        const formData = {
+            clubName: clubName,
+            description: description,
+            instagram: instagram,
+            email: email,
+            website: website,
+            yaleConnect: yaleConnect,
+            clubMembers: selectedMembers,
+            clubLeaders: selectedLeaders,
+            logo: image,
+        };
+
+        console.log(formData)
+
+        const response = await axios.post('/api/create', formData);
+
+        if (response.data.success) {
+            Toast.show({
+                type: 'success',
+                text1: 'Success!',
+                text2: 'Club Added Successfully!'
+            });
 
             setImage(null);
             setEmail('');
@@ -125,19 +135,27 @@ const CRMManager = () => {
             setDescription('');
             setYaleConnect('');
             setSelectedMembers([]);
-            setSelectedLeaders(["am3785"]);
-        } catch (error) {
-            console.error('Error submitting club:', error.message);
+            setSelectedLeaders([]);
+
+            useRouter().push('/');
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Oops!',
+                text2: 'Error occurred while adding club'
+            });
+
+            console.log(response)
         }
-    };  
-    
+    };
+
     return (
         <AuthWrapper>
             <SafeAreaView className="w-full">
                 <View className="flex-col w-full min-h-screen">
-                    <Header />
+                    <Header/>
 
-                    <Wrapper>                  
+                    <Wrapper>
                         <View className="ph:mb-0 md:mb-10 w-full flex items-center">
                             <View className="ph:w-full lg:w-[920px]">
                                 <View className='px-[20px]'>
@@ -145,43 +163,51 @@ const CRMManager = () => {
                                         <Text className='font-bold text-2xl mr-2'>Club Management System</Text>
                                         <OfficialSVG h={25} w={25}/>
                                     </View>
-                                    <Text className='text-sm'>Hard problems need easy solutions</Text>
+                                    <Text className='text-sm'>Enter club details</Text>
 
                                     {/* Main Data Manager */}
                                     <View className='flex flex-row mt-20 gap-x-6 h-[268px]'>
-                                        <View className='w-32'>                                            
-                                            <View className='bg-gray-200 rounded-[30px] w-32 h-32 items-center justify-center overflow-hidden'>
+                                        <View className='w-32'>
+                                            <View
+                                                className='bg-gray-200 rounded-[30px] w-32 h-32 items-center justify-center overflow-hidden'>
                                                 {image ? (
-                                                    <Image source={{ uri: image }} className='w-32 h-32' />
+                                                    <Image source={{uri: image}} className='w-32 h-32'/>
                                                 ) : (
-                                                    <EmptySVG h={50} w={50} />
+                                                    <EmptySVG h={50} w={50}/>
                                                 )}
                                             </View>
-                                            
-                                            <Pressable onPress={pickImage} className='border-[1px] rounded-md border-sky-500 flex-row justify-center py-2 mt-5'>
+
+                                            <Pressable onPress={pickImage}
+                                                       className='border-[1px] rounded-md border-sky-500 flex-row justify-center py-2 mt-5'>
                                                 <Text className='text-sky-500 text-sm'>Upload</Text>
                                             </Pressable>
                                         </View>
 
                                         <View className='flex-col w-full pt-2 shrink gap-y-2 h-full'>
-                                            <InputBox placeholder="Define your club name" onChangeText={setClubName} title="Club Name" value={clubName} />
+                                            <InputBox placeholder="Define your club name" onChangeText={setClubName}
+                                                      title="Club Name" value={clubName}/>
 
                                             <View className='flex-col h-full shrink'>
                                                 <Text className='text-md text-gray-500 mb-1'>Description</Text>
-                                                <TextInput 
-                                                    placeholder='Explain what this club is about?' 
-                                                    onChangeText={setDescription} multiline 
+                                                <TextInput
+                                                    placeholder='Explain what this club is about?'
+                                                    onChangeText={setDescription} multiline
                                                     value={description}
-                                                    className='bg-white rounded-md border-[1px] text-sm text-gray-700 h-full shrink border-gray-200 p-3 w-full' 
+                                                    className='bg-white rounded-md border-[1px] text-sm text-gray-700 h-full shrink border-gray-200 p-3 w-full'
                                                 />
                                             </View>
                                         </View>
 
                                         <View className='flex-col gap-y-2 h-full shrink w-96'>
-                                            <View><InputBox title="Instagram (Optional)" placeholder="@username" onChangeText={setInstagram} /></View>
-                                            <View><InputBox title="Email (Optional)" placeholder="clubemail@yale.edy" onChangeText={setEmail} /></View>
-                                            <View><InputBox title="Website (Optional)" placeholder="www.website.com" onChangeText={setWebsite} /></View>
-                                            <View><InputBox title="Yale Connect (Optional)" placeholder="Share other platforms" onChangeText={setYaleConnect} /></View>
+                                            <View><InputBox title="Instagram (Optional)" placeholder="@username"
+                                                            onChangeText={setInstagram}/></View>
+                                            <View><InputBox title="Email (Optional)" placeholder="clubemail@yale.edy"
+                                                            onChangeText={setEmail}/></View>
+                                            <View><InputBox title="Website (Optional)" placeholder="www.website.com"
+                                                            onChangeText={setWebsite}/></View>
+                                            <View><InputBox title="Yale Connect (Optional)"
+                                                            placeholder="Share other platforms"
+                                                            onChangeText={setYaleConnect}/></View>
                                         </View>
                                     </View>
 
@@ -189,57 +215,73 @@ const CRMManager = () => {
                                     <View className='flex-row gap-x-6 h-[170px] mt-7'>
                                         <View className='flex-col shrink w-96'>
                                             <Text className='text-md text-gray-500 mb-1'>Add Members</Text>
-                                            <View className='w-full border-[1px] border-gray-200 shrink rounded-md justify-center'>
-                                                <TextInput 
+                                            <View
+                                                className='w-full border-[1px] border-gray-200 shrink rounded-md justify-center'>
+                                                <TextInput
                                                     placeholder='Search by NetID...'
-                                                    onChangeText={setSelectedMember} 
+                                                    onChangeText={setSelectedMember}
                                                     className='bg-white p-3'
                                                 />
-                                                <Pressable className='absolute right-3 w-4 h-4 bg-gray-300 items-center rounded-md justify-center' onPress={addMember}>
+                                                <Pressable
+                                                    className='absolute right-3 w-4 h-4 bg-gray-300 items-center rounded-md justify-center'
+                                                    onPress={addMember}>
                                                     <Text className='text-white mb-0.5'>+</Text>
                                                 </Pressable>
                                             </View>
                                         </View>
 
                                         <View className='flex-col shrink w-96'>
-                                        <Text className='text-md text-gray-500 mb-1'>Add Leaders</Text>
-                                            <View className='w-full border-[1px] border-gray-200 shrink rounded-md justify-center'>
-                                                <TextInput 
+                                            <Text className='text-md text-gray-500 mb-1'>Add Leaders</Text>
+                                            <View
+                                                className='w-full border-[1px] border-gray-200 shrink rounded-md justify-center'>
+                                                <TextInput
                                                     placeholder='Search by NetID...'
-                                                    onChangeText={setSelectedLeader} 
+                                                    onChangeText={setSelectedLeader}
                                                     className='bg-white p-3'
                                                 />
-                                                <Pressable className='absolute right-3 w-4 h-4 bg-gray-300 items-center rounded-md justify-center' onPress={addLeader}>
+                                                <Pressable
+                                                    className='absolute right-3 w-4 h-4 bg-gray-300 items-center rounded-md justify-center'
+                                                    onPress={addLeader}>
                                                     <Text className='text-white mb-0.5'>+</Text>
                                                 </Pressable>
                                             </View>
                                         </View>
-                                        
+
                                         <View className='flex-col w-full shrink'>
-                                            <Text className='text-md text-gray-500 mb-1'>Membership ({selectedMembers.length})</Text>
-                                            <View className='w-full border-[1px] border-gray-200 shrink rounded-md overflow-scroll'>
+                                            <Text className='text-md text-gray-500 mb-1'>Membership
+                                                ({selectedMembers.length})</Text>
+                                            <View
+                                                className='w-full border-[1px] border-gray-200 shrink rounded-md overflow-scroll'>
                                                 {selectedLeaders.map((id, index) => (
-                                                    <View className={`p-3 py-1.5 ${index % 2 === 1 ? 'bg-gray-50' : ''} flex-row justify-between`} key={id}>
+                                                    <View
+                                                        className={`p-3 py-1.5 ${index % 2 === 1 ? 'bg-gray-50' : ''} flex-row justify-between`}
+                                                        key={id}>
                                                         <Text className='w-28'>{id}</Text>
                                                         <View className='flex-row gap-x-2 w-full shrink items-center'>
                                                             <Text>Name Surname</Text>
-                                                            <View className='bg-sky-500 h-4 w-4 rounded-md items-center justify-center'>
-                                                                <Text className='text-white font-bold text-[9px]'>R</Text>
+                                                            <View
+                                                                className='bg-sky-500 h-4 w-4 rounded-md items-center justify-center'>
+                                                                <Text
+                                                                    className='text-white font-bold text-[9px]'>R</Text>
                                                             </View>
                                                         </View>
 
-                                                        <Pressable onPress={() => removeLeader(id)} className='h-4 w-4 rounded-md justify-center items-center'>
-                                                            <DeleteSVG />
+                                                        <Pressable onPress={() => removeLeader(id)}
+                                                                   className='h-4 w-4 rounded-md justify-center items-center'>
+                                                            <DeleteSVG/>
                                                         </Pressable>
                                                     </View>
                                                 ))}
                                                 {selectedMembers.map((id, index) => (
-                                                    <View className={`p-3 py-1.5 ${index % 2 === 1 ? 'bg-gray-50' : ''} flex-row justify-between`} key={id}>
+                                                    <View
+                                                        className={`p-3 py-1.5 ${index % 2 === 1 ? 'bg-gray-50' : ''} flex-row justify-between`}
+                                                        key={id}>
                                                         <Text className='w-28'>{id}</Text>
                                                         <Text className='w-full'>Name Surname</Text>
 
-                                                        <Pressable onPress={() => removeMember(id)} className='h-4 w-4 rounded-md justify-center items-center'>
-                                                            <DeleteSVG />
+                                                        <Pressable onPress={() => removeMember(id)}
+                                                                   className='h-4 w-4 rounded-md justify-center items-center'>
+                                                            <DeleteSVG/>
                                                         </Pressable>
                                                     </View>
                                                 ))}
@@ -255,7 +297,8 @@ const CRMManager = () => {
                                         </View>
                                         <View className='flex-row gap-4'>
                                             <View className='flex-row'>
-                                                <Pressable onPress={submitClub} className='bg-sky-500 py-2 px-5 rounded-md'>
+                                                <Pressable onPress={submitClub}
+                                                           className='bg-sky-500 py-2 px-5 rounded-md'>
                                                     <Text className='text-white'>Submit</Text>
                                                 </Pressable>
                                             </View>
@@ -266,10 +309,11 @@ const CRMManager = () => {
                             </View>
                         </View>
                     </Wrapper>
-                    
-                    <Footer />
+
+                    <Footer/>
                 </View>
             </SafeAreaView>
+            <Toast/>
         </AuthWrapper>
     );
 }
