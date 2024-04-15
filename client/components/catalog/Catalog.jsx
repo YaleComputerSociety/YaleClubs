@@ -1,10 +1,10 @@
 
 import { NativeWindStyleSheet } from "nativewind";
 
+import axios from "axios";
 import { useRouter } from "expo-router";
 import React, { useEffect, useMemo, useState } from 'react';
 import { Text, View, ActivityIndicator, Pressable } from 'react-native';
-import { fetchClubs } from '../../api/ManageClubs';
 import { FlatGrid } from 'react-native-super-grid';
 
 import useFilteredData from "../../hooks/FilterData";
@@ -28,26 +28,16 @@ const Catalog = ({page, setPage}) => {
     const [fetchError, setFetchError] = useState(null);
 
     const { searchValue, onChange, found, filteredGroups } = useFilteredData(allGroups);
+    console.log(filteredGroups);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 setIsLoading(true);
 
-                // Check the last reload time from AsyncStorage
-                // const lastReloadTime = await AsyncStorage.getItem('lastReloadTime');
-                //
-                // if (!lastReloadTime || Date.now() - new Date(lastReloadTime).getTime() > 6 * 60 * 60 * 1000) {
-                //     await reloadClubs();
-                //
-                //     // Update the last reload time in AsyncStorage
-                //     await AsyncStorage.setItem('lastReloadTime', new Date().toISOString());
-                // }
+                const response = await axios.get('http://localhost:8081/api/data');
 
-                const clubs = await fetchClubs();
-                console.log('catalog', clubs);
-                setAllGroups(clubs);
-
+                setAllGroups(response.data);
                 setIsLoading(false);
             } catch (error) {
                 console.error('Error fetching or saving data:', error);
@@ -55,7 +45,7 @@ const Catalog = ({page, setPage}) => {
                 setIsLoading(false);
             }
         };
-    
+
         fetchData();
     }, []);
 
@@ -95,7 +85,7 @@ const Catalog = ({page, setPage}) => {
             ) : (
                 <View>
                     <FlatGrid
-                        data={filteredGroups.slice(0, page * 100)}
+                        data={filteredGroups?.slice(0, page * 100)}
                         renderItem={renderItem}
                         scrollEnabled={false}
                         itemContainerStyle={{ justifyContent: 'flex-start' }}
