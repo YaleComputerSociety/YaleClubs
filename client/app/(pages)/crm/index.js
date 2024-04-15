@@ -167,49 +167,83 @@ const CRMManager = () => {
 
                                     {/* Main Data Manager */}
                                     <View className='flex flex-row mt-20 gap-x-6 h-[268px]'>
-                                        <View className='w-32'>
-                                            <View
-                                                className='bg-gray-200 rounded-[30px] w-32 h-32 items-center justify-center overflow-hidden'>
-                                                {image ? (
-                                                    <Image source={{uri: image}} className='w-32 h-32'/>
-                                                ) : (
-                                                    <EmptySVG h={50} w={50}/>
-                                                )}
-                                            </View>
+            <View className='w-32'>
+                <View className='bg-gray-200 rounded-[30px] w-32 h-32 items-center justify-center overflow-hidden'>
+                    {image ? (
+                        <Image source={{ uri: image }} style={{ width: 128, height: 128 }}/>
+                    ) : (
+                        <Text>No Image</Text> // Replace with your <EmptySVG /> component
+                    )}
+                </View>
 
-                                            <Pressable onPress={pickImage}
-                                                       className='border-[1px] rounded-md border-sky-500 flex-row justify-center py-2 mt-5'>
-                                                <Text className='text-sky-500 text-sm'>Upload</Text>
-                                            </Pressable>
-                                        </View>
+                <Pressable onPress={pickImage} className='border-[1px] rounded-md border-sky-500 flex-row justify-center py-2 mt-5'>
+                    <Text className='text-sky-500 text-sm'>Upload</Text>
+                </Pressable>
+            </View>
 
-                                        <View className='flex-col w-full pt-2 shrink gap-y-2 h-full'>
-                                            <InputBox placeholder="Define your club name" onChangeText={setClubName}
-                                                      title="Club Name" value={clubName}/>
 
-                                            <View className='flex-col h-full shrink'>
-                                                <Text className='text-md text-gray-500 mb-1'>Description</Text>
-                                                <TextInput
-                                                    placeholder='Explain what this club is about?'
-                                                    onChangeText={setDescription} multiline
-                                                    value={description}
-                                                    className='bg-white rounded-md border-[1px] text-sm text-gray-700 h-full shrink border-gray-200 p-3 w-full'
-                                                />
-                                            </View>
-                                        </View>
 
-                                        <View className='flex-col gap-y-2 h-full shrink w-96'>
-                                            <View><InputBox title="Instagram (Optional)" placeholder="@username"
-                                                            onChangeText={setInstagram}/></View>
-                                            <View><InputBox title="Email (Optional)" placeholder="clubemail@yale.edy"
-                                                            onChangeText={setEmail}/></View>
-                                            <View><InputBox title="Website (Optional)" placeholder="www.website.com"
-                                                            onChangeText={setWebsite}/></View>
-                                            <View><InputBox title="Yale Connect (Optional)"
-                                                            placeholder="Share other platforms"
-                                                            onChangeText={setYaleConnect}/></View>
-                                        </View>
-                                    </View>
+
+
+            <View className='flex-1 flex-col pt-2 gap-y-2 h-full'>
+            <Text className='text-md text-gray-500 mb-1'>Club Name</Text>
+                <TextInput
+                    placeholder="Define your club name"
+                    onChangeText={setClubName}
+                    value={clubName}
+                    style={{ borderWidth: 1, borderColor: 'gray', padding: 10, borderRadius: 5 }}
+                />
+
+                <View className='flex-1 flex-col'>
+                    <Text className='text-md text-gray-500 mb-1'>Description</Text>
+                    <TextInput
+                        placeholder='Explain what this club is about?'
+                        onChangeText={setDescription}
+                        multiline
+                        value={description}
+                        style={{ borderWidth: 1, borderColor: 'gray', padding: 10, borderRadius: 5, flex: 1 }}
+                    />
+                </View>
+            </View>
+
+            <View className='flex-col gap-y-2 h-full flex-1'>
+                <Text className='text-md text-gray-500'>Instagram (Optional)</Text>
+                <TextInput
+                    placeholder="@username"
+                    onChangeText={setInstagram}
+                    value={instagram}
+                    style={{ borderWidth: 1, borderColor: 'gray', padding: 10, borderRadius: 5 }}
+                    title="Instagram (Optional)"
+                />
+                <Text className='text-md text-gray-500'>Email (Optional)</Text>
+                <TextInput
+                    placeholder="clubemail@yale.edu"
+                    onChangeText={setEmail}
+                    value={email}
+                    style={{ borderWidth: 1, borderColor: 'gray', padding: 10, borderRadius: 5 }}
+                    title="Email (Optional)"
+                />
+                <Text className='text-md text-gray-500'>Website (Optional)</Text>
+                <TextInput
+                    placeholder="www.website.com"
+                    onChangeText={setWebsite}
+                    value={website}
+                    style={{ borderWidth: 1, borderColor: 'gray', padding: 10, borderRadius: 5 }}
+                    title="Website (Optional)"
+                />
+                <Text className='text-md text-gray-500'>Yale Connect (Optional)</Text>
+                <TextInput
+                    placeholder="Share other platforms"
+                    onChangeText={setYaleConnect}
+                    value={yaleConnect}
+                    style={{ borderWidth: 1, borderColor: 'gray', padding: 10, borderRadius: 5 }}
+                    title="Yale Connect (Optional)"
+                />
+            </View>
+
+
+            
+        </View>
 
                                     {/* Fix Later: Manage Membership */}
                                     <View className='flex-row gap-x-6 h-[170px] mt-7'>
@@ -319,3 +353,4 @@ const CRMManager = () => {
 }
 
 export default CRMManager;
+
