@@ -31,9 +31,9 @@ router.get('/auth/redirect', async (req, res) => {
         const userId = results['cas:serviceResponse']['cas:authenticationSuccess']['cas:user'];
     
         // Check if the user is already in MongoDB
-        const existingUser = await User.findOne({ userId });
+        const existingUser = await User.countDocuments({ userId }).exec();
     
-        if (!existingUser) {
+        if (existingUser === 0) {
             // Save the user to MongoDB if not already present
             const newUser = new User({ userId });
             await newUser.save();
