@@ -35,7 +35,7 @@ const Catalog = ({page, setPage}) => {
             try {
                 setIsLoading(true);
 
-                const response = await axios.get('http://localhost:8081/api/data');
+                const response = await axios.get(`http://${process.env.BASE_URL}:${process.env.PORT}/api/data`);
 
                 setAllGroups(response.data);
                 setIsLoading(false);
