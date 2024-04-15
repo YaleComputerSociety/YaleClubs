@@ -12,7 +12,6 @@ import AuthWrapper from '../components/AuthWrapper';
 import Header from "../components/header/Header";
 import Footer from "../components/footer/Footer";
 import Catalog from "../components/catalog/Catalog";
-  
 
 const App = () => {
     const [page, setPage] = useState(1);

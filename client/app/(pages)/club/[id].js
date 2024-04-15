@@ -8,11 +8,12 @@ import { useGlobalSearchParams } from 'expo-router';
 
 import Header from '../../../components/header/Header';
 import Footer from '../../../components/footer/Footer';
-import { fetchClubsAPI } from '../../../api/ManageClubs';
+import {fetchClubs, fetchClubsAPI} from '../../../api/ManageClubs';
 import SideBar from '../../../components/club/SideBar';
 import ClubDescription from '../../../components/club/ClubDescription';
 import AuthWrapper from '../../../components/AuthWrapper';
 import Wrapper from '../../../components/Wrapper';
+import axios from "axios";
 
 
 const ClubPage = () => {
@@ -26,15 +27,17 @@ const ClubPage = () => {
 
     // Fetch Clubs
     useEffect(() => {
+
         const fetchData = async () => {
             try {
-                const data = await fetchClubsAPI({ filters: { id: id } });
-                setGroupData(data[0]);
+                const resp = await fetchClubs()
+                console.log(resp)
+                setGroupData(resp);
             } catch (error) {
                 console.error('Error fetching club data:', error);
             }
         };
-    
+
         fetchData();
     }, [id]);
     

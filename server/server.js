@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const {createProxyMiddleware} = require('http-proxy-middleware');
 const MongoStore = require('connect-mongo');
 const history = require('connect-history-api-fallback');
-
+const cors = require('cors')
 const getRoutes = require('./router');
 
 // MongoDB connection
@@ -28,6 +28,7 @@ mongoose.connection.on('disconnected', () => {
 const app = express();
 const port = process.env.PORT || 8081;
 app.use(express.json())
+app.use(cors())
 
 // Session
 app.use(session({

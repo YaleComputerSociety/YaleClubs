@@ -51,7 +51,7 @@ const Header = () => {
         <View className="w-full flex-row absolute z-10 justify-between bg-white py-5 ph:px-5 xl:px-[110px]">
             <Pressable className="flex-row items-center" onPress={() => route.push(`/`)}>
                 <LogoSVG/>
-                <Text selectable={false} className="ml-5 font-semibold text-[16px]">Yale Clubs</Text>
+                <Text selectable={false} className="ml-5 font-semibold text-[16px]">YaleClubs</Text>
             </Pressable>
 
             <View className="flex-row items-center">
@@ -59,12 +59,18 @@ const Header = () => {
                     <Pressable onPress={() => route.push(`/`)}>
                         <Text selectable={false} className="text-[15px]">Catalog</Text>
                     </Pressable>
-                    <Pressable onPress={() => route.push(`/worksheet`)}>
-                        <Text selectable={false} className="text-[15px]">Worksheet</Text>
+                    <Pressable onPress={() => route.push(`/crm`)}>
+                        <Text selectable={false} className="text-[15px]">Add Club</Text>
                     </Pressable>
-                    <Pressable onPress={() => null}>
-                        <ModesSVG/>
-                    </Pressable>
+                    {/* Hide worksheets for now */}
+                    {/*<Pressable onPress={() => route.push(`/worksheet`)}>*/}
+                    {/*    <Text selectable={false} className="text-[15px]">Worksheet</Text>*/}
+                    {/*</Pressable>*/}
+
+                    {/*Hide dark mode too*/}
+                    {/*<Pressable onPress={() => null}>*/}
+                    {/*    <ModesSVG/>*/}
+                    {/*</Pressable>*/}
                 </View>
                 <View>
                     <View className={`group-isolate w-[40px] rounded-[9px]`}>

@@ -2,10 +2,9 @@
 import { NativeWindStyleSheet } from "nativewind";
 
 import { useRouter } from "expo-router";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Text, View, ActivityIndicator, Pressable } from 'react-native';
-import { reloadClubs, fetchClubsJSON } from '../../api/ManageClubs';
+import { fetchClubs } from '../../api/ManageClubs';
 import { FlatGrid } from 'react-native-super-grid';
 
 import useFilteredData from "../../hooks/FilterData";
@@ -36,17 +35,17 @@ const Catalog = ({page, setPage}) => {
                 setIsLoading(true);
 
                 // Check the last reload time from AsyncStorage
-                const lastReloadTime = await AsyncStorage.getItem('lastReloadTime');
+                // const lastReloadTime = await AsyncStorage.getItem('lastReloadTime');
+                //
+                // if (!lastReloadTime || Date.now() - new Date(lastReloadTime).getTime() > 6 * 60 * 60 * 1000) {
+                //     await reloadClubs();
+                //
+                //     // Update the last reload time in AsyncStorage
+                //     await AsyncStorage.setItem('lastReloadTime', new Date().toISOString());
+                // }
 
-                if (!lastReloadTime || Date.now() - new Date(lastReloadTime).getTime() > 6 * 60 * 60 * 1000) {
-                    await reloadClubs();
-
-                    // Update the last reload time in AsyncStorage
-                    await AsyncStorage.setItem('lastReloadTime', new Date().toISOString());
-                }
-
-                const clubs = await fetchClubsJSON({});
-                console.log(clubs);
+                const clubs = await fetchClubs();
+                console.log('catalog', clubs);
                 setAllGroups(clubs);
 
                 setIsLoading(false);

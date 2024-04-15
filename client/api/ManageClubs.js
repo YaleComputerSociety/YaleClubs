@@ -1,33 +1,14 @@
 import axios from "axios"
+//
+export const fetchClubs = async () => {
+  try {
+      // Make a GET request to the /data route
+      return axios.get(`http://${process.env.BASE_URL}:${process.env.PORT}/api/data`)
+  } catch (error) {
+      console.error('Error fetching data:', error);
+  }
 
-export const reloadClubs = async () => {
-  // const clubsdaily = await fetchClubsAPI({});
-  // const filteredClubs = filterClubs(clubsdaily)
-  await updateData(filteredClubs);
-}
-//
-// export const fetchClubsJSON = async () => {
-//   try {
-//       // Make a GET request to the /data route
-//       const response = await axios.get(`http://${process.env.BASE_URL}:${process.env.PORT}/api/data`);
-//
-//       // Extract the data from the response
-//       const data =  response.data;
-//       const exclude = "https://yaleconnect.yale.edu/images/Redirect_arrow_small.png";
-//       const shuffledData = _shuffle(data.filter(item => item.logo !== null && item.logo !== exclude));
-//       const nullLogoData = data.filter(item => item.logo === null || item.logo === exclude);
-//       const final = shuffledData.concat(nullLogoData);
-//
-//       if (data !== undefined) {
-//         return final
-//       }
-//
-//       // Log or use the retrieved data as needed
-//       console.log('Data received:', data);
-//   } catch (error) {
-//       console.error('Error fetching data:', error);
-//   }
-// };
+};
 //
 // export const filterClubs = (clubs) => {
 //   return clubs.map((club) => {
@@ -60,8 +41,3 @@ export const reloadClubs = async () => {
 //     console.error('Error updating data:', error);
 //   }
 // };
-
-export const fetchClubsAPI = async (defaultPayload) => {
-  return await axios.post(`http://${process.env.BASE_URL}:${process.env.PORT}/api/data`)
-}
-
