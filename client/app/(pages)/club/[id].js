@@ -32,8 +32,6 @@ const ClubPage = () => {
             try {
                 const resp = await fetchClub(id);
                 setGroupData(resp.data);
-                console.log(resp.data);
-                // console.log(groupData[0]);
             } catch (error) {
                 console.error('Error fetching club data:', error);
             }

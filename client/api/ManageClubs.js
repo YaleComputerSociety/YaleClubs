@@ -14,7 +14,6 @@ import axios from "axios"
 export const fetchClub = async (id) => {
   try {
       // Make a GET request to the /data route
-      console.log("attempting");
       return axios.get(`http://${process.env.BASE_URL}:${process.env.PORT}/api/data/${id}`);
   } catch (error) {
       console.error('Error fetching data:', error);
