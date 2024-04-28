@@ -5,7 +5,7 @@ const data = require("./routes/data");
 // const subscribe = require("./routes/subscribe");
 const auth = require("./routes/auth");
 const logout = require("./routes/logout");
-const crm = require("./routes/create");
+const crmmanager = require("./routes/crmmanager");
 const save_club = require("./routes/save");
 const delete_club = require("./routes/delete");
 
@@ -37,7 +37,7 @@ const getRoutes = (router) => {
     router.use("/api", auth);
     router.use("/api", logout);
 
-    router.use("/api", crm);
+    router.use("/api", crmmanager);
     router.use("/api", save_club);
     router.use("/api", delete_club);
 
