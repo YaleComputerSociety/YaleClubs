@@ -1,9 +1,20 @@
+// import axios from "axios"
+//
+// export const fetchClub = async (id) => {
+//   try {
+//       // Make a GET request to the /data route
+//       return axios.get(`http://${process.env.BASE_URL}:${process.env.PORT}/api/data/?id=${id}`)
+//   } catch (error) {
+//       console.error('Error fetching data:', error);
+//   }
+
+// };
 import axios from "axios"
 //
-export const fetchClubs = async () => {
+export const fetchClub = async (id) => {
   try {
       // Make a GET request to the /data route
-      return axios.get(`http://${process.env.BASE_URL}:${process.env.PORT}/api/data`)
+      return axios.get(`http://${process.env.BASE_URL}:${process.env.PORT}/api/data/${id}`);
   } catch (error) {
       console.error('Error fetching data:', error);
   }

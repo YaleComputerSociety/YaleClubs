@@ -19,6 +19,18 @@ router.get('/data', async (req, res) => {
     }
 });
 
+router.get('/data/:id', async (req, res) => {
+    try {
+        // Read the content
+        const clubs = await Club.findById(req.params.id);
+        // Send the JSON data
+        res.json(clubs);
+    } catch (error) {
+        console.error('Error reading savedData.json:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 // Cant have two types of REST request in same route
 // TODO: change
 
