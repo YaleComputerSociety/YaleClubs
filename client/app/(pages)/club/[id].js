@@ -8,7 +8,7 @@ import { useGlobalSearchParams } from 'expo-router';
 
 import Header from '../../../components/header/Header';
 import Footer from '../../../components/footer/Footer';
-import {fetchClubs, fetchClubsAPI} from '../../../api/ManageClubs';
+import {fetchClub, fetchClubsAPI} from '../../../api/ManageClubs';
 import SideBar from '../../../components/club/SideBar';
 import ClubDescription from '../../../components/club/ClubDescription';
 import AuthWrapper from '../../../components/AuthWrapper';
@@ -18,7 +18,7 @@ import axios from "axios";
 
 const ClubPage = () => {
     const { id } = useGlobalSearchParams();
-    const [groupData, setGroupData] = useState([]);    
+    const [groupData, setGroupData] = useState({});    
 
     // Native Wind SetUp
     NativeWindStyleSheet.setOutput({
@@ -30,9 +30,10 @@ const ClubPage = () => {
 
         const fetchData = async () => {
             try {
-                const resp = await fetchClubs()
-                console.log(resp)
-                setGroupData(resp);
+                const resp = await fetchClub(id);
+                setGroupData(resp.data);
+                console.log(resp.data);
+                // console.log(groupData[0]);
             } catch (error) {
                 console.error('Error fetching club data:', error);
             }
@@ -59,10 +60,10 @@ const ClubPage = () => {
 
                                 <SideBar
                                     data={{
-                                        website: groupData?.website, 
-                                        phone: groupData?.phone, 
+                                        instagram: groupData?.instagram,
                                         email: groupData?.email,
-                                        identity: id
+                                        website: groupData?.website, 
+                                        yaleConnect: groupData?.yaleConnect,
                                     }} 
                                 />
                             </View>
