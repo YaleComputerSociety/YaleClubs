@@ -6,8 +6,8 @@ const mongoose = require('mongoose');
 const {createProxyMiddleware} = require('http-proxy-middleware');
 const MongoStore = require('connect-mongo');
 const history = require('connect-history-api-fallback');
-const cors = require('cors')
 const getRoutes = require('./router');
+const cors = require('cors')
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI);
@@ -40,7 +40,7 @@ app.use(session({
 
 // Proxies (Move Client to 8082)
 if (process.env.DEV_ENV === 'true') {
-    console.log("Dev mode enabled! Setting up proxy for expo")
+    console.log("Dev mode enabled! Setting up proxy for expo");
 
     app.use((req, res, next) => {
         if (!req.url.startsWith('/api')) {
