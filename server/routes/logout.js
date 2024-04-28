@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/logout', (req, res) => {
-    console.log(1);
     req.session.destroy((err) => {
         if (err) {
             console.error('Error destroying session:', err);
