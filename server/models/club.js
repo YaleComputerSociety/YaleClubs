@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const logoSchema = require('./logo');
 
 // Scheme for each Club Data
 const clubSchema = new mongoose.Schema({
@@ -10,7 +11,9 @@ const clubSchema = new mongoose.Schema({
   yaleConnect: { type: String },
   clubMembers: { type: [String] },
   clubLeaders: { type: [String] },
-  logo: { type: String }
+
+  // Reference to the Logo schema
+  logo: { type: mongoose.Schema.Types.ObjectId, ref: 'Logo' }
 });
 
 const Club = mongoose.model('Club', clubSchema);

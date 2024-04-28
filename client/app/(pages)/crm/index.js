@@ -12,8 +12,8 @@ import InputBox from "../../../components/crm/InputBox";
 import Footer from '../../../components/footer/Footer';
 import Header from '../../../components/header/Header';
 import Wrapper from '../../../components/Wrapper';
-import EmptySVG from '../../../assets/empty';
 import DeleteSVG from '../../../assets/delete';
+import LogoSVG from '../../../assets/logo';
 
 import OfficialSVG from '../../../assets/official';
 import {useRouter} from "expo-router";
@@ -73,32 +73,40 @@ const CRMManager = () => {
     });
 
     const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-
-        if (!result.cancelled) {
-            const localUri = result.uri;
-
-            // Create a FormData object to send the image to the server
-            const formData = new FormData();
-            formData.append('image', {
-                uri: localUri,
-                name: 'image.jpg',
-                type: 'image/jpg',
+        try {
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.All,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
             });
+    
+            if (!result.cancelled) {
+                const localUri = result.uri;
+                const blob = await fetch(localUri).then(response => response.blob());
+                const extension = localUri.split(';')[0].split('/')[1];
+                
+                // Check if the file extension is jpg or png
+                if (extension !== 'jpg' && extension !== 'jpeg' && extension !== 'png') {
+                    alert('Please select a JPG or PNG image.');
+                    return;
+                }
 
-            // Send the image to the server
-            try {
-                const response = await axios.post('/api/uploadimage', formData);
-                console.log('Image uploaded successfully:', response.data);
-                setImage(response.data.imagePath); // Set the image path received from the server
-            } catch (error) {
-                console.error('Error uploading image:', error.message);
+                const formData = new FormData();
+                formData.append('logo', blob, `image.${extension}`);
+    
+                const response = await axios.post('/api/uploadlogo', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+                
+                const binaryImageData = response.data.logo.data.data;
+                const base64ImageData = btoa(String.fromCharCode.apply(null, new Uint8Array(binaryImageData)));
+                setImage(`data:image/jpeg;base64,${base64ImageData}`);
             }
+        } catch (error) {
+            console.error('Error picking image:', error);
         }
     };
 
@@ -154,7 +162,6 @@ const CRMManager = () => {
             <SafeAreaView className="w-full">
                 <View className="flex-col w-full min-h-screen">
                     <Header/>
-
                     <Wrapper>
                         <View className="ph:mb-0 md:mb-10 w-full flex items-center">
                             <View className="ph:w-full lg:w-[920px]">
@@ -163,29 +170,27 @@ const CRMManager = () => {
                                         <Text className='font-bold text-2xl mr-2'>Club Management System</Text>
                                         <OfficialSVG h={25} w={25}/>
                                     </View>
-                                    <Text className='text-sm'>Enter club details</Text>
+                                    <Text className='text-sm'>Enter club details (Alpha Version)</Text>
 
                                     {/* Main Data Manager */}
-                                    <View className='flex flex-row mt-20 gap-x-6 h-[268px]'>
-                                        <View className='w-32'>
-                                            <View
-                                                className='bg-gray-200 rounded-[30px] w-32 h-32 items-center justify-center overflow-hidden'>
-                                                {image ? (
-                                                    <Image source={{uri: image}} className='w-32 h-32'/>
-                                                ) : (
-                                                    <EmptySVG h={50} w={50}/>
-                                                )}
-                                            </View>
+                                    <View className='flex flex-row mt-10 gap-x-4 h-[268px]'>
+                                        <View className='w-24'>
+                                            <Text className='text-md text-gray-500 mb-1'>Club Logo</Text>
 
-                                            <Pressable onPress={pickImage}
-                                                       className='border-[1px] rounded-md border-sky-500 flex-row justify-center py-2 mt-5'>
-                                                <Text className='text-sky-500 text-sm'>Upload</Text>
+                                            <Pressable
+                                                onPress={pickImage}
+                                                className='rounded-md w-24 h-24 border-[1px] border-gray-200 bg-white items-center justify-center overflow-hidden'>
+                                                {image ? (
+                                                    <Image source={{uri: image}} className='w-24 h-24'/>
+                                                ) : (
+                                                    <LogoSVG h={50} w={50}/>
+                                                )}
                                             </Pressable>
                                         </View>
 
                                         <View className='flex-col w-full pt-2 shrink gap-y-2 h-full'>
                                             <InputBox placeholder="Define your club name" onChangeText={setClubName}
-                                                      title="Club Name" value={clubName}/>
+                                                      title="Club Name" value={clubName} />
 
                                             <View className='flex-col h-full shrink'>
                                                 <Text className='text-md text-gray-500 mb-1'>Description</Text>
