@@ -14,7 +14,6 @@ const Menu = ({ navigation }) => {
 
     const handleLogout = async () => {
         try {
-            console.log(1);
             await axios.get('/api/logout');
             navigation.push('/login');
         } catch (error) {
