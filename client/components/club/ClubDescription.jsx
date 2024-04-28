@@ -8,11 +8,6 @@ import Comments from './Comments';
 
 
 const ClubDescription = ({id, groupData}) => {    
-    // console.log(groupData.data[0].clubName);
-    // console.log(groupData.data[0][0]);
-    // let d = groupData.data;
-    // console.log(d.clubName)
-
     const [isSubscribed, setIsSubscribed] = useState(false);
 
     useEffect(() => {

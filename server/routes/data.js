@@ -6,7 +6,7 @@ const fs = require('fs/promises');
 
 const Club = require("../models/club");
 
-// // Route the Club JSON Data File
+// Route the Club JSON Data File
 router.get('/data', async (req, res) => {
     try {
         // Read the content
@@ -30,32 +30,6 @@ router.get('/data/:id', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
-// router.get('/data/:id', async (req, res) => {
-//     res.json({ message: "Endpoint hit successfully", id: req.params.id });
-// });
-
-// const express = require('express');
-// const router = express.Router();
-// const Club = require('../models/Club'); // Adjust the path according to your project structure
-
-
-
-// Get club by ID
-// router.get('/data', async (req, res) => {
-//     try {
-//         console.log('testing');
-//         console.log(req.params);
-//         const club = await Club.findById(req.params.id);
-//         // if (!club) {
-//         //     return res.status(404).json({ error: 'Club not found' });
-//         // }
-//         res.json(club);
-//     } catch (error) {
-//         console.error('Error fetching club:', error);
-//         res.status(500).json({ error: 'Internal Server Error' });
-//     }
-// });
 
 // Cant have two types of REST request in same route
 // TODO: change
