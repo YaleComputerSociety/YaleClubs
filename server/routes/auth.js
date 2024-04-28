@@ -3,13 +3,20 @@ const axios = require("axios")
 
 const { XMLParser} = require("fast-xml-parser");
 const User = require("../models/user");
+const router = express.Router();
 require('dotenv').config();
 
-const router = express.Router();
+const PORT = process.env.PORT || 8082;
+const BASE_URL = process.env.BASE_URL;
+
+if (!BASE_URL) {
+    console.error("Error: BASE_URL environment variable is not defined.");
+    process.exit(1);
+}
 
 const CAS_SERVER = 'https://secure.its.yale.edu';
 const CAS_VALIDATE_ROUTE = '/cas/serviceValidate';
-const CAS_SERVICE = `http://${process.env.BASE_URL}:${process.env.PORT}/api/auth/redirect`;
+const CAS_SERVICE = `http://${BASE_URL}:${PORT}/api/auth/redirect`;
 
 const get_ticket_validation_link = (ticket) => {
     const validateURL = new URL(CAS_VALIDATE_ROUTE, CAS_SERVER)
