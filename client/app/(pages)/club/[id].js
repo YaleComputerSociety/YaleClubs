@@ -27,11 +27,9 @@ const ClubPage = () => {
 
     // Fetch Clubs
     useEffect(() => {
-
         const fetchData = async () => {
             try {
-                const resp = await fetchClubs()
-                console.log(resp)
+                const resp = await fetchClubs();
                 setGroupData(resp);
             } catch (error) {
                 console.error('Error fetching club data:', error);
