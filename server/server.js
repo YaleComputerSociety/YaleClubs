@@ -7,7 +7,7 @@ const {createProxyMiddleware} = require('http-proxy-middleware');
 const MongoStore = require('connect-mongo');
 const history = require('connect-history-api-fallback');
 const getRoutes = require('./router');
-const cors = require('cors')
+const cors = require('cors');
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI);

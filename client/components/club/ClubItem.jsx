@@ -2,15 +2,38 @@ import { NativeWindStyleSheet } from 'nativewind';
 
 import { FlatList, Image, Pressable, Text, View} from 'react-native';
 import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+
+import EmptySVG from '../../assets/empty';
 
 
 const ClubItem = ({ item }) => {
     const navigation = useRouter();
     const categories = ["Yale College"];
+    const [logoUri, setLogoUri] = useState(null);
 
     NativeWindStyleSheet.setOutput({
         default: "native",
     });
+
+    useEffect(() => {
+        const fetchLogoUri = async () => {
+            try {
+                const response = await axios.get(`/api/logo/${item.logo}`);
+                const base64ImageData = response.data;
+                const uri = `data:image/jpeg;base64,${base64ImageData}`;
+                setLogoUri(uri);
+            } catch (error) {
+                console.error('Error fetching logo data:', error);
+            }
+        };
+
+        if (item.logo) {
+            // Fetch if Logo Exists
+            fetchLogoUri();
+        }
+    }, [item.logo]);
 
     return (
         <Pressable key={item._id} className="relative" onPress={() => navigation.push(`/club/${item._id}`)}>
@@ -41,10 +64,16 @@ const ClubItem = ({ item }) => {
     
                 </View>
                 <View className='relative flex-col items-end'>
-                    <Image 
-                        source={{uri: item.logo}} 
-                        className="h-20 w-20 rounded-full"
-                    />
+                    {logoUri ? (
+                        <Image 
+                            source={{ uri: logoUri }} 
+                            className="h-20 w-20 rounded-full"
+                        />
+                    ) : (
+                        <View className='bg-gray-200 h-20 rounded-full w-20 items-center justify-center'>
+                            <EmptySVG h={35} w={35} />
+                        </View>
+                    )}
                 </View>
             </View>
         </Pressable>
