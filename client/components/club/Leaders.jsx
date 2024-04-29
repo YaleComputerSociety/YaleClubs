@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { NativeWindStyleSheet } from 'nativewind';
 import { FlatList, Image, Text, View } from 'react-native';
 import EmptySVG from '../../assets/empty';
+import {API_KEY} from "../../api/yalies";
 
 const Leaders = ({ leaders }) => {
   const [leaderData, setLeaderData] = useState([]);
@@ -22,7 +23,7 @@ const Leaders = ({ leaders }) => {
             { query: leader },
             {
               headers: {
-                Authorization: `Bearer ${process.env.API_KEY}`, // Assuming you have the API key stored in your environment variable
+                  Authorization: `Bearer ${API_KEY}`, // Assuming you have the API key stored in your environment variable
               },
             }
           );
