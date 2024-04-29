@@ -43,10 +43,10 @@ const QuestionBlock = () => {
                         </View>
                         <View className="ph:mb-4 md:mb-10 px-5 w-full">
                             <Text className='text-2xl text-black font-bold'>Frequently Asked Questions</Text>
-                            <Text className='ph:mb-4 md:mb-10'>Have more questions? Use 
+                            <Text className='ph:mb-4 md:mb-10'>Feel free to reach us at
                                 <Pressable className='text-sky-500'>
                                     <Text className='px-1'>yaleclubs@gmail.com</Text>
-                                </Pressable>email.
+                                </Pressable>
                             </Text>
                             {questions.map((item, index) => (
                                 <Pressable

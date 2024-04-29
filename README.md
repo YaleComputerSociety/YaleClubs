@@ -4,9 +4,8 @@ A user-friendly platform to explore, rank, and leave reviews for various clubs, 
 # Environment Variables
 Client folder:
 ```
-# need to prefix with EXPO_PUBLIC to be able to access
-EXPO_PUBLIC_BASE_URL=localhost
-EXPO_PUBLIC_PORT=8081
+BASE_URL=localhost
+PORT=8081
 ```
 
 Server folder:

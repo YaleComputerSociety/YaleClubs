@@ -35,7 +35,6 @@ const Catalog = ({page, setPage}) => {
                 setIsLoading(true);
 
                 const response = await axios.get('/api/data');
-
                 setAllGroups(response.data);
                 setIsLoading(false);
             } catch (error) {

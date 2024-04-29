@@ -17,30 +17,41 @@ if (!BASE_URL) {
     process.exit(1);
 }
 
+const loginCheck = async (req, res, next) => {
+    let path = req.baseUrl + req.path
+    if (path === '/login' || path === '/api/auth/redirect') {
+        return next();
+    }
+
+    if (req.session && req.session.user) {
+        return next();
+    }
+
+    return res.redirect(`http://${BASE_URL}:${PORT}/login`);
+}
+
 const getRoutes = (router) => {
-    // Do a blanket barrier on all routes except login
+    // restrict pages
+    router.get('/', loginCheck);
+    router.get('/crm', loginCheck);
+    router.get('/clubs/*', loginCheck);
 
-    router.get('/', async (req, res, next) => {
-        if (req.session && req.session.user) {
-            next();
-        } else {
-            res.redirect(`http://${BASE_URL}:${PORT}/login`);
-        }
-    });
-
-    router.use("/api", data);
+    router.use("/api", loginCheck, data);
     // router.use("/api", events);
     // router.get("/api", comment);
     // router.get("/api", comments);
     // router.get("/api", subscribe);
 
     router.use("/api", auth);
-    router.use("/api", logout);
+    router.use("/api", loginCheck, logout);
 
-    router.use("/api", crmmanager);
-    router.use("/api", save_club);
-    router.use("/api", delete_club);
+    router.use("/api", loginCheck, crmmanager);
+    router.use("/api", loginCheck, save_club);
+    router.use("/api", loginCheck, delete_club);
 
+    router.use("/api", loginCheck, crm);
+    router.use("/api", loginCheck, save_club);
+    router.use("/api", loginCheck, delete_club);
     return router;
 }
 

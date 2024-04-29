@@ -19,7 +19,7 @@ import EmptySVG from '../../../assets/empty';
 
 const ClubPage = () => {
     const { id } = useGlobalSearchParams();
-    const [groupData, setGroupData] = useState([]);    
+    const [groupData, setGroupData] = useState([]);
     const [logoUri, setLogoUri] = useState(null);
 
     NativeWindStyleSheet.setOutput({
@@ -85,10 +85,10 @@ const ClubPage = () => {
 
                                 <SideBar
                                     data={{
-                                        website: groupData?.website, 
-                                        phone: groupData?.phone, 
+                                        instagram: groupData?.instagram,
                                         email: groupData?.email,
-                                        identity: id
+                                        website: groupData?.website, 
+                                        yaleConnect: groupData?.yaleConnect,
                                     }} 
                                 />
                             </View>
