@@ -47,4 +47,21 @@ router.post("/uploadlogo", upload.single('logo'), async (req, res) => {
     }
 });
 
+router.get("/logo/:id", async (req, res) => {
+    try {
+        const logoId = req.params.id;
+        const logo = await Logo.findById(logoId);
+
+        if (!logo) {
+            return res.status(404).json({ error: 'Logo not found' });
+        }
+
+        res.set('Content-Type', logo.contentType);
+        res.send(logo.data.toString('base64'));
+    } catch (error) {
+        console.error('Error fetching logo:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 module.exports = router;
