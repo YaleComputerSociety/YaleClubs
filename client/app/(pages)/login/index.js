@@ -1,18 +1,24 @@
 import { NativeWindStyleSheet } from 'nativewind';
 import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import * as Linking from 'expo-linking'
+import { AsyncStorage } from 'react-native';
 import {get_cas_link} from "../../../api/CasAuth";
-
-function redirect_to_cas() {
-    Linking.openURL(get_cas_link())
-}
+import * as Linking from 'expo-linking';
+import { useRouter } from 'expo-router';
+import axios from 'axios';
 
 const LoginScreen = () => {
     // Native Wind SetUp
     NativeWindStyleSheet.setOutput({
         default: 'native',
     });
+    
+    const router = useRouter();
+    
+    const redirect_to_cas = async () => {
+        const casLink = get_cas_link();
+        await Linking.openURL(casLink);
+    }
 
     return (
         <SafeAreaView className="w-ful">

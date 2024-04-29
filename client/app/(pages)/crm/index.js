@@ -1,10 +1,11 @@
 import axios from 'axios';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import {NativeWindStyleSheet} from 'nativewind';
 import Toast from 'react-native-toast-message';
 
 import {Image, Pressable, Text, TextInput, View} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 import AuthWrapper from '../../../components/AuthWrapper';
@@ -20,6 +21,7 @@ import {useRouter} from "expo-router";
 
 const CRMManager = () => {
     const [image, setImage] = useState(null);
+    const [logoId, setLogoId] = useState(null);
     const [clubName, setClubName] = useState('');
     const [description, setDescription] = useState('');
     const [instagram, setInstagram] = useState('');
@@ -34,6 +36,19 @@ const CRMManager = () => {
 
     // This implementation is only a quick draft and must to be fixed in the future
     // If you are planning on adding the code in here, please manage the structure first
+
+    useEffect(() => {
+        const setLoggedInUserAsLeader = async () => {
+            try {
+                const admin = await AsyncStorage.getItem('userid');
+                setSelectedLeaders([admin]);
+            } catch (error) {
+                console.error('Error setting selected leader:', error);
+            }
+        };
+    
+        setLoggedInUserAsLeader();
+    }, []);
 
     const addMember = () => {
         const netID = selectedMember.trim();
@@ -104,6 +119,7 @@ const CRMManager = () => {
                 const binaryImageData = response.data.logo.data.data;
                 const base64ImageData = btoa(String.fromCharCode.apply(null, new Uint8Array(binaryImageData)));
                 setImage(`data:image/jpeg;base64,${base64ImageData}`);
+                setLogoId(response.data.logo._id);
             }
         } catch (error) {
             console.error('Error picking image:', error);
@@ -121,10 +137,8 @@ const CRMManager = () => {
             yaleConnect: yaleConnect,
             clubMembers: selectedMembers,
             clubLeaders: selectedLeaders,
-            logo: image,
+            logo: logoId,
         };
-
-        console.log(formData)
 
         const response = await axios.post('/api/create', formData);
 
@@ -188,11 +202,11 @@ const CRMManager = () => {
                                             </Pressable>
                                         </View>
 
-                                        <View className='flex-col w-full pt-2 shrink gap-y-2 h-full'>
-                                            <InputBox placeholder="Define your club name" onChangeText={setClubName}
-                                                      title="Club Name" value={clubName} />
+                                        <View className='flex-col w-full pt-2 shrink h-full p-0'>
+                                            <Text className='text-md text-gray-500 mb-1'>Club Name</Text>
+                                            <TextInput placeholder="Define your club name" onChangeText={setClubName} className='border-[1px] rounded-md bg-white py-2 px-3 border-gray-200'/>
 
-                                            <View className='flex-col h-full shrink'>
+                                            <View className='flex-col h-full shrink mt-2'>
                                                 <Text className='text-md text-gray-500 mb-1'>Description</Text>
                                                 <TextInput
                                                     placeholder='Explain what this club is about?'
@@ -204,20 +218,27 @@ const CRMManager = () => {
                                         </View>
 
                                         <View className='flex-col gap-y-2 h-full shrink w-96'>
-                                            <View><InputBox title="Instagram (Optional)" placeholder="@username"
-                                                            onChangeText={setInstagram}/></View>
-                                            <View><InputBox title="Email (Optional)" placeholder="clubemail@yale.edy"
-                                                            onChangeText={setEmail}/></View>
-                                            <View><InputBox title="Website (Optional)" placeholder="www.website.com"
-                                                            onChangeText={setWebsite}/></View>
-                                            <View><InputBox title="Yale Connect (Optional)"
-                                                            placeholder="Share other platforms"
-                                                            onChangeText={setYaleConnect}/></View>
+                                            <View>
+                                                <Text className='text-md text-gray-500 mb-1'>Instagram (Optional)</Text>
+                                                <TextInput placeholder="@username" onChangeText={setInstagram} className='border-[1px] rounded-md bg-white py-2 px-3 border-gray-200'/>
+                                            </View>
+                                            <View>
+                                                <Text className='text-md text-gray-500 mb-1'>Email (Optional)</Text>
+                                                <TextInput placeholder="@username" onChangeText={setEmail} className='border-[1px] rounded-md bg-white py-2 px-3 border-gray-200'/>
+                                            </View>
+                                            <View>
+                                                <Text className='text-md text-gray-500 mb-1'>Website (Optional)</Text>
+                                                <TextInput placeholder="@username" onChangeText={setWebsite} className='border-[1px] rounded-md bg-white py-2 px-3 border-gray-200'/>
+                                            </View>
+                                            <View>
+                                                <Text className='text-md text-gray-500 mb-1'>Yale Connect (Optional)</Text>
+                                                <TextInput placeholder="@username" onChangeText={setYaleConnect} className='border-[1px] rounded-md bg-white py-2 px-3 border-gray-200'/>
+                                            </View>
                                         </View>
                                     </View>
 
                                     {/* Fix Later: Manage Membership */}
-                                    <View className='flex-row gap-x-6 h-[170px] mt-7'>
+                                    <View className='flex-row gap-x-4 max-h-40 mt-7'>
                                         <View className='flex-col shrink w-96'>
                                             <Text className='text-md text-gray-500 mb-1'>Add Members</Text>
                                             <View
@@ -263,7 +284,6 @@ const CRMManager = () => {
                                                         key={id}>
                                                         <Text className='w-28'>{id}</Text>
                                                         <View className='flex-row gap-x-2 w-full shrink items-center'>
-                                                            <Text>Name Surname</Text>
                                                             <View
                                                                 className='bg-sky-500 h-4 w-4 rounded-md items-center justify-center'>
                                                                 <Text
@@ -282,7 +302,6 @@ const CRMManager = () => {
                                                         className={`p-3 py-1.5 ${index % 2 === 1 ? 'bg-gray-50' : ''} flex-row justify-between`}
                                                         key={id}>
                                                         <Text className='w-28'>{id}</Text>
-                                                        <Text className='w-full'>Name Surname</Text>
 
                                                         <Pressable onPress={() => removeMember(id)}
                                                                    className='h-4 w-4 rounded-md justify-center items-center'>

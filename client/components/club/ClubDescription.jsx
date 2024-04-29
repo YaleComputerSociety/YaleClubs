@@ -87,7 +87,7 @@ const ClubDescription = ({id, groupData}) => {
 
             <Comments clubId={id} />
 
-            <View className='mt-4 border-[1px] border-gray-100 rounded-md flex-row justify-between p-4 px-6 items-center'>
+            <View className='mt-4 border-[1px] border-gray-100 bg-white rounded-md flex-row justify-between p-4 px-6 items-center'>
                 <Text>Don't want to miss events from this club?</Text>
                 {!isSubscribed ? (
                     <Pressable onPress={handleSubscribe} className="bg-sky-500 rounded-md py-1.5 px-4">

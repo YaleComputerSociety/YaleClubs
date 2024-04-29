@@ -8,8 +8,6 @@ const Logo = require("../models/logo");
 router.post('/create', async (req, res) => {
     try {
         const newData = req.body;
-        console.log("create")
-        console.log(newData)
         const newClub = new Club(newData);
         const result = await newClub.save();
 
