@@ -5,7 +5,7 @@ export const formatTimeElapsed = async () => {
         const lastUpdate = await AsyncStorage.getItem('lastReloadTime');
 
         if (!lastUpdate) {
-        return 'Last updated: Never';
+            return 'Last updated: Never';
         }
 
         const now = new Date();

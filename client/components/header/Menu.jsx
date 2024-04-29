@@ -39,24 +39,24 @@ const Menu = ({ navigation }) => {
                 <Pressable onPress={() => route.push(`/worksheet`)} className='ph:flex md:hidden'>
                     <Text selectable={false} className="text-[15px]">Worksheet</Text>
                 </Pressable>
-                <Pressable
+                {/* <Pressable
                     className="flex-row justify-end"
                     onPress={() => navigation.push("/about")}
                 >
                     <Text selectable={false}>About</Text>
-                </Pressable>
+                </Pressable> */}
                 <Pressable
                     className="flex-row justify-end"
                     onPress={() => navigation.push("/faq")}
                 >
                     <Text selectable={false}>FAQ</Text>
                 </Pressable>
-                <Pressable
+                {/* <Pressable
                     className="flex-row justify-end"
                     onPress={() => navigation.push("/feedback")}
                 >
                     <Text selectable={false}>Feedback</Text>
-                </Pressable>
+                </Pressable> */}
                 <Pressable
                     className="flex-row justify-end"
                     onPress={handleLogout}

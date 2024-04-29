@@ -15,37 +15,37 @@ const Comments = ({clubId}) => {
         default: "native",
     });
 
-    const handleCommentSubmit = async () => {
-        try {
-            // Submit comment
-            console.log(anonymous);
-            await axios.post(`http://${process.env.BASE_URL}:${process.env.PORT}/api/comment`, { text, clubId, anonymous });
-            console.log('Comment submitted successfully!');
-            setText('');
-        } catch (error) {
-            console.error('Error submitting comment:', error);
-        }
+    // const handleCommentSubmit = async () => {
+    //     try {
+    //         // Submit comment
+    //         console.log(anonymous);
+    //         await axios.post(`http://${process.env.BASE_URL}:${process.env.PORT}/api/comment`, { text, clubId, anonymous });
+    //         console.log('Comment submitted successfully!');
+    //         setText('');
+    //     } catch (error) {
+    //         console.error('Error submitting comment:', error);
+    //     }
 
-        // Fetch all comments
-        await requestAllComments();
-    };
+    //     // Fetch all comments
+    //     await requestAllComments();
+    // };
 
-    const requestAllComments = async () => {
-        try {
-            const response = await axios.post(`http://${process.env.BASE_URL}:${process.env.PORT}/api/comments`, { clubId });
-            setComments(response.data);
-        } catch (error) {
-            console.error('Error fetching all comments:', error);
-        }
-    };
+    // const requestAllComments = async () => {
+    //     try {
+    //         const response = await axios.post(`http://${process.env.BASE_URL}:${process.env.PORT}/api/comments`, { clubId });
+    //         setComments(response.data);
+    //     } catch (error) {
+    //         console.error('Error fetching all comments:', error);
+    //     }
+    // };
 
-    useEffect(() => {
-        requestAllComments();
-    }, []);
+    // useEffect(() => {
+    //     requestAllComments();
+    // }, []);
 
-    const renderCommentItem = ({ item }) => (
-        <CommentItem item={item} />
-    );
+    // const renderCommentItem = ({ item }) => (
+    //     <CommentItem item={item} />
+    // );
 
     return (
         <View className="w-full flex-col">
@@ -80,7 +80,7 @@ const Comments = ({clubId}) => {
                     </View>
                 </View>
                 <Pressable
-                    onPress={handleCommentSubmit} 
+                    onPress={null} 
                     className="rounded-md py-1.5 ml-2 w-24 bg-sky-500 justify-center items-center"
                 >
                     <Text className='text-white'>Submit</Text>
@@ -91,7 +91,7 @@ const Comments = ({clubId}) => {
                 <View className='flex-col gap-y-4'>
                     <FlatList
                         data={comments}
-                        renderItem={renderCommentItem}
+                        renderItem={null}
                         keyExtractor={(item) => item._id.toString()}
                     />
                 </View>

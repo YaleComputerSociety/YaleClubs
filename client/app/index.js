@@ -36,7 +36,6 @@ const App = () => {
 
                     if (response.data) {
                         // Save the userid to AsyncStorage
-                        console.log(response.data.netID);
                         await AsyncStorage.setItem('userid', response.data.netID);
                     }
                 }

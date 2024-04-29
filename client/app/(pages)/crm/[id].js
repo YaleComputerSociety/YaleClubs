@@ -9,24 +9,28 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 import AuthWrapper from '../../../components/AuthWrapper';
-import InputBox from "../../../components/crm/InputBox";
 import Footer from '../../../components/footer/Footer';
 import Header from '../../../components/header/Header';
+import DecoratorSVG from '../../../assets/decorator';
 import Wrapper from '../../../components/Wrapper';
 import DeleteSVG from '../../../assets/delete';
 import LogoSVG from '../../../assets/logo';
 
 import OfficialSVG from '../../../assets/official';
-import {useRouter} from "expo-router";
+import {useGlobalSearchParams, useRouter} from "expo-router";
 
 const CRMManager = () => {
-    const [image, setImage] = useState(null);
+    const { id } = useGlobalSearchParams();
+
+    const [logoUri, setLogoUri] = useState(null);
     const [logoId, setLogoId] = useState(null);
     const [clubName, setClubName] = useState('');
     const [description, setDescription] = useState('');
     const [instagram, setInstagram] = useState('');
     const [email, setEmail] = useState('');
     const [website, setWebsite] = useState('');
+    const [phone, setPhone] = useState('');
+    const [applyForm, setApplyForm] = useState('');
     const [yaleConnect, setYaleConnect] = useState('');
 
     const [selectedMember, setSelectedMember] = useState("");
@@ -46,9 +50,49 @@ const CRMManager = () => {
                 console.error('Error setting selected leader:', error);
             }
         };
+
+        const fetchData = async () => {
+            try {
+                if (id) {
+                    const response = await axios.get(`/api/data/${id}`);
+                    const clubData = response.data;
+
+                    if (clubData) {
+                        setLogoId(clubData?.logo);
+                        setClubName(clubData?.clubName || '');
+                        setDescription(clubData?.description || '');
+                        setInstagram(clubData?.instagram || '');
+                        setEmail(clubData?.email || '');
+                        setWebsite(clubData?.website || '');
+                        setPhone(clubData?.phone || '');
+                        setApplyForm(clubData?.applyForm || '');
+                        setYaleConnect(clubData?.yaleConnect || '');
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching club data:', error);
+            }
+        };
     
-        setLoggedInUserAsLeader();
-    }, []);
+        fetchData().then(() => {setLoggedInUserAsLeader();});
+    }, [id]);
+
+    useEffect(() => {
+        const fetchLogoUri = async () => {
+            if (logoId) {
+                try {
+                    const response = await axios.get(`/api/logo/${logoId}`);
+                    const base64ImageData = response.data;
+                    const uri = `data:image/jpeg;base64,${base64ImageData}`;
+                    setLogoUri(uri);
+                } catch (error) {
+                    console.error('Error fetching logo data:', error);
+                }
+            }
+        };
+
+        fetchLogoUri();
+    }, [logoId]);
 
     const addMember = () => {
         const netID = selectedMember.trim();
@@ -118,7 +162,7 @@ const CRMManager = () => {
                 
                 const binaryImageData = response.data.logo.data.data;
                 const base64ImageData = btoa(String.fromCharCode.apply(null, new Uint8Array(binaryImageData)));
-                setImage(`data:image/jpeg;base64,${base64ImageData}`);
+                setLogoUri(`data:image/jpeg;base64,${base64ImageData}`);
                 setLogoId(response.data.logo._id);
             }
         } catch (error) {
@@ -128,19 +172,28 @@ const CRMManager = () => {
 
     const submitClub = async () => {
 
-        const formData = {
+        let formData = {
             clubName: clubName,
             description: description,
             instagram: instagram,
             email: email,
+            phone: phone,
             website: website,
+            applyForm: applyForm,
             yaleConnect: yaleConnect,
             clubMembers: selectedMembers,
             clubLeaders: selectedLeaders,
             logo: logoId,
         };
 
-        const response = await axios.post('/api/create', formData);
+        let response;
+
+        if (id !== "0") {
+            formData._id = id;
+            response = await axios.post('/api/update', formData);
+        } else {
+            response = await axios.post('/api/create', formData);
+        }
 
         if (response.data.success) {
             Toast.show({
@@ -149,16 +202,6 @@ const CRMManager = () => {
                 text2: 'Club Added Successfully!'
             });
 
-            setImage(null);
-            setEmail('');
-            setWebsite('');
-            setClubName('');
-            setInstagram('');
-            setDescription('');
-            setYaleConnect('');
-            setSelectedMembers([]);
-            setSelectedLeaders([]);
-
             useRouter().push('/');
         } else {
             Toast.show({
@@ -166,8 +209,6 @@ const CRMManager = () => {
                 text1: 'Oops!',
                 text2: 'Error occurred while adding club'
             });
-
-            console.log(response)
         }
     };
 
@@ -177,6 +218,10 @@ const CRMManager = () => {
                 <View className="flex-col w-full min-h-screen">
                     <Header/>
                     <Wrapper>
+                        <View className="absolute z-[-10] ph:hidden lg:flex h-[400] left-[-210] top-[-20]">
+                            <DecoratorSVG />
+                        </View>
+                        
                         <View className="ph:mb-0 md:mb-10 w-full flex items-center">
                             <View className="ph:w-full lg:w-[920px]">
                                 <View className='px-[20px]'>
@@ -187,15 +232,15 @@ const CRMManager = () => {
                                     <Text className='text-sm'>Enter club details (Alpha Version)</Text>
 
                                     {/* Main Data Manager */}
-                                    <View className='flex flex-row mt-10 gap-x-4 h-[268px]'>
+                                    <View className='flex flex-row mt-10 gap-x-4 h-[370px]'>
                                         <View className='w-24'>
                                             <Text className='text-md text-gray-500 mb-1'>Club Logo</Text>
 
                                             <Pressable
                                                 onPress={pickImage}
-                                                className='rounded-md w-24 h-24 border-[1px] border-gray-200 bg-white items-center justify-center overflow-hidden'>
-                                                {image ? (
-                                                    <Image source={{uri: image}} className='w-24 h-24'/>
+                                                className='rounded-md w-24 h-24 shadow-sm bg-white items-center justify-center overflow-hidden'>
+                                                {logoUri ? (
+                                                    <Image source={{uri: logoUri}} className='w-24 h-24'/>
                                                 ) : (
                                                     <LogoSVG h={50} w={50}/>
                                                 )}
@@ -204,7 +249,7 @@ const CRMManager = () => {
 
                                         <View className='flex-col w-full pt-2 shrink h-full p-0'>
                                             <Text className='text-md text-gray-500 mb-1'>Club Name</Text>
-                                            <TextInput placeholder="Define your club name" onChangeText={setClubName} className='border-[1px] rounded-md bg-white py-2 px-3 border-gray-200'/>
+                                            <TextInput placeholder="Define your club name" onChangeText={setClubName} value={clubName} className='border-[1px] rounded-md bg-white py-2 px-3 border-gray-200'/>
 
                                             <View className='flex-col h-full shrink mt-2'>
                                                 <Text className='text-md text-gray-500 mb-1'>Description</Text>
@@ -219,20 +264,28 @@ const CRMManager = () => {
 
                                         <View className='flex-col gap-y-2 h-full shrink w-96'>
                                             <View>
+                                                <Text className='text-md text-gray-500 mb-1'>Application Form (Optional)</Text>
+                                                <TextInput placeholder="www.domain.com" onChangeText={setApplyForm} value={applyForm} className='border-[1px] rounded-md bg-white py-2 px-3 border-gray-200'/>
+                                            </View>
+                                            <View>
                                                 <Text className='text-md text-gray-500 mb-1'>Instagram (Optional)</Text>
-                                                <TextInput placeholder="@username" onChangeText={setInstagram} className='border-[1px] rounded-md bg-white py-2 px-3 border-gray-200'/>
+                                                <TextInput placeholder="@username" onChangeText={setInstagram} value={instagram} className='border-[1px] rounded-md bg-white py-2 px-3 border-gray-200'/>
                                             </View>
                                             <View>
                                                 <Text className='text-md text-gray-500 mb-1'>Email (Optional)</Text>
-                                                <TextInput placeholder="@username" onChangeText={setEmail} className='border-[1px] rounded-md bg-white py-2 px-3 border-gray-200'/>
+                                                <TextInput placeholder="email@yale.edu" onChangeText={setEmail} value={email} className='border-[1px] rounded-md bg-white py-2 px-3 border-gray-200'/>
                                             </View>
                                             <View>
                                                 <Text className='text-md text-gray-500 mb-1'>Website (Optional)</Text>
-                                                <TextInput placeholder="@username" onChangeText={setWebsite} className='border-[1px] rounded-md bg-white py-2 px-3 border-gray-200'/>
+                                                <TextInput placeholder="www.domain.com" onChangeText={setWebsite} value={website} className='border-[1px] rounded-md bg-white py-2 px-3 border-gray-200'/>
                                             </View>
                                             <View>
                                                 <Text className='text-md text-gray-500 mb-1'>Yale Connect (Optional)</Text>
-                                                <TextInput placeholder="@username" onChangeText={setYaleConnect} className='border-[1px] rounded-md bg-white py-2 px-3 border-gray-200'/>
+                                                <TextInput placeholder="www.domain.com" onChangeText={setYaleConnect} value={yaleConnect} className='border-[1px] rounded-md bg-white py-2 px-3 border-gray-200'/>
+                                            </View>
+                                            <View>
+                                                <Text className='text-md text-gray-500 mb-1'>Phone Number (Optional)</Text>
+                                                <TextInput placeholder="098 765 4321" onChangeText={setPhone} value={phone} className='border-[1px] rounded-md bg-white py-2 px-3 border-gray-200'/>
                                             </View>
                                         </View>
                                     </View>
@@ -274,11 +327,11 @@ const CRMManager = () => {
                                         </View>
 
                                         <View className='flex-col w-full shrink'>
-                                            <Text className='text-md text-gray-500 mb-1'>Membership
-                                                ({selectedMembers.length})</Text>
+                                            <Text className='text-md text-gray-500 mb-1'>Student Membership
+                                                ({selectedMembers?.length})</Text>
                                             <View
                                                 className='w-full border-[1px] border-gray-200 shrink rounded-md overflow-scroll'>
-                                                {selectedLeaders.map((id, index) => (
+                                                {selectedLeaders?.map((id, index) => (
                                                     <View
                                                         className={`p-3 py-1.5 ${index % 2 === 1 ? 'bg-gray-50' : ''} flex-row justify-between`}
                                                         key={id}>
@@ -297,7 +350,7 @@ const CRMManager = () => {
                                                         </Pressable>
                                                     </View>
                                                 ))}
-                                                {selectedMembers.map((id, index) => (
+                                                {selectedMembers?.map((id, index) => (
                                                     <View
                                                         className={`p-3 py-1.5 ${index % 2 === 1 ? 'bg-gray-50' : ''} flex-row justify-between`}
                                                         key={id}>
@@ -317,7 +370,7 @@ const CRMManager = () => {
                                     <View className='flex-row justify-between w-full mt-10 items-start'>
                                         <View className='flex-row gap-x-2 items-center'>
                                             <View className='w-3 h-3 rounded-full bg-yellow-500'></View>
-                                            <Text>Updated</Text>
+                                            <Text>Changed</Text>
                                         </View>
                                         <View className='flex-row gap-4'>
                                             <View className='flex-row'>
