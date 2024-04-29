@@ -10,7 +10,6 @@ import SavedSVG from '../../assets/saved';
 
 const SideBar = ({data}) => {
     const [saved, setSaved] = useState(false);
-    const [subscribersCount, setSubscribersCount] = useState(0);
 
     // Native Wind
     NativeWindStyleSheet.setOutput({
@@ -36,28 +35,28 @@ const SideBar = ({data}) => {
         }
     };
 
-    const fetchSubscribersCount = async () => {
-        try {
-            const response = await axios.get(`../api/subscriptions/length/${data.identity}`);
-            setSubscribersCount(response.data.length);
-        } catch (error) {
-            console.error('Error fetching subscribers count:', error);
-        }
-    };
+    // const fetchSubscribersCount = async () => {
+    //     try {
+    //         const response = await axios.get(`../api/subscriptions/length/${data.identity}`);
+    //         setSubscribersCount(response.data.length);
+    //     } catch (error) {
+    //         console.error('Error fetching subscribers count:', error);
+    //     }
+    // };
 
-    useEffect(() => {
-        const checkClubSaved = async () => {
-            try {
-                const response = await axios.get(`/api/check-club/${data.identity}`);
-                setSaved(response.data.isClubSaved);
-            } catch (error) {
-                console.error('Error checking if club is saved:', error);
-            }
-        };
+    // useEffect(() => {
+    //     const checkClubSaved = async () => {
+    //         try {
+    //             const response = await axios.get(`/api/check-club/${data.identity}`);
+    //             setSaved(response.data.isClubSaved);
+    //         } catch (error) {
+    //             console.error('Error checking if club is saved:', error);
+    //         }
+    //     };
 
-        checkClubSaved();
-        fetchSubscribersCount();
-    }, [data.identity]);
+    //     checkClubSaved();
+    //     // fetchSubscribersCount();
+    // }, [data.identity]);
     
     return (
         <View className='w-[220] ph:hidden lg:flex'>
@@ -77,7 +76,7 @@ const SideBar = ({data}) => {
 
             <Pressable className='border-[1px] py-1 mt-2 border-gray-200 justify-center items-center rounded-md'>
                 <Text className='text-gray-400'>
-                    All Subsribers ({subscribersCount})
+                    All Subsribers (0)
                 </Text>
             </Pressable>
         </View>

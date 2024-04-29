@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import AuthWrapper from '../../../components/AuthWrapper';
 import Footer from '../../../components/footer/Footer';
+import DecoratorSVG from '../../../assets/decorator';
 import Header from '../../../components/header/Header';
 import Wrapper from '../../../components/Wrapper';
 
@@ -37,6 +38,9 @@ const QuestionBlock = () => {
                 <View className="flex-col w-full min-h-screen">
                     <Header />
                     <Wrapper>
+                        <View className="absolute z-[-10] ph:hidden lg:flex h-[400] left-[-210] top-[-20]">
+                            <DecoratorSVG />
+                        </View>
                         <View className="ph:mb-4 md:mb-10 px-5 w-full">
                             <Text className='text-2xl text-black font-bold'>Frequently Asked Questions</Text>
                             <Text className='ph:mb-4 md:mb-10'>Have more questions? Use 

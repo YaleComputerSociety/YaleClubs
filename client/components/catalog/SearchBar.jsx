@@ -2,7 +2,6 @@
 import { NativeWindStyleSheet } from "nativewind";
 import { View, TextInput, Text } from "react-native";
 
-import { formatTimeElapsed } from "../../actions/timeFormat";
 import { useEffect, useState } from "react";
 
 const SearchBar = ({onChange, searchValue, found}) => {
@@ -12,19 +11,6 @@ const SearchBar = ({onChange, searchValue, found}) => {
     NativeWindStyleSheet.setOutput({
         default: "native",
     });    
-
-    const fetchTimeElapsed = async () => {
-        try {
-            const elapsedTime = await formatTimeElapsed();
-            setTimeElapsed(elapsedTime);
-        } catch (error) {
-            console.error('Error updating time elapsed:', error);
-        }
-    };
-
-    useEffect(() => {
-        fetchTimeElapsed();
-    }, [fetchTimeElapsed]);
 
     return (
         <View className="flex-row justify-between items-start">
@@ -59,9 +45,8 @@ const SearchBar = ({onChange, searchValue, found}) => {
                     />
                 </View>
 
-                <View className="ph:mt-4 ph:mb-4 md:mb-0 md:mt-6 ph:flex-row md:flex-col">
+                <View className="ph:mt-4 ph:mb-4 md:mb-0 md:mt-10 ph:flex-row md:flex-col">
                     <Text className="ph:ml-0 md:ml-6 text-gray-400">Showing {found} results</Text>
-                    <Text className="ph:ml-2 md:ml-6 text-gray-400">{timeElapsed}</Text>
                 </View>
 
             </View>

@@ -94,9 +94,6 @@ router.delete("/unsubscribe", async (req, res) => {
   const { clubId } = req.body;
   const userId = req.session.user;
 
-  console.log(clubId);
-  console.log(userId);
-
   try {
     if (!clubId || !userId) {
       return res.status(400).json({ message: 'clubId and userId are required' });

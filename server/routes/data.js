@@ -19,27 +19,39 @@ router.get('/data', async (req, res) => {
     }
 });
 
-// Cant have two types of REST request in same route
-// TODO: change
+router.get('/data/:id', async (req, res) => {
+    try {
+        const clubId = req.params.id;
+        if (clubId) {
+            const club = await Club.findById(clubId);
+            
+            if (!club) {
+                return res.status(404).json({ error: 'Club not found' });
+            }
+            
+            res.json(club);
+        }
+    } catch (error) {
+        console.error('Error fetching club data by ID:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
-// router.post('/data', async (req, res) => {
-//     try {
-//         const newData = req.body;
-//
-//         // Read the existing data from the file
-//         const fileContent = await fs.readFile(jsonFilePath, 'utf-8');
-//         const existingData = JSON.parse(fileContent);
-//
-//         // Append the new data to the existing data
-//         const updatedData = [...existingData, ...newData];
-//
-//         // Update JSON Data File
-//         await fs.writeFile(jsonFilePath, JSON.stringify(updatedData, null, 2));
-//         res.json({ message: 'Data updated successfully' });
-//     } catch (error) {
-//         console.error('Error updating data:', error);
-//         res.status(500).json({ error: 'Internal Server Error' });
-//     }
-// });
+router.get('/data/by/:userid', async (req, res) => {
+    try {
+        const userId = req.params.userid;
+        const clubs = await Club.find({ clubLeaders: userId });
+        (clubs);
+
+        if (!clubs || clubs.length === 0) {
+            return res.status(404).json({ error: 'Clubs not found for the given user' });
+        }
+
+        res.json(clubs);
+    } catch (error) {
+        console.error('Error fetching clubs by user ID:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 module.exports = router;

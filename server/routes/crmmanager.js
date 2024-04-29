@@ -23,6 +23,28 @@ router.post('/create', async (req, res) => {
     }
 });
 
+router.post('/update', async (req, res) => {
+    try {
+        const data = req.body;
+
+        if (!data._id) {
+            return res.status(400).json({ error: 'Valid _id is required for updating club' });
+        }
+
+        const existingClub = await Club.findByIdAndUpdate(data._id, data, { new: true });
+
+        if (existingClub) {
+            res.json({ success: true, data: existingClub });
+        } else {
+            res.status(404).json({ success: false, error: 'Club not found' });
+        }
+
+    } catch (error) {
+        console.error('Error updating club:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 const storage = multer.memoryStorage(); // Store files in memory
 const upload = multer({ storage: storage });
 
