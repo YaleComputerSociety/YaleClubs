@@ -12,8 +12,8 @@ import {fetchClubs, fetchClubsAPI} from '../../../api/ManageClubs';
 import SideBar from '../../../components/club/SideBar';
 import ClubDescription from '../../../components/club/ClubDescription';
 import AuthWrapper from '../../../components/AuthWrapper';
+import DecoratorSVG from '../../../assets/decorator';
 import Wrapper from '../../../components/Wrapper';
-import axios from "axios";
 
 
 const ClubPage = () => {
@@ -48,6 +48,10 @@ const ClubPage = () => {
                     <Header />
                     <View className="mb-10 w-full flex items-center">
                         <Wrapper>
+                            <View className="absolute z-[-10] ph:hidden lg:flex h-[400] left-[-210] top-[-20]">
+                                <DecoratorSVG />
+                            </View>
+
                             <View className="w-full ph:flex-col-reverse lg:flex-row ph:px-5 lg:p-0">
                                 <View className="w-full flex-shrink mr-10 ph:flex-col lg:flex-row">
                                     <View className="w-16 mr-5 ph:hidden lg:flex shadow-none">

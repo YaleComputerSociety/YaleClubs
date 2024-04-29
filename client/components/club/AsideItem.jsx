@@ -129,19 +129,6 @@ const AsideItem = ({data}) => {
                     </View>
                 );
             })}
-
-            <View className="gap-y-2 mt-1">
-                <Pressable
-                    onPress={handleUploadEvents}
-                    className="w-full py-1 rounded-md border-[1px] border-gray-200"
-                >
-                    <Text className="text-center text-gray-400">Upload Events</Text>
-                </Pressable>
-
-                <Pressable className="w-full py-1 rounded-md border-[1px] border-gray-200">
-                    <Text className="text-center text-gray-400">Add Member</Text>
-                </Pressable>
-            </View>
         </View>
     );
 

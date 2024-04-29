@@ -63,6 +63,7 @@ const Comments = ({clubId}) => {
                             h-20 
                             border-[1px] 
                             border-gray-100 
+                            bg-white
                             rounded-md 
                             px-3 py-2.5
                             w-full
