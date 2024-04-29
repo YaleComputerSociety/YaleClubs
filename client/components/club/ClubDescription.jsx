@@ -4,45 +4,45 @@ import { Image, Pressable, Text, View } from 'react-native';
 import axios from 'axios';
 
 import Leaders from './Leaders';
-import Comments from './Comments';
+// import Comments from './Comments';
 
 
 const ClubDescription = ({id, groupData}) => {    
     const [isSubscribed, setIsSubscribed] = useState(false);
 
-    useEffect(() => {
-        const fetchSubscriptionStatus = async () => {
-          try {
-            const response = await axios.get(`../api/subscriptions/${id}`);
-            setIsSubscribed(response.data.isSubscribed);
-          } catch (error) {
-            console.error('Error fetching subscription status:', error.response?.data);
-          }
-        };
+    // useEffect(() => {
+    //     const fetchSubscriptionStatus = async () => {
+    //       try {
+    //         const response = await axios.get(`../api/subscriptions/${id}`);
+    //         setIsSubscribed(response.data.isSubscribed);
+    //       } catch (error) {
+    //         console.error('Error fetching subscription status:', error.response?.data);
+    //       }
+    //     };
     
-        fetchSubscriptionStatus();
-    }, [id]);
+    //     fetchSubscriptionStatus();
+    // }, [id]);
 
-    const handleSubscribe = async () => {
-        try {
-            const response = await axios.post('../api/subscribe', { clubId: id });
-            console.log(response);
-            setIsSubscribed(response);
-        } catch (error) {
-            console.error('Error subscribing:', error.response?.data);
-        }
-    };
+    // const handleSubscribe = async () => {
+    //     try {
+    //         const response = await axios.post('../api/subscribe', { clubId: id });
+    //         console.log(response);
+    //         setIsSubscribed(response);
+    //     } catch (error) {
+    //         console.error('Error subscribing:', error.response?.data);
+    //     }
+    // };
 
-    const handleUnsubscribe = async () => {
-        try {
-            const response = await axios.delete('../api/unsubscribe', { data: { clubId: id } });
+    // const handleUnsubscribe = async () => {
+    //     try {
+    //         const response = await axios.delete('../api/unsubscribe', { data: { clubId: id } });
         
-            console.log(response.data.message);
-            setIsSubscribed(!isSubscribed);
-        } catch (error) {
-            console.error('Error:', error.response ? error.response.data : error.message);
-        }
-    };
+    //         console.log(response.data.message);
+    //         setIsSubscribed(!isSubscribed);
+    //     } catch (error) {
+    //         console.error('Error:', error.response ? error.response.data : error.message);
+    //     }
+    // };
 
     // Native Wind
     NativeWindStyleSheet.setOutput({
@@ -64,7 +64,7 @@ const ClubDescription = ({id, groupData}) => {
                     </View>
                 </View>
                 <View className='ph:ml-[53] lg:ml-0'>
-                    <Text className="leading-5">{ groupData.description }</Text>
+                    <Text className="leading-5">{ groupData?.description }</Text>
                 </View>
             </View>
             <View className='flex-row justify-between mt-6 ph:ml-[53] lg:ml-0'>
@@ -79,26 +79,26 @@ const ClubDescription = ({id, groupData}) => {
                     </View>
                 </View>
                 <View>
-                    <Text>{groupData.clubMembers?.length} Members</Text>
+                    <Text>{groupData.clubLeaders?.length + groupData.clubMembers?.length} Members</Text>
                 </View>
             </View>
 
-            {groupData.leaders?.length > 0 && <Leaders leaders={groupData.leaders} />}
+            {groupData.clubLeaders?.length > 0 && <Leaders leaders={[...groupData.clubLeaders, ...groupData.clubMembers]} />}
 
             {/* <Comments clubId={id} /> */}
 
-            <View className='mt-4 border-[1px] border-gray-100 rounded-md flex-row justify-between p-4 px-6 items-center'>
+            {/* <View className='mt-4 border-[1px] border-gray-100 bg-white rounded-md flex-row justify-between p-4 px-6 items-center'>
                 <Text>Don't want to miss events from this club?</Text>
                 {!isSubscribed ? (
-                    <Pressable onPress={handleSubscribe} className="bg-sky-500 rounded-md py-1.5 px-4">
+                    <Pressable onPress={null} className="bg-sky-500 rounded-md py-1.5 px-4">
                         <Text className='text-white'>Subscribe</Text>
                     </Pressable>
                 ) : (
-                    <Pressable onPress={handleUnsubscribe} className="bg-gray-300 rounded-md py-1.5 px-4">
+                    <Pressable onPress={null} className="bg-gray-300 rounded-md py-1.5 px-4">
                         <Text className='text-white'>Unsubscribe</Text>
                     </Pressable>
                 )}
-            </View>
+            </View> */}
         </View>
     );
     

@@ -17,7 +17,6 @@ router.post('/save-club', async (req, res) => {
         return res.status(404).json({ error: 'User not found' });
     }
 
-    console.log(clubId);
     if (user.saved.includes(clubId)) {
         return res.status(400).json({ error: 'Club ID already saved for this user' });
     }

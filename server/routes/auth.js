@@ -56,4 +56,18 @@ router.get('/auth/redirect', async (req, res) => {
     }
 });
 
+router.get('/auth/userid', async (req, res) => {
+    try {
+        if (req.session && req.session.user) {
+            const netID = req.session.user;
+            res.status(200).json({ netID });
+        } else {
+            res.status(401).json({ error: 'User not logged in' });
+        }
+    } catch (error) {
+        console.error('Error retrieving user ID:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 module.exports = router;

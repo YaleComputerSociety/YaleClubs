@@ -28,7 +28,6 @@ export const parseICSFile = async () => {
             };
         });
     
-        console.log(parsedEvents);
     } catch (error) {
         console.error('Error parsing ICS file:', error);
     }

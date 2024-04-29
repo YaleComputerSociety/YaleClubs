@@ -28,15 +28,13 @@ const Catalog = ({page, setPage}) => {
     const [fetchError, setFetchError] = useState(null);
 
     const { searchValue, onChange, found, filteredGroups } = useFilteredData(allGroups);
-    console.log(filteredGroups);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 setIsLoading(true);
 
-                const response = await axios.get(`http://${process.env.BASE_URL}:${process.env.PORT}/api/data`);
-
+                const response = await axios.get('/api/data');
                 setAllGroups(response.data);
                 setIsLoading(false);
             } catch (error) {
@@ -80,7 +78,7 @@ const Catalog = ({page, setPage}) => {
             ) : found === 0 ? (
                 <View className="p-5">
                     <Text>Sorry. No results has been found by your request.</Text>
-                    <Pressable onPress={() => navigation.push(`https://yaleconnect.yale.edu/home_login`)} className="cursor-pointer mt-1"><Text className="text-sky-500">Request a new club?</Text></Pressable>
+                    <Pressable onPress={() => navigation.push(`/crm/0`)} className="cursor-pointer mt-1"><Text className="text-sky-500">Request a new club?</Text></Pressable>
                 </View>
             ) : (
                 <View>

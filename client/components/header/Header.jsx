@@ -6,7 +6,6 @@ import { NativeWindStyleSheet } from "nativewind";
 import { View, Text, Pressable, Animated } from "react-native";
 
 import Menu from "./Menu";
-import ModesSVG from "../../assets/modes";
 import LogoSVG from "../../assets/logo";
 import IconSVG from "../../assets/icon";
 
@@ -59,13 +58,9 @@ const Header = () => {
                     <Pressable onPress={() => route.push(`/`)}>
                         <Text selectable={false} className="text-[15px]">Catalog</Text>
                     </Pressable>
-                    <Pressable onPress={() => route.push(`/crm`)}>
-                        <Text selectable={false} className="text-[15px]">Add Club</Text>
+                    <Pressable onPress={() => route.push(`/worksheet`)}>
+                        <Text selectable={false} className="text-[15px]">Worksheet</Text>
                     </Pressable>
-                    {/* Hide worksheets for now */}
-                    {/*<Pressable onPress={() => route.push(`/worksheet`)}>*/}
-                    {/*    <Text selectable={false} className="text-[15px]">Worksheet</Text>*/}
-                    {/*</Pressable>*/}
 
                     {/*Hide dark mode too*/}
                     {/*<Pressable onPress={() => null}>*/}

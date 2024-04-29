@@ -1,50 +1,69 @@
 import { NativeWindStyleSheet } from 'nativewind';
 
-import { FlatList, Image, Pressable, Text, View} from 'react-native';
-import parseCategories from '../../actions/parseCategories';
+import { Image, Pressable, Text, View} from 'react-native';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
+import axios from 'axios';
+
+import EmptySVG from '../../assets/empty';
 
 
 const ClubItemWorksheet = ({ item }) => {
     const navigation = useRouter();
-    const categories = parseCategories(item.category).slice(0, 2);
+    const [logoUri, setLogoUri] = useState(null);
 
     NativeWindStyleSheet.setOutput({
         default: "native",
     });
+
+    useEffect(() => {
+        const fetchLogoUri = async () => {
+            try {
+                const response = await axios.get(`/api/logo/${item.logo}`);
+                const base64ImageData = response.data;
+                const uri = `data:image/jpeg;base64,${base64ImageData}`;
+                setLogoUri(uri);
+            } catch (error) {
+                console.error('Error fetching logo data:', error);
+            }
+        };
+
+        if (item.logo) {
+            // Fetch if Logo Exists
+            fetchLogoUri();
+        }
+    }, [item.logo]);
     
     return (
-        <Pressable key={item.id} className="relative" onPress={() => navigation.push(`/club/${item.id}`)}>
-            <View className="rounded-md border-[1px] border-gray-100 mr-4 w-[430] p-5 py-6 flex-row bg-white">
-                <View className='w-full flex-col flex-shrink overflow-hidden'>
-                    <Text numberOfLines={2} className="font-bold text-[24px] mt-2 w-[80%]">{item.name}</Text>
-                    <FlatList
-                        className="w-full flex-row"
-                        data={categories}
-                        horizontal={true}
-                        contentContainerStyle={{ flexDirection: 'row' }}
-                        keyExtractor={(category) => category.id.toString()}
-                        renderItem={({ item: category }) => (
-                            <View className="bg-gray-100 mt-3 mr-2 py-1 px-2 rounded-md" key={category.id}>
-                                <Text>{category.name}</Text>
-                            </View>
+        <Pressable key={item._id} className="relative" onPress={() => navigation.push(`/crm/${item._id}`)}>
+            <View className="rounded-md border-[1px] border-gray-100 mr-4 w-[430] justify-between flex-row bg-white">
+                <View className="p-5 py-6 flex-col w-[70%]">
+                    <Text numberOfLines={2} className="font-bold text-[24px] mt-2 w-[80%]">{item.clubName}</Text>
+
+                    <Text numberOfLines={7} className="pr-4 mt-3 leading-[20px]">
+                        { item.description && (
+                            item.description
                         )}
-                    />
+                    </Text>
 
-                    { item.mission && (
-                        <Text numberOfLines={7} className="pr-4 mt-3 leading-[20px]">{item.mission}</Text>
-                    )}
-
-                    { item.website && (
-                        <Text numberOfLines={1} className="mt-4 text-sky-500">{item.website}</Text>
-                    )}
+                    <Text numberOfLines={1} className="mt-4 text-sky-500">
+                        { item.website && (
+                            item.website
+                        )}
+                    </Text>
     
                 </View>
-                <View className='relative flex-col items-end'>
-                    <Image 
-                        source={{uri: item.logo}} 
-                        className="h-20 w-20 rounded-full"
-                    />
+                <View className='relative flex-col items-end mx-5 my-6'>
+                    {logoUri ? (
+                        <Image 
+                            source={{ uri: logoUri }} 
+                            className="h-20 w-20 rounded-full"
+                        />
+                    ) : (
+                        <View className='bg-gray-200 h-20 rounded-full w-20 items-center justify-center'>
+                            <EmptySVG h={35} w={35} />
+                        </View>
+                    )}
                 </View>
             </View>
         </Pressable>

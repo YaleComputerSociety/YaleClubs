@@ -86,6 +86,9 @@ const AsideItem = ({data}) => {
     });
 
     const openWebsite = (url) => {
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            url = 'http://' + url; // Prefix with http:// if no protocol is provided
+        }
         Linking.openURL(url).catch((err) => console.error('Error opening website:', err));
     };
 
@@ -93,8 +96,6 @@ const AsideItem = ({data}) => {
         Linking.openURL("mailto:"+url).catch((err) => console.error('Error opening email:', err));
     };
       
-      
-
     return (
         <View>
             {Object.keys(data).map((key) => {
@@ -110,7 +111,7 @@ const AsideItem = ({data}) => {
                                 <Pressable
                                     onPress={
                                         key === "website"
-                                        ? () => openWebsite(`https://${value.split("//")[1].replace("www.", "")}`)
+                                        ? () => openWebsite(`${value}`)
                                         : key === "email"
                                         ? () => sendEmail(value)
                                         : undefined
@@ -129,19 +130,6 @@ const AsideItem = ({data}) => {
                     </View>
                 );
             })}
-
-            <View className="gap-y-2 mt-1">
-                <Pressable
-                    onPress={handleUploadEvents}
-                    className="w-full py-1 rounded-md border-[1px] border-gray-200"
-                >
-                    <Text className="text-center text-gray-400">Upload Events</Text>
-                </Pressable>
-
-                <Pressable className="w-full py-1 rounded-md border-[1px] border-gray-200">
-                    <Text className="text-center text-gray-400">Add Member</Text>
-                </Pressable>
-            </View>
         </View>
     );
 
