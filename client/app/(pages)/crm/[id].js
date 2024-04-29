@@ -53,28 +53,30 @@ const CRMManager = () => {
 
         const fetchData = async () => {
             try {
-                if (id) {
-                    const response = await axios.get(`/api/data/${id}`);
-                    const clubData = response.data;
+                const response = await axios.get(`/api/data/${id}`);
+                const clubData = response.data;
 
-                    if (clubData) {
-                        setLogoId(clubData?.logo);
-                        setClubName(clubData?.clubName || '');
-                        setDescription(clubData?.description || '');
-                        setInstagram(clubData?.instagram || '');
-                        setEmail(clubData?.email || '');
-                        setWebsite(clubData?.website || '');
-                        setPhone(clubData?.phone || '');
-                        setApplyForm(clubData?.applyForm || '');
-                        setYaleConnect(clubData?.yaleConnect || '');
-                    }
+                if (clubData) {
+                    setLogoId(clubData?.logo);
+                    setClubName(clubData?.clubName || '');
+                    setDescription(clubData?.description || '');
+                    setInstagram(clubData?.instagram || '');
+                    setEmail(clubData?.email || '');
+                    setWebsite(clubData?.website || '');
+                    setPhone(clubData?.phone || '');
+                    setApplyForm(clubData?.applyForm || '');
+                    setYaleConnect(clubData?.yaleConnect || '');
                 }
             } catch (error) {
                 console.error('Error fetching club data:', error);
             }
         };
     
-        fetchData().then(() => {setLoggedInUserAsLeader();});
+        if (id !== "0") {
+            fetchData().then(() => {setLoggedInUserAsLeader();});
+        } else {
+            setLoggedInUserAsLeader();
+        }
     }, [id]);
 
     useEffect(() => {
