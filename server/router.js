@@ -49,7 +49,6 @@ const getRoutes = (router) => {
     router.use("/api", loginCheck, save_club);
     router.use("/api", loginCheck, delete_club);
 
-    router.use("/api", loginCheck, crm);
     router.use("/api", loginCheck, save_club);
     router.use("/api", loginCheck, delete_club);
     return router;
