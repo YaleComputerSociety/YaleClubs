@@ -2,7 +2,7 @@ import connectToDatabase from '../../../../lib/mongodb';
 import Club from '../../../../lib/models/Club';
 import { NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(): Promise<NextResponse> {
     try {
         await connectToDatabase();
         const clubs = await Club.find({});

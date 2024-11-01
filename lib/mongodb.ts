@@ -1,18 +1,22 @@
-import mongoose from 'mongoose';
+import mongoose, { Mongoose } from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = process.env.MONGODB_URI as string;
 
 if (!MONGODB_URI) {
     throw new Error('Please define the MONGODB_URI environment variable');
 }
 
-let cached = global.mongoose;
-
-if (!cached) {
-    cached = global.mongoose = { conn: null, promise: null };
+/* eslint-disable no-var */
+declare global {
+    var mongoose: { conn: Mongoose | null; promise: Promise<Mongoose> | null };
 }
+/* eslint-enable no-var */
 
-async function connectToDatabase() {
+global.mongoose = global.mongoose || { conn: null, promise: null };
+
+const cached = global.mongoose;
+
+async function connectToDatabase(): Promise<Mongoose> {
     if (cached.conn) {
         return cached.conn;
     }
