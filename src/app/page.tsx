@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import axios from "axios";
 
 import AuthWrapper from '../components/AuthWrapper';
@@ -41,19 +41,19 @@ export default function Home() {
     //     fetchUserId();
     // }, []);
 
-    const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-        const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
-        const isReachingEnd = scrollTop + clientHeight >= scrollHeight - 200;
-        if (isReachingEnd) {
-            setPage((prevPage) => prevPage + 1);
-        }
-    };
+    // const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    //     // const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
+    //     // const isReachingEnd = scrollTop + clientHeight >= scrollHeight - 200;
+    //     // if (isReachingEnd) {
+    //     //     setPage((prevPage) => prevPage + 1);
+    //     // }
+    // };
 
     return (
         <AuthWrapper>
             <main className="w-full">
                 <section 
-                    onScroll={handleScroll} 
+                    // onScroll={handleScroll} 
                     className="h-screen overflow-y-scroll"
                     style={{ maxHeight: '100vh' }}
                 >
