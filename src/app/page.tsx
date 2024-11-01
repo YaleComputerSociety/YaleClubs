@@ -9,7 +9,19 @@ import Footer from "../components/footer/Footer";
 // import Catalog from "../components/catalog/Catalog";
 
 export default function Home() {
-    const [page, setPage] = useState(1);
+    // const [page, setPage] = useState(1);
+
+    useEffect(() => {
+        const fetchApiMessage = async () => {
+            try {
+                const response = await axios.get('/api/clubs');
+                console.log('API message:', response.data);
+            } catch (error) {
+                console.error('Error fetching API message:', error);
+            }
+        };
+        fetchApiMessage();
+    }, []);
 
     // Handle On Login
     // useEffect(() => {
