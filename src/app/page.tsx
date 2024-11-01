@@ -6,7 +6,7 @@ import axios from "axios";
 import AuthWrapper from '../components/AuthWrapper';
 import Header from "../components/header/Header";
 import Footer from "../components/footer/Footer";
-// import Catalog from "../components/catalog/Catalog";
+import Catalog from "../components/catalog/Catalog";
 
 export default function Home() {
     const [page, setPage] = useState(1);
@@ -47,7 +47,9 @@ export default function Home() {
                 >
                     <div className="flex flex-col w-full min-h-screen">
                         <Header />
-                        {/* <Catalog page={page} setPage={setPage} />*/}
+                        <div className ="mt-16">
+                        <Catalog page={page} setPage={setPage} />
+                        </div>
                         <Footer />
                     </div>
                 </section>
