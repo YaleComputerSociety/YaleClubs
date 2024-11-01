@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from "react";
+// import React, { useRef, useState } from "react";
 import Link from "next/link";
 
 import Menu from "./Menu";
@@ -7,7 +7,7 @@ import LogoSVG from "../../assets/logo";
 
 
 const Header = () => {
-    const [openMenu, setOpenMenu] = useState(false);
+    // const [openMenu, setOpenMenu] = useState(false);
     // const menuHeight = useRef(new Animated.Value(0)).current;
 
     // const toggleMenu = () => {
@@ -70,7 +70,7 @@ const Header = () => {
                                 height: 200,
                             }}
                         >
-                            {openMenu && <Menu />}
+                            {false && <Menu />}
                         </div>
                     </div>
                 </div>
