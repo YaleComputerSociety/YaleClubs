@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 import Menu from "./Menu";
-import LogoSVG from "@/assets/logo";
+import LogoSVG from "../../../public/assets/logo";
 
 
 const Header = () => {
