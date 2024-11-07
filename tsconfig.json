@@ -42,7 +42,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "global.d.ts"
-  ],
+, "src/hooks/FilterData.js"  ],
   "exclude": [
     "node_modules"
   ]

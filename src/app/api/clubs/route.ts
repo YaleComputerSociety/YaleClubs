@@ -1,5 +1,5 @@
-import connectToDatabase from '../../../../lib/mongodb';
-import Club from '../../../../lib/models/Club';
+import connectToDatabase from '../../../lib/mongodb';
+import Club from '../../../lib/models/Club';
 import { NextResponse } from 'next/server';
 
 export async function GET(): Promise<NextResponse> {
