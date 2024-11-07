@@ -5,9 +5,11 @@
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "next/core-web-vitals", 
-    "next/typescript"
+    "next/typescript",
+    "plugin:prettier/recommended"
   ],
   "rules": {
-    "semi": ["error", "always"]
+    "semi": ["error", "always"],
+        "prettier/prettier": "warn"
   }
 }
