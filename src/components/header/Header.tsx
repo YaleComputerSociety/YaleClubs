@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 import Menu from "./Menu";
-import LogoSVG from "../../assets/logo";
+import LogoSVG from "@/assets/logo";
 
 
 const Header = () => {
@@ -36,10 +36,10 @@ const Header = () => {
     // });
 
 
-    return (    
+    return (
         <div className="w-full flex flex-row fixed z-10 justify-between py-5 ph:px-5 xl:px-[110px]">
             <Link href="/" className="flex flex-row items-center">
-                <LogoSVG/>
+                <LogoSVG />
                 <div className="ml-5 font-semibold text-[16px]">YaleClubs</div>
             </Link>
 
@@ -59,7 +59,7 @@ const Header = () => {
                 </div>
                 <div>
                     <div className={`group-isolate w-[40px] rounded-[9px]`}>
-                        <button onClick={() => toggleMenu()}>
+                        <button onClick={() => {}/*() => toggleMenu()*/}>
                             {/* <IconSVG /> */}
                         </button>
 
@@ -78,6 +78,6 @@ const Header = () => {
         </div>
     );
 
-}
+};
 
 export default Header;

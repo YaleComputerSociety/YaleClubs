@@ -21,6 +21,6 @@ const IconSVG = () => {
             <Rectangle />
         </svg>
     );
-}
+};
 
 export default IconSVG;
