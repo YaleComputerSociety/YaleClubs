@@ -11,4 +11,4 @@ export async function GET(): Promise<NextResponse> {
         console.error('Error reading savedData.json:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
-};
+}

@@ -1,7 +1,8 @@
-'use client'
+'use client';
 
 import { useEffect } from "react";
-import axios from "axios";
+import axios, { AxiosResponse } from 'axios';
+
 
 import AuthWrapper from '../components/AuthWrapper';
 import Header from "../components/header/Header";
@@ -14,7 +15,7 @@ export default function Home() {
     useEffect(() => {
         const fetchApiMessage = async () => {
             try {
-                const response = await axios.get('/api/clubs');
+                const response: AxiosResponse = await axios.get('/api/clubs');
                 console.log('API message:', response.data);
             } catch (error) {
                 console.error('Error fetching API message:', error);
