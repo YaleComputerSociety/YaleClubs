@@ -1,5 +1,5 @@
-import mongoose, { Document, Schema } from 'mongoose';
-import { ILogo } from './Logo';
+import mongoose, { Document, Schema } from "mongoose";
+import { ILogo } from "./Logo";
 
 // Interface for Club Schema
 export interface IClub extends Document {
@@ -13,7 +13,7 @@ export interface IClub extends Document {
   yaleConnect: string;
   clubMembers: string[];
   clubLeaders: string[];
-  logo: ILogo['_id'];
+  logo: ILogo["_id"];
 }
 
 // Club Schema
@@ -28,8 +28,8 @@ const clubSchema = new Schema<IClub>({
   yaleConnect: { type: String },
   clubMembers: { type: [String] },
   clubLeaders: { type: [String] },
-  logo: { type: Schema.Types.ObjectId, ref: 'Logo' }
+  logo: { type: Schema.Types.ObjectId, ref: "Logo" },
 });
 
-const Club = mongoose.models.Club || mongoose.model<IClub>('Club', clubSchema);
+const Club = mongoose.models.Club || mongoose.model<IClub>("Club", clubSchema);
 export default Club;

@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema } from "mongoose";
 
 // Interface for Logo Schema
 export interface ILogo extends Document {
@@ -9,8 +9,8 @@ export interface ILogo extends Document {
 // Logo Schema
 const logoSchema = new Schema<ILogo>({
   imageUrl: { type: String, required: true },
-  altText: { type: String }
+  altText: { type: String },
 });
 
-const Logo = mongoose.models.Logo || mongoose.model<ILogo>('Logo', logoSchema);
+const Logo = mongoose.models.Logo || mongoose.model<ILogo>("Logo", logoSchema);
 export default Logo;
