@@ -9,7 +9,7 @@ import Footer from "../components/footer/Footer";
 import Catalog from "../components/catalog/Catalog";
 
 export default function Home() {
-    const [page, setPage] = useState(1);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const fetchApiMessage = async () => {
@@ -23,24 +23,24 @@ export default function Home() {
     fetchApiMessage();
   }, []);
 
-    return (
-        <AuthWrapper>
-            <main className="w-full">
-                <section 
-                    // onScroll={handleScroll} 
-                    className="h-screen overflow-y-scroll"
-                    style={{ maxHeight: '100vh' }}
-                >
-                    <div className="flex flex-col w-full min-h-screen">
-                        <Header />
-                        <div className = "mt-10">
-                        {/* <Catalog  /> */}
-                        <Catalog page={page} setPage={setPage} />
-                        </div>
-                        <Footer />
-                    </div>
-                </section>
-            </main>
-        </AuthWrapper>
-    );
+  return (
+    <AuthWrapper>
+      <main className="w-full">
+        <section
+          // onScroll={handleScroll}
+          className="h-screen overflow-y-scroll"
+          style={{ maxHeight: "100vh" }}
+        >
+          <div className="flex flex-col w-full min-h-screen">
+            <Header />
+            <div className="mt-10">
+              {/* <Catalog  /> */}
+              <Catalog page={page} setPage={setPage} />
+            </div>
+            <Footer />
+          </div>
+        </section>
+      </main>
+    </AuthWrapper>
+  );
 }
