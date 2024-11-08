@@ -81,7 +81,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import axios from "axios";
-import ClubItem from "../club/Clubitem";
+import ClubCard from "./ClubCard";
 import { IClub } from "@/lib/models/Club";
 
 interface CatalogProps {
@@ -118,7 +118,7 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
     }
   }, [page, fetchApiMessage, isLoading, allGroups]);
 
-  const renderClubItem = (club: IClub) => <ClubItem key={club._id} club={club} />;
+  const renderClubItem = (club: IClub) => <ClubCard key={club._id} club={club} />;
   renderClubItem.displayName = "RenderClubItem";
 
   const renderItem = useMemo(() => renderClubItem, []);
