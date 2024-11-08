@@ -73,7 +73,7 @@ const ClubItem = ({ club }: ClubItemProps) => {
                     <img src={logoUri} alt="Club Logo" style={{ width: '60px', height: '60px', borderRadius: '50%' }} />
                 )} */}
         <div>
-          <h3 style={{ fontSize: "1.5em", fontWeight: "bold", margin: 0 }}>{club.clubName}</h3>
+          <h3 style={{ fontSize: "1.5em", fontWeight: "bold", margin: 0 }}>{club.name}</h3>
           {<p style={{ color: "#555", margin: 0 }}></p>}
         </div>
       </div>
