@@ -7,6 +7,7 @@ import AuthWrapper from "../components/AuthWrapper";
 import Header from "../components/header/Header";
 import Footer from "../components/footer/Footer";
 import Catalog from "../components/catalog/Catalog";
+import { IClub } from "@/lib/models/Club";
 
 export default function Home() {
   const [page, setPage] = useState(1);
@@ -14,7 +15,7 @@ export default function Home() {
   useEffect(() => {
     const fetchApiMessage = async () => {
       try {
-        const response: AxiosResponse = await axios.get("/api/clubs");
+        const response = await axios.get<IClub[]>("/api/clubs");
         console.log("API message:", response.data);
       } catch (error) {
         console.error("Error fetching API message:", error);
