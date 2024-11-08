@@ -82,6 +82,7 @@ import React, { useEffect, useState, useMemo, useCallback } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import axios from "axios";
 import ClubCard from "./ClubCard";
+import ClubModal from "./ClubModal";
 import { IClub } from "@/lib/models/Club";
 
 interface CatalogProps {
@@ -91,10 +92,12 @@ interface CatalogProps {
 
 const Catalog = ({ page, setPage }: CatalogProps) => {
   const numColumns = 2;
-
   const [isLoading, setIsLoading] = useState(false);
   const [allGroups, setAllGroups] = useState<IClub[]>([]);
   const [hasMore, setHasMore] = useState(true);
+  const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
+
+  const handleCloseModal = () => setSelectedClub(null);
 
   const fetchApiMessage = useCallback(async (pageNum: number = 1) => {
     try {
@@ -118,7 +121,7 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
     }
   }, [page, fetchApiMessage, isLoading, allGroups]);
 
-  const renderClubItem = (club: IClub) => <ClubCard key={club._id} club={club} />;
+  const renderClubItem = (club: IClub) => <ClubCard key={club._id} club={club} onClick={() => setSelectedClub(club)} />;
   renderClubItem.displayName = "RenderClubItem";
 
   const renderItem = useMemo(() => renderClubItem, []);
@@ -162,6 +165,9 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
             }}
           >
             {allGroups.map(renderItem)}
+            {selectedClub && (
+              <ClubModal club={selectedClub} onClose={handleCloseModal} /> // Render modal if club is selected
+            )}
           </div>
         </InfiniteScroll>
       )}

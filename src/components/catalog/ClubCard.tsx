@@ -29,11 +29,12 @@
 import React from "react";
 import { IClub } from "@/lib/models/Club";
 
-type ClubItemProps = {
+type ClubCardProps = {
   club: IClub;
+  onClick: () => void;
 };
 
-const ClubItem = ({ club }: ClubItemProps) => {
+const ClubCard = ({ club, onClick }: ClubCardProps) => {
   const categories = club.categories || ["tag1", "tag2", "tag3"]; // Use categories from API if available
   //   const [logoUri, setLogoUri] = useState(null);
 
@@ -58,6 +59,7 @@ const ClubItem = ({ club }: ClubItemProps) => {
   return (
     <div
       className="club-item-card"
+      onClick={onClick}
       style={{
         border: "1px solid #ddd",
         borderRadius: "8px",
@@ -107,4 +109,4 @@ const ClubItem = ({ club }: ClubItemProps) => {
   );
 };
 
-export default ClubItem;
+export default ClubCard;
