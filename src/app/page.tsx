@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 import AuthWrapper from "../components/AuthWrapper";
-import Header from "../components/header/Header";
+import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Catalog from "../components/catalog/Catalog";
 import { IClub } from "@/lib/models/Club";
