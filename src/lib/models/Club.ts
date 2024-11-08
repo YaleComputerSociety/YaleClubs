@@ -3,6 +3,7 @@ import { ILogo } from "./Logo";
 
 // Interface for Club Schema
 export interface IClub extends Document {
+  _id: string;
   clubName: string;
   description: string;
   instagram: string;
@@ -14,6 +15,7 @@ export interface IClub extends Document {
   clubMembers: string[];
   clubLeaders: string[];
   logo: ILogo["_id"];
+  categories: string[];
 }
 
 // Club Schema
@@ -29,6 +31,7 @@ const clubSchema = new Schema<IClub>({
   clubMembers: { type: [String] },
   clubLeaders: { type: [String] },
   logo: { type: Schema.Types.ObjectId, ref: "Logo" },
+  categories: { type: [String] },
 });
 
 const Club = mongoose.models.Club || mongoose.model<IClub>("Club", clubSchema);
