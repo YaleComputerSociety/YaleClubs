@@ -5,7 +5,7 @@ const Footer = () => {
             w-full 
             absolute 
             bottom-0 
-            bg-white 
+            bg-transparent
             p-5 flex
             items-center
             justify-center
