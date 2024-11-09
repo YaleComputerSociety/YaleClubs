@@ -37,6 +37,7 @@ export interface IClubInput {
   applyForm?: string;
   mailingForm?: string;
   meeting?: Meeting;
+  calendarLink?: string;
 }
 
 // Use this when fetching a club
@@ -56,6 +57,7 @@ export interface IClub extends Document {
   applyForm?: string;
   mailingForm?: string;
   meeting?: Meeting;
+  calendarLink?: string;
 }
 
 // Club Schema
@@ -87,6 +89,7 @@ const clubSchema = new Schema<IClub>({
       time: { type: String },
     },
   },
+  calendarLink: { type: String },
 });
 
 const Club = mongoose.models.Club || mongoose.model<IClub>("Club", clubSchema);
