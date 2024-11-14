@@ -9,6 +9,9 @@ import Footer from "../components/Footer";
 import Catalog from "../components/catalog/Catalog";
 import { IClub } from "@/lib/models/Club";
 
+import { getCookie } from "cookies-next";
+import jwt from "jsonwebtoken";
+
 export default function Home() {
   const [page, setPage] = useState(1);
 
@@ -23,6 +26,15 @@ export default function Home() {
     };
     fetchApiMessage();
   }, []);
+
+  // token
+  useEffect(() => {
+    const token = getCookie("token");
+    if (token) {
+      const decoded = jwt.decode(token.toString());
+      console.log(decoded);
+    }
+  });
 
   return (
     <AuthWrapper>
