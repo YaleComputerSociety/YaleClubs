@@ -75,10 +75,10 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
 
   return (
     <div className="border border-gray-200 rounded-xl p-6 flex flex-col gap-4 max-w-lg w-full" onClick={onClick}>
-      <div className="flex flex-row items-center gap-4 border-red-400 border-2 justify-between">
-        <div className="flex flex-col justify-center">
+      <div className="flex flex-row items-center gap-4">
+        <div className="flex flex-col justify-center flex-1 min-w-0">
           <div className="text-3xl font-semibold line-clamp-2 overflow-hidden">{club.name}</div>
-          <div className="mt-3 club-tags flex gap-2 flex-wrap">
+          <div className="mt-3 flex gap-2 overflow-auto whitespace-nowrap text-ellipsis scrollbar-hide">
             {categories.map((tag, index) => (
               <span key={index} className="bg-[#eee] rounded px-2 py-1 text-xs">
                 {tag}
@@ -91,7 +91,7 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
           alt="Club Logo"
           width={100}
           height={100}
-          className={`${club.logo ? "rounded-full" : ""}`}
+          className={`${club.logo ? "rounded-full" : ""} flex-shrink-0`}
         />
       </div>
 
