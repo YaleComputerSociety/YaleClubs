@@ -86,7 +86,13 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
             ))}
           </div>
         </div>
-        {club.logo && <Image src={club.logo} alt="Club Logo" width={100} height={100} className="rounded-full" />}
+        <Image
+          src={club.logo ?? "/assets/default-logo.png"}
+          alt="Club Logo"
+          width={100}
+          height={100}
+          className={`${club.logo ? "rounded-full" : ""}`}
+        />
       </div>
 
       <div className="text-base text-gray-800 line-clamp-3">{club.description ?? "No description..."}</div>
