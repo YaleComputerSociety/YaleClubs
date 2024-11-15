@@ -3,14 +3,12 @@ import { IClub } from "@/lib/models/Club";
 
 interface FilterButtonProps {
   setFilteredGroups: React.Dispatch<React.SetStateAction<IClub[]>>;
-  allGroups: IClub[];
+//   allGroups: IClub[];
   selectedCategories: string[];
   setSelectedCategories: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 const FilterButton = ({
-  setFilteredGroups,
-  allGroups,
   selectedCategories,
   setSelectedCategories,
 }: FilterButtonProps) => {

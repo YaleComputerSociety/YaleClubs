@@ -26,7 +26,6 @@ const SearchControl = ({
       <div className="w-full md:w-[600px]">
         <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       </div>
-
       <div className="md:w-auto w-full">
         <FilterButton
           allGroups={allGroups}

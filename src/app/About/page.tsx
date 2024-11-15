@@ -11,7 +11,7 @@ const AboutPage: React.FC = () => {
           <h1 className="text-4xl font-bold mb-4">Welcome to Yale Clubs 🎓</h1>
           <p className="text-lg text-gray-700 mb-8 leading-relaxed">
             YaleClubs provides a streamlined platform to explore student organizations at Yale University. Whether
-            you're a first-year seeking your niche or looking for activities to balance academics, YaleClubs connects
+            you are a first-year seeking your niche or looking for activities to balance academics, YaleClubs connects
             you to student reviews, organization descriptions, and club details—all in one place.
           </p>
           <p className="text-lg text-gray-700 mb-8 leading-relaxed">
