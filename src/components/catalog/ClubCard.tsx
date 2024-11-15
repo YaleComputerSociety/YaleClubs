@@ -103,7 +103,9 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
             {club.email}
           </a>
         )}
-        {club.numMembers && <div>{getAdjustedNumMembers(club.numMembers)} members</div>}
+        {club.numMembers && (
+          <div className="flex-shrink-0 text-right">{getAdjustedNumMembers(club.numMembers)} members</div>
+        )}
       </div>
     </div>
   );
