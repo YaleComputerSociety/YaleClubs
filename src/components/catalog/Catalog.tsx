@@ -11,7 +11,6 @@ interface CatalogProps {
 }
 
 const Catalog = ({ page, setPage }: CatalogProps) => {
-  const numColumns = 2;
   const [isLoading, setIsLoading] = useState(false);
   const [allGroups, setAllGroups] = useState<IClub[]>([]);
   const [filteredGroups, setFilteredGroups] = useState<IClub[]>([]);
@@ -41,7 +40,7 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
     setAllGroups([]); // Clear groups when visiting page to reload everything
     setPage(1); // Reset page number when visiting
     fetchApiMessage(1); // Fetch the first page on load
-  }, []);
+  }, [fetchApiMessage, setPage]);
 
   useEffect(() => {
     if (searchQuery === "") {
@@ -88,33 +87,19 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
 
       {isLoading && page === 1 ? (
         <div className="mx-auto">
-          <div className="loader" style={{ color: "#aaa" }}></div> {/* Loader while fetching the first page */}
+          <div className="text-gray-300"></div> {/* Loader while fetching the first page */}
         </div>
       ) : (
         <InfiniteScroll
           dataLength={filteredGroups.length}
           next={loadMoreData}
           hasMore={hasMore}
-          loader={
-            <div className="loader" style={{ color: "#aaa" }}>
-              Loading...
-            </div>
-          }
+          loader={<div className="text-gray-300">Loading...</div>}
           endMessage={<p style={{ textAlign: "center" }}>No more clubs to display.</p>}
         >
-          <div
-            className="grid"
-            style={{
-              display: "grid",
-              gridTemplateColumns: `repeat(${numColumns}, 1fr)`,
-              gap: "32px",
-              margin: "0 5rem",
-            }}
-          >
+          <div className="grid gap-8 mx-10 xl:mx-20 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center">
             {filteredGroups.map(renderItem)}
-            {selectedClub && (
-              <ClubModal club={selectedClub} onClose={handleCloseModal} /> 
-            )}
+            {selectedClub && <ClubModal club={selectedClub} onClose={handleCloseModal} />}
           </div>
         </InfiniteScroll>
       )}
