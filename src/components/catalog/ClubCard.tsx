@@ -74,7 +74,7 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
   };
 
   return (
-    <div className="border border-gray-200 rounded-xl p-6 flex flex-col gap-4 max-w-lg" onClick={onClick}>
+    <div className="border border-gray-200 rounded-xl p-6 flex flex-col gap-4 max-w-lg w-full" onClick={onClick}>
       <div className="flex flex-row items-center gap-4 border-red-400 border-2 justify-between">
         <div className="flex flex-col justify-center">
           <div className="text-3xl font-semibold line-clamp-2 overflow-hidden">{club.name}</div>
