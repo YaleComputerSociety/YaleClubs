@@ -59,8 +59,22 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
   //     }
   // }, [item.logo, item._id]);
 
+  const getAdjustedNumMembers = (numMembers: number): string => {
+    if (numMembers <= 10) {
+      return "1 - 10";
+    } else if (numMembers <= 25) {
+      return "10 - 25";
+    } else if (numMembers <= 50) {
+      return "25-50";
+    } else if (numMembers <= 100) {
+      return "50-100";
+    } else {
+      return "100+";
+    }
+  };
+
   return (
-    <div className="border border-gray-200 rounded-xl p-6 flex flex-col gap-4" onClick={onClick}>
+    <div className="border border-gray-200 rounded-xl p-6 flex flex-col gap-4 max-w-lg" onClick={onClick}>
       <div className="flex flex-row items-center gap-4 border-red-400 border-2 justify-between">
         <div className="flex flex-col justify-center">
           <div className="text-3xl font-semibold line-clamp-2 overflow-hidden">{club.name}</div>
@@ -75,17 +89,16 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
         {club.logo && <Image src={club.logo} alt="Club Logo" width={100} height={100} className="rounded-full" />}
       </div>
 
-      {club.description && <p style={{ fontSize: "1em", color: "#333" }}>{club.description}</p>}
-      {club.instagram && (
-        <a
-          href={club.instagram}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "#0066cc", textDecoration: "underline" }}
-        >
-          {club.instagram}
-        </a>
-      )}
+      <div className="text-base text-gray-800 line-clamp-3">{club.description ?? "No description..."}</div>
+
+      <div className="flex flex-row items-center justify-between">
+        {club.email && (
+          <a href={`mailto:${club.email}`} className="text-blue-500 underline truncate max-w-xs inline-block">
+            {club.email}
+          </a>
+        )}
+        {club.numMembers && <div>{getAdjustedNumMembers(club.numMembers)} members</div>}
+      </div>
     </div>
   );
 };
