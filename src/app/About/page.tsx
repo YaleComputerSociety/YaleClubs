@@ -10,15 +10,29 @@ const AboutPage: React.FC = () => {
         <div className="max-w-3xl text-center">
           <h1 className="text-4xl font-bold mb-4">Welcome to Yale Clubs 🎓</h1>
           <p className="text-lg text-gray-700 mb-8 leading-relaxed">
-            Discover the vibrant community of clubs and organizations at Yale University. From academic societies and
-            volunteer groups to sports teams and cultural clubs, there’s something here for everyone. Dive into
-            opportunities that will inspire you, connect you, and help you grow.
+            YaleClubs provides a streamlined platform to explore student organizations at Yale University. Whether
+            you're a first-year seeking your niche or looking for activities to balance academics, YaleClubs connects
+            you to student reviews, organization descriptions, and club details—all in one place.
           </p>
           <p className="text-lg text-gray-700 mb-8 leading-relaxed">
+            YaleClubs is a project of the{" "}
+            <a
+              href={"https://yalecomputersociety.org/"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500"
+            >
+              Yale Computer Society
+            </a>
+            {/* Discover the vibrant community of clubs and organizations at Yale University. From academic societies and
+          volunteer groups to sports teams and cultural clubs, there’s something here for everyone. Dive into
+          opportunities that will inspire you, connect you, and help you grow. */}
+          </p>
+          {/* <p className="text-lg text-gray-700 mb-8 leading-relaxed">
             Whether you’re looking to explore a new passion, develop your leadership skills, or make lifelong
             friendships, Yale’s clubs are the perfect place to start. Join us in building a community that’s as diverse
             and dynamic as the students who make it up.
-          </p>
+          </p> */}
         </div>
 
         <div className="max-w-3xl text-center mt-10">
@@ -29,8 +43,18 @@ const AboutPage: React.FC = () => {
                 <h3 className="text-xl font-semibold text-gray-800">{member.name}</h3>
                 <p className="text-gray-600">{member.role}</p>
                 {member.website && (
-                  <a href={member.website} target="_blank" rel="noopener noreferrer" className="text-blue-500">
-                    {member.website}
+                  <a href={member.website} target="_blank" rel="noopener noreferrer">
+                    <img src="/assets/website-icon.png" alt="Website" className="inline-block w-4 h-4" />
+                  </a>
+                )}
+                {member.linkedin && (
+                  <a href={member.linkedin} target="_blank" rel="noopener noreferrer">
+                    <img src="/assets/linkedin-icon.png" alt="Website" className="inline-block w-6 h-6" />
+                  </a>
+                )}
+                {member.github && (
+                  <a href={member.github} target="_blank" rel="noopener noreferrer">
+                    <img src="/assets/github-icon.png" alt="Website" className="inline-block w-4 h-4" />
                   </a>
                 )}
               </div>
@@ -44,10 +68,27 @@ const AboutPage: React.FC = () => {
 };
 
 const teamMembers = [
-  { name: "Addison Goolsbee", role: "Team Lead", website: "https://addisongoolsbee.com" },
-  { name: "Lauren Lee", role: "Developer" },
-  { name: "Koray Akduman", role: "Developer", website: "https://korayakduman.com" },
-  { name: "Grady Yu", role: "Developer" },
+  {
+    name: "Addison Goolsbee",
+    role: "Team Lead",
+    website: "https://addisongoolsbee.com",
+    linkedin: "https://www.linkedin.com/in/addisongoolsbee/",
+    github: "https://github.com/addisongoolsbee",
+  },
+  {
+    name: "Lauren Lee",
+    role: "Developer",
+    linkedin: "https://www.linkedin.com/in/laurenwylee/",
+    github: "https://github.com/laurenwylee?",
+  },
+  {
+    name: "Koray Akduman",
+    role: "Developer",
+    website: "https://korayakduman.com",
+    linkedin: "https://www.linkedin.com/in/korayakduman/",
+    github: "https://github.com/kakduman",
+  },
+  { name: "Grady Yu", role: "Developer", linkedin: "https://www.linkedin.com/in/gradyyu/"},
 ];
 
 export default AboutPage;
