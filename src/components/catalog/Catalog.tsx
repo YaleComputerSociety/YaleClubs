@@ -81,7 +81,7 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Searching.."
-          className="w-full px-4 py-2 border rounded-full text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 border rounded-full text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 my-8"
         />
       </div>
 
@@ -94,10 +94,10 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
           dataLength={filteredGroups.length}
           next={loadMoreData}
           hasMore={hasMore}
-          loader={<div className="text-gray-300">Loading...</div>}
+          //   loader={<div className="text-gray-300">Loading...</div>}
           endMessage={<p style={{ textAlign: "center" }}>No more clubs to display.</p>}
         >
-          <div className="grid gap-8 mx-10 xl:mx-20 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center">
+          <div className="grid gap-8 mx-10 xl:mx-20 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center;">
             {filteredGroups.map(renderItem)}
             {selectedClub && <ClubModal club={selectedClub} onClose={handleCloseModal} />}
           </div>
