@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import axios from "axios";
 import ClubCard from "./ClubCard";
@@ -102,7 +102,7 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
             dataLength={filteredGroups.length}
             next={loadMoreData}
             hasMore={hasMore}
-            loader={<div className="text-gray-300">Loading...</div>}
+            // loader={<div className="text-gray-300">Loading...</div>}
             // endMessage={<p style={{ textAlign: "center" }}>No more clubs to display.</p>}
           >
             <div className="grid gap-8  grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center;">
