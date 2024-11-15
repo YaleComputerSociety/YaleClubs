@@ -150,7 +150,7 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
           loader={<div className="text-gray-300">Loading...</div>}
           endMessage={<p style={{ textAlign: "center" }}>No more clubs to display.</p>}
         >
-          <div className="grid gap-8 mx-20 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center">
+          <div className="grid gap-8 mx-10 xl:mx-20 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center">
             {allGroups.map(renderItem)}
             {selectedClub && (
               <ClubModal club={selectedClub} onClose={handleCloseModal} /> // Render modal if club is selected
