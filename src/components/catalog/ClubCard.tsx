@@ -1,31 +1,3 @@
-// import { useEffect, useState } from 'react';
-// import axios from 'axios';
-
-// const ClubItem = ({ item }) => {
-
-// 	const categories = ["Yale College"];
-//     const [logoUri, setLogoUri] = useState(null);
-
-// 	useEffect(() => {
-// 		const fetchLogoUri = async () => {
-// 			try {
-// 				const response = await axios.get('/api/clubs');
-// 				console.log('API message:', response.data);
-// 				const base64ImageData = response.data;
-//                 const uri = `data:image/jpeg;base64,${base64ImageData}`;
-// 			} catch (error) {
-// 				console.error('Error fetching API message:', error);
-// 			}
-// 		};
-// 		if (item.logo) {
-//             // Fetch if Logo Exists
-//             fetchLogoUri();
-//         }
-//     }, [item.logo]);
-// }
-
-// export default ClubItem;
-
 "use client";
 
 import React from "react";

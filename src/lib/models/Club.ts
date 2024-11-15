@@ -26,18 +26,6 @@ const ClubLeaderSchema = new Schema({
   profilePicture: { type: String },
 });
 
-export interface Meeting {
-  day?: string;
-  time?: string;
-  location?: string;
-}
-
-const MeetingSchema = new Schema({
-  day: { type: String },
-  time: { type: String },
-  location: { type: String },
-});
-
 // Use this when creating/updating a club
 export interface IClubInput {
   name: string;
@@ -53,7 +41,7 @@ export interface IClubInput {
   phone?: string;
   applyForm?: string;
   mailingListForm?: string;
-  meeting?: Meeting;
+  meeting?: string;
   calendarLink?: string;
   affiliation?: string;
 }
@@ -74,7 +62,7 @@ export interface IClub extends Document {
   phone?: string;
   applyForm?: string;
   mailingListForm?: string;
-  meeting?: Meeting;
+  meeting?: string;
   calendarLink?: string;
   affiliation?: string;
 }
@@ -94,7 +82,7 @@ const clubSchema = new Schema<IClub>({
   phone: { type: String },
   applyForm: { type: String },
   mailingListForm: { type: String },
-  meeting: MeetingSchema,
+  meeting: { type: String },
   calendarLink: { type: String },
   affiliation: { type: String },
 });
