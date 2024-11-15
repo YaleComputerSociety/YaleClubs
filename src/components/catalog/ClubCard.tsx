@@ -26,8 +26,11 @@
 
 // export default ClubItem;
 
+"use client";
+
 import React from "react";
 import { IClub } from "@/lib/models/Club";
+import Image from "next/image";
 
 type ClubCardProps = {
   club: IClub;
@@ -57,43 +60,21 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
   // }, [item.logo, item._id]);
 
   return (
-    <div
-      className="club-item-card"
-      onClick={onClick}
-      style={{
-        border: "1px solid #ddd",
-        borderRadius: "8px",
-        padding: "24px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "12px",
-        margin: "16px",
-      }}
-    >
-      <div className="club-header" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-        {/* {logoUri && (
-                    <img src={logoUri} alt="Club Logo" style={{ width: '60px', height: '60px', borderRadius: '50%' }} />
-                )} */}
-        <div>
-          <h3 style={{ fontSize: "1.5em", fontWeight: "bold", margin: 0 }}>{club.name}</h3>
-          {<p style={{ color: "#555", margin: 0 }}></p>}
+    <div className="border border-gray-200 rounded-xl p-6 flex flex-col gap-4" onClick={onClick}>
+      <div className="flex flex-row items-center gap-4 border-red-400 border-2 justify-between">
+        <div className="flex flex-col justify-center">
+          <div className="text-3xl font-semibold line-clamp-2 overflow-hidden">{club.name}</div>
+          <div className="mt-3 club-tags flex gap-2 flex-wrap">
+            {categories.map((tag, index) => (
+              <span key={index} className="bg-[#eee] rounded px-2 py-1 text-xs">
+                {tag}
+              </span>
+            ))}
+          </div>
         </div>
+        {club.logo && <Image src={club.logo} alt="Club Logo" width={100} height={100} className="rounded-full" />}
       </div>
-      <div className="club-tags" style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-        {categories.map((tag, index) => (
-          <span
-            key={index}
-            style={{
-              backgroundColor: "#f0f0f0",
-              borderRadius: "4px",
-              padding: "6px 12px",
-              fontSize: "0.9em",
-            }}
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
+
       {club.description && <p style={{ fontSize: "1em", color: "#333" }}>{club.description}</p>}
       {club.instagram && (
         <a
