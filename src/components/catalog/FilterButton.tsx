@@ -54,45 +54,43 @@ const FilterButton = ({
 	}, [showDropdown]);
 
 	return (
-		<div ref={dropdownRef} className="relative">
-			<div
-			className="border px-4 py-2 rounded cursor-pointer w-72 max-w-full flex items-center justify-between"
-			onClick={() => setShowDropdown((prev) => !prev)}
-			>
-			<div className="flex-1 min-w-0">
-				<div className="flex items-center overflow-hidden">
-					<div className="truncate">
-						{selectedCategories.length > 0 ? (
-						selectedCategories.map((category) => (
-							<span key={category} className="bg-gray-200 px-2 py-1 rounded-full text-sm mr-2">
-							{category}
-							</span>
-						))
-						) : (
-						<span className="text-gray-600">Categories</span>
-						)}
-					</div>
-				</div>
+    <div ref={dropdownRef} className="relative">
+      <div
+        className="border px-4 py-2 rounded cursor-pointer w-72 max-w-full flex items-center justify-between"
+        onClick={() => setShowDropdown((prev) => !prev)}
+      >
+        <div className="flex items-center overflow-hidden min-w-0">
+			<div className="truncate">
+				{selectedCategories.length > 0 ? (
+				selectedCategories.map((category) => (
+					<span key={category} className="bg-gray-200 px-2 py-1 rounded-full text-sm mr-2">
+					{category}
+					</span>
+				))
+				) : (
+				<span className="text-gray-600">Categories</span>
+				)}
 			</div>
-			<span className="ml-2">&#x25BC;</span>
-			</div>
-			{showDropdown && (
-				<div className="absolute mt-2 w-72 max-w-full bg-white border rounded shadow-lg z-10">
-					<div className="flex flex-col p-2 gap-2">
-					{categories.map((category) => (
-						<div
-						key={category}
-						className="cursor-pointer hover:bg-gray-100 px-4 py-2 rounded"
-						onClick={() => handleCategoryChange(category)}
-						>
-						{category}
-						</div>
-					))}
-					</div>
-				</div>
-			)}
-		</div>
-	);
+        </div>
+        <span className="ml-2">&#x25BC;</span>
+      </div>
+      {showDropdown && (
+        <div className="absolute mt-2 w-72 max-w-full bg-white border rounded shadow-lg z-10">
+          <div className="flex flex-col p-2 gap-2">
+            {categories.map((category) => (
+              <div
+                key={category}
+                className="cursor-pointer hover:bg-gray-100 px-4 py-2 rounded"
+                onClick={() => handleCategoryChange(category)}
+              >
+                {category}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default FilterButton;
