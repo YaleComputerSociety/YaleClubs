@@ -10,9 +10,9 @@ const AboutPage: React.FC = () => {
         <div className="max-w-3xl text-center">
           <h1 className="text-4xl font-bold mb-4">Welcome to Yale Clubs 🎓</h1>
           <p className="text-lg text-gray-700 mb-8 leading-relaxed">
-            YaleClubs provides a streamlined platform to explore student organizations at Yale University. Whether
-            you are a first-year seeking your niche or looking for activities to balance academics, YaleClubs connects
-            you to student reviews, organization descriptions, and club details—all in one place.
+            YaleClubs provides a streamlined platform to explore student organizations at Yale University. Whether you
+            are a first-year seeking your niche or looking for activities to balance academics, YaleClubs connects you
+            to student reviews, organization descriptions, and club details—all in one place.
           </p>
           <p className="text-lg text-gray-700 mb-8 leading-relaxed">
             YaleClubs is a project of the{" "}
@@ -24,10 +24,10 @@ const AboutPage: React.FC = () => {
             >
               Yale Computer Society
             </a>
-            {/* Discover the vibrant community of clubs and organizations at Yale University. From academic societies and
+          </p>
+          {/* Discover the vibrant community of clubs and organizations at Yale University. From academic societies and
           volunteer groups to sports teams and cultural clubs, there’s something here for everyone. Dive into
           opportunities that will inspire you, connect you, and help you grow. */}
-          </p>
           {/* <p className="text-lg text-gray-700 mb-8 leading-relaxed">
             Whether you’re looking to explore a new passion, develop your leadership skills, or make lifelong
             friendships, Yale’s clubs are the perfect place to start. Join us in building a community that’s as diverse
