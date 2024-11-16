@@ -96,14 +96,16 @@ const teamMembers = [
   {
     name: "Grady Yu",
     role: "Developer",
+    headshot: "assets/grady_yu.jpg",
     linkedin: "https://www.linkedin.com/in/gradyyu/",
     github: "https://github.com/Ragyudy",
   },
   {
-    name: "First Last",
+    name: "Lucas Huang",
     role: "Developer",
     headshot: "assets/smile.jpg",
-    linkedin: "",
+    website: "https://lucashua.ng/",
+    linkedin: "https://www.linkedin.com/in/huangl16/",
     github: "",
   },
 ];
