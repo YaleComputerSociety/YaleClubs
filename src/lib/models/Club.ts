@@ -38,7 +38,6 @@ export interface IClubInput {
   website?: string;
   email?: string;
   instagram?: string;
-  phone?: string;
   applyForm?: string;
   mailingListForm?: string;
   meeting?: string;
@@ -59,7 +58,6 @@ export interface IClub extends Document {
   website?: string;
   email?: string;
   instagram?: string;
-  phone?: string;
   applyForm?: string;
   mailingListForm?: string;
   meeting?: string;
@@ -79,7 +77,6 @@ const clubSchema = new Schema<IClub>({
   website: { type: String },
   email: { type: String },
   instagram: { type: String },
-  phone: { type: String },
   applyForm: { type: String },
   mailingListForm: { type: String },
   meeting: { type: String },
