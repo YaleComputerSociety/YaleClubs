@@ -57,6 +57,7 @@ const AboutPage: React.FC = () => {
                     <img src="/assets/github-icon.png" alt="Website" className="inline-block w-4 h-4" />
                   </a>
                 )}
+                {member.headshot && <img src={member.headshot} className="mt-5 aspect-square"/>}
               </div>
             ))}
           </div>
@@ -72,12 +73,14 @@ const teamMembers = [
     name: "Addison Goolsbee",
     role: "Team Lead",
     website: "https://addisongoolsbee.com",
+    headshot: "assets/addison.jpg",
     linkedin: "https://www.linkedin.com/in/addisongoolsbee/",
     github: "https://github.com/addisongoolsbee",
   },
   {
     name: "Lauren Lee",
     role: "Developer",
+    headshot: "assets/lauren.jpg",
     linkedin: "https://www.linkedin.com/in/laurenwylee/",
     github: "https://github.com/laurenwylee?",
   },
