@@ -93,7 +93,19 @@ const teamMembers = [
     linkedin: "https://www.linkedin.com/in/korayakduman/",
     github: "https://github.com/kakduman",
   },
-  { name: "Grady Yu", role: "Developer", linkedin: "https://www.linkedin.com/in/gradyyu/"},
+  {
+    name: "Grady Yu",
+    role: "Developer",
+    linkedin: "https://www.linkedin.com/in/gradyyu/",
+    github: "https://github.com/Ragyudy",
+  },
+  {
+    name: "First Last",
+    role: "Developer",
+    headshot: "assets/smile.jpg",
+    linkedin: "",
+    github: "",
+  },
 ];
 
 export default AboutPage;
