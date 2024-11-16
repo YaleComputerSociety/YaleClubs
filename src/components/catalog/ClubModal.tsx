@@ -30,13 +30,14 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div ref={modalRef} className="relative bg-white rounded-lg p-6 w-11/12 max-w-lg h-3/4">
-        <button
+      <div ref={modalRef} className="relative bg-white rounded-lg max-w-3xl h-5/6">
+      <img src={club.backgroundImage} alt="Club Background" className="w-full h-48 object-cover rounded-t-lg mb-4" />
+        {/* <button
           onClick={onClose}
           className="absolute top-2 right-2 text-2xl text-gray-600 hover:text-gray-800 focus:outline-none"
         >
           &times;
-        </button>
+        </button> */}
         <h2 className="text-2xl font-bold mb-4">{club.name}</h2>
         <p className="text-gray-700 mb-4">{club.description}</p>
       </div>
