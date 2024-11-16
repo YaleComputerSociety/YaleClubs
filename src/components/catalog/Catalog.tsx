@@ -52,10 +52,17 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
       searchQuery === ""
         ? allGroups
         : allGroups.filter((club) => {
-            const query = searchQuery.toLowerCase();
-            const nameMatches = club.name.toLowerCase().includes(query);
-            return nameMatches;
+            const queryWords = searchQuery.toLowerCase().split(" ");
+            const nameWords = club.name.toLowerCase().split(" ");
+
+            for (let i = 0; i <= nameWords.length - queryWords.length; i++) {
+              if (queryWords.every((queryWord, index) => nameWords[i + index]?.startsWith(queryWord))) {
+                return true;
+              }
+            }
+            return false;
           });
+
 
     // filter based on the selected categories
     let filteredByCategories;
