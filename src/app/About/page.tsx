@@ -5,8 +5,10 @@ import React from "react";
 const AboutPage: React.FC = () => {
   return (
     <div>
-      <Header />
-      <div className="flex flex-col items-center justify-center min-h-screen p-6">
+      <div className="fixed top-0 z-50">
+        <Header />
+      </div>
+      <div className="flex flex-col items-center justify-center min-h-screen p-6 mt-10">
         <div className="max-w-3xl text-center">
           <h1 className="text-4xl font-bold mb-4">Welcome to Yale Clubs 🎓</h1>
           <p className="text-lg text-gray-700 mb-8 leading-relaxed">
@@ -57,7 +59,7 @@ const AboutPage: React.FC = () => {
                     <img src="/assets/github-icon.png" alt="Website" className="inline-block w-4 h-4" />
                   </a>
                 )}
-                {member.headshot && <img src={member.headshot} className="mt-5 aspect-square"/>}
+                {member.headshot && <img src={member.headshot} className="mt-5 aspect-square" />}
               </div>
             ))}
           </div>
