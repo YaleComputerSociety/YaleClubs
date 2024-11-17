@@ -62,19 +62,22 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
         />
         <div className="flex flex-col md:flex-row m-4 gap-8 h-[calc(100%-14rem)] overflow-y-auto">
           <div className="flex flex-col md:w-2/3">
-            <div className={`${club.name.length > 100 ? "text-2xl" : "text-3xl"} font-bold mb-4`}>{club.name}</div>
-            <div className="flex gap-2 whitespace-nowrap w-full flex-wrap">
-              {club.categories.length > 0 &&
-                club.categories.map((tag, index) => (
+            <div className={`${club.name.length > 100 ? "text-2xl" : "text-3xl"} font-bold`}>{club.name}</div>
+            {club.categories.length > 0 && (
+              <div className="flex gap-2 whitespace-nowrap w-full flex-wrap mt-4">
+                {club.categories.map((tag, index) => (
                   <span key={index} className="bg-[#eee] rounded px-2 py-1 text-sm">
                     {tag}
                   </span>
                 ))}
-            </div>
-            {club.affiliation && (
-              <div className="w-fit bg-[#fdf] rounded px-2 py-1 text-sm mt-4">{club.affiliation}</div>
+              </div>
             )}
-            <div className="text-gray-700 mt-4">{club.description}</div>
+            {club.affiliation ? (
+              <div className="w-fit bg-[#fdf] rounded px-2 py-1 text-sm mt-4">{club.affiliation}</div>
+            ) : (
+              <div className="text-gray-700 text-md mt-4">Unknown affiliation</div>
+            )}
+            <div className="text-gray-700 mt-4">{club.description || "No description"}</div>
             {club.leaders.length > 0 && (
               <div className="mt-4">
                 <div className="text-xl font-bold">Board</div>
