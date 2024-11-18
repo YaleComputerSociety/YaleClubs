@@ -31,6 +31,7 @@
 import React from "react";
 import { IClub } from "@/lib/models/Club";
 import Image from "next/image";
+import { getAdjustedNumMembers } from "@/lib/utils";
 
 type ClubCardProps = {
   club: IClub;
@@ -59,20 +60,6 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
   //     }
   // }, [item.logo, item._id]);
 
-  const getAdjustedNumMembers = (numMembers: number): string => {
-    if (numMembers <= 10) {
-      return "1 - 10";
-    } else if (numMembers <= 25) {
-      return "10 - 25";
-    } else if (numMembers <= 50) {
-      return "25-50";
-    } else if (numMembers <= 100) {
-      return "50-100";
-    } else {
-      return "100+";
-    }
-  };
-
   return (
     <div className="border border-gray-200 rounded-xl p-6 flex flex-col gap-4 max-w-lg w-full" onClick={onClick}>
       <div className="flex flex-row items-center gap-4">
@@ -95,7 +82,7 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
         />
       </div>
 
-      <div className="text-base text-gray-800 line-clamp-3">{club.description ?? "No description..."}</div>
+      <div className="text-base text-gray-800 line-clamp-3">{club.description ?? "No description"}</div>
 
       <div className="flex flex-row items-center justify-between">
         {club.email && (
