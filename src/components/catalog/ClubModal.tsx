@@ -82,18 +82,28 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
               </div>
             </div>
             <div className="flex flex-col">
-              <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
-                <div className="text-gray-500">Website</div>
-                <a className="text-blue-500" href={"https://" + club.website}>
-                  {club.website}
-                </a>
-              </div>
-              <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
-                <div className="text-gray-500">Email</div>
-                <a className="text-blue-500" href={"mailto:" + club.email}>
-                  {club.email}
-                </a>
-              </div>
+              {club.website && (
+                <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
+                  <div className="text-gray-500">Website</div>
+                  <a className="text-blue-500" href={"https://" + club.website}>
+                    {club.website}
+                  </a>
+                </div>
+              )}
+              {club.email && (
+                <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
+                  <div className="text-gray-500">Email</div>
+                  <a className="text-blue-500" href={"mailto:" + club.email}>
+                    {club.email}
+                  </a>
+                </div>
+              )}
+              {club.instagram && (
+                <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
+                  <div className="text-gray-500">Instagram</div>
+                  <div className="text-gray-500">{club.instagram}</div>
+                </div>
+              )}
               {club.applyForm && (
                 <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
                   <div className="text-gray-500">Application</div>
@@ -105,9 +115,23 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
               {club.mailingListForm && (
                 <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
                   <div className="text-gray-500">Mailing List</div>
-                  <a className="text-blue-500" href={"https://" + club.mailingListForm}>
+                  <a className="text-blue-500" href={club.mailingListForm}>
                     Mailing List
                   </a>
+                </div>
+              )}
+              {club.calendarLink && (
+                <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
+                  <div className="text-gray-500">Calendar</div>
+                  <a className="text-blue-500" href={club.calendarLink}>
+                    Calendar Link
+                  </a>
+                </div>
+              )}
+              {club.meeting && (
+                <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
+                  <div className="text-gray-500">Meeting</div>
+                  <div className="text-gray-500">{club.meeting}</div>
                 </div>
               )}
             </div>
