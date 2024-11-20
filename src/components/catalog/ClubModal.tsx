@@ -43,10 +43,12 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
         ref={modalRef}
         className="relative bg-white rounded-lg max-w-3xl w-full mx-5 md:mx-auto h-5/6 overflow-hidden"
       >
-        <img
+        <Image
           src={club.backgroundImage || "/assets/default-background.png"}
           alt="Club Background"
-          className="w-full h-48 object-cover rounded-t-lg mb-4"
+          className="w-full h-1/4 md:h-48 object-cover rounded-t-lg mb-4"
+          width={768}
+          height={192}
         />
         <div className="flex flex-col md:flex-row m-4 gap-4 h-[calc(100%-14rem)] overflow-y-auto">
           <div className="flex flex-col md:w-3/5">
