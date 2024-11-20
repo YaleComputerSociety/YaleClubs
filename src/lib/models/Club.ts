@@ -22,7 +22,7 @@ export enum ClubAffiliation {
 
 export interface ClubLeader {
   email: string;
-  name?: string;
+  name: string;
   year?: number;
   role?: string;
   netId?: string;
@@ -31,7 +31,7 @@ export interface ClubLeader {
 
 const ClubLeaderSchema = new Schema({
   email: { type: String, required: true },
-  name: { type: String },
+  name: { type: String, required: true },
   year: { type: Number },
   role: { type: String },
   netId: { type: String },
