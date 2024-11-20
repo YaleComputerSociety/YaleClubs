@@ -53,7 +53,7 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
             .toLowerCase()
             .split(" ")
             .some((word) => word.startsWith(query));
-          const categoryMatches = club.categories.some((category) => category.toLowerCase().startsWith(query));
+          const categoryMatches = (club.categories ?? []).some((category) => category.toLowerCase().startsWith(query));
           return nameMatches || categoryMatches;
         }),
       );

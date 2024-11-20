@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { IClub } from "@/lib/models/Club";
+import Link from "next/link";
 import Board from "./Board";
 import Image from "next/image";
 import { getAdjustedNumMembers } from "@/lib/utils";
@@ -39,10 +40,18 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div
-        ref={modalRef}
-        className="relative bg-white rounded-lg max-w-3xl w-full mx-5 md:mx-auto h-5/6 overflow-hidden"
-      >
+      <div ref={modalRef} className="relative bg-white rounded-lg p-6 w-11/12 max-w-lg h-3/4">
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-4 text-2xl text-gray-600 hover:text-gray-800 focus:outline-none"
+        >
+          &times;
+        </button>
+        <h2 className="text-2xl font-bold mb-4">{club.name}</h2>
+        <p className="text-gray-700 mb-4">{club.description}</p>
+        <button className="absolute bottom-4 right-4 px-4 py-2 text-lg font-medium text-white bg-indigo-600 rounded shadow hover:bg-indigo-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+          <Link href={`/Update?clubId=${club._id}`}>Edit Here</Link>
+        </button>
         <img
           src={club.backgroundImage || "/assets/default-background.png"}
           alt="Club Background"
