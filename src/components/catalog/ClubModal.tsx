@@ -50,94 +50,101 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
           width={768}
           height={192}
         />
-        <div className="flex flex-col md:flex-row m-4 gap-4 h-[calc(100%-14rem)] overflow-y-auto">
-          <div className="flex flex-col md:w-3/5">
-            <div className={`${club.name.length > 100 ? "text-2xl" : "text-3xl"} font-bold`}>{club.name}</div>
-            {club.categories && club.categories.length > 0 && (
-              <div className="flex gap-2 whitespace-nowrap w-full flex-wrap mt-4">
-                {club.categories.map((tag, index) => (
-                  <span key={index} className="bg-[#eee] rounded px-2 py-1 text-sm">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-            {club.affiliations && club.affiliations.length > 0 ? (
-              <div className="w-fit bg-[#fdf] rounded px-2 py-1 text-sm mt-4">{club.affiliations[0]}</div>
-            ) : (
-              <div className="text-gray-700 text-md mt-4">Unknown affiliation</div>
-            )}
-            <div className="text-gray-700 mt-4">{club.description || "No description"}</div>
-            <Board leaders={club.leaders} />
-          </div>
-          <div className="flex flex-col w-2/5">
-            <div className="flex flex-col items-center gap-4">
-              <Image
-                src={club.logo ?? "/assets/default-logo.png"}
-                alt="Club Logo"
-                width={100}
-                height={100}
-                className={`${club.logo ? "rounded-full" : ""} flex-shrink-0`}
-              />
-              <div className="flex-shrink-0 text-right">
-                {club.numMembers ? getAdjustedNumMembers(club.numMembers) : "Unknown # of"} members
-              </div>
-            </div>
-            <div className="flex flex-col">
-              {club.website && (
-                <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
-                  <div className="text-gray-500">Website</div>
-                  <a className="text-blue-500" href={"https://" + club.website}>
-                    {club.website}
-                  </a>
+        <div className="flex flex-col h-[calc(100%-14rem)] overflow-y-auto overflow-x-hidden m-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex flex-col md:w-3/5">
+              <div className={`${club.name.length > 100 ? "text-2xl" : "text-3xl"} font-bold`}>{club.name}</div>
+              {club.categories && club.categories.length > 0 && (
+                <div className="flex gap-2 whitespace-nowrap w-full flex-wrap mt-4">
+                  {club.categories.map((tag, index) => (
+                    <span key={index} className="bg-[#eee] rounded px-2 py-1 text-sm">
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               )}
-              {club.email && (
+              {club.affiliations && club.affiliations.length > 0 ? (
+                <div className="w-fit bg-[#fdf] rounded px-2 py-1 text-sm mt-4">{club.affiliations[0]}</div>
+              ) : (
+                <div className="text-gray-700 text-md mt-4">Unknown affiliation</div>
+              )}
+              <div className="text-gray-700 mt-4">{club.description || "No description"}</div>
+            </div>
+            <div className="flex flex-col md:w-2/5 items-center">
+              <div className="flex flex-col items-center gap-4">
+                <Image
+                  src={club.logo ?? "/assets/default-logo.png"}
+                  alt="Club Logo"
+                  width={100}
+                  height={100}
+                  className={`${club.logo ? "rounded-full" : ""} flex-shrink-0`}
+                />
+              </div>
+              <div className="flex flex-col w-full sm:w-3/4 md:w-full">
+                {club.website && (
+                  <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
+                    <div className="text-gray-500">Website</div>
+                    <a className="text-blue-500" href={"https://" + club.website}>
+                      {club.website}
+                    </a>
+                  </div>
+                )}
                 <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
                   <div className="text-gray-500">Email</div>
-                  <a className="text-blue-500" href={"mailto:" + club.email}>
-                    {club.email}
-                  </a>
+                  {club.email ? (
+                    <a className="text-blue-500" href={"mailto:" + club.email}>
+                      {club.email}
+                    </a>
+                  ) : (
+                    <div className="text-gray-500">Unknown email</div>
+                  )}
                 </div>
-              )}
-              {club.instagram && (
                 <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
-                  <div className="text-gray-500">Instagram</div>
-                  <div className="text-gray-500">{club.instagram}</div>
+                  <div className="text-gray-500">Membership</div>
+                  <div className="text-gray-500">
+                    {club.numMembers ? getAdjustedNumMembers(club.numMembers) : "Unknown # of"} members
+                  </div>
                 </div>
-              )}
-              {club.applyForm && (
-                <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
-                  <div className="text-gray-500">Application</div>
-                  <a className="text-blue-500" href={"https://" + club.applyForm}>
-                    Application Form
-                  </a>
-                </div>
-              )}
-              {club.mailingListForm && (
-                <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
-                  <div className="text-gray-500">Mailing List</div>
-                  <a className="text-blue-500" href={club.mailingListForm}>
-                    Mailing List
-                  </a>
-                </div>
-              )}
-              {club.calendarLink && (
-                <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
-                  <div className="text-gray-500">Calendar</div>
-                  <a className="text-blue-500" href={club.calendarLink}>
-                    Calendar Link
-                  </a>
-                </div>
-              )}
-              {club.meeting && (
-                <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
-                  <div className="text-gray-500">Meeting</div>
-                  <div className="text-gray-500">{club.meeting}</div>
-                </div>
-              )}
+                {club.instagram && (
+                  <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
+                    <div className="text-gray-500">Instagram</div>
+                    <div className="text-gray-500">{club.instagram}</div>
+                  </div>
+                )}
+                {club.applyForm && (
+                  <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
+                    <div className="text-gray-500">Application</div>
+                    <a className="text-blue-500" href={"https://" + club.applyForm}>
+                      Application Form
+                    </a>
+                  </div>
+                )}
+                {club.mailingListForm && (
+                  <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
+                    <div className="text-gray-500">Mailing List</div>
+                    <a className="text-blue-500" href={club.mailingListForm}>
+                      Mailing List
+                    </a>
+                  </div>
+                )}
+                {club.calendarLink && (
+                  <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
+                    <div className="text-gray-500">Calendar</div>
+                    <a className="text-blue-500" href={club.calendarLink}>
+                      Calendar Link
+                    </a>
+                  </div>
+                )}
+                {club.meeting && (
+                  <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
+                    <div className="text-gray-500">Meeting</div>
+                    <div className="text-gray-500">{club.meeting}</div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+          <Board leaders={club.leaders} />
         </div>
       </div>
     </div>
