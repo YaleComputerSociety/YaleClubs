@@ -8,9 +8,21 @@ export enum ClubCategory {
   MUSIC = "Music",
 }
 
+export enum ClubAffiliation {
+  COLLEGE = "Yale College",
+  LAW = "Law School",
+  DRAMA = "School of Drama",
+  MEDICINE = "School of Medicine",
+  ENVIRONMENT = "School of the Environment",
+  ARCHITECTURE = "School of Architecture",
+  MANAGEMENT = "School of Management",
+  GSAS_ADMIN = "Graduate School of Arts & Sciences (GSAS) Administration",
+  GSAS = "Graduate School of Arts & Sciences (GSAS)",
+}
+
 export interface ClubLeader {
   email: string;
-  name?: string;
+  name: string;
   year?: number;
   role?: string;
   netId?: string;
@@ -19,7 +31,7 @@ export interface ClubLeader {
 
 const ClubLeaderSchema = new Schema({
   email: { type: String, required: true },
-  name: { type: String },
+  name: { type: String, required: true },
   year: { type: Number },
   role: { type: String },
   netId: { type: String },
@@ -30,7 +42,7 @@ const ClubLeaderSchema = new Schema({
 export interface IClubInput {
   name: string;
   description?: string;
-  categories: ClubCategory[];
+  categories?: ClubCategory[];
   leaders: ClubLeader[];
   logo?: string;
   backgroundImage?: string;
@@ -38,12 +50,11 @@ export interface IClubInput {
   website?: string;
   email?: string;
   instagram?: string;
-  phone?: string;
   applyForm?: string;
   mailingListForm?: string;
   meeting?: string;
   calendarLink?: string;
-  affiliation?: string;
+  affiliations?: ClubAffiliation[];
 }
 
 // Use this when fetching a club
@@ -51,7 +62,7 @@ export interface IClub extends Document {
   _id: string;
   name: string;
   description?: string;
-  categories: ClubCategory[];
+  categories?: ClubCategory[];
   leaders: ClubLeader[];
   logo?: string;
   backgroundImage?: string;
@@ -59,19 +70,18 @@ export interface IClub extends Document {
   website?: string;
   email?: string;
   instagram?: string;
-  phone?: string;
   applyForm?: string;
   mailingListForm?: string;
   meeting?: string;
   calendarLink?: string;
-  affiliation?: string;
+  affiliations?: ClubAffiliation[];
 }
 
 // Club Schema
 const clubSchema = new Schema<IClub>({
   name: { type: String, required: true },
   description: { type: String },
-  categories: { type: [String], enum: Object.values(ClubCategory), required: true },
+  categories: { type: [String], enum: Object.values(ClubCategory), default: [] },
   leaders: { type: [ClubLeaderSchema], required: true },
   logo: { type: String },
   backgroundImage: { type: String },
@@ -79,12 +89,11 @@ const clubSchema = new Schema<IClub>({
   website: { type: String },
   email: { type: String },
   instagram: { type: String },
-  phone: { type: String },
   applyForm: { type: String },
   mailingListForm: { type: String },
   meeting: { type: String },
   calendarLink: { type: String },
-  affiliation: { type: String },
+  affiliations: { type: [String], enum: Object.values(ClubCategory), default: [] },
 });
 
 const Club = mongoose.models.Club || mongoose.model<IClub>("Club", clubSchema);
