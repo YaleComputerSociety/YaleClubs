@@ -94,13 +94,22 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
                   {club.email}
                 </a>
               </div>
-              <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
-                <div className="text-gray-500">Application</div>
-                {}
-                <a className="text-blue-500" href={"https://" + club.applyForm}>
-                  Application Form
-                </a>
-              </div>
+              {club.applyForm && (
+                <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
+                  <div className="text-gray-500">Application</div>
+                  <a className="text-blue-500" href={"https://" + club.applyForm}>
+                    Application Form
+                  </a>
+                </div>
+              )}
+              {club.mailingListForm && (
+                <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
+                  <div className="text-gray-500">Mailing List</div>
+                  <a className="text-blue-500" href={"https://" + club.mailingListForm}>
+                    Mailing List
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         </div>
