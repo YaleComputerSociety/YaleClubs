@@ -4,6 +4,7 @@ import Board from "./Board";
 import Image from "next/image";
 import { getAdjustedNumMembers } from "@/lib/utils";
 import { useMediaQuery } from "react-responsive";
+import ClubModalRightLabel from "./ClubModalRightLabel";
 
 type ClubModalProps = {
   club: IClub;
@@ -98,66 +99,17 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
                 </div>
               )}
               <div className="flex flex-col w-full sm:w-3/4 md:w-full">
-                {club.website && (
-                  <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
-                    <div className="text-gray-500">Website</div>
-                    <a className="text-blue-500" href={"https://" + club.website}>
-                      {club.website}
-                    </a>
-                  </div>
-                )}
-                <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
-                  <div className="text-gray-500">Email</div>
-                  {club.email ? (
-                    <a className="text-blue-500" href={"mailto:" + club.email}>
-                      {club.email}
-                    </a>
-                  ) : (
-                    <div className="text-gray-500">Unknown email</div>
-                  )}
-                </div>
-                <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
-                  <div className="text-gray-500">Membership</div>
-                  <div className="text-gray-500">
-                    {club.numMembers ? getAdjustedNumMembers(club.numMembers) : "Unknown # of"} members
-                  </div>
-                </div>
-                {club.instagram && (
-                  <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
-                    <div className="text-gray-500">Instagram</div>
-                    <div className="text-gray-500">{club.instagram}</div>
-                  </div>
-                )}
-                {club.applyForm && (
-                  <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
-                    <div className="text-gray-500">Application</div>
-                    <a className="text-blue-500" href={"https://" + club.applyForm}>
-                      Application Form
-                    </a>
-                  </div>
-                )}
-                {club.mailingListForm && (
-                  <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
-                    <div className="text-gray-500">Mailing List</div>
-                    <a className="text-blue-500" href={club.mailingListForm}>
-                      Mailing List
-                    </a>
-                  </div>
-                )}
-                {club.calendarLink && (
-                  <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
-                    <div className="text-gray-500">Calendar</div>
-                    <a className="text-blue-500" href={club.calendarLink}>
-                      Calendar Link
-                    </a>
-                  </div>
-                )}
-                {club.meeting && (
-                  <div className="flex flex-row justify-between gap-2 text-sm mt-4 font-semibold">
-                    <div className="text-gray-500">Meeting</div>
-                    <div className="text-gray-500">{club.meeting}</div>
-                  </div>
-                )}
+                <ClubModalRightLabel header="Website" content={club.website} link={club.website} />
+                <ClubModalRightLabel header="Email" content={club.email} link={"mailto:" + club.email} />
+                <ClubModalRightLabel
+                  header="Membership"
+                  content={`${club.numMembers ? getAdjustedNumMembers(club.numMembers) : "Unknown # of"} members`}
+                />
+                <ClubModalRightLabel header="Instagram" content={club.instagram} />
+                <ClubModalRightLabel header="Application Form" content="Application Form Link" link={club.applyForm} />
+                <ClubModalRightLabel header="Mailing List" content="Mailing List Link" link={club.mailingListForm} />
+                <ClubModalRightLabel header="Calendar" content="Calendar Link" link={club.calendarLink} />
+                <ClubModalRightLabel header="Meeting" content={club.meeting} />
               </div>
             </div>
           </div>
