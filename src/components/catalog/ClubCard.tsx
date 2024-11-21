@@ -33,7 +33,10 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
   // }, [item.logo, item._id]);
 
   return (
-    <div className="border border-gray-200 rounded-xl p-6 flex flex-col gap-4 max-w-lg w-full" onClick={onClick}>
+    <div
+      className="border border-gray-200 rounded-xl p-6 flex flex-col gap-4 max-w-lg w-full search-control-container cursor-pointer"
+      onClick={onClick}
+    >
       <div className="flex flex-row items-center gap-4">
         <div className="flex flex-col justify-center flex-1 min-w-0">
           <div className="text-3xl font-semibold line-clamp-2 overflow-hidden">{club.name}</div>
