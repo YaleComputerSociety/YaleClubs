@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import axios from "axios";
 import ClubCard from "./ClubCard";
 import ClubModal from "./ClubModal";
 import { IClub } from "@/lib/models/Club";
+import SearchControl from "./SearchControl";
 
 interface CatalogProps {
   page: number;
@@ -17,6 +18,7 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
   const [hasMore, setHasMore] = useState(true);
   const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   const handleCloseModal = () => setSelectedClub(null);
 
@@ -27,7 +29,7 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
       if (response.data.length === 0) {
         setHasMore(false);
       } else {
-        setAllGroups((prevGroups) => [...prevGroups, ...response.data]);
+        setAllGroups((prevGroups) => (pageNum === 1 ? response.data : [...new Set([...prevGroups, ...response.data])]));
       }
     } catch (error) {
       console.error(error);
@@ -37,33 +39,49 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
   }, []);
 
   useEffect(() => {
-    setAllGroups([]); // Clear groups when visiting page to reload everything
-    setPage(1); // Reset page number when visiting
-    fetchApiMessage(1); // Fetch the first page on load
-  }, [fetchApiMessage, setPage]);
-
-  useEffect(() => {
-    if (searchQuery === "") {
-      setFilteredGroups(allGroups);
-    } else {
-      setFilteredGroups(
-        allGroups.filter((club) => {
-          const query = searchQuery.toLowerCase();
-          const nameMatches = club.name
-            .toLowerCase()
-            .split(" ")
-            .some((word) => word.startsWith(query));
-          const categoryMatches = club.categories.some((category) => category.toLowerCase().startsWith(query));
-          return nameMatches || categoryMatches;
-        }),
-      );
+    if (page === 1) {
+      setAllGroups([]); // Clear previous data
     }
-  }, [searchQuery, allGroups]);
+    fetchApiMessage(page);
+  }, [fetchApiMessage, page]);
+
+  // Filter clubs based on search query and selected categories
+  useEffect(() => {
+    // filter based on the search query
+    const filteredBySearch =
+      searchQuery === ""
+        ? allGroups
+        : allGroups.filter((club) => {
+            const queryWords = searchQuery.toLowerCase().split(" ");
+            const nameWords = club.name.toLowerCase().split(" ");
+
+            for (let i = 0; i <= nameWords.length - queryWords.length; i++) {
+              if (queryWords.every((queryWord, index) => nameWords[i + index]?.startsWith(queryWord))) {
+                return true;
+              }
+            }
+            return false;
+          });
+
+
+    // filter based on the selected categories
+    let filteredByCategories;
+    if (selectedCategories.length > 0) {
+      filteredByCategories = filteredBySearch.filter((club) =>
+        selectedCategories.some((selectedCategory) => club.categories.includes(selectedCategory)),
+      );
+    } else {
+      filteredByCategories = filteredBySearch;
+    }
+
+    // Sort
+    const sortedFilteredGroups = filteredByCategories.sort((a, b) => a.name.localeCompare(b.name));
+
+    setFilteredGroups(sortedFilteredGroups);
+  }, [searchQuery, allGroups, selectedCategories]);
 
   const renderClubItem = (club: IClub) => <ClubCard key={club._id} club={club} onClick={() => setSelectedClub(club)} />;
   renderClubItem.displayName = "RenderClubItem";
-
-  const renderItem = useMemo(() => renderClubItem, []);
 
   const loadMoreData = () => {
     console.log("Loading more data...");
@@ -72,33 +90,33 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
   };
 
   return (
-    <div>
-      <div className="px-5 ml-20 mt-16">
-        <h1 className="text-3xl font-bold">Browse Clubs</h1>
-        <h2 className="text-xl mb-8">Shopping has never been easier.</h2>
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Searching.."
-          className="w-full px-4 py-2 border rounded-full text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+    <div className="px-5 mx-20 mt-16">
+      <h1 className="text-3xl font-bold">Browse Clubs</h1>
+      <h2 className="text-xl mb-8">Finding Clubs has Never Been Easier.</h2>
+
+      <SearchControl
+        allGroups={allGroups}
+        setFilteredGroups={setFilteredGroups}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        selectedCategories={selectedCategories}
+        setSelectedCategories={setSelectedCategories}
+      />
 
       {isLoading && page === 1 ? (
-        <div className="mx-auto">
-          <div className="text-gray-300"></div> {/* Loader while fetching the first page */}
-        </div>
+        <div className="text-center text-gray-500 mt-10">Loading...</div>
+      ) : !isLoading && filteredGroups.length === 0 ? (
+        <div className="text-center text-gray-500 mt-10">No results found.</div>
       ) : (
         <InfiniteScroll
           dataLength={filteredGroups.length}
           next={loadMoreData}
           hasMore={hasMore}
-          loader={<div className="text-gray-300">Loading...</div>}
-          endMessage={<p style={{ textAlign: "center" }}>No more clubs to display.</p>}
+          // loader={<div className="text-gray-300">Loading...</div>}
+          // endMessage={<p style={{ textAlign: "center" }}>No more clubs to display.</p>}
         >
-          <div className="grid gap-8 mx-10 xl:mx-20 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center">
-            {filteredGroups.map(renderItem)}
+          <div className="grid gap-8  grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center;">
+            {filteredGroups.map(renderClubItem)}
             {selectedClub && <ClubModal club={selectedClub} onClose={handleCloseModal} />}
           </div>
         </InfiniteScroll>
