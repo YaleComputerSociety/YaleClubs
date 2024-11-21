@@ -106,9 +106,21 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
                   content={`${club.numMembers ? getAdjustedNumMembers(club.numMembers) : "Unknown # of"} members`}
                 />
                 <ClubModalRightLabel header="Instagram" content={club.instagram} />
-                <ClubModalRightLabel header="Application Form" content="Application Form Link" link={club.applyForm} />
-                <ClubModalRightLabel header="Mailing List" content="Mailing List Link" link={club.mailingListForm} />
-                <ClubModalRightLabel header="Calendar" content="Calendar Link" link={club.calendarLink} />
+                <ClubModalRightLabel
+                  header="Application Form"
+                  content={club.applyForm ? "Application Form Link" : undefined}
+                  link={club.applyForm}
+                />
+                <ClubModalRightLabel
+                  header="Mailing List"
+                  content={club.mailingListForm ? "Mailing List Link" : undefined}
+                  link={club.mailingListForm}
+                />
+                <ClubModalRightLabel
+                  header="Calendar"
+                  content={club.calendarLink ? "Calendar Link" : undefined}
+                  link={club.calendarLink}
+                />
                 <ClubModalRightLabel header="Meeting" content={club.meeting} />
               </div>
             </div>
