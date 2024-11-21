@@ -13,7 +13,7 @@ interface CatalogProps {
 
 const Catalog = ({ page, setPage }: CatalogProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [allGroups, setAllGroups] = useState<IClub[]>([]);
+  const [allClubs, setallClubs] = useState<IClub[]>([]);
   const [filteredGroups, setFilteredGroups] = useState<IClub[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
@@ -29,7 +29,7 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
       if (response.data.length === 0) {
         setHasMore(false);
       } else {
-        setAllGroups((prevGroups) => (pageNum === 1 ? response.data : [...new Set([...prevGroups, ...response.data])]));
+        setallClubs((prevGroups) => (pageNum === 1 ? response.data : [...new Set([...prevGroups, ...response.data])]));
       }
     } catch (error) {
       console.error(error);
@@ -40,7 +40,7 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
 
   useEffect(() => {
     if (page === 1) {
-      setAllGroups([]); // Clear previous data
+      setallClubs([]); // Clear previous data
     }
     fetchApiMessage(page);
   }, [fetchApiMessage, page]);
@@ -50,8 +50,8 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
     // filter based on the search query
     const filteredBySearch =
       searchQuery === ""
-        ? allGroups
-        : allGroups.filter((club) => {
+        ? allClubs
+        : allClubs.filter((club) => {
             const queryWords = searchQuery.toLowerCase().split(" ");
             const nameWords = club.name.toLowerCase().split(" ");
 
@@ -77,7 +77,7 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
     const sortedFilteredGroups = filteredByCategories.sort((a, b) => a.name.localeCompare(b.name));
 
     setFilteredGroups(sortedFilteredGroups);
-  }, [searchQuery, allGroups, selectedCategories]);
+  }, [searchQuery, allClubs, selectedCategories]);
 
   const renderClubItem = (club: IClub) => <ClubCard key={club._id} club={club} onClick={() => setSelectedClub(club)} />;
   renderClubItem.displayName = "RenderClubItem";
@@ -94,7 +94,7 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
       <h2 className="text-xl mb-8">Finding Clubs has Never Been Easier.</h2>
 
       <SearchControl
-        allGroups={allGroups}
+        allClubs={allClubs}
         setFilteredGroups={setFilteredGroups}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
