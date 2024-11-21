@@ -89,6 +89,7 @@ const teamMembers = [
   {
     name: "Koray Akduman",
     role: "Developer",
+    headshot: "assets/koray.jpeg",
     website: "https://korayakduman.com",
     linkedin: "https://www.linkedin.com/in/korayakduman/",
     github: "https://github.com/kakduman",
