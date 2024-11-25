@@ -14,7 +14,6 @@ import CategoriesDropdown from "@/components/update/ClubCategories";
 import AffiliationDropdown from "@/components/update/ClubAffiliation";
 
 const UpdatePage = () => {
-  // const router = useRouter();
   const searchParams = useSearchParams();
   const [club, setClub] = useState<IClub | null>(null);
   const [formData, setFormData] = useState<IClubInput>({
