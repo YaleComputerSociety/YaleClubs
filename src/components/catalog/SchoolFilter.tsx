@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { IClub } from "@/lib/models/Club";
-import { ClubAffiliation } from "@/lib/models/Club";
+import { School } from "@/lib/models/Club";
 // import { ClubCategory } from "@/lib/models/Club";
-// import { ClubAffiliation } from "@/lib/models/Club";
+// import { School } from "@/lib/models/Club";
 
 interface SchoolFilterButtonProps {
   setFilteredGroups: React.Dispatch<React.SetStateAction<IClub[]>>;
@@ -14,30 +14,7 @@ const SchoolFilterButton = ({ selectedSchools, setSelectedSchools }: SchoolFilte
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const schools = Object.values(ClubAffiliation);
-  // const schools = [
-  //   "Yale College",
-  //   "Law School",
-  //   "School of Drama",
-  //   "School of Medicine",
-  //   "School of the Environment",
-  //   "School of Architecture",
-  //   "School of Management",
-  //   "Graduate School of Arts & Sciences (GSAS) Administration",
-  //   "Graduate School of Arts & Sciences (GSAS)",
-  // ];
-
-  // const school {
-  //   COLLEGE = "Yale College",
-  //   LAW = "Law School",
-  //   DRAMA = "School of Drama",
-  //   MEDICINE = "School of Medicine",
-  //   ENVIRONMENT = "School of the Environment",
-  //   ARCHITECTURE = "School of Architecture",
-  //   MANAGEMENT = "School of Management",
-  //   GSAS_ADMIN = "Graduate School of Arts & Sciences (GSAS) Administration",
-  //   GSAS = "Graduate School of Arts & Sciences (GSAS)",
-  // }
+  const schools = Object.values(School);
 
   const availableSchools = schools.filter((school) => !selectedSchools.includes(school));
 

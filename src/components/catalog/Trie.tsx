@@ -66,7 +66,6 @@ export class Trie {
 
     allClubs.forEach((club) => {
       const words = club.name.toLowerCase().split(/\s+/);
-      console.log(`Inserting words for club "${club.name}":`, words);
       words.forEach((word) => this.insert(word, club.name));
     });
 
@@ -76,9 +75,7 @@ export class Trie {
       const prefix = query.trim().toLowerCase();
       if (!prefix) continue;
 
-      console.log(`Searching for prefix: "${prefix}"`);
       const matchingNames = this.search(prefix);
-      console.log(`Matching names for prefix "${prefix}":`, matchingNames);
 
       if (!matchingNames.length) {
         return []; 

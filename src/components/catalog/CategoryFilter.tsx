@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { IClub } from "@/lib/models/Club";
-import { ClubCategory } from "@/lib/models/Club";
-// import { ClubAffiliation } from "@/lib/models/Club";
+import { Category } from "@/lib/models/Club";
 
 interface CategoryFilterButtonProps {
   setFilteredGroups: React.Dispatch<React.SetStateAction<IClub[]>>;
@@ -13,7 +12,7 @@ const CategoryFilterButton = ({ selectedCategories, setSelectedCategories }: Cat
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const categories = Object.values(ClubCategory);
+  const categories = Object.values(Category);
   // const categories = [
   //   "Pre-Professional",
   //   "Entrepreneurial/Business",
