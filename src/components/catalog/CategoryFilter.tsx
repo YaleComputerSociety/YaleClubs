@@ -1,23 +1,28 @@
 import React, { useState, useRef, useEffect } from "react";
 import { IClub } from "@/lib/models/Club";
+import { ClubCategory } from "@/lib/models/Club";
+// import { ClubAffiliation } from "@/lib/models/Club";
 
-interface FilterButtonProps {
+interface CategoryFilterButtonProps {
   setFilteredGroups: React.Dispatch<React.SetStateAction<IClub[]>>;
   selectedCategories: string[];
   setSelectedCategories: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-const FilterButton = ({ selectedCategories, setSelectedCategories }: FilterButtonProps) => {
+const CategoryFilterButton = ({ selectedCategories, setSelectedCategories }: CategoryFilterButtonProps) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const categories = [
-    "Pre-Professional",
-    "Entrepreneurial/Business",
-    "Media/Technology",
-    "Science/Technology",
-    "Cultural",
-  ];
+  const categories = Object.values(ClubCategory);
+  // const categories = [
+  //   "Pre-Professional",
+  //   "Entrepreneurial/Business",
+  //   "Media/Technology",
+  //   "Science/Technology",
+  //   "Cultural",
+  // ];
+
+
 
   const availableCategories = categories.filter((category) => !selectedCategories.includes(category));
 
@@ -50,7 +55,7 @@ const FilterButton = ({ selectedCategories, setSelectedCategories }: FilterButto
   return (
     <div ref={dropdownRef} className="relative">
       <div
-        className="border px-4 py-2 rounded cursor-pointer w-72 max-w-full flex items-center justify-between"
+        className="border px-4 py-2 rounded cursor-pointer w-60 max-w-full flex items-center justify-between"
         onClick={() => setShowDropdown((prev) => !prev)}
       >
         <div className="flex items-center overflow-x-auto min-w-0 space-x-2">
@@ -101,4 +106,4 @@ const FilterButton = ({ selectedCategories, setSelectedCategories }: FilterButto
   );
 };
 
-export default FilterButton;
+export default CategoryFilterButton;

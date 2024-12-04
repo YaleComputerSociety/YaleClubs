@@ -5,6 +5,7 @@ import ClubCard from "./ClubCard";
 import ClubModal from "./ClubModal";
 import { IClub } from "@/lib/models/Club";
 import SearchControl from "./SearchControl";
+import Trie from "./Trie";
 
 interface CatalogProps {
   page: number;
@@ -19,6 +20,9 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
   const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedSchools, setSelectedSchools] = useState<string[]>([]);
+  const [selectedAffiliations, setSelectedAffiliations] = useState<string[]>([]);
+  const [clubTrie, setClubTrie] = useState<Trie | null>(null);
 
   const handleCloseModal = () => setSelectedClub(null);
 
@@ -29,7 +33,13 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
       if (response.data.length === 0) {
         setHasMore(false);
       } else {
-        setallClubs((prevGroups) => (pageNum === 1 ? response.data : [...new Set([...prevGroups, ...response.data])]));
+        const updatedClubs = pageNum === 1 ? response.data : [...new Set([...allClubs, ...response.data])];
+        setallClubs(updatedClubs);
+
+        // Rebuild the Trie when new clubs are fetched
+        const newTrie = new Trie();
+        updatedClubs.forEach((club) => newTrie.insert(club.name));
+        setClubTrie(newTrie);
       }
     } catch (error) {
       console.error(error);
@@ -47,21 +57,31 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
 
   // Filter clubs based on search query and selected categories
   useEffect(() => {
-    // filter based on the search query
-    const filteredBySearch =
-      searchQuery === ""
-        ? allClubs
-        : allClubs.filter((club) => {
-            const queryWords = searchQuery.toLowerCase().split(" ");
-            const nameWords = club.name.toLowerCase().split(" ");
+    if (!clubTrie || allClubs.length === 0) {
+      console.warn("Trie or allClubs not initialized yet");
+      return;
+    }
 
-            for (let i = 0; i <= nameWords.length - queryWords.length; i++) {
-              if (queryWords.every((queryWord, index) => nameWords[i + index]?.startsWith(queryWord))) {
-                return true;
-              }
-            }
-            return false;
-          });
+   let filteredBySearch = allClubs;
+
+   if (searchQuery.trim() !== "") {
+     const queryWords = searchQuery
+       .toLowerCase()
+       .split(" ")
+       .filter((word) => word.trim() !== "");
+
+     let matchingNames = clubTrie.getWordsWithPrefixes(queryWords, allClubs);
+     matchingNames = matchingNames.map((name) => name.toLowerCase());
+    //  console.log("Matching Names:", matchingNames);
+
+    filteredBySearch = allClubs.filter((club) => {
+    // const clubName = club.name.toLowerCase().trim();
+    const isMatch = matchingNames.includes(club.name.toLowerCase().trim());
+    // console.log(`Club: ${clubName}, Match Found: ${isMatch}`);
+    return isMatch;
+});
+
+   }
 
     // filter based on the selected categories
     let filteredByCategories;
@@ -72,12 +92,31 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
     } else {
       filteredByCategories = filteredBySearch;
     }
+    // filter based on selected schools
+    let filteredBySchools;
+    if (selectedSchools.length > 0) {
+      filteredBySchools = filteredByCategories.filter((club) =>
+        // change to school
+        selectedSchools.some((selectedSchools) => club.affiliations.includes(selectedSchools)),
+      );
+    } else {
+      filteredBySchools = filteredByCategories;
+    }
+
+    let filteredByAffiliations;
+    if (selectedAffiliations.length > 0) {
+      filteredByAffiliations = filteredBySchools.filter((club) =>
+        selectedAffiliations.some((selectedAffiliations) => club.affiliations.includes(selectedAffiliations)),
+      );
+    } else {
+      filteredByAffiliations = filteredBySchools;
+    }
 
     // Sort
-    const sortedFilteredGroups = filteredByCategories.sort((a, b) => a.name.localeCompare(b.name));
+    // const sortedFilteredGroups = filteredBySchools.sort((a, b) => a.name.localeCompare(b.name));
 
-    setFilteredGroups(sortedFilteredGroups);
-  }, [searchQuery, allClubs, selectedCategories]);
+    setFilteredGroups(filteredByAffiliations);
+  }, [searchQuery, allClubs, selectedCategories, selectedAffiliations, selectedSchools, clubTrie]);
 
   const renderClubItem = (club: IClub) => <ClubCard key={club._id} club={club} onClick={() => setSelectedClub(club)} />;
   renderClubItem.displayName = "RenderClubItem";
@@ -100,6 +139,10 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
         setSearchQuery={setSearchQuery}
         selectedCategories={selectedCategories}
         setSelectedCategories={setSelectedCategories}
+        selectedSchools={selectedSchools}
+        setSelectedSchools={setSelectedSchools}
+        selectedAffiliations={selectedAffiliations}
+        setSelectedAffiliations={setSelectedAffiliations}
       />
 
       {isLoading && page === 1 ? (

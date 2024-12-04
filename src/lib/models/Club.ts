@@ -90,6 +90,15 @@ export enum Intensity {
   Intense = "Intense Commitment",
 }
 
+export enum Affiliation {
+  AACC = "AACC Affiliate Org",
+  AFAM = "AfAm Affiliate Org",
+  LACASA = "La Casa Affiliate Org",
+  NACC = "NACC Affiliate Org",
+  OISS = "OISS Affiliate Org",
+  TSAI = "Tsai CITY Affiliate Org",
+}
+
 export interface ClubLeader {
   email: string;
   name: string;
@@ -193,5 +202,5 @@ const clubSchema = new Schema<IClub>(
   { timestamps: true },
 );
 
-const Club = mongoose.models.Club || mongoose.model<IClub>("Club", clubSchema);
+const Club = mongoose.models?.Club || mongoose.model<IClub>("Club", clubSchema);
 export default Club;
