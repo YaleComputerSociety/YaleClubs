@@ -31,11 +31,11 @@ const SearchControl = ({
   setSelectedAffiliations,
 }: SearchControlProps) => {
   return (
-    <div className="flex flex-wrap gap-2 mb-8">
-      <div className="flex-row basis-2/5">
+    <div className="flex flex-wrap gap-2">
+      <div className="flex-row basis-2/5 flex-shrink-0 flex-grow lg:basis-auto lg:flex-grow-0mb-8">
         <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       </div>
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-wrap gap-4  mb-8">
         <div className="scale-10">
           <CategoryFilterButton
             allGroups={allGroups}
