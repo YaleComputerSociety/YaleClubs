@@ -62,28 +62,27 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
       return;
     }
 
-   let filteredBySearch = allClubs;
+    let filteredBySearch = allClubs;
 
-   if (searchQuery.trim() !== "") {
-     const queryWords = searchQuery
-       .toLowerCase()
-       .split(" ")
-       .filter((word) => word.trim() !== "");
+    if (searchQuery.trim() !== "") {
+      const queryWords = searchQuery
+        .toLowerCase()
+        .split(" ")
+        .filter((word) => word.trim() !== "");
 
-     let matchingNames = clubTrie.getWordsWithPrefixes(queryWords, allClubs);
-     matchingNames = matchingNames
-       .filter((name) => name !== undefined && name !== null)
-       .map((name) => name.toLowerCase());
-    //  console.log("Matching Names:", matchingNames);
+      let matchingNames = clubTrie.getWordsWithPrefixes(queryWords, allClubs);
+      matchingNames = matchingNames
+        .filter((name) => name !== undefined && name !== null)
+        .map((name) => name.toLowerCase());
+      //  console.log("Matching Names:", matchingNames);
 
-    filteredBySearch = allClubs.filter((club) => {
-    // const clubName = club.name.toLowerCase().trim();
-    const isMatch = matchingNames.includes(club.name.toLowerCase().trim());
-    // console.log(`Club: ${clubName}, Match Found: ${isMatch}`);
-    return isMatch;
-});
-
-   }
+      filteredBySearch = allClubs.filter((club) => {
+        // const clubName = club.name.toLowerCase().trim();
+        const isMatch = matchingNames.includes(club.name.toLowerCase().trim());
+        // console.log(`Club: ${clubName}, Match Found: ${isMatch}`);
+        return isMatch;
+      });
+    }
 
     // filter based on the selected categories
     let filteredByCategories;
@@ -98,8 +97,7 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
     let filteredBySchools;
     if (selectedSchools.length > 0) {
       filteredBySchools = filteredByCategories.filter((club) =>
-        // change to school
-        selectedSchools.some((selectedSchools) => club.affiliations.includes(selectedSchools)),
+        selectedSchools.some((selectedSchool) => club.school?.includes?.(selectedSchool)),
       );
     } else {
       filteredBySchools = filteredByCategories;
@@ -108,7 +106,7 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
     let filteredByAffiliations;
     if (selectedAffiliations.length > 0) {
       filteredByAffiliations = filteredBySchools.filter((club) =>
-        selectedAffiliations.some((selectedAffiliations) => club.affiliations.includes(selectedAffiliations)),
+        selectedAffiliations.some((selectedAffiliations) => club.affiliations?.includes?.(selectedAffiliations)),
       );
     } else {
       filteredByAffiliations = filteredBySchools;
