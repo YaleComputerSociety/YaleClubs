@@ -62,60 +62,51 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
       return;
     }
 
-    let filteredBySearch = allClubs;
+    // Start with all clubs
+    let filteredGroups = allClubs;
 
+    // Step 1: Filter by categories
+    if (selectedCategories.length > 0) {
+      filteredGroups = filteredGroups.filter((club) =>
+        selectedCategories.some((selectedCategory) => club.categories.includes(selectedCategory)),
+      );
+    }
+
+    // Step 2: Filter by schools
+    if (selectedSchools.length > 0) {
+      filteredGroups = filteredGroups.filter((club) =>
+        selectedSchools.some(
+          (selectedSchool) => club.school?.includes?.(selectedSchool), // Safely check `club.school`
+        ),
+      );
+    }
+
+    // Step 3: Filter by affiliations
+    if (selectedAffiliations.length > 0) {
+      filteredGroups = filteredGroups.filter((club) =>
+        selectedAffiliations.some(
+          (selectedAffiliation) => club.affiliations?.includes?.(selectedAffiliation), // Safely check `club.affiliations`
+        ),
+      );
+    }
+
+    // Step 4: Filter by search query
     if (searchQuery.trim() !== "") {
       const queryWords = searchQuery
         .toLowerCase()
         .split(" ")
         .filter((word) => word.trim() !== "");
 
-      let matchingNames = clubTrie.getWordsWithPrefixes(queryWords, allClubs);
+      let matchingNames = clubTrie.getWordsWithPrefixes(queryWords, filteredGroups);
       matchingNames = matchingNames
         .filter((name) => name !== undefined && name !== null)
         .map((name) => name.toLowerCase());
-      //  console.log("Matching Names:", matchingNames);
 
-      filteredBySearch = allClubs.filter((club) => {
-        // const clubName = club.name.toLowerCase().trim();
-        const isMatch = matchingNames.includes(club.name.toLowerCase().trim());
-        // console.log(`Club: ${clubName}, Match Found: ${isMatch}`);
-        return isMatch;
-      });
+      filteredGroups = filteredGroups.filter((club) => matchingNames.includes(club.name.toLowerCase().trim()));
     }
 
-    // filter based on the selected categories
-    let filteredByCategories;
-    if (selectedCategories.length > 0) {
-      filteredByCategories = filteredBySearch.filter((club) =>
-        selectedCategories.some((selectedCategory) => club.categories.includes(selectedCategory)),
-      );
-    } else {
-      filteredByCategories = filteredBySearch;
-    }
-    // filter based on selected schools
-    let filteredBySchools;
-    if (selectedSchools.length > 0) {
-      filteredBySchools = filteredByCategories.filter((club) =>
-        selectedSchools.some((selectedSchool) => club.school?.includes?.(selectedSchool)),
-      );
-    } else {
-      filteredBySchools = filteredByCategories;
-    }
-
-    let filteredByAffiliations;
-    if (selectedAffiliations.length > 0) {
-      filteredByAffiliations = filteredBySchools.filter((club) =>
-        selectedAffiliations.some((selectedAffiliations) => club.affiliations?.includes?.(selectedAffiliations)),
-      );
-    } else {
-      filteredByAffiliations = filteredBySchools;
-    }
-
-    // Sort
-    // const sortedFilteredGroups = filteredBySchools.sort((a, b) => a.name.localeCompare(b.name));
-
-    setFilteredGroups(filteredByAffiliations);
+    // Update state with the final filtered groups
+    setFilteredGroups(filteredGroups);
   }, [searchQuery, allClubs, selectedCategories, selectedAffiliations, selectedSchools, clubTrie]);
 
   const renderClubItem = (club: IClub) => <ClubCard key={club._id} club={club} onClick={() => setSelectedClub(club)} />;
