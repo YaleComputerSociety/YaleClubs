@@ -71,7 +71,9 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
        .filter((word) => word.trim() !== "");
 
      let matchingNames = clubTrie.getWordsWithPrefixes(queryWords, allClubs);
-     matchingNames = matchingNames.map((name) => name.toLowerCase());
+     matchingNames = matchingNames
+       .filter((name) => name !== undefined && name !== null)
+       .map((name) => name.toLowerCase());
     //  console.log("Matching Names:", matchingNames);
 
     filteredBySearch = allClubs.filter((club) => {
