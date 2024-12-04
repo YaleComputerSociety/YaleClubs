@@ -12,25 +12,6 @@ type ClubCardProps = {
 
 const ClubCard = ({ club, onClick }: ClubCardProps) => {
   const categories = club.categories || ["tag1", "tag2", "tag3"]; // Use categories from API if available
-  //   const [logoUri, setLogoUri] = useState(null);
-
-  // useEffect(() => {
-  //     const fetchLogoUri = async () => {
-  //         try {
-  //             const response = await axios.get(`/api/clubs/logo/${item._id}`);
-  //             const base64ImageData = response.data;
-  //             const uri = `data:image/jpeg;base64,${base64ImageData}`;
-  //             setLogoUri(uri);
-  //         } catch (error) {
-  //             console.error('Error fetching logo:', error);
-  //             // Use a default logo URI in case of an error
-  //             setLogoUri('/default-logo.png');
-  //         }
-  //     };
-  //     if (item.logo) {
-  //         fetchLogoUri();
-  //     }
-  // }, [item.logo, item._id]);
 
   return (
     <div

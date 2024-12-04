@@ -20,6 +20,15 @@ export enum ClubAffiliation {
   GSAS = "Graduate School of Arts & Sciences (GSAS)",
 }
 
+export enum Affiliation {
+  AACC = "AACC Affiliate Org",
+  AFAM = "AfAm Affiliate Org",
+  LACASA = "La Casa Affiliate Org",
+  NACC = "NACC Affiliate Org",
+  OISS = "OISS Affiliate Org",
+  TSAI = "Tsai CITY Affiliate Org",
+}
+
 export interface ClubLeader {
   email: string;
   name: string;
@@ -96,5 +105,5 @@ const clubSchema = new Schema<IClub>({
   affiliations: { type: [String], enum: Object.values(ClubCategory), default: [] },
 });
 
-const Club = mongoose.models.Club || mongoose.model<IClub>("Club", clubSchema);
+const Club = mongoose.models?.Club || mongoose.model<IClub>("Club", clubSchema);
 export default Club;
