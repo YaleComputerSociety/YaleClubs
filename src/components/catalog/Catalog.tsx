@@ -12,8 +12,7 @@ interface CatalogProps {
   isLoading: boolean;
 }
 
-const Catalog = ({ page, setPage, clubs }: CatalogProps) => {
-  const [isLoading, setIsLoading] = useState(false);
+const Catalog = ({ clubs, isLoading }: CatalogProps) => {
   const [allClubs, setallClubs] = useState<IClub[]>([]);
   const [filteredGroups, setFilteredGroups] = useState<IClub[]>([]);
   const [hasMore, setHasMore] = useState(true);
@@ -93,7 +92,7 @@ const Catalog = ({ page, setPage, clubs }: CatalogProps) => {
   renderClubItem.displayName = "RenderClubItem";
 
   return (
-    <div className="px-5 mx-20 mt-16">
+    <div className="px-5 mx-20 mt-28">
       <h1 className="text-3xl font-bold">Browse Clubs</h1>
       <h2 className="text-xl mb-8">Finding Clubs has Never Been Easier.</h2>
 
@@ -110,7 +109,7 @@ const Catalog = ({ page, setPage, clubs }: CatalogProps) => {
         setSelectedAffiliations={setSelectedAffiliations}
       /> */}
 
-      {isLoading && page === 1 ? (
+      {isLoading ? (
         <div className="flex justify-center items-center mt-10">
           <div className="w-8 h-8 border-4 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
