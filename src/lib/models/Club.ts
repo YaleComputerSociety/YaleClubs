@@ -1,23 +1,60 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-// these are just examples, we will change these later
-export enum ClubCategory {
-  SPORTS = "Sports",
-  ARTS = "Arts",
-  TECHNOLOGY = "Technology",
-  MUSIC = "Music",
-}
-
-export enum ClubAffiliation {
-  COLLEGE = "Yale College",
-  LAW = "Law School",
-  DRAMA = "School of Drama",
-  MEDICINE = "School of Medicine",
-  ENVIRONMENT = "School of the Environment",
-  ARCHITECTURE = "School of Architecture",
-  MANAGEMENT = "School of Management",
-  GSAS_ADMIN = "Graduate School of Arts & Sciences (GSAS) Administration",
-  GSAS = "Graduate School of Arts & Sciences (GSAS)",
+export enum Category {
+  ACappella = "A Cappella",
+  Academic = "Academic",
+  Administrative = "Administrative",
+  AdvocacySocialJusticeGlobalAffairs = "Advocacy, Social Justice, Global Affairs",
+  AdvocacyPolicy = "Advocacy/Policy",
+  ArtsPerformanceComedy = "Arts, Performance, Comedy",
+  ArtsOther = "Arts: Other",
+  ArtsVisualArts = "Arts: Visual Arts",
+  BusinessAndEntrepreneurship = "Business and Entrepreneurship",
+  CommunityOutreach = "Community Outreach",
+  Cultural = "Cultural",
+  CulturalMixedRace = "Cultural: Mixed Race",
+  Dance = "Dance",
+  EntrepreneurialBusiness = "Entrepreneurial/Business",
+  EnvironmentSustainability = "Environment, Sustainability",
+  FoodCulinary = "Food/Culinary",
+  Funding = "Funding",
+  GamesGaming = "Games/Gaming",
+  GreekLetterOrganizations = "Greek-Letter Organizations",
+  HealthWellness = "Health, Wellness",
+  HealthWellnessAlt = "Health/Wellness",
+  International = "International",
+  InternationalAffairs = "International Affairs",
+  LGBTQ = "LGBTQ",
+  Leadership = "Leadership",
+  MediaTechnology = "Media/Technology",
+  MedicalNursingPublicHealth = "Medical/Nursing/Public Health",
+  Music = "Music",
+  Outdoors = "Outdoors",
+  PerformanceComedy = "Performance: Comedy",
+  PerformanceDance = "Performance: Dance",
+  PerformanceInstruments = "Performance: Instruments",
+  PerformanceOther = "Performance: Other",
+  PerformanceSinging = "Performance: Singing",
+  PerformanceTheater = "Performance: Theater",
+  Political = "Political",
+  PoliticsCivicEngagementDebate = "Politics, Civic Engagement, Debate",
+  PreProfessional = "Pre-Professional",
+  Professional = "Professional",
+  Publication = "Publication",
+  ReligiousSpiritual = "Religious, Spiritual",
+  ReligiousSpiritualAlt = "Religious/Spiritual",
+  ResidenceHalls = "Residence Halls",
+  ScienceAndTechnology = "Science and Technology",
+  ScienceTechnologyAlt = "Science/Technology",
+  ServiceVolunteering = "Service/Volunteering",
+  Social = "Social",
+  SpecialInterest = "Special Interest",
+  SpeechDebate = "Speech/Debate",
+  Sports = "Sports",
+  SportsOutdoors = "Sports/Outdoors",
+  StudentGovernment = "Student Government",
+  UniversityLifeOrganizations = "University Life Organizations",
+  VeteranMilitary = "Veteran/Military",
 }
 
 export enum School {
@@ -28,8 +65,22 @@ export enum School {
   ENVIRONMENT = "School of the Environment",
   ARCHITECTURE = "School of Architecture",
   MANAGEMENT = "School of Management",
-  GSAS_ADMIN = "Graduate School of Arts & Sciences (GSAS) Administration",
-  GSAS = "Graduate School of Arts & Sciences (GSAS)",
+  GSAS = "Graduate School of Arts & Sciences",
+  HEALTH = "School of Public Health",
+  JACKSON = "Jackson School of Global Affairs",
+  NURSING = "School of Nursing",
+  MUSIC = "School of Music",
+  DIVINITY = "Divinity School",
+  POSTDOC = "Postdoctoral",
+}
+
+export enum Affiliation {
+  AACC = "AACC",
+  AFAM = "AfAm",
+  NACC = "NACC",
+  TSAI = "Tsai City",
+  CASA = "La Casa",
+  DWIGHT = "Dwight Hall",
 }
 
 export enum Intensity {
@@ -62,9 +113,9 @@ export interface IClubInput {
   name: string;
   subheader?: string;
   description?: string;
-  categories?: ClubCategory[];
+  categories?: Category[];
   leaders: ClubLeader[];
-  affiliations?: ClubAffiliation[];
+  affiliations?: Affiliation[];
   school?: School;
   logo?: string;
   backgroundImage?: string;
@@ -92,10 +143,10 @@ export interface IClub extends Document {
   name: string;
   subheader?: string;
   description?: string;
-  categories?: string[];
+  categories?: Category[];
   leaders: ClubLeader[];
-  affiliations?: string[];
-  school?: string;
+  affiliations?: Affiliation[];
+  school?: School;
   logo?: string;
   backgroundImage?: string;
   numMembers?: number;
@@ -119,9 +170,9 @@ const clubSchema = new Schema<IClub>(
     name: { type: String, required: true },
     description: { type: String },
     subheader: { type: String },
-    categories: { type: [String], enum: Object.values(ClubCategory), default: [] },
+    categories: { type: [String], enum: Object.values(Category), default: [] },
     leaders: { type: [ClubLeaderSchema], required: true },
-    affiliations: { type: [String], enum: Object.values(ClubAffiliation), default: [] },
+    affiliations: { type: [String], enum: Object.values(Affiliation), default: [] },
     school: { type: String, enum: Object.values(School) },
     logo: { type: String },
     backgroundImage: { type: String },

@@ -63,7 +63,6 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
             return false;
           });
 
-
     // filter based on the selected categories
     let filteredByCategories;
     if (selectedCategories.length > 0) {
