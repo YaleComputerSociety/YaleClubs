@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 interface MemberCardProps {
   member: Member;
@@ -24,20 +25,28 @@ const MemberCard = ({ member }: MemberCardProps) => {
       <p className="text-gray-600">{member.role}</p>
       {member.website && (
         <a href={member.website} target="_blank" rel="noopener noreferrer">
-          <img src="/assets/website-icon.png" alt="Website" className="inline-block w-4 h-4" />
+          <Image src="/assets/website-icon.png" alt="Website" width={16} height={16} className="inline-block" />
         </a>
       )}
       {member.linkedin && (
         <a href={member.linkedin} target="_blank" rel="noopener noreferrer">
-          <img src="/assets/linkedin-icon.png" alt="Linkedin" className="inline-block w-6 h-6" />
+          <Image src="/assets/linkedin-icon.png" alt="linkedIn" width={25} height={25} className="inline-block" />
         </a>
       )}
       {member.github && (
         <a href={member.github} target="_blank" rel="noopener noreferrer">
-          <img src="/assets/github-icon.png" alt="Github" className="inline-block w-4 h-4" />
+          <Image src="/assets/github-icon.png" alt="GitHub" width={16} height={16} className="inline-block" />
         </a>
       )}
-      {member.headshot && <img src={member.headshot} className="mt-5 aspect-square" />}
+      {member.headshot && (
+        <Image
+          src={member.headshot}
+          alt="Member Headshot"
+          className="mt-5 aspect-square w-full"
+          width={500}
+          height={500}
+        />
+      )}
     </div>
   );
 };
