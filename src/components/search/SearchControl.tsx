@@ -3,7 +3,7 @@ import SearchBar from "./SearchBar";
 import CategoryFilterButton from "./CategoryFilter";
 import SchoolFilterButton from "./SchoolFilter";
 import AffiliationFilterButton from "./AffiliationFilter";
-import { IClub } from "@/lib/models/Club";
+import { IClub, School } from "@/lib/models/Club";
 import Trie from "./Trie";
 
 interface SearchControlProps {
@@ -14,7 +14,7 @@ interface SearchControlProps {
 const SearchControl = ({ clubs, setCurrentClubs }: SearchControlProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedSchools, setSelectedSchools] = useState<string[]>([]);
+  const [selectedSchools, setSelectedSchools] = useState<string[]>([School.COLLEGE]);
   const [selectedAffiliations, setSelectedAffiliations] = useState<string[]>([]);
   const [trie, setTrie] = useState<Trie | null>(null);
 
