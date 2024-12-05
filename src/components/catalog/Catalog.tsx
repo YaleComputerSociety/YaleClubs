@@ -17,7 +17,7 @@ const Catalog = ({ clubs, isLoading }: CatalogProps) => {
   renderClubItem.displayName = "RenderClubItem";
 
   return (
-    <div className="px-5 mx-20 mt-4">
+    <div className="mt-4">
       {isLoading ? (
         <div className="flex justify-center items-center mt-10">
           <div className="w-8 h-8 border-4 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
@@ -26,7 +26,7 @@ const Catalog = ({ clubs, isLoading }: CatalogProps) => {
         <div className="text-center text-gray-500 mt-10">No results found.</div>
       ) : (
         <div>
-          <div className="grid gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center;">
+          <div className="grid gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center">
             {clubs.map(renderClubItem)}
             {selectedClub && <ClubModal club={selectedClub} onClose={handleCloseModal} />}
           </div>

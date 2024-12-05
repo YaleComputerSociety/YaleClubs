@@ -84,7 +84,7 @@ const SearchControl = ({ clubs, setCurrentClubs }: SearchControlProps) => {
   }, [searchQuery, selectedCategories, selectedAffiliations, selectedSchools, trie, clubs, setCurrentClubs]);
 
   return (
-    <div className="flex flex-wrap gap-2 mx-24 max-w-[1400px]">
+    <div className="flex flex-wrap gap-2 max-w-[1400px]">
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
       <div className="scale-10">
