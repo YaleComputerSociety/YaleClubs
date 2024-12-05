@@ -13,15 +13,6 @@ const CategoryFilterButton = ({ selectedCategories, setSelectedCategories }: Cat
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const categories = Object.values(Category);
-  // const categories = [
-  //   "Pre-Professional",
-  //   "Entrepreneurial/Business",
-  //   "Media/Technology",
-  //   "Science/Technology",
-  //   "Cultural",
-  // ];
-
-
 
   const availableCategories = categories.filter((category) => !selectedCategories.includes(category));
 

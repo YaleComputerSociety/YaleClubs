@@ -3,7 +3,7 @@ import { IClub } from "@/lib/models/Club";
 class TrieNode {
   children: Map<string, TrieNode>;
   isEndOfWord: boolean;
-  clubNames: Set<string>; 
+  clubNames: Set<string>;
 
   constructor() {
     this.children = new Map();
@@ -38,7 +38,7 @@ export class Trie {
 
     for (const char of prefix) {
       if (!currentNode.children.has(char)) {
-        return []; 
+        return [];
       }
       currentNode = currentNode.children.get(char)!;
     }
@@ -78,7 +78,7 @@ export class Trie {
       const matchingNames = this.search(prefix);
 
       if (!matchingNames.length) {
-        return []; 
+        return [];
       }
 
       results = results ? new Set(matchingNames.filter((name) => results!.has(name))) : new Set(matchingNames);
