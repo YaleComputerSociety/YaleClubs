@@ -9,9 +9,10 @@ import Trie from "./Trie";
 interface SearchControlProps {
   clubs: IClub[];
   setCurrentClubs: React.Dispatch<React.SetStateAction<IClub[]>>;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const SearchControl = ({ clubs, setCurrentClubs }: SearchControlProps) => {
+const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSchools, setSelectedSchools] = useState<string[]>([School.COLLEGE]);
@@ -19,10 +20,12 @@ const SearchControl = ({ clubs, setCurrentClubs }: SearchControlProps) => {
   const [trie, setTrie] = useState<Trie | null>(null);
 
   useEffect(() => {
+    setIsLoading(true);
     const newTrie = new Trie();
     clubs.forEach((club) => newTrie.insert(club.name));
     setTrie(newTrie);
-  }, [clubs]);
+    setIsLoading(false);
+  }, [clubs, setIsLoading]);
 
   // Filter clubs based on search query and selected categories
   useEffect(() => {
@@ -30,6 +33,7 @@ const SearchControl = ({ clubs, setCurrentClubs }: SearchControlProps) => {
       return;
     }
 
+    setIsLoading(true);
     let filteredBySearch = clubs;
 
     if (searchQuery.trim() !== "") {
@@ -81,7 +85,17 @@ const SearchControl = ({ clubs, setCurrentClubs }: SearchControlProps) => {
     // const sortedFilteredGroups = filteredBySchools.sort((a, b) => a.name.localeCompare(b.name));
 
     setCurrentClubs(filteredByAffiliations);
-  }, [searchQuery, selectedCategories, selectedAffiliations, selectedSchools, trie, clubs, setCurrentClubs]);
+    setIsLoading(false);
+  }, [
+    searchQuery,
+    selectedCategories,
+    selectedAffiliations,
+    selectedSchools,
+    trie,
+    clubs,
+    setCurrentClubs,
+    setIsLoading,
+  ]);
 
   return (
     <div className="flex flex-wrap gap-2 max-w-[1400px]">

@@ -11,7 +11,7 @@ import { IClub } from "@/lib/models/Club";
 import SearchControl from "@/components/search/SearchControl";
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [clubs, setClubs] = useState<IClub[]>([]);
   const [currentClubs, setCurrentClubs] = useState<IClub[]>([]);
 
@@ -40,7 +40,7 @@ export default function Home() {
             <div className="mt-20 md:mt-40"></div>
             <h1 className="text-3xl font-bold text-black">Browse Clubs</h1>
             <h2 className="text-xl mb-8">Finding Clubs has Never Been Easier.</h2>
-            <SearchControl clubs={clubs} setCurrentClubs={setCurrentClubs} />
+            <SearchControl clubs={clubs} setCurrentClubs={setCurrentClubs} setIsLoading={setIsLoading} />
             <Catalog clubs={currentClubs} isLoading={isLoading} />
             <Footer />
           </div>
