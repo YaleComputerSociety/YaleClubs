@@ -11,6 +11,12 @@ export async function GET(request: Request): Promise<NextResponse> {
   if (!JWT_SECRET) {
     throw new Error("Please define the JWT_SECRET environment variable");
   }
+
+  const YALIES_API_KEY = process.env.YALIES_API_KEY as string;
+  if (!YALIES_API_KEY) {
+    throw new Error("Please define the YALIES_API_KEY environment variable");
+  }
+
   const { searchParams } = new URL(request.url);
   const ticket = searchParams.get("ticket");
 
@@ -40,11 +46,29 @@ export async function GET(request: Request): Promise<NextResponse> {
       }
 
       const netid = success[0]["cas:user"][0];
-      const token = jwt.sign({ netid }, JWT_SECRET, {
+
+      const yaliesURL = "https://yalies.io/api/people";
+      const yaliesResponse = await fetch(yaliesURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + YALIES_API_KEY,
+        },
+        body: JSON.stringify({ filters: { netid } }),
+      });
+      const yaliesJSON = await yaliesResponse.json();
+      const email = yaliesJSON[0].email;
+
+      const token = jwt.sign({ netid, email }, JWT_SECRET, {
         expiresIn: "7d",
       });
       const response = NextResponse.redirect(`${process.env.BASE_URL}/`);
-      response.cookies.set("token", token);
+      response.cookies.set("token", token, {
+        httpOnly: true,
+        secure: true,
+        path: "/",
+        maxAge: 60 * 60 * 24 * 7,
+      });
       return response;
     } catch (e) {
       return NextResponse.json({ error: "Authentication failed: " + e }, { status: 401 });
