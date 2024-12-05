@@ -4,7 +4,7 @@ import CategoryFilterButton from "./CategoryFilter";
 import SchoolFilterButton from "./SchoolFilter";
 import AffiliationFilterButton from "./AffiliationFilter";
 import { IClub } from "@/lib/models/Club";
-import Trie from "../catalog/Trie";
+import Trie from "./Trie";
 
 interface SearchControlProps {
   clubs: IClub[];
@@ -81,35 +81,32 @@ const SearchControl = ({ clubs, setCurrentClubs }: SearchControlProps) => {
     // const sortedFilteredGroups = filteredBySchools.sort((a, b) => a.name.localeCompare(b.name));
 
     setCurrentClubs(filteredByAffiliations);
-  }, [searchQuery, selectedCategories, selectedAffiliations, selectedSchools, trie]);
+  }, [searchQuery, selectedCategories, selectedAffiliations, selectedSchools, trie, clubs, setCurrentClubs]);
 
   return (
-    <div className="flex flex-wrap gap-2 mx-24 max-w-[1000px]">
-      <div className="flex-row basis-2/5 flex-shrink-0 flex-grow lg:basis-auto">
-        <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+    <div className="flex flex-wrap gap-2 mx-24 max-w-[1400px]">
+      <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+
+      <div className="scale-10">
+        <CategoryFilterButton
+          allGroups={clubs}
+          selectedCategories={selectedCategories}
+          setSelectedCategories={setSelectedCategories}
+        />
       </div>
-      <div className="flex flex-wrap gap-4 mb-8">
-        <div className="scale-10">
-          <CategoryFilterButton
-            allGroups={clubs}
-            selectedCategories={selectedCategories}
-            setSelectedCategories={setSelectedCategories}
-          />
-        </div>
-        <div className="scale-10">
-          <SchoolFilterButton
-            allGroups={clubs}
-            selectedSchools={selectedSchools}
-            setSelectedSchools={setSelectedSchools}
-          />
-        </div>
-        <div className="scale-10">
-          <AffiliationFilterButton
-            allGroups={clubs}
-            selectedAffiliations={selectedAffiliations}
-            setSelectedAffiliations={setSelectedAffiliations}
-          />
-        </div>
+      <div className="scale-10">
+        <SchoolFilterButton
+          allGroups={clubs}
+          selectedSchools={selectedSchools}
+          setSelectedSchools={setSelectedSchools}
+        />
+      </div>
+      <div className="scale-10">
+        <AffiliationFilterButton
+          allGroups={clubs}
+          selectedAffiliations={selectedAffiliations}
+          setSelectedAffiliations={setSelectedAffiliations}
+        />
       </div>
     </div>
   );
