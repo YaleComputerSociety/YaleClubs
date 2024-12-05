@@ -34,7 +34,8 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
           alt="Club Logo"
           width={100}
           height={100}
-          className={`${club.logo ? "rounded-2xl" : ""} flex-shrink-0`}
+          className="rounded-2xl flex-shrink-0 w-[100px] h-[100px]"
+          priority
         />
       </div>
 
