@@ -20,7 +20,7 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
     >
       <div className="flex flex-row items-center gap-4">
         <div className="flex flex-col justify-center flex-1 min-w-0">
-          <div className="text-3xl font-semibold line-clamp-2 overflow-hidden">{club.name}</div>
+          <div className="text-xl md:text-3xl font-semibold line-clamp-1 overflow-hidden">{club.name}</div>
           <div className="mt-3 flex gap-2 overflow-auto whitespace-nowrap text-ellipsis scrollbar-hide">
             {categories.map((tag, index) => (
               <span key={index} className="bg-[#eee] rounded px-2 py-1 text-xs">
@@ -34,7 +34,7 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
           alt="Club Logo"
           width={100}
           height={100}
-          className="rounded-2xl flex-shrink-0 w-[100px] h-[100px]"
+          className="rounded-2xl flex-shrink-0 w-16 md:w-[100px] h-16 md:h-[100px]"
           priority
         />
       </div>
