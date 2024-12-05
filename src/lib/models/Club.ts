@@ -193,5 +193,5 @@ const clubSchema = new Schema<IClub>(
   { timestamps: true },
 );
 
-const Club = mongoose.models.Club || mongoose.model<IClub>("Club", clubSchema);
+const Club = mongoose.models?.Club || mongoose.model<IClub>("Club", clubSchema);
 export default Club;

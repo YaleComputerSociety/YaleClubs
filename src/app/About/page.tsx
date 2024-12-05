@@ -1,6 +1,7 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import React from "react";
+import MemberCard from "@/components/about/MemberCard.tsx";
 
 const AboutPage: React.FC = () => {
   return (
@@ -42,24 +43,7 @@ const AboutPage: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
             {teamMembers.map((member) => (
               <div key={member.name} className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-xl font-semibold text-gray-800">{member.name}</h3>
-                <p className="text-gray-600">{member.role}</p>
-                {member.website && (
-                  <a href={member.website} target="_blank" rel="noopener noreferrer">
-                    <img src="/assets/website-icon.png" alt="Website" className="inline-block w-4 h-4" />
-                  </a>
-                )}
-                {member.linkedin && (
-                  <a href={member.linkedin} target="_blank" rel="noopener noreferrer">
-                    <img src="/assets/linkedin-icon.png" alt="Website" className="inline-block w-6 h-6" />
-                  </a>
-                )}
-                {member.github && (
-                  <a href={member.github} target="_blank" rel="noopener noreferrer">
-                    <img src="/assets/github-icon.png" alt="Website" className="inline-block w-4 h-4" />
-                  </a>
-                )}
-                {member.headshot && <img src={member.headshot} className="mt-5 aspect-square" />}
+                <MemberCard member={member}></MemberCard>
               </div>
             ))}
           </div>

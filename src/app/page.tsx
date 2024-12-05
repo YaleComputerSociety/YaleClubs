@@ -8,17 +8,24 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Catalog from "../components/catalog/Catalog";
 import { IClub } from "@/lib/models/Club";
+import SearchControl from "@/components/search/SearchControl";
 
 export default function Home() {
-  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [clubs, setClubs] = useState<IClub[]>([]);
+  const [currentClubs, setCurrentClubs] = useState<IClub[]>([]);
 
   useEffect(() => {
     const fetchApiMessage = async () => {
       try {
+        setIsLoading(true);
         const response = await axios.get<IClub[]>("/api/clubs");
         console.log("API message:", response.data);
+        setClubs(response.data);
       } catch (error) {
         console.error("Error fetching API message:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchApiMessage();
@@ -27,19 +34,16 @@ export default function Home() {
   return (
     <AuthWrapper>
       <main className="w-full">
-        <section
-          // onScroll={handleScroll}
-          className="h-screen overflow-y-scroll"
-          style={{ maxHeight: "100vh" }}
-        >
-          <div className="flex flex-col w-full min-h-screen">
-            <Header />
-            <div className="mt-10">
-              {/* <Catalog  /> */}
-              <Catalog page={page} setPage={setPage} />
-            </div>
-            <Footer />
+        <section className="h-screen overflow-y-scroll">
+          <Header />
+          <div className="flex flex-col w-full h-screen px-5 md:px-20">
+            <div className="mt-20 md:mt-40"></div>
+            <h1 className="text-3xl font-bold text-black">Browse Clubs</h1>
+            <h2 className="text-xl mb-8">Finding Clubs has Never Been Easier.</h2>
+            <SearchControl clubs={clubs} setCurrentClubs={setCurrentClubs} />
+            <Catalog clubs={currentClubs} isLoading={isLoading} />
           </div>
+          <Footer />
         </section>
       </main>
     </AuthWrapper>
