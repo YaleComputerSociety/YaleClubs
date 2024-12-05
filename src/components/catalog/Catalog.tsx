@@ -8,11 +8,11 @@ import SearchControl from "./SearchControl";
 import Trie from "./Trie";
 
 interface CatalogProps {
-  page: number;
-  setPage: React.Dispatch<React.SetStateAction<number>>;
+  clubs: IClub[];
+  isLoading: boolean;
 }
 
-const Catalog = ({ page, setPage }: CatalogProps) => {
+const Catalog = ({ page, setPage, clubs }: CatalogProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [allClubs, setallClubs] = useState<IClub[]>([]);
   const [filteredGroups, setFilteredGroups] = useState<IClub[]>([]);
@@ -26,104 +26,78 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
 
   const handleCloseModal = () => setSelectedClub(null);
 
-  const fetchApiMessage = useCallback(async (pageNum: number = 1) => {
-    try {
-      setIsLoading(true);
-      const response = await axios.get<IClub[]>(`/api/clubs?page=${pageNum}`);
-      if (response.data.length === 0) {
-        setHasMore(false);
-      } else {
-        const updatedClubs = pageNum === 1 ? response.data : [...new Set([...allClubs, ...response.data])];
-        setallClubs(updatedClubs);
-
-        // Rebuild the Trie when new clubs are fetched
-        const newTrie = new Trie();
-        updatedClubs.forEach((club) => newTrie.insert(club.name));
-        setClubTrie(newTrie);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (page === 1) {
-      setallClubs([]); // Clear previous data
-    }
-    fetchApiMessage(page);
-  }, [fetchApiMessage, page]);
-
   // Filter clubs based on search query and selected categories
-  useEffect(() => {
-    if (!clubTrie || allClubs.length === 0) {
-      console.warn("Trie or allClubs not initialized yet");
-      return;
-    }
+  // useEffect(() => {
+  //   if (!clubTrie || allClubs.length === 0) {
+  //     console.warn("Trie or allClubs not initialized yet");
+  //     return;
+  //   }
 
-    // Start with all clubs
-    let filteredGroups = allClubs;
+  //   let filteredBySearch = allClubs;
 
-    // Step 1: Filter by categories
-    if (selectedCategories.length > 0) {
-      filteredGroups = filteredGroups.filter((club) =>
-        selectedCategories.some((selectedCategory) => club.categories.includes(selectedCategory)),
-      );
-    }
+  //   if (searchQuery.trim() !== "") {
+  //     const queryWords = searchQuery
+  //       .toLowerCase()
+  //       .split(" ")
+  //       .filter((word) => word.trim() !== "");
 
-    // Step 2: Filter by schools
-    if (selectedSchools.length > 0) {
-      filteredGroups = filteredGroups.filter((club) =>
-        selectedSchools.some(
-          (selectedSchool) => club.school?.includes?.(selectedSchool), // Safely check `club.school`
-        ),
-      );
-    }
+  //     let matchingNames = clubTrie.getWordsWithPrefixes(queryWords, allClubs);
+  //     matchingNames = matchingNames
+  //       .filter((name) => name !== undefined && name !== null)
+  //       .map((name) => name.toLowerCase());
+  //     //  console.log("Matching Names:", matchingNames);
 
-    // Step 3: Filter by affiliations
-    if (selectedAffiliations.length > 0) {
-      filteredGroups = filteredGroups.filter((club) =>
-        selectedAffiliations.some(
-          (selectedAffiliation) => club.affiliations?.includes?.(selectedAffiliation), // Safely check `club.affiliations`
-        ),
-      );
-    }
+  //     filteredBySearch = allClubs.filter((club) => {
+  //       // const clubName = club.name.toLowerCase().trim();
+  //       const isMatch = matchingNames.includes(club.name.toLowerCase().trim());
+  //       // console.log(`Club: ${clubName}, Match Found: ${isMatch}`);
+  //       return isMatch;
+  //     });
+  //   }
 
-    // Step 4: Filter by search query
-    if (searchQuery.trim() !== "") {
-      const queryWords = searchQuery
-        .toLowerCase()
-        .split(" ")
-        .filter((word) => word.trim() !== "");
+  //   // filter based on the selected categories
+  //   let filteredByCategories;
+  //   if (selectedCategories.length > 0) {
+  //     filteredByCategories = filteredBySearch.filter((club) =>
+  //       selectedCategories.some((selectedCategory) => club.categories.includes(selectedCategory)),
+  //     );
+  //   } else {
+  //     filteredByCategories = filteredBySearch;
+  //   }
+  //   // filter based on selected schools
+  //   let filteredBySchools;
+  //   if (selectedSchools.length > 0) {
+  //     filteredBySchools = filteredByCategories.filter((club) =>
+  //       selectedSchools.some((selectedSchool) => club.school?.includes?.(selectedSchool)),
+  //     );
+  //   } else {
+  //     filteredBySchools = filteredByCategories;
+  //   }
 
-      let matchingNames = clubTrie.getWordsWithPrefixes(queryWords, filteredGroups);
-      matchingNames = matchingNames
-        .filter((name) => name !== undefined && name !== null)
-        .map((name) => name.toLowerCase());
+  //   let filteredByAffiliations;
+  //   if (selectedAffiliations.length > 0) {
+  //     filteredByAffiliations = filteredBySchools.filter((club) =>
+  //       selectedAffiliations.some((selectedAffiliations) => club.affiliations?.includes?.(selectedAffiliations)),
+  //     );
+  //   } else {
+  //     filteredByAffiliations = filteredBySchools;
+  //   }
 
-      filteredGroups = filteredGroups.filter((club) => matchingNames.includes(club.name.toLowerCase().trim()));
-    }
+  //   // Sort
+  //   // const sortedFilteredGroups = filteredBySchools.sort((a, b) => a.name.localeCompare(b.name));
 
-    // Update state with the final filtered groups
-    setFilteredGroups(filteredGroups);
-  }, [searchQuery, allClubs, selectedCategories, selectedAffiliations, selectedSchools, clubTrie]);
+  //   setFilteredGroups(filteredByAffiliations);
+  // }, [searchQuery, allClubs, selectedCategories, selectedAffiliations, selectedSchools, clubTrie]);
 
   const renderClubItem = (club: IClub) => <ClubCard key={club._id} club={club} onClick={() => setSelectedClub(club)} />;
   renderClubItem.displayName = "RenderClubItem";
-
-  const loadMoreData = () => {
-    console.log("Loading more data...");
-    setPage((prevPage) => prevPage + 1);
-    fetchApiMessage(page + 1);
-  };
 
   return (
     <div className="px-5 mx-20 mt-16">
       <h1 className="text-3xl font-bold">Browse Clubs</h1>
       <h2 className="text-xl mb-8">Finding Clubs has Never Been Easier.</h2>
 
-      <SearchControl
+      {/* <SearchControl
         allClubs={allClubs}
         setFilteredGroups={setFilteredGroups}
         searchQuery={searchQuery}
@@ -134,27 +108,21 @@ const Catalog = ({ page, setPage }: CatalogProps) => {
         setSelectedSchools={setSelectedSchools}
         selectedAffiliations={selectedAffiliations}
         setSelectedAffiliations={setSelectedAffiliations}
-      />
+      /> */}
 
       {isLoading && page === 1 ? (
         <div className="flex justify-center items-center mt-10">
           <div className="w-8 h-8 border-4 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
-      ) : !isLoading && filteredGroups.length === 0 ? (
+      ) : !isLoading && clubs.length === 0 ? (
         <div className="text-center text-gray-500 mt-10">No results found.</div>
       ) : (
-        <InfiniteScroll
-          dataLength={filteredGroups.length}
-          next={loadMoreData}
-          hasMore={hasMore}
-          // loader={<div className="text-gray-300">Loading...</div>}
-          // endMessage={<p style={{ textAlign: "center" }}>No more clubs to display.</p>}
-        >
-          <div className="grid gap-8  grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center;">
-            {filteredGroups.map(renderClubItem)}
+        <div>
+          <div className="grid gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center;">
+            {clubs.map(renderClubItem)}
             {selectedClub && <ClubModal club={selectedClub} onClose={handleCloseModal} />}
           </div>
-        </InfiniteScroll>
+        </div>
       )}
     </div>
   );

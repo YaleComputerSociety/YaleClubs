@@ -8,17 +8,23 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Catalog from "../components/catalog/Catalog";
 import { IClub } from "@/lib/models/Club";
+import Trie from "@/components/catalog/Trie";
 
 export default function Home() {
-  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [clubs, setClubs] = useState<IClub[]>([]);
 
   useEffect(() => {
     const fetchApiMessage = async () => {
       try {
+        setIsLoading(true);
         const response = await axios.get<IClub[]>("/api/clubs");
         console.log("API message:", response.data);
+        setClubs(response.data);
       } catch (error) {
         console.error("Error fetching API message:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchApiMessage();
@@ -27,17 +33,10 @@ export default function Home() {
   return (
     <AuthWrapper>
       <main className="w-full">
-        <section
-          // onScroll={handleScroll}
-          className="h-screen overflow-y-scroll"
-          style={{ maxHeight: "100vh" }}
-        >
+        <section className="h-screen overflow-y-scroll">
           <div className="flex flex-col w-full min-h-screen">
             <Header />
-            <div className="mt-10">
-              {/* <Catalog  /> */}
-              <Catalog page={page} setPage={setPage} />
-            </div>
+            <Catalog clubs={clubs} isLoading={isLoading} />
             <Footer />
           </div>
         </section>
