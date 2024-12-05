@@ -42,8 +42,8 @@ export default function Home() {
             <h2 className="text-xl mb-8">Finding Clubs has Never Been Easier.</h2>
             <SearchControl clubs={clubs} setCurrentClubs={setCurrentClubs} />
             <Catalog clubs={currentClubs} isLoading={isLoading} />
+            <Footer />
           </div>
-          <Footer />
         </section>
       </main>
     </AuthWrapper>
