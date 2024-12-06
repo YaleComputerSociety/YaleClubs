@@ -16,6 +16,8 @@ import IntensityDropdown from "@/components/update/IntensityDropdown";
 import SchoolDropdown from "@/components/update/SchoolDropdown";
 import Image from "next/image";
 
+import { getCookie } from "cookies-next";
+
 const UpdatePage = () => {
   const searchParams = useSearchParams();
   const [club, setClub] = useState<IClub | null>(null);
@@ -174,6 +176,30 @@ const UpdatePage = () => {
     }
 
     console.log("Club Data:", formData);
+    const clubId = searchParams.get("clubId");
+    const token = getCookie("token");
+    if (clubId && token) {
+      fetch(`/api/clubs?id=${clubId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+        body: JSON.stringify(formData),
+      })
+        .then((response) => {
+          if (response.ok) {
+            alert("Club updated successfully");
+            window.location.href = "/";
+          } else {
+            alert("Failed to update club");
+          }
+        })
+        .catch((error) => {
+          console.error("Error updating club:", error);
+          alert("Failed to update club");
+        });
+    }
   };
 
   const toggleModal = () => setIsModalOpen((prev) => !prev);
