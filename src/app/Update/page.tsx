@@ -175,6 +175,14 @@ const UpdatePage = () => {
       return;
     }
 
+    if (formData.backgroundImage == "") {
+      delete formData.backgroundImage;
+    }
+    
+    if (formData.logo == "") {
+      delete formData.logo;
+    }
+
     console.log("Club Data:", formData);
     const clubId = searchParams.get("clubId");
     const token = getCookie("token");

@@ -12,6 +12,7 @@ import SearchControl from "@/components/search/SearchControl";
 
 import { getCookie } from "cookies-next";
 import jwt from "jsonwebtoken";
+import SurveyBanner from "@/components/Survey";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -57,6 +58,7 @@ export default function Home() {
             <Footer />
           </div>
         </section>
+        <SurveyBanner />
       </main>
     </AuthWrapper>
   );
