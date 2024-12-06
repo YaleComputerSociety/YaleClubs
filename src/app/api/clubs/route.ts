@@ -103,18 +103,24 @@ export async function PUT(req: Request): Promise<NextResponse> {
     // Connect to the database
     await connectToDatabase();
 
-    let body: IClubInput;
-    try {
-      body = await req.json();
-    } catch (error) {
-      console.error("Error parsing JSON:", error);
-      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
-    }
+    // Get request body
+    const body = await req.json();
 
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
     if (!id) {
       return NextResponse.json({ error: "Club ID is required." }, { status: 400 });
+    }
+
+    // Disallow updates to restricted fields
+    const restrictedFields = ["yaleConnectId", "scraped", "inactive", "_id", "createdAt", "updatedAt"];
+    const validUpdateData = Object.fromEntries(Object.entries(body).filter(([key]) => !restrictedFields.includes(key)));
+
+    if (Object.keys(validUpdateData).length === 0) {
+      return NextResponse.json(
+        { error: "No valid fields provided for update. Restricted fields cannot be updated." },
+        { status: 400 },
+      );
     }
 
     // Fetch the original club data
@@ -123,32 +129,8 @@ export async function PUT(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Club not found." }, { status: 404 });
     }
 
-    const updateEmail = req.headers.get("X-Email");
-    if (!originalClub.leaders.some((leader: ClubLeader) => leader.email === updateEmail)) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Ensure at least one of the fields for logging is provided
-    const { name, email, leaders } = body;
-    if (!name && !email && !leaders) {
-      return NextResponse.json(
-        { error: "At least one of 'name', 'email', or 'leaders' must be provided for update." },
-        { status: 400 },
-      );
-    }
-
-    if (leaders && !Array.isArray(leaders)) {
-      return NextResponse.json({ error: "'leaders' must be an array." }, { status: 400 });
-    }
-
-    // Create update data dynamically
-    const updateData: Partial<IClubInput> = {};
-    if (name) updateData.name = name;
-    if (email) updateData.email = email;
-    if (leaders) updateData.leaders = leaders;
-
     // Perform the update
-    const updatedClub = await Club.findByIdAndUpdate(id, { $set: updateData }, { new: true, runValidators: true });
+    const updatedClub = await Club.findByIdAndUpdate(id, { $set: validUpdateData }, { new: true, runValidators: true });
     if (!updatedClub) {
       return NextResponse.json({ error: "Club not found after update." }, { status: 404 });
     }
