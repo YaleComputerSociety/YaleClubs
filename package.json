@@ -12,6 +12,7 @@
     "@types/js-cookie": "^3.0.6",
     "axios": "^1.7.7",
     "cookies-next": "^5.0.2",
+    "jose": "^5.9.6",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
