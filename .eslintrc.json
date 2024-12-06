@@ -4,12 +4,13 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "next/core-web-vitals", 
+    "next/core-web-vitals",
     "next/typescript",
     "plugin:prettier/recommended"
   ],
   "rules": {
     "semi": ["error", "always"],
-        "prettier/prettier": "warn"
+    "prettier/prettier": "warn",
+    "@typescript-eslint/no-explicit-any": "off"
   }
 }
