@@ -167,6 +167,7 @@ export async function PUT(req: Request): Promise<NextResponse> {
       // Save the change log
       await UpdateLog.create({
         documentId: id,
+        updatedBy: updateEmail,
         changes: changeLog,
       });
     }
