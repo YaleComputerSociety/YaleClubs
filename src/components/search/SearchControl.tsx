@@ -98,7 +98,7 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
   ]);
 
   return (
-    <div className="flex flex-wrap gap-2 max-w-[1400px]">
+    <div className="flex flex-wrap gap-2 max-w-[1400px] flex-col items-center md:flex-row mb-4">
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
       <div className="scale-10">
