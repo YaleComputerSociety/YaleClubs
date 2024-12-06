@@ -15,7 +15,7 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
 
   return (
     <div
-      className="border border-gray-200 rounded-xl p-3 md:p-6 flex flex-col gap-4 w-full cursor-pointer"
+      className="border border-gray-200 rounded-xl p-3 md:p-6 flex flex-col gap-2 w-full cursor-pointer"
       onClick={onClick}
     >
       <div className="flex flex-row items-center gap-4">
@@ -39,20 +39,24 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
         />
       </div>
 
-      <div className="text-base text-gray-800 line-clamp-3">{club.description ?? "No description"}</div>
+      <div className="text-sm md:text:lg text-gray-800 line-clamp-3">{club.description ?? "No description"}</div>
 
-      <div className="flex flex-row items-center justify-between">
-        {club.email && (
-          <a href={`mailto:${club.email}`} className="text-blue-500 underline truncate max-w-xs inline-block">
-            {club.email}
-          </a>
-        )}
-        {club.numMembers && (
-          <div className="flex-shrink-0 text-right">{getAdjustedNumMembers(club.numMembers)} members</div>
-        )}
-      </div>
+      {(club.email || club.numMembers) && (
+        <div className="flex flex-row items-center justify-between text-sm md:text-lg font-bold">
+          {club.email && (
+            <a href={`mailto:${club.email}`} className="text-blue-500 truncate max-w-xs inline-block">
+              {club.email}
+            </a>
+          )}
+          {club.numMembers && (
+            <div className="flex-shrink-0 text-right">{getAdjustedNumMembers(club.numMembers)} members</div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
 
 export default ClubCard;
+
+// http://10.66.2.203:3000/

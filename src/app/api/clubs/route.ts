@@ -22,8 +22,13 @@ export async function POST(req: Request): Promise<NextResponse> {
     // Connect to the database
     await connectToDatabase();
 
-    // Parse the incoming JSON body
-    const body: IClubInput = await req.json();
+    let body: IClubInput;
+    try {
+      body = await req.json();
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    }
 
     // Validate required fields
     if (!body.name || !body.leaders || !Array.isArray(body.leaders)) {
@@ -174,6 +179,11 @@ export async function DELETE(req: Request): Promise<NextResponse> {
   try {
     // Connect to the database
     await connectToDatabase();
+
+    const netid = req.headers.get("X-NetID");
+    if (netid !== "admin_a1b2c3e") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     // Get the club ID from the query parameters
     const url = new URL(req.url);

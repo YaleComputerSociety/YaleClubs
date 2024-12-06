@@ -25,7 +25,7 @@ export default function ScrollableLeaders({ leaders }: { leaders: ClubLeader[] }
           <div className="text-xl font-bold">Board</div>
           <div className="relative">
             <div
-              className="flex flex-row gap-4 mt-2 overflow-x-auto whitespace-nowrap"
+              className="flex flex-row gap-4 mt-2 overflow-x-auto whitespace-nowrap scrollbar-hide"
               ref={scrollContainerRef}
               onScroll={handleScroll}
             >

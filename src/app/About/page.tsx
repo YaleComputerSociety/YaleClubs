@@ -88,7 +88,7 @@ const teamMembers = [
   {
     name: "Francis Fan",
     role: "Developer",
-    headshot: "/assets/default-logo.png",
+    headshot: "/assets/people/francis.jpg",
     website: "https://francis-fan05.onrender.com/",
     linkedin: "https://www.linkedin.com/in/francis-fan-51293a236/",
     github: "https://github.com/francisfan0",
