@@ -37,7 +37,7 @@ const AffiliationDropdown: React.FC<AffiliationDropdownProps> = ({ selectedAffil
   return (
     <div className="relative" ref={dropdownRef}>
       <label className="block text-sm font-medium text-gray-700 mb-2">
-        Club Affiliation
+        Affiliations
         <div
           onClick={() => setIsDropdownOpen((prev) => !prev)}
           className="border border-gray-300 rounded-lg px-4 py-2 cursor-pointer bg-white"

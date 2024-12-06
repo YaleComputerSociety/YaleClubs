@@ -50,9 +50,9 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
         <Image
           src={club.backgroundImage || "/assets/default-background.png"}
           alt="Club Background"
-          className="w-full h-1/4 md:h-48 object-cover rounded-t-lg"
+          className="w-full h-1/4 md:h-[210px] object-cover rounded-t-lg"
           width={768}
-          height={192}
+          height={768}
         />
         {isMobile && (
           <Image
@@ -63,9 +63,12 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
             className={`${club.logo ? "rounded-2xl" : ""} flex-shrink-0 border-2 border-white relative -top-[50px] mx-auto`}
           />
         )}
-        <button className="absolute top-4 right-4 px-4 py-2 text-lg font-medium text-white bg-indigo-600 rounded shadow hover:bg-indigo-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-          <Link href={`/Update?clubId=${club._id}`}>Edit Here</Link>
-        </button>
+        <Link href={`/Update?clubId=${club._id}`}>
+          <button className="absolute top-4 right-4 px-4 py-2 text-lg font-medium text-white bg-indigo-600 rounded shadow hover:bg-indigo-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            Edit Here
+          </button>
+        </Link>
+
         <div className="flex flex-col overflow-y-auto overflow-x-hidden m-4 md:m-8 -mt-[50px] md:mt-4">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex flex-col md:w-3/5">

@@ -58,3 +58,5 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
 };
 
 export default ClubCard;
+
+// http://10.66.2.203:3000/

@@ -213,13 +213,13 @@ const UpdatePage = () => {
     <div className="flex flex-col">
       <Header />
       <main className="flex-grow flex py-6 justify-center mt-12">
-        <div className="bg-gray-100 rounded-lg shadow-md p-2 w-full max-w-6xl h-full">
-          <div className="flex items-center justify-between px-2 mb-4">
-            <button className="bg-gray-400 text-white py-2 px-4 rounded-lg hover:bg-gray-500">
-              <Link href={`/`}>Back</Link>
-            </button>
+        <div className="bg-gray-100 rounded-lg shadow-md p-8 w-full max-w-6xl h-full">
+          <div className="flex items-center justify-between px-0 mb-4 mt">
+            <Link href={`/`}>
+              <button className="text-gray-400 py-2 px-4 rounded-lg">Back</button>
+            </Link>
             <div className="flex items-center space-x-4 justify-center flex-grow">
-              <h1 className="text-3xl font-bold text-center">{formData.name}</h1>
+              <h1 className="text-3xl font-bold text-center pb-2">{formData.name}</h1>
               <button onClick={() => toggleModal()} className="bg-white p-2 rounded-full shadow hover:shadow-md">
                 <Image src="/assets/edit-3-svgrepo-com.svg" alt="Edit Icon" width={16} height={16} />
               </button>
@@ -265,6 +265,7 @@ const UpdatePage = () => {
               <div className="space-y-0">
                 <AffiliationDropdown selectedAffiliation={formData.affiliations || []} handleChange={handleChange} />
               </div>
+              <SchoolDropdown selectedSchool={formData.school as School} handleChange={handleChange} />
             </div>
 
             {/* Center Section */}
@@ -362,7 +363,7 @@ const UpdatePage = () => {
                     value={formData.website}
                     onChange={(e) => handleChange("website", e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2"
-                    placeholder="website.com"
+                    placeholder="yalecomputersociety.org"
                   />
                 </label>
                 {validationErrors.website && <p className="text-red-500">{validationErrors.website}</p>}
@@ -375,7 +376,7 @@ const UpdatePage = () => {
                     value={formData.calendarLink}
                     onChange={(e) => handleChange("calendarLink", e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2"
-                    placeholder="calendarlink.com"
+                    placeholder="Link to Google Calendar"
                   />
                 </label>
                 {validationErrors.calendarLink && <p className="text-red-500">{validationErrors.calendarLink}</p>}
@@ -394,7 +395,6 @@ const UpdatePage = () => {
                 {validationErrors.meeting && <p className="text-red-500">{validationErrors.meeting}</p>}
               </div>
               <IntensityDropdown selectedIntensity={formData.intensity as Intensity} handleChange={handleChange} />
-              <SchoolDropdown selectedSchool={formData.school as School} handleChange={handleChange} />
             </div>
           </div>
 

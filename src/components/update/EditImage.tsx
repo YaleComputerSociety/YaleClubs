@@ -9,7 +9,6 @@ interface EditableImageSectionProps {
 
 const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, handleChange }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const isMobile = window.innerWidth <= 768;
   const [currentField, setCurrentField] = useState<"backgroundImage" | "logo">("backgroundImage");
   const [inputValue, setInputValue] = useState("");
 
@@ -31,41 +30,39 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
   return (
     <div className="relative">
       {/* Background Image */}
-      <div className="relative h-64 w-full rounded-lg overflow-hidden">
-        {formData.backgroundImage ? (
+      <div className="relative h-64 w-full rounded-lg overflow-hidden flex items-center flex-col">
+        <div className="w-[920px] h-[252px] relative flex items-center">
           <Image
-            src={formData.backgroundImage}
+            src={formData.backgroundImage || "/assets/default-background.png"}
             alt="Background"
-            className="w-full h-full object-cover"
-            width={1920} // Use appropriate resolution
+            className="object-cover"
+            width={1920}
             height={1080}
           />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-r from-blue-500 via-blue-500 to-white-500"></div>
-        )}
-        <button
-          onClick={() => openModal("backgroundImage")}
-          className="absolute top-2 right-2 bg-white p-2 rounded-full shadow hover:shadow-md"
-        >
-          <Image src="/assets/edit-3-svgrepo-com.svg" alt="Edit Icon" width={24} height={24} />
-        </button>
+          <button
+            onClick={() => openModal("backgroundImage")}
+            className="absolute top-2 right-2 bg-white p-2 rounded-full shadow hover:shadow-md"
+          >
+            <Image src="/assets/edit-3-svgrepo-com.svg" alt="Edit Icon" width={24} height={24} />
+          </button>
+        </div>
       </div>
 
       {/* Logo */}
-      <div className="absolute -bottom-4 right-8">
-        <div className="relative w-48 h-48 rounded-full border-4 border-white overflow-hidden shadow-lg bg-white flex items-center justify-center">
+      <div className="absolute -bottom-6 right-20">
+        <div className="relative w-48 h-48 rounded-lg shadow-lg">
           <Image
             src={formData.logo || "/assets/default-logo.png"}
             alt="Logo"
             className="object-cover rounded-lg"
-            width={120}
-            height={120}
+            width={240}
+            height={240}
             priority
           />
         </div>
         <button
           onClick={() => openModal("logo")}
-          className="absolute bottom-2 right-2 bg-white p-2 rounded-full shadow hover:shadow-md"
+          className="absolute top-2 right-4 bg-white p-2 rounded-full shadow hover:shadow-md flex flex-col justify-center"
         >
           <Image src="/assets/edit-3-svgrepo-com.svg" alt="Edit Icon" width={24} height={24} />
         </button>
