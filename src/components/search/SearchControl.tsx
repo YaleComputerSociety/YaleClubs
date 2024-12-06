@@ -22,7 +22,7 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
   useEffect(() => {
     setIsLoading(true);
     const newTrie = new Trie();
-    clubs.forEach((club) => newTrie.insert(club.name));
+    clubs.forEach((club) => newTrie.insert(club.name, ""));
     setTrie(newTrie);
     setIsLoading(false);
   }, [clubs, setIsLoading]);

@@ -19,17 +19,19 @@ export class Trie {
     this.root = new TrieNode();
   }
 
-  insert(clubName: string): void {
+  insert(word: string, clubName: string): void {
     let currentNode = this.root;
 
-    for (const char of clubName) {
+    for (const char of word) {
       if (!currentNode.children.has(char)) {
-        currentNode.children.set(char, new TrieNode());
+      // console.log(char);
+      currentNode.children.set(char, new TrieNode());
       }
       currentNode = currentNode.children.get(char)!;
     }
 
     currentNode.isEndOfWord = true;
+
     currentNode.clubNames.add(clubName);
   }
 
@@ -66,7 +68,7 @@ export class Trie {
 
     allClubs.forEach((club) => {
       const words = club.name.toLowerCase().split(/\s+/);
-      words.forEach((word) => this.insert(word));
+      words.forEach((word) => this.insert(word, club.name));
     });
 
     let results: Set<string> | null = null;
