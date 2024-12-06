@@ -12,34 +12,15 @@ type ClubCardProps = {
 
 const ClubCard = ({ club, onClick }: ClubCardProps) => {
   const categories = club.categories || ["tag1", "tag2", "tag3"]; // Use categories from API if available
-  //   const [logoUri, setLogoUri] = useState(null);
-
-  // useEffect(() => {
-  //     const fetchLogoUri = async () => {
-  //         try {
-  //             const response = await axios.get(`/api/clubs/logo/${item._id}`);
-  //             const base64ImageData = response.data;
-  //             const uri = `data:image/jpeg;base64,${base64ImageData}`;
-  //             setLogoUri(uri);
-  //         } catch (error) {
-  //             console.error('Error fetching logo:', error);
-  //             // Use a default logo URI in case of an error
-  //             setLogoUri('/default-logo.png');
-  //         }
-  //     };
-  //     if (item.logo) {
-  //         fetchLogoUri();
-  //     }
-  // }, [item.logo, item._id]);
 
   return (
     <div
-      className="border border-gray-200 rounded-xl p-6 flex flex-col gap-4 max-w-lg w-full search-control-container cursor-pointer"
+      className="border border-gray-200 rounded-xl p-3 md:p-6 flex flex-col gap-4 w-full cursor-pointer"
       onClick={onClick}
     >
       <div className="flex flex-row items-center gap-4">
         <div className="flex flex-col justify-center flex-1 min-w-0">
-          <div className="text-3xl font-semibold line-clamp-2 overflow-hidden">{club.name}</div>
+          <div className="text-xl md:text-3xl font-semibold line-clamp-1 overflow-hidden">{club.name}</div>
           <div className="mt-3 flex gap-2 overflow-auto whitespace-nowrap text-ellipsis scrollbar-hide">
             {categories.map((tag, index) => (
               <span key={index} className="bg-[#eee] rounded px-2 py-1 text-xs">
@@ -53,7 +34,8 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
           alt="Club Logo"
           width={100}
           height={100}
-          className={`${club.logo ? "rounded-full" : ""} flex-shrink-0`}
+          className="rounded-2xl flex-shrink-0 w-16 md:w-[100px] h-16 md:h-[100px]"
+          priority
         />
       </div>
 

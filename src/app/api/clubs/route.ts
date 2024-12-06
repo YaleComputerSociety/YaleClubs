@@ -1,7 +1,7 @@
 import connectToDatabase from "../../../lib/mongodb";
 import Club from "../../../lib/models/Club";
 import { NextResponse } from "next/server";
-import { ClubCategory, ClubAffiliation, IClubInput } from "../../../lib/models/Club";
+import { Category, IClubInput } from "../../../lib/models/Club";
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -30,11 +30,11 @@ export async function POST(req: Request): Promise<NextResponse> {
 
     // Validate `categories` if provided
     if (body.categories && !Array.isArray(body.categories)) {
-      return NextResponse.json({ error: "Categories must be an array of ClubCategory values." }, { status: 400 });
+      return NextResponse.json({ error: "Categories must be an array of Category values." }, { status: 400 });
     }
 
-    // Validate `categories` against ClubCategory enum
-    if (body.categories && !body.categories.every((category) => Object.values(ClubCategory).includes(category))) {
+    // Validate `categories` against Category enum
+    if (body.categories && !body.categories.every((category) => Object.values(Category).includes(category))) {
       return NextResponse.json({ error: "Invalid category provided." }, { status: 400 });
     }
 
@@ -43,13 +43,13 @@ export async function POST(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Affiliations must be an array of ClubAffiliation values." }, { status: 400 });
     }
 
-    // Validate `affiliations` against ClubAffiliation enum
-    if (
-      body.affiliations &&
-      !body.affiliations.every((affiliation) => Object.values(ClubAffiliation).includes(affiliation))
-    ) {
-      return NextResponse.json({ error: "Invalid affiliation provided." }, { status: 400 });
-    }
+    // // Validate `affiliations` against ClubAffiliation enum
+    // if (
+    //   body.affiliations &&
+    //   !body.affiliations.every((affiliation) => Object.values(ClubAffiliation).includes(affiliation))
+    // ) {
+    //   return NextResponse.json({ error: "Invalid affiliation provided." }, { status: 400 });
+    // }
 
     // Create a new club
     const club = new Club(body);
@@ -61,6 +61,34 @@ export async function POST(req: Request): Promise<NextResponse> {
     return NextResponse.json(savedClub, { status: 201 });
   } catch (error) {
     console.error("Error creating club:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request): Promise<NextResponse> {
+  try {
+    // Connect to the database
+    await connectToDatabase();
+
+    // Get the club ID from the query parameters
+    const url = new URL(req.url);
+    const id = url.searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "Club ID is required." }, { status: 400 });
+    }
+
+    // Attempt to delete the club
+    const result = await Club.findByIdAndDelete(id);
+
+    if (!result) {
+      return NextResponse.json({ error: "Club not found." }, { status: 404 });
+    }
+
+    // Respond with a success message
+    return NextResponse.json({ message: "Club deleted successfully." }, { status: 200 });
+  } catch (error) {
+    console.error("Error deleting club:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

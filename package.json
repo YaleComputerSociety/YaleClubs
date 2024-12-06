@@ -16,7 +16,8 @@
     "react-dom": "^18.0.0",
     "react-infinite-scroll-component": "^6.1.0",
     "react-responsive": "^10.0.0",
-    "react-select": "^5.8.3"
+    "react-select": "^5.8.3",
+    "react-window": "^1.8.10"
   },
   "devDependencies": {
     "@types/mongoose": "^5.11.97",
