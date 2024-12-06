@@ -15,6 +15,12 @@ const Header = () => {
           <Link href="/About">
             <div className="text-md">About</div>
           </Link>
+          <Link
+            href="https://docs.google.com/forms/d/e/1FAIpQLSdBM9ccbynx2eQKVdCkpPDW-sIJArTWqUlMGGKuXz175iq0Og/viewform?usp=sf_link"
+            target="_blank"
+          >
+            Feedback
+          </Link>
         </div>
       </div>
     </div>
