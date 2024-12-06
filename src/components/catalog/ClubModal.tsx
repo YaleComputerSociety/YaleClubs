@@ -49,10 +49,13 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
       >
         <Image
           src={club.backgroundImage || "/assets/default-background.png"}
-          alt="Club Background"
+          alt="bg"
           className="w-full h-1/4 md:h-[210px] object-cover rounded-t-lg"
           width={768}
           height={768}
+          onError={(e) => {
+            e.currentTarget.src = "/assets/default-background.png";
+          }}
         />
         {isMobile && (
           <Image

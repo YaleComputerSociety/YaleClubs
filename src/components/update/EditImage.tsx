@@ -49,7 +49,7 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
       </div>
 
       {/* Logo */}
-      <div className="absolute -bottom-6 right-20">
+      <div className="absolute -bottom-6 right-16">
         <div className="relative w-48 h-48 rounded-lg shadow-lg">
           <Image
             src={formData.logo || "/assets/default-logo.png"}
@@ -62,7 +62,7 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
         </div>
         <button
           onClick={() => openModal("logo")}
-          className="absolute top-2 right-4 bg-white p-2 rounded-full shadow hover:shadow-md flex flex-col justify-center"
+          className="absolute top-2 right-2 bg-white p-2 rounded-full shadow hover:shadow-md flex flex-col justify-center"
         >
           <Image src="/assets/edit-3-svgrepo-com.svg" alt="Edit Icon" width={24} height={24} />
         </button>
