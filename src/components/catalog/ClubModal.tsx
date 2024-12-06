@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import { IClub } from "@/lib/models/Club";
-import Link from "next/link";
 import Board from "./Board";
 import Image from "next/image";
 import { getAdjustedNumMembers } from "@/lib/utils";
 import { useMediaQuery } from "react-responsive";
 import ClubModalRightLabel from "./ClubModalRightLabel";
+import Link from "next/link";
 
 type ClubModalProps = {
   club: IClub;
@@ -43,19 +43,11 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div ref={modalRef} className="relative bg-white rounded-lg p-6 w-11/12 max-w-lg h-3/4">
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-4 text-2xl text-gray-600 hover:text-gray-800 focus:outline-none"
-        >
-          &times;
-        </button>
-        <h2 className="text-2xl font-bold mb-4">{club.name}</h2>
-        <p className="text-gray-700 mb-4">{club.description}</p>
-        <button className="absolute bottom-4 right-4 px-4 py-2 text-lg font-medium text-white bg-indigo-600 rounded shadow hover:bg-indigo-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-          <Link href={`/Update?clubId=${club._id}`}>Edit Here</Link>
-        </button>
-        <img
+      <div
+        ref={modalRef}
+        className="relative bg-white rounded-lg max-w-3xl w-full mx-4 md:mx-auto h-5/6 overflow-hidden flex flex-col"
+      >
+        <Image
           src={club.backgroundImage || "/assets/default-background.png"}
           alt="Club Background"
           className="w-full h-1/4 md:h-48 object-cover rounded-t-lg"
@@ -71,6 +63,9 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
             className={`${club.logo ? "rounded-full" : ""} flex-shrink-0 border-2 border-white relative -top-[50px] mx-auto`}
           />
         )}
+        <button className="absolute top-4 right-4 px-4 py-2 text-lg font-medium text-white bg-indigo-600 rounded shadow hover:bg-indigo-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+          <Link href={`/Update?clubId=${club._id}`}>Edit Here</Link>
+        </button>
         <div className="flex flex-col overflow-y-auto overflow-x-hidden m-4 -mt-[50px] md:mt-4">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex flex-col md:w-3/5">
