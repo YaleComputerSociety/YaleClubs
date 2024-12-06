@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import LogoSVG from "../../public/assets/logo";
 import { useEffect, useState } from "react";
@@ -35,12 +37,12 @@ const Header = () => {
     <div className="w-full flex flex-row fixed z-10 justify-between py-5 px-5 md:px-[110px] bg-white">
       <Link href="/" className="flex flex-row items-center">
         <LogoSVG />
-        <div className="ml-5 font-semibold text-[16px]">YaleClubs</div>
+        <div className="ml-5 font-semibold text-xl">YaleClubs</div>
       </Link>
 
       {isMobile ? (
         <div className="relative">
-          <button onClick={() => setIsMenuOpen((prev) => !prev)} className="text-2xl focus:outline-none">
+          <button onClick={() => setIsMenuOpen((prev) => !prev)} className="text-4xl focus:outline-none">
             ☰
           </button>
           {isMenuOpen && (

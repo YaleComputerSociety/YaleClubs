@@ -58,7 +58,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
         console.error("Failed to decode token:", err);
       }
     }
-  }, [club.leaders]);
+  }, [club.leaders, token]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
