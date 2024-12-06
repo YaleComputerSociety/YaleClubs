@@ -1,5 +1,6 @@
 import connectToDatabase from "../../../lib/mongodb";
-import Club from "../../../lib/models/Club";
+import Club, { ClubLeader } from "../../../lib/models/Club";
+import UpdateLog from "../../../lib/models/Updates";
 import { NextResponse } from "next/server";
 import { Category, IClubInput } from "../../../lib/models/Club";
 
@@ -20,8 +21,13 @@ export async function POST(req: Request): Promise<NextResponse> {
     // Connect to the database
     await connectToDatabase();
 
-    // Parse the incoming JSON body
-    const body: IClubInput = await req.json();
+    let body: IClubInput;
+    try {
+      body = await req.json();
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    }
 
     // Validate required fields
     if (!body.name || !body.leaders || !Array.isArray(body.leaders)) {
@@ -65,10 +71,135 @@ export async function POST(req: Request): Promise<NextResponse> {
   }
 }
 
+const generateChangeLog = (
+  original: { name?: string; email?: string; leaders?: ClubLeader[] },
+  updates: { name?: string; email?: string; leaders?: ClubLeader[] },
+): string => {
+  const changes: string[] = [];
+
+  // Log changes to the club name
+  if (original.name !== updates.name) {
+    changes.push(`Name changed from "${original.name}" to "${updates.name}"`);
+  }
+
+  // Log changes to the club email
+  if (original.email !== updates.email) {
+    changes.push(`Email changed from "${original.email}" to "${updates.email}"`);
+  }
+
+  // Log changes to the club leaders
+  if (JSON.stringify(original.leaders) !== JSON.stringify(updates.leaders)) {
+    const originalEmails = original.leaders?.map((leader) => leader.email) || [];
+    const updatedEmails = updates.leaders?.map((leader) => leader.email) || [];
+    changes.push(`Leaders changed from [${originalEmails.join(", ")}] to [${updatedEmails.join(", ")}]`);
+  }
+
+  return changes.join(", ");
+};
+
+export async function PUT(req: Request): Promise<NextResponse> {
+  try {
+    // Connect to the database
+    await connectToDatabase();
+
+    let body: IClubInput;
+    try {
+      body = await req.json();
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    }
+
+    const url = new URL(req.url);
+    const id = url.searchParams.get("id");
+    if (!id) {
+      return NextResponse.json({ error: "Club ID is required." }, { status: 400 });
+    }
+
+    // Disallow updates to restricted fields
+    const restrictedFields = ["yaleConnectId", "scraped", "inactive", "_id", "createdAt", "updatedAt"];
+    const validUpdateData = Object.fromEntries(Object.entries(body).filter(([key]) => !restrictedFields.includes(key)));
+
+    if (Object.keys(validUpdateData).length === 0) {
+      return NextResponse.json(
+        { error: "No valid fields provided for update. Restricted fields cannot be updated." },
+        { status: 400 },
+      );
+    }
+
+    // Fetch the original club data
+    const originalClub = await Club.findById(id);
+    if (!originalClub) {
+      return NextResponse.json({ error: "Club not found." }, { status: 404 });
+    }
+
+    const admin_emails = [
+      "lucas.huang@yale.edu",
+      "addison.goolsbee@yale.edu",
+      "francis.fan@yale.edu",
+      "grady.yu@yale.edu",
+      "lauren.lee.ll2243@yale.edu",
+    ];
+
+    const updateEmail = req.headers.get("X-Email");
+    if (
+      !updateEmail ||
+      (updateEmail &&
+        !originalClub.leaders.some((leader: ClubLeader) => leader.email === updateEmail) &&
+        updateEmail !== "admin_a1b2c3e" &&
+        !admin_emails.includes(updateEmail))
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Perform the update
+    const updatedClub = await Club.findByIdAndUpdate(id, { $set: validUpdateData }, { new: true, runValidators: true });
+    if (!updatedClub) {
+      return NextResponse.json({ error: "Club not found after update." }, { status: 404 });
+    }
+
+    // Generate change log
+    const changeLog = generateChangeLog(
+      {
+        name: originalClub.name,
+        email: originalClub.email,
+        leaders: originalClub.leaders,
+      },
+      {
+        name: updatedClub.name,
+        email: updatedClub.email,
+        leaders: updatedClub.leaders,
+      },
+    );
+
+    if (changeLog) {
+      console.log(changeLog);
+
+      // Save the change log
+      await UpdateLog.create({
+        documentId: id,
+        updatedBy: updateEmail,
+        changes: changeLog,
+      });
+    }
+
+    // Respond with the updated club
+    return NextResponse.json(updatedClub, { status: 200 });
+  } catch (error) {
+    console.error("Error updating club:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
+
 export async function DELETE(req: Request): Promise<NextResponse> {
   try {
     // Connect to the database
     await connectToDatabase();
+
+    const netid = req.headers.get("X-NetID");
+    if (netid !== "admin_a1b2c3e") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     // Get the club ID from the query parameters
     const url = new URL(req.url);
