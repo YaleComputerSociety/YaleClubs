@@ -1,6 +1,5 @@
 import connectToDatabase from "../../../lib/mongodb";
 import Club, { ClubLeader } from "../../../lib/models/Club";
-import ClubLeader from "../../../lib/models/Club";
 import UpdateLog from "../../../lib/models/Updates";
 import { NextResponse } from "next/server";
 import { Category, IClubInput } from "../../../lib/models/Club";
