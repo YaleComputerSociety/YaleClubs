@@ -1,5 +1,5 @@
 import connectToDatabase from "../../../lib/mongodb";
-import Club from "../../../lib/models/Club";
+import Club, { ClubLeader } from "../../../lib/models/Club";
 import ClubLeader from "../../../lib/models/Club";
 import UpdateLog from "../../../lib/models/Updates";
 import { NextResponse } from "next/server";
@@ -74,7 +74,7 @@ export async function POST(req: Request): Promise<NextResponse> {
 
 const generateChangeLog = (
   original: { name?: string; email?: string; leaders?: ClubLeader[] },
-  updates: { name?: string; email?: string; leaders?: ClubLeader[] }
+  updates: { name?: string; email?: string; leaders?: ClubLeader[] },
 ): string => {
   const changes: string[] = [];
 
@@ -103,8 +103,13 @@ export async function PUT(req: Request): Promise<NextResponse> {
     // Connect to the database
     await connectToDatabase();
 
-    // Get request body and validate
-    const body = await req.json();
+    let body: IClubInput;
+    try {
+      body = await req.json();
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    }
 
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
@@ -112,23 +117,28 @@ export async function PUT(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Club ID is required." }, { status: 400 });
     }
 
+    // Fetch the original club data
+    const originalClub = await Club.findById(id);
+    if (!originalClub) {
+      return NextResponse.json({ error: "Club not found." }, { status: 404 });
+    }
+
+    const updateEmail = req.headers.get("X-Email");
+    if (!originalClub.leaders.some((leader: ClubLeader) => leader.email === updateEmail)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     // Ensure at least one of the fields for logging is provided
     const { name, email, leaders } = body;
     if (!name && !email && !leaders) {
       return NextResponse.json(
         { error: "At least one of 'name', 'email', or 'leaders' must be provided for update." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (leaders && !Array.isArray(leaders)) {
       return NextResponse.json({ error: "'leaders' must be an array." }, { status: 400 });
-    }
-
-    // Fetch the original club data
-    const originalClub = await Club.findById(id);
-    if (!originalClub) {
-      return NextResponse.json({ error: "Club not found." }, { status: 404 });
     }
 
     // Create update data dynamically
@@ -154,7 +164,7 @@ export async function PUT(req: Request): Promise<NextResponse> {
         name: updatedClub.name,
         email: updatedClub.email,
         leaders: updatedClub.leaders,
-      }
+      },
     );
 
     if (changeLog) {
