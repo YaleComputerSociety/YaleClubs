@@ -10,6 +10,9 @@ import Catalog from "../components/catalog/Catalog";
 import { IClub } from "@/lib/models/Club";
 import SearchControl from "@/components/search/SearchControl";
 
+import { getCookie } from "cookies-next";
+import jwt from "jsonwebtoken";
+
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [clubs, setClubs] = useState<IClub[]>([]);
@@ -30,6 +33,15 @@ export default function Home() {
     };
     fetchApiMessage();
   }, []);
+
+  // token
+  useEffect(() => {
+    const token = getCookie("token");
+    if (token) {
+      const decoded = jwt.decode(token.toString());
+      console.log(decoded);
+    }
+  });
 
   return (
     <AuthWrapper>
