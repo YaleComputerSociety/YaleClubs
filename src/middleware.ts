@@ -38,8 +38,8 @@ export async function middleware(request: NextRequest) {
   }
 
   const response = NextResponse.next();
-  response.headers.set("X-NetID", JSON.stringify(decoded.netid));
-  response.headers.set("X-Email", JSON.stringify(decoded.email));
+  response.headers.set("X-NetID", decoded.netid);
+  response.headers.set("X-Email", decoded.email);
   return response;
 }
 
