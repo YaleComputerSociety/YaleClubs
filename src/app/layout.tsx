@@ -17,8 +17,8 @@ export const metadata: Metadata = {
   title: "YaleClubs",
   description: "Finding clubs and organizations at Yale, made easy",
   icons: {
-    icon: "/assets/icon.png"
-  }
+    icon: "/assets/icon.png",
+  },
 };
 
 export default function RootLayout({
