@@ -62,7 +62,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
             className={`${club.logo ? "rounded-2xl" : ""} flex-shrink-0 border-2 border-white relative -top-[50px] mx-auto`}
           />
         )}
-        <div className="flex flex-col overflow-y-auto overflow-x-hidden m-4 -mt-[50px] md:mt-4">
+        <div className="flex flex-col overflow-y-auto overflow-x-hidden m-4 md:m-8 -mt-[50px] md:mt-4">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex flex-col md:w-3/5">
               <div
