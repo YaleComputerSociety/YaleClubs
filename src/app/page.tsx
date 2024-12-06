@@ -47,7 +47,7 @@ export default function Home() {
   return (
     <AuthWrapper>
       <main className="w-full">
-        <section className="h-screen overflow-y-scroll">
+        <section className="h-screen">
           <Header />
           <div className="flex flex-col w-full h-screen px-5 md:px-20">
             <div className="mt-20 md:mt-24"></div>

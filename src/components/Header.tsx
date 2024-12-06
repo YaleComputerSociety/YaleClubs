@@ -54,6 +54,14 @@ const Header = () => {
                   </Link>
                 </li>
                 <li>
+                  <Link
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSdBM9ccbynx2eQKVdCkpPDW-sIJArTWqUlMGGKuXz175iq0Og/viewform?usp=sf_link"
+                    target="_blank"
+                  >
+                    Feedback
+                  </Link>
+                </li>
+                <li>
                   {isLoggedIn ? (
                     <button
                       onClick={() => {
@@ -82,6 +90,12 @@ const Header = () => {
         <div className="hidden sm:flex flex-row items-center gap-x-11">
           <Link href="/About">
             <div className="text-md">About</div>
+          </Link>
+          <Link
+            href="https://docs.google.com/forms/d/e/1FAIpQLSdBM9ccbynx2eQKVdCkpPDW-sIJArTWqUlMGGKuXz175iq0Og/viewform?usp=sf_link"
+            target="_blank"
+          >
+            Feedback
           </Link>
           {isLoggedIn ? (
             <button

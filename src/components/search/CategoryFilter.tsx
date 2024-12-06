@@ -75,7 +75,7 @@ const CategoryFilterButton = ({ selectedCategories, setSelectedCategories }: Cat
       </div>
       {showDropdown && (
         <div className="absolute mt-2 w-72 max-w-full bg-white border rounded shadow-lg z-10">
-          <div className="flex flex-col p-2 gap-2">
+          <div className="flex flex-col p-2 gap-2 max-h-72 overflow-y-auto">
             {availableCategories.length > 0 ? (
               availableCategories.map((category) => (
                 <div

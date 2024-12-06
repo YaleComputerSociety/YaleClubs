@@ -14,10 +14,10 @@ const geistMono = CustomFont({
 });
 
 export const metadata: Metadata = {
-  title: "YaleClubs",
-  description: "Finding clubs and organizations at Yale, made easy",
+  title: "Yale Clubs",
+  description: "Finding clubs has never been easier",
   icons: {
-    icon: "/assets/icon.png",
+    icon: "assets/icon.png",
   },
 };
 
