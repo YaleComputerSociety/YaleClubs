@@ -52,8 +52,16 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
         const decoded = jwtDecode<{ email: string }>(token);
         const userEmail = decoded.email;
 
+        const admin_emails = [
+          "lucas.huang@yale.edu",
+          "addison.goolsbee@yale.edu",
+          "francis.fan@yale.edu",
+          "grady.yu@yale.edu",
+          "lauren.lee.ll2243@yale.edu",
+        ];
+
         const isBoardMember = club.leaders.some((leader) => leader.email === userEmail);
-        setCanEdit(isBoardMember);
+        setCanEdit(isBoardMember || admin_emails.includes(userEmail));
       } catch (err) {
         console.error("Failed to decode token:", err);
       }
