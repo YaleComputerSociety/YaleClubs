@@ -1,6 +1,6 @@
 import connectToDatabase from "../../../lib/mongodb";
 import Club from "../../../lib/models/Club";
-import IClub from "../../../lib/models/Club";
+import ClubLeader from "../../../lib/models/Club";
 import UpdateLog from "../../../lib/models/Updates";
 import { NextResponse } from "next/server";
 import { Category, IClubInput } from "../../../lib/models/Club";
@@ -68,15 +68,26 @@ export async function POST(req: Request): Promise<NextResponse> {
 }
 
 const generateChangeLog = (
-  original: { [key: string]: typeof IClub },
-  updates: { [key: string]: typeof IClub },
+  original: { name?: string; email?: string; leaders?: ClubLeader[] },
+  updates: { name?: string; email?: string; leaders?: ClubLeader[] }
 ): string => {
   const changes: string[] = [];
 
-  for (const key in updates) {
-    if (JSON.stringify(original[key]) !== JSON.stringify(updates[key])) {
-      changes.push(`old ${key}: ${original[key]}, new ${key}: ${updates[key]}`);
-    }
+  // Log changes to the club name
+  if (original.name !== updates.name) {
+    changes.push(`Name changed from "${original.name}" to "${updates.name}"`);
+  }
+
+  // Log changes to the club email
+  if (original.email !== updates.email) {
+    changes.push(`Email changed from "${original.email}" to "${updates.email}"`);
+  }
+
+  // Log changes to the club leaders
+  if (JSON.stringify(original.leaders) !== JSON.stringify(updates.leaders)) {
+    const originalEmails = original.leaders?.map((leader) => leader.email) || [];
+    const updatedEmails = updates.leaders?.map((leader) => leader.email) || [];
+    changes.push(`Leaders changed from [${originalEmails.join(", ")}] to [${updatedEmails.join(", ")}]`);
   }
 
   return changes.join(", ");
@@ -84,33 +95,38 @@ const generateChangeLog = (
 
 export async function PUT(req: Request): Promise<NextResponse> {
   try {
-    // connect to db
+    // Connect to the database
     await connectToDatabase();
 
-    // get info and validate
+    // Get request body and validate
     const body = await req.json();
 
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
-    console.log(id);
     if (!id) {
       return NextResponse.json({ error: "Club ID is required." }, { status: 400 });
     }
+
+    // Ensure at least one of the fields for logging is provided
     const { name, email, leaders } = body;
     if (!name && !email && !leaders) {
       return NextResponse.json(
         { error: "At least one of 'name', 'email', or 'leaders' must be provided for update." },
-        { status: 400 },
+        { status: 400 }
       );
     }
+
     if (leaders && !Array.isArray(leaders)) {
       return NextResponse.json({ error: "'leaders' must be an array." }, { status: 400 });
     }
+
+    // Fetch the original club data
     const originalClub = await Club.findById(id);
-    if (!Club) {
+    if (!originalClub) {
       return NextResponse.json({ error: "Club not found." }, { status: 404 });
     }
-    // create update item
+
+    // Create update data dynamically
     const updateData: Partial<IClubInput> = {};
     if (name) updateData.name = name;
     if (email) updateData.email = email;
@@ -118,17 +134,33 @@ export async function PUT(req: Request): Promise<NextResponse> {
 
     // Perform the update
     const updatedClub = await Club.findByIdAndUpdate(id, { $set: updateData }, { new: true, runValidators: true });
-    // console.log(updatedClub);
     if (!updatedClub) {
-      return NextResponse.json({ error: "Club not found." }, { status: 404 });
+      return NextResponse.json({ error: "Club not found after update." }, { status: 404 });
     }
 
-    const changeLog = generateChangeLog(originalClub, updatedClub);
-    console.log(changeLog);
-    await UpdateLog.create({
-      documentId: id,
-      changes: changeLog,
-    });
+    // Generate change log
+    const changeLog = generateChangeLog(
+      {
+        name: originalClub.name,
+        email: originalClub.email,
+        leaders: originalClub.leaders,
+      },
+      {
+        name: updatedClub.name,
+        email: updatedClub.email,
+        leaders: updatedClub.leaders,
+      }
+    );
+
+    if (changeLog) {
+      console.log(changeLog);
+
+      // Save the change log
+      await UpdateLog.create({
+        documentId: id,
+        changes: changeLog,
+      });
+    }
 
     // Respond with the updated club
     return NextResponse.json(updatedClub, { status: 200 });
