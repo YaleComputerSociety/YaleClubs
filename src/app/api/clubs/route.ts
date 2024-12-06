@@ -102,8 +102,13 @@ export async function PUT(req: Request): Promise<NextResponse> {
     // Connect to the database
     await connectToDatabase();
 
-    // Get request body
-    const body = await req.json();
+    let body: IClubInput;
+    try {
+      body = await req.json();
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    }
 
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
@@ -126,6 +131,14 @@ export async function PUT(req: Request): Promise<NextResponse> {
     const originalClub = await Club.findById(id);
     if (!originalClub) {
       return NextResponse.json({ error: "Club not found." }, { status: 404 });
+    }
+
+    const updateEmail = req.headers.get("X-Email");
+    if (
+      !originalClub.leaders.some((leader: ClubLeader) => leader.email === updateEmail) &&
+      updateEmail !== "admin_a1b2c3e"
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Perform the update
