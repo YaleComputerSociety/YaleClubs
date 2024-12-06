@@ -75,7 +75,7 @@ export async function DELETE(req: Request): Promise<NextResponse> {
     // Connect to the database
     await connectToDatabase();
 
-    let netid = req.headers.get("X-NetID");
+    const netid = req.headers.get("X-NetID");
     if (netid !== "admin_a1b2c3e") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
