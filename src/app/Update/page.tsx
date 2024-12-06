@@ -2,7 +2,7 @@
 // 1. id and name attributes for the labels and inputs so chrome doesn't freak out
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { IClub, IClubInput, Category, Affiliation, ClubLeader, Intensity, School } from "@/lib/models/Club";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -178,7 +178,7 @@ const UpdatePage = () => {
     if (formData.backgroundImage == "") {
       delete formData.backgroundImage;
     }
-    
+
     if (formData.logo == "") {
       delete formData.logo;
     }
@@ -478,4 +478,12 @@ const UpdatePage = () => {
   );
 };
 
-export default UpdatePage;
+function UpdatePageWrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <UpdatePage />
+    </Suspense>
+  );
+}
+
+export default UpdatePageWrapper;
