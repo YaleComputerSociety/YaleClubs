@@ -64,7 +64,6 @@ export async function GET(request: Request): Promise<NextResponse> {
       });
       const response = NextResponse.redirect(`${process.env.BASE_URL}/`);
       response.cookies.set("token", token, {
-        httpOnly: true,
         secure: true,
         path: "/",
         maxAge: 60 * 60 * 24 * 7,

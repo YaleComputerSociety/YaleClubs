@@ -17,7 +17,10 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-infinite-scroll-component": "^6.1.0",
-    "xml2js": "^0.6.2"
+    "xml2js": "^0.6.2",
+    "react-responsive": "^10.0.0",
+    "react-select": "^5.8.3",
+    "react-window": "^1.8.10"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.7",

@@ -1,33 +1,9 @@
-// import { useEffect, useState } from 'react';
-// import axios from 'axios';
-
-// const ClubItem = ({ item }) => {
-
-// 	const categories = ["Yale College"];
-//     const [logoUri, setLogoUri] = useState(null);
-
-// 	useEffect(() => {
-// 		const fetchLogoUri = async () => {
-// 			try {
-// 				const response = await axios.get('/api/clubs');
-// 				console.log('API message:', response.data);
-// 				const base64ImageData = response.data;
-//                 const uri = `data:image/jpeg;base64,${base64ImageData}`;
-// 			} catch (error) {
-// 				console.error('Error fetching API message:', error);
-// 			}
-// 		};
-// 		if (item.logo) {
-//             // Fetch if Logo Exists
-//             fetchLogoUri();
-//         }
-//     }, [item.logo]);
-// }
-
-// export default ClubItem;
+"use client";
 
 import React from "react";
 import { IClub } from "@/lib/models/Club";
+import Image from "next/image";
+import { getAdjustedNumMembers } from "@/lib/utils";
 
 type ClubCardProps = {
   club: IClub;
@@ -36,77 +12,51 @@ type ClubCardProps = {
 
 const ClubCard = ({ club, onClick }: ClubCardProps) => {
   const categories = club.categories || ["tag1", "tag2", "tag3"]; // Use categories from API if available
-  //   const [logoUri, setLogoUri] = useState(null);
-
-  // useEffect(() => {
-  //     const fetchLogoUri = async () => {
-  //         try {
-  //             const response = await axios.get(`/api/clubs/logo/${item._id}`);
-  //             const base64ImageData = response.data;
-  //             const uri = `data:image/jpeg;base64,${base64ImageData}`;
-  //             setLogoUri(uri);
-  //         } catch (error) {
-  //             console.error('Error fetching logo:', error);
-  //             // Use a default logo URI in case of an error
-  //             setLogoUri('/default-logo.png');
-  //         }
-  //     };
-  //     if (item.logo) {
-  //         fetchLogoUri();
-  //     }
-  // }, [item.logo, item._id]);
 
   return (
     <div
-      className="club-item-card"
+      className="border border-gray-200 rounded-xl p-3 md:p-6 flex flex-col gap-2 w-full cursor-pointer"
       onClick={onClick}
-      style={{
-        border: "1px solid #ddd",
-        borderRadius: "8px",
-        padding: "24px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "12px",
-        margin: "16px",
-      }}
     >
-      <div className="club-header" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-        {/* {logoUri && (
-                    <img src={logoUri} alt="Club Logo" style={{ width: '60px', height: '60px', borderRadius: '50%' }} />
-                )} */}
-        <div>
-          <h3 style={{ fontSize: "1.5em", fontWeight: "bold", margin: 0 }}>{club.name}</h3>
-          {<p style={{ color: "#555", margin: 0 }}></p>}
+      <div className="flex flex-row items-center gap-4">
+        <div className="flex flex-col justify-center flex-1 min-w-0">
+          <div className="text-xl md:text-3xl font-semibold line-clamp-1 overflow-hidden">{club.name}</div>
+          <div className="mt-3 flex gap-2 overflow-auto whitespace-nowrap text-ellipsis scrollbar-hide">
+            {categories.map((tag, index) => (
+              <span key={index} className="bg-[#eee] rounded px-2 py-1 text-xs">
+                {tag}
+              </span>
+            ))}
+          </div>
         </div>
+        <Image
+          src={club.logo ?? "/assets/default-logo.png"}
+          alt="Club Logo"
+          width={100}
+          height={100}
+          className="rounded-2xl flex-shrink-0 w-16 md:w-[100px] h-16 md:h-[100px]"
+          priority
+        />
       </div>
-      <div className="club-tags" style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-        {categories.map((tag, index) => (
-          <span
-            key={index}
-            style={{
-              backgroundColor: "#f0f0f0",
-              borderRadius: "4px",
-              padding: "6px 12px",
-              fontSize: "0.9em",
-            }}
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
-      {club.description && <p style={{ fontSize: "1em", color: "#333" }}>{club.description}</p>}
-      {club.instagram && (
-        <a
-          href={club.instagram}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "#0066cc", textDecoration: "underline" }}
-        >
-          {club.instagram}
-        </a>
+
+      <div className="text-sm md:text:lg text-gray-800 line-clamp-3">{club.description ?? "No description"}</div>
+
+      {(club.email || club.numMembers) && (
+        <div className="flex flex-row items-center justify-between text-sm md:text-lg font-bold">
+          {club.email && (
+            <a href={`mailto:${club.email}`} className="text-blue-500 truncate max-w-xs inline-block">
+              {club.email}
+            </a>
+          )}
+          {club.numMembers && (
+            <div className="flex-shrink-0 text-right">{getAdjustedNumMembers(club.numMembers)} members</div>
+          )}
+        </div>
       )}
     </div>
   );
 };
 
 export default ClubCard;
+
+// http://10.66.2.203:3000/
