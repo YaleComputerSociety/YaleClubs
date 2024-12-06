@@ -1,9 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import { IClub } from "@/lib/models/Club";
 import { School } from "@/lib/models/Club";
 
 interface SchoolFilterButtonProps {
-  setFilteredGroups: React.Dispatch<React.SetStateAction<IClub[]>>;
   selectedSchools: string[];
   setSelectedSchools: React.Dispatch<React.SetStateAction<string[]>>;
 }

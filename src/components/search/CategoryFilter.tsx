@@ -1,9 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import { IClub } from "@/lib/models/Club";
 import { Category } from "@/lib/models/Club";
 
 interface CategoryFilterButtonProps {
-  setFilteredGroups: React.Dispatch<React.SetStateAction<IClub[]>>;
   selectedCategories: string[];
   setSelectedCategories: React.Dispatch<React.SetStateAction<string[]>>;
 }

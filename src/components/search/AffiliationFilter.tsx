@@ -1,9 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import { IClub } from "@/lib/models/Club";
 import { Affiliation } from "@/lib/models/Club";
 
 interface AffiliationFilterButtonProps {
-  setFilteredGroups: React.Dispatch<React.SetStateAction<IClub[]>>;
   selectedAffiliations: string[];
   setSelectedAffiliations: React.Dispatch<React.SetStateAction<string[]>>;
 }

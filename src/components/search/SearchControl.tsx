@@ -3,7 +3,7 @@ import SearchBar from "./SearchBar";
 import CategoryFilterButton from "./CategoryFilter";
 import SchoolFilterButton from "./SchoolFilter";
 import AffiliationFilterButton from "./AffiliationFilter";
-import { IClub, School } from "@/lib/models/Club";
+import { Affiliation, Category, IClub, School } from "@/lib/models/Club";
 import Trie from "./Trie";
 
 interface SearchControlProps {
@@ -57,7 +57,9 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
     let filteredByCategories;
     if (selectedCategories.length > 0) {
       filteredByCategories = filteredBySearch.filter((club) =>
-        selectedCategories.some((selectedCategory) => club.categories.includes(selectedCategory)),
+        selectedCategories.some((selectedCategory) =>
+          club.categories ? club.categories.includes(selectedCategory as Category) : false,
+        ),
       );
     } else {
       filteredByCategories = filteredBySearch;
@@ -75,7 +77,9 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
     let filteredByAffiliations;
     if (selectedAffiliations.length > 0) {
       filteredByAffiliations = filteredBySchools.filter((club) =>
-        selectedAffiliations.some((selectedAffiliations) => club.affiliations?.includes?.(selectedAffiliations)),
+        selectedAffiliations.some((selectedAffiliations) =>
+          club.affiliations?.includes?.(selectedAffiliations as Affiliation),
+        ),
       );
     } else {
       filteredByAffiliations = filteredBySchools;
@@ -102,22 +106,13 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
       <div className="scale-10">
-        <CategoryFilterButton
-          allGroups={clubs}
-          selectedCategories={selectedCategories}
-          setSelectedCategories={setSelectedCategories}
-        />
+        <CategoryFilterButton selectedCategories={selectedCategories} setSelectedCategories={setSelectedCategories} />
       </div>
       <div className="scale-10">
-        <SchoolFilterButton
-          allGroups={clubs}
-          selectedSchools={selectedSchools}
-          setSelectedSchools={setSelectedSchools}
-        />
+        <SchoolFilterButton selectedSchools={selectedSchools} setSelectedSchools={setSelectedSchools} />
       </div>
       <div className="scale-10">
         <AffiliationFilterButton
-          allGroups={clubs}
           selectedAffiliations={selectedAffiliations}
           setSelectedAffiliations={setSelectedAffiliations}
         />

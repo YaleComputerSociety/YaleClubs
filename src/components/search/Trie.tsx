@@ -19,10 +19,10 @@ export class Trie {
     this.root = new TrieNode();
   }
 
-  insert(word: string, clubName: string): void {
+  insert(clubName: string): void {
     let currentNode = this.root;
 
-    for (const char of word) {
+    for (const char of clubName) {
       if (!currentNode.children.has(char)) {
         currentNode.children.set(char, new TrieNode());
       }
@@ -66,7 +66,7 @@ export class Trie {
 
     allClubs.forEach((club) => {
       const words = club.name.toLowerCase().split(/\s+/);
-      words.forEach((word) => this.insert(word, club.name));
+      words.forEach((word) => this.insert(word));
     });
 
     let results: Set<string> | null = null;
