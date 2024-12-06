@@ -133,10 +133,21 @@ export async function PUT(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Club not found." }, { status: 404 });
     }
 
+    const admin_emails = [
+      "lucas.huang@yale.edu",
+      "addison.goolsbee@yale.edu",
+      "francis.fan@yale.edu",
+      "grady.yu@yale.edu",
+      "lauren.lee.ll2243@yale.edu",
+    ];
+
     const updateEmail = req.headers.get("X-Email");
     if (
-      !originalClub.leaders.some((leader: ClubLeader) => leader.email === updateEmail) &&
-      updateEmail !== "admin_a1b2c3e"
+      !updateEmail ||
+      (updateEmail &&
+        !originalClub.leaders.some((leader: ClubLeader) => leader.email === updateEmail) &&
+        updateEmail !== "admin_a1b2c3e" &&
+        !admin_emails.includes(updateEmail))
     ) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
