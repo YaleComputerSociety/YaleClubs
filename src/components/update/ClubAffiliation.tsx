@@ -1,23 +1,11 @@
-import { ClubCategory, ClubLeader, IClubInput } from "@/lib/models/Club";
+import { Category, ClubLeader, IClubInput, Affiliation } from "@/lib/models/Club";
 import React, { useState, useRef, useEffect } from "react";
 
-export enum ClubAffiliation {
-  COLLEGE = "Yale College",
-  LAW = "Law School",
-  DRAMA = "School of Drama",
-  MEDICINE = "School of Medicine",
-  ENVIRONMENT = "School of the Environment",
-  ARCHITECTURE = "School of Architecture",
-  MANAGEMENT = "School of Management",
-  GSAS_ADMIN = "Graduate School of Arts & Sciences (GSAS) Administration",
-  GSAS = "Graduate School of Arts & Sciences (GSAS)",
-}
-
 interface AffiliationDropdownProps {
-  selectedAffiliation: ClubAffiliation[] | null;
+  selectedAffiliation: Affiliation[] | null;
   handleChange: (
     field: keyof IClubInput,
-    value: string | number | ClubLeader[] | ClubAffiliation[] | undefined | ClubCategory[],
+    value: string | number | ClubLeader[] | Affiliation[] | undefined | Category[],
   ) => void;
 }
 
@@ -25,11 +13,11 @@ const AffiliationDropdown: React.FC<AffiliationDropdownProps> = ({ selectedAffil
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const allAffiliations = Object.values(ClubAffiliation);
+  const allAffiliations = Object.values(Affiliation);
 
   const handleSelect = (affiliation: string) => {
-    if (selectedAffiliation && selectedAffiliation.includes(affiliation as ClubAffiliation)) return;
-    handleChange("affiliations", [affiliation as ClubAffiliation]); // "affiliations" matches the IClubInput type
+    if (selectedAffiliation && selectedAffiliation.includes(affiliation as Affiliation)) return;
+    handleChange("affiliations", [affiliation as Affiliation]); // "affiliations" matches the IClubInput type
     setIsDropdownOpen(false);
   };
 
@@ -64,11 +52,11 @@ const AffiliationDropdown: React.FC<AffiliationDropdownProps> = ({ selectedAffil
 
       {isDropdownOpen && (
         <div className="absolute mt-1 max-h-60 w-full overflow-y-auto bg-white border border-gray-300 rounded-lg shadow-lg z-10">
-          {allAffiliations.map((affiliation: ClubAffiliation) => (
+          {allAffiliations.map((affiliation: Affiliation) => (
             <div
               key={affiliation}
               className={`cursor-pointer px-4 py-2 ${
-                selectedAffiliation?.includes(affiliation as ClubAffiliation)
+                selectedAffiliation?.includes(affiliation as Affiliation)
                   ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                   : "hover:bg-gray-200"
               }`}

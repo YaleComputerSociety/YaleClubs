@@ -1,17 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
-import { IClubInput } from "@/lib/models/Club";
+import { IClubInput, Category } from "@/lib/models/Club";
 
-enum ClubCategory {
-  SPORTS = "Sports",
-  ARTS = "Arts",
-  TECHNOLOGY = "Technology",
-  MUSIC = "Music",
-}
+// enum Category {
+//   SPORTS = "Sports",
+//   ARTS = "Arts",
+//   TECHNOLOGY = "Technology",
+//   MUSIC = "Music",
+// }
 
 interface CategoriesDropdownProps {
-  selectedCategories: ClubCategory[];
+  selectedCategories: Category[];
   additionalCategories?: string[];
-  handleChange: (field: keyof IClubInput, value: string | number | ClubCategory[] | undefined) => void;
+  handleChange: (field: keyof IClubInput, value: string | number | Category[] | undefined) => void;
 }
 
 const CategoriesDropdown: React.FC<CategoriesDropdownProps> = ({
@@ -23,13 +23,13 @@ const CategoriesDropdown: React.FC<CategoriesDropdownProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const allCategories = [
-    ...Object.values(ClubCategory),
-    ...additionalCategories.filter((cat) => !Object.values(ClubCategory).includes(cat as ClubCategory)),
+    ...Object.values(Category),
+    ...additionalCategories.filter((cat) => !Object.values(Category).includes(cat as Category)),
   ];
 
   const toggleCategory = (category: string) => {
-    if (selectedCategories.includes(category as ClubCategory)) return;
-    const updatedCategories = [...selectedCategories, category as ClubCategory];
+    if (selectedCategories.includes(category as Category)) return;
+    const updatedCategories = [...selectedCategories, category as Category];
     handleChange("categories", updatedCategories);
   };
 
@@ -76,7 +76,7 @@ const CategoriesDropdown: React.FC<CategoriesDropdownProps> = ({
             <div
               key={category}
               className={`cursor-pointer px-4 py-2 ${
-                selectedCategories.includes(category as ClubCategory)
+                selectedCategories.includes(category as Category)
                   ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                   : "hover:bg-gray-200"
               }`}
@@ -89,7 +89,7 @@ const CategoriesDropdown: React.FC<CategoriesDropdownProps> = ({
       )}
       {/* Selected Categories as Cards */}
       <div className="flex gap-2 whitespace-nowrap w-full flex-wrap mt-4">
-        {selectedCategories.map((category: ClubCategory, index: number) => (
+        {selectedCategories.map((category: Category, index: number) => (
           <div key={index} className="flex items-center bg-gray-200 rounded px-2 py-1 text-sm">
             {category}
             <button onClick={() => removeCategory(category)} className="ml-2 text-red-500 font-bold hover:text-red-700">

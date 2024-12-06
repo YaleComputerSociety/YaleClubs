@@ -9,6 +9,7 @@ interface EditableImageSectionProps {
 
 const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, handleChange }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // const isMobile = window.innerWidth <= 768;
   const [currentField, setCurrentField] = useState<"backgroundImage" | "logo">("backgroundImage");
   const [inputValue, setInputValue] = useState("");
 
@@ -52,22 +53,22 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
 
       {/* Logo */}
       <div className="absolute -bottom-4 right-8">
-        <div className="relative w-48 h-48 rounded-lg border-4 border-white overflow-hidden shadow-lg bg-white">
+        <div className="relative w-48 h-48 rounded-full border-4 border-white overflow-hidden shadow-lg bg-white flex items-center justify-center">
           <Image
             src={formData.logo || "/assets/default-logo.png"}
             alt="Logo"
-            className="object-cover"
-            width={192}
-            height={192}
-            priority // Preloads the image for better LCP performance
+            className="object-cover rounded-lg"
+            width={120}
+            height={120}
+            priority
           />
-          <button
-            onClick={() => openModal("logo")}
-            className="absolute bottom-2 right-2 bg-white p-2 rounded-full shadow hover:shadow-md"
-          >
-            <Image src="/assets/edit-3-svgrepo-com.svg" alt="Edit Icon" width={24} height={24} />
-          </button>
         </div>
+        <button
+          onClick={() => openModal("logo")}
+          className="absolute bottom-2 right-2 bg-white p-2 rounded-full shadow hover:shadow-md"
+        >
+          <Image src="/assets/edit-3-svgrepo-com.svg" alt="Edit Icon" width={24} height={24} />
+        </button>
       </div>
 
       {/* Modal */}
