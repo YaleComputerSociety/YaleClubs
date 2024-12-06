@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IClub } from "@/lib/models/Club";
 import Board from "./Board";
 import Image from "next/image";
@@ -6,6 +6,8 @@ import { getAdjustedNumMembers } from "@/lib/utils";
 import { useMediaQuery } from "react-responsive";
 import ClubModalRightLabel from "./ClubModalRightLabel";
 import Link from "next/link";
+import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 
 type ClubModalProps = {
   club: IClub;
@@ -15,6 +17,9 @@ type ClubModalProps = {
 const ClubModal = ({ club, onClose }: ClubModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const isMobile = useMediaQuery({ maxWidth: 767 });
+  const [canEdit, setCanEdit] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const token = Cookies.get("token");
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -41,6 +46,20 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
     };
   }, []);
 
+  useEffect(() => {
+    if (token) {
+      try {
+        const decoded = jwtDecode<{ email: string }>(token);
+        const userEmail = decoded.email;
+
+        const isBoardMember = club.leaders.some((leader) => leader.email === userEmail);
+        setCanEdit(isBoardMember);
+      } catch (err) {
+        console.error("Failed to decode token:", err);
+      }
+    }
+  }, [club.leaders]);
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div
@@ -66,11 +85,53 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
             className={`${club.logo ? "rounded-2xl" : ""} flex-shrink-0 border-2 border-white relative -top-[50px] mx-auto`}
           />
         )}
-        <Link href={`/Update?clubId=${club._id}`}>
+        {/* <Link href={`/Update?clubId=${club._id}`}>
           <button className="absolute top-4 right-4 px-4 py-2 text-lg font-medium text-white bg-indigo-600 rounded shadow hover:bg-indigo-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
             Edit Here
           </button>
-        </Link>
+        </Link> */}
+        {!isMobile && (
+          <>
+            {token ? (
+              canEdit ? (
+                <Link href={`/Update?clubId=${club._id}`}>
+                  <button className="absolute top-4 right-4 px-4 py-2 text-lg font-medium text-white bg-indigo-600 rounded shadow hover:bg-indigo-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    Edit Here
+                  </button>
+                </Link>
+              ) : (
+                <button
+                  onClick={() => setErrorMessage("You do not have permission to edit this club.")}
+                  className="absolute top-4 right-4 px-4 py-2 text-lg font-medium text-gray-500 bg-gray-300 rounded shadow cursor-not-allowed"
+                >
+                  Edit Here
+                </button>
+              )
+            ) : (
+              <button
+                onClick={() => setErrorMessage("You need to log in to edit this club.")}
+                className="absolute top-4 right-4 px-4 py-2 text-lg font-medium text-gray-500 bg-gray-300 rounded shadow cursor-pointer"
+              >
+                Log in to Edit
+              </button>
+            )}
+          </>
+        )}
+
+        {errorMessage && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md mx-auto shadow-lg">
+              <h2 className="text-lg font-semibold text-gray-800">Error</h2>
+              <p className="mt-2 text-gray-600">{errorMessage}</p>
+              <button
+                onClick={() => setErrorMessage("")}
+                className="mt-4 px-4 py-2 text-white bg-indigo-600 rounded shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="flex flex-col overflow-y-auto overflow-x-hidden m-4 md:m-8 -mt-[50px] md:mt-4">
           <div className="flex flex-col md:flex-row gap-4">

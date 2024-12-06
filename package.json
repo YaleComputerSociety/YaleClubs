@@ -9,22 +9,28 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/js-cookie": "^3.0.6",
     "axios": "^1.7.7",
     "cookies-next": "^5.0.2",
+    "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
     "mongoose": "^8.8.0",
     "next": "15.0.1",
+    "next-auth": "^4.24.10",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-infinite-scroll-component": "^6.1.0",
-    "xml2js": "^0.6.2",
     "react-responsive": "^10.0.0",
     "react-select": "^5.8.3",
-    "react-window": "^1.8.10"
+    "react-window": "^1.8.10",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.7",
+    "@types/jwt-decode": "^2.2.1",
     "@types/mongoose": "^5.11.97",
+    "@types/next-auth": "^3.13.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/xml2js": "^0.4.14",
