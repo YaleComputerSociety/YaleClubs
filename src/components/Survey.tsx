@@ -12,7 +12,7 @@ const SurveyBanner = () => {
 
     const timer = setTimeout(() => {
       setIsVisible(true);
-    }, 5000);
+    }, 25000);
 
     return () => clearTimeout(timer);
   }, []);
