@@ -1,7 +1,7 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import React from "react";
-import MemberCard from "@/components/about/MemberCard.tsx";
+import MemberCard from "@/components/about/MemberCard";
 
 const AboutPage: React.FC = () => {
   return (
@@ -9,7 +9,7 @@ const AboutPage: React.FC = () => {
       <div className="fixed top-0 z-50">
         <Header />
       </div>
-      <div className="flex flex-col items-center justify-center min-h-screen p-6 mt-10">
+      <div className="flex flex-col items-center min-h-screen p-6 mt-[10svh] gap-[5svh]">
         <div className="max-w-3xl text-center">
           <h1 className="text-4xl font-bold mb-4">Welcome to Yale Clubs 🎓</h1>
           <p className="text-lg text-gray-700 mb-8 leading-relaxed">
@@ -28,14 +28,6 @@ const AboutPage: React.FC = () => {
               Yale Computer Society
             </a>
           </p>
-          {/* Discover the vibrant community of clubs and organizations at Yale University. From academic societies and
-          volunteer groups to sports teams and cultural clubs, there’s something here for everyone. Dive into
-          opportunities that will inspire you, connect you, and help you grow. */}
-          {/* <p className="text-lg text-gray-700 mb-8 leading-relaxed">
-            Whether you’re looking to explore a new passion, develop your leadership skills, or make lifelong
-            friendships, Yale’s clubs are the perfect place to start. Join us in building a community that’s as diverse
-            and dynamic as the students who make it up.
-          </p> */}
         </div>
 
         <div className="max-w-3xl text-center mt-10">
@@ -59,21 +51,21 @@ const teamMembers = [
     name: "Addison Goolsbee",
     role: "Team Lead",
     website: "https://addisongoolsbee.com",
-    headshot: "assets/addison.jpg",
+    headshot: "/assets/people/addison.jpg",
     linkedin: "https://www.linkedin.com/in/addisongoolsbee/",
     github: "https://github.com/addisongoolsbee",
   },
   {
     name: "Lauren Lee",
     role: "Developer",
-    headshot: "assets/lauren.jpg",
+    headshot: "/assets/people/lauren.jpg",
     linkedin: "https://www.linkedin.com/in/laurenwylee/",
-    github: "https://github.com/laurenwylee?",
+    github: "https://github.com/laurenwylee",
   },
   {
     name: "Koray Akduman",
     role: "Developer",
-    headshot: "assets/koray.jpeg",
+    headshot: "/assets/people/koray.jpg",
     website: "https://korayakduman.com",
     linkedin: "https://www.linkedin.com/in/korayakduman/",
     github: "https://github.com/kakduman",
@@ -81,17 +73,25 @@ const teamMembers = [
   {
     name: "Grady Yu",
     role: "Developer",
-    headshot: "assets/grady_yu.jpg",
+    headshot: "/assets/people/grady.jpg",
     linkedin: "https://www.linkedin.com/in/gradyyu/",
     github: "https://github.com/Ragyudy",
   },
   {
     name: "Lucas Huang",
     role: "Developer",
-    headshot: "assets/smile.jpg",
+    headshot: "/assets/people/lucas.jpg",
     website: "https://lucashua.ng/",
     linkedin: "https://www.linkedin.com/in/huangl16/",
-    github: "",
+    github: "https://github.com/Quintec",
+  },
+  {
+    name: "Francis Fan",
+    role: "Developer",
+    headshot: "/assets/default-logo.png",
+    website: "https://francis-fan05.onrender.com/",
+    linkedin: "https://www.linkedin.com/in/francis-fan-51293a236/",
+    github: "https://github.com/francisfan0",
   },
 ];
 
