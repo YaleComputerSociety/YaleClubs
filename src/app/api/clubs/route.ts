@@ -65,6 +65,52 @@ export async function POST(req: Request): Promise<NextResponse> {
   }
 }
 
+export async function PUT(req: Request): Promise<NextResponse> {
+  try {
+    // connect to db
+    await connectToDatabase();
+
+    // get info and validate
+    const body = await req.json();
+
+    const url = new URL(req.url);
+    const id = url.searchParams.get("id");
+    console.log(id);
+    if (!id) {
+      return NextResponse.json({ error: "Club ID is required." }, { status: 400 });
+    }
+    const { name, email, leaders } = body;
+    if (!name && !email && !leaders) {
+      return NextResponse.json(
+        { error: "At least one of 'name', 'email', or 'leaders' must be provided for update." },
+        { status: 400 },
+      );
+    }
+    if (leaders && !Array.isArray(leaders)) {
+      return NextResponse.json({ error: "'leaders' must be an array." }, { status: 400 });
+    }
+
+    // create update item
+    const updateData: Partial<IClubInput> = {};
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+    if (leaders) updateData.leaders = leaders;
+
+    // Perform the update
+    const updatedClub = await Club.findByIdAndUpdate(id, { $set: updateData }, { new: true, runValidators: true });
+    console.log(updatedClub);
+    if (!updatedClub) {
+      return NextResponse.json({ error: "Club not found." }, { status: 404 });
+    }
+
+    // Respond with the updated club
+    return NextResponse.json(updatedClub, { status: 200 });
+  } catch (error) {
+    console.error("Error updating club:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
+
 export async function DELETE(req: Request): Promise<NextResponse> {
   try {
     // Connect to the database
