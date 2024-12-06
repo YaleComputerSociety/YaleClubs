@@ -1,5 +1,7 @@
 import connectToDatabase from "../../../lib/mongodb";
 import Club from "../../../lib/models/Club";
+import IClub from "../../../lib/models/Club";
+import UpdateLog from "../../../lib/models/Updates";
 import { NextResponse } from "next/server";
 import { Category, IClubInput } from "../../../lib/models/Club";
 
@@ -65,6 +67,21 @@ export async function POST(req: Request): Promise<NextResponse> {
   }
 }
 
+const generateChangeLog = (
+  original: { [key: string]: typeof IClub },
+  updates: { [key: string]: typeof IClub },
+): string => {
+  const changes: string[] = [];
+
+  for (const key in updates) {
+    if (JSON.stringify(original[key]) !== JSON.stringify(updates[key])) {
+      changes.push(`old ${key}: ${original[key]}, new ${key}: ${updates[key]}`);
+    }
+  }
+
+  return changes.join(", ");
+};
+
 export async function PUT(req: Request): Promise<NextResponse> {
   try {
     // connect to db
@@ -89,7 +106,10 @@ export async function PUT(req: Request): Promise<NextResponse> {
     if (leaders && !Array.isArray(leaders)) {
       return NextResponse.json({ error: "'leaders' must be an array." }, { status: 400 });
     }
-
+    const originalClub = await Club.findById(id);
+    if (!Club) {
+      return NextResponse.json({ error: "Club not found." }, { status: 404 });
+    }
     // create update item
     const updateData: Partial<IClubInput> = {};
     if (name) updateData.name = name;
@@ -98,10 +118,17 @@ export async function PUT(req: Request): Promise<NextResponse> {
 
     // Perform the update
     const updatedClub = await Club.findByIdAndUpdate(id, { $set: updateData }, { new: true, runValidators: true });
-    console.log(updatedClub);
+    // console.log(updatedClub);
     if (!updatedClub) {
       return NextResponse.json({ error: "Club not found." }, { status: 404 });
     }
+
+    const changeLog = generateChangeLog(originalClub, updatedClub);
+    console.log(changeLog);
+    await UpdateLog.create({
+      documentId: id,
+      changes: changeLog,
+    });
 
     // Respond with the updated club
     return NextResponse.json(updatedClub, { status: 200 });
