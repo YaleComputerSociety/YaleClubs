@@ -198,7 +198,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
                 <ClubModalRightLabel header="Email" content={club.email} link={"mailto:" + club.email} />
                 <ClubModalRightLabel
                   header="Membership"
-                  content={`${club.numMembers ? getAdjustedNumMembers(club.numMembers) : "Unknown # of"} members`}
+                  content={club.numMembers ? getAdjustedNumMembers(club.numMembers) + "members" : undefined}
                 />
                 <ClubModalRightLabel header="Instagram" content={club.instagram} />
                 <ClubModalRightLabel
