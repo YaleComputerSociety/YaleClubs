@@ -94,31 +94,24 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
   return (
     <div className="flex flex-wrap gap-2 max-w-[1400px] flex-col items-center sm:flex-row mb-4">
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-
-      <div className="scale-10">
-        <FilterButton
-          selectedItems={selectedCategories}
-          setSelectedItems={setSelectedCategories}
-          allItems={Object.values(Category)}
-          label="Categories"
-        />
-      </div>
-      <div className="scale-10">
-        <FilterButton
-          selectedItems={selectedSchools}
-          setSelectedItems={setSelectedSchools}
-          allItems={Object.values(School)}
-          label="Schools"
-        />
-      </div>
-      <div className="scale-10">
-        <FilterButton
-          selectedItems={selectedAffiliations}
-          setSelectedItems={setSelectedAffiliations}
-          allItems={Object.values(Affiliation)}
-          label="Affiliations"
-        />
-      </div>
+      <FilterButton
+        selectedItems={selectedCategories}
+        setSelectedItems={setSelectedCategories}
+        allItems={Object.values(Category)}
+        label="Categories"
+      />
+      <FilterButton
+        selectedItems={selectedSchools}
+        setSelectedItems={setSelectedSchools}
+        allItems={Object.values(School)}
+        label="Schools"
+      />
+      <FilterButton
+        selectedItems={selectedAffiliations}
+        setSelectedItems={setSelectedAffiliations}
+        allItems={Object.values(Affiliation)}
+        label="Affiliations"
+      />
     </div>
   );
 };
