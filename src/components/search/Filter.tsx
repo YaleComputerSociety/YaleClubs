@@ -1,32 +1,24 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Affiliation } from "@/lib/models/Club";
 
-interface AffiliationFilterButtonProps {
-  selectedAffiliations: string[];
-  setSelectedAffiliations: React.Dispatch<React.SetStateAction<string[]>>;
+interface FilterProps {
+  selectedItems: string[];
+  setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>;
+  allItems: string[];
+  label: string;
 }
 
-const AffiliationFilterButton = ({ selectedAffiliations, setSelectedAffiliations }: AffiliationFilterButtonProps) => {
+const Filter = ({ selectedItems, setSelectedItems, allItems, label }: FilterProps) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const affiliations = Object.values(Affiliation);
-  // const affiliations = [
-  //   "Pre-Professional",
-  //   "Entrepreneurial/Business",
-  //   "Media/Technology",
-  //   "Science/Technology",
-  //   "Cultural",
-  // ];
+  const availableItems = allItems.filter((item) => !selectedItems.includes(item));
 
-  const availableAffiliations = affiliations.filter((affiliation) => !selectedAffiliations.includes(affiliation));
-
-  const handleAddAffiliation = (affiliation: string) => {
-    setSelectedAffiliations((prev) => [...prev, affiliation]);
+  const handleAddItem = (item: string) => {
+    setSelectedItems((prev) => [...prev, item]);
   };
 
-  const handleRemoveAffiliation = (affiliation: string) => {
-    setSelectedAffiliations((prev) => prev.filter((cat) => cat !== affiliation));
+  const handleRemoveItem = (item: string) => {
+    setSelectedItems((prev) => prev.filter((selected) => selected !== item));
   };
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -50,21 +42,21 @@ const AffiliationFilterButton = ({ selectedAffiliations, setSelectedAffiliations
   return (
     <div ref={dropdownRef} className="relative">
       <div
-        className="border px-4 py-2 rounded cursor-pointer w-80 md:w-60 max-w-full flex items-center justify-between h-9 md:h-11"
+        className="border px-4 py-2 rounded cursor-pointer w-80 sm:w-60 max-w-full flex items-center justify-between h-9 md:h-11"
         onClick={() => setShowDropdown((prev) => !prev)}
       >
         <div className="flex items-center overflow-x-auto min-w-0 space-x-2">
-          {selectedAffiliations.length > 0 ? (
-            selectedAffiliations.map((affiliation) => (
+          {selectedItems.length > 0 ? (
+            selectedItems.map((item) => (
               <div
-                key={affiliation}
+                key={item}
                 className="bg-gray-200 px-2 py-1 rounded-full text-sm flex items-center space-x-1 min-w-[120px] flex-shrink-0 justify-between"
               >
-                <span className="truncate">{affiliation}</span>
+                <span className="truncate">{item}</span>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleRemoveAffiliation(affiliation);
+                    handleRemoveItem(item);
                   }}
                   className="text-gray-600 hover:text-gray-800 focus:outline-none"
                 >
@@ -73,7 +65,7 @@ const AffiliationFilterButton = ({ selectedAffiliations, setSelectedAffiliations
               </div>
             ))
           ) : (
-            <span className="text-gray-600">Affiliations</span>
+            <span className="text-gray-600">{label}</span>
           )}
         </div>
         <span className="ml-2">&#x25BC;</span>
@@ -81,18 +73,18 @@ const AffiliationFilterButton = ({ selectedAffiliations, setSelectedAffiliations
       {showDropdown && (
         <div className="absolute mt-2 w-72 max-w-full bg-white border rounded shadow-lg z-10">
           <div className="flex flex-col p-2 gap-2 max-h-72 overflow-y-auto">
-            {availableAffiliations.length > 0 ? (
-              availableAffiliations.map((affiliation) => (
+            {availableItems.length > 0 ? (
+              availableItems.map((item) => (
                 <div
-                  key={affiliation}
+                  key={item}
                   className="cursor-pointer hover:bg-gray-100 px-4 py-2 rounded"
-                  onClick={() => handleAddAffiliation(affiliation)}
+                  onClick={() => handleAddItem(item)}
                 >
-                  {affiliation}
+                  {item}
                 </div>
               ))
             ) : (
-              <div className="text-gray-600 px-4 py-2">No more affiliations available</div>
+              <div className="text-gray-600 px-4 py-2">No more {label.toLowerCase()} available</div>
             )}
           </div>
         </div>
@@ -101,4 +93,4 @@ const AffiliationFilterButton = ({ selectedAffiliations, setSelectedAffiliations
   );
 };
 
-export default AffiliationFilterButton;
+export default Filter;

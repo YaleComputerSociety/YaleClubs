@@ -24,8 +24,7 @@ export class Trie {
 
     for (const char of word) {
       if (!currentNode.children.has(char)) {
-      // console.log(char);
-      currentNode.children.set(char, new TrieNode());
+        currentNode.children.set(char, new TrieNode());
       }
       currentNode = currentNode.children.get(char)!;
     }
