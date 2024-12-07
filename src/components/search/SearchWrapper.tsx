@@ -33,7 +33,6 @@ const SearchWrapper = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const handleScroll = () => {
       const searchControlHeight = document.querySelector(".search-control")?.getBoundingClientRect().top || 0;
-      console.log(searchControlHeight, headerHeight, searchControlTopRef.current, window.scrollY);
 
       setIsSticky(
         searchControlHeight <= headerHeight + 10 && window.scrollY > searchControlTopRef.current - headerHeight - 10,
