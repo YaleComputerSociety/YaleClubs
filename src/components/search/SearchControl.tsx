@@ -92,7 +92,7 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
 
   // Render the component
   return (
-    <div className="flex flex-wrap gap-2 max-w-[1400px] flex-col items-center sm:flex-row mb-4">
+    <div className="search-control flex flex-wrap gap-2 max-w-[1400px] flex-col items-center sm:flex-row pb-4">
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <FilterButton
         selectedItems={selectedCategories}
