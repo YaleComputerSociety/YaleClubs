@@ -98,13 +98,13 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
             Edit Here
           </button>
         </Link> */}
-        {!isMobile && (
+        {!isMobile ? (
           <>
             {token ? (
               canEdit ? (
                 <Link href={`/Update?clubId=${club._id}`}>
                   <button className="absolute top-4 right-4 px-4 py-2 text-lg font-medium text-white bg-indigo-600 rounded shadow hover:bg-indigo-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                    Edit Here
+                    Edit Club
                   </button>
                 </Link>
               ) : (
@@ -112,7 +112,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
                   onClick={() => setErrorMessage("You do not have permission to edit this club.")}
                   className="absolute top-4 right-4 px-4 py-2 text-lg font-medium text-gray-500 bg-gray-300 rounded shadow cursor-not-allowed"
                 >
-                  Edit Here
+                  Edit Club
                 </button>
               )
             ) : (
@@ -124,6 +124,13 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
               </button>
             )}
           </>
+        ) : (
+          <button
+            onClick={() => setErrorMessage("You must be logged in on a computer to edit a club.")}
+            className="absolute top-3 right-3 px-2 py-1 text-sm font-medium text-gray-500 bg-gray-300 rounded shadow cursor-not-allowed"
+          >
+            Edit Club
+          </button>
         )}
 
         {errorMessage && (
