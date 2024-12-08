@@ -16,7 +16,8 @@ type ClubModalProps = {
 
 const ClubModal = ({ club, onClose }: ClubModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
-  const isMobile = useMediaQuery({ maxWidth: 767 });
+  const isSm = useMediaQuery({ maxWidth: 640 });
+  const isMd = useMediaQuery({ maxWidth: 768 });
   const [canEdit, setCanEdit] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const token = Cookies.get("token");
@@ -90,7 +91,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
             e.currentTarget.src = "/assets/default-background.png";
           }}
         />
-        {isMobile && (
+        {isMd && (
           <Image
             src={club.logo ?? "/assets/default-logo.png"}
             alt="Club Logo"
@@ -99,7 +100,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
             className={`${club.logo ? "rounded-2xl" : ""} flex-shrink-0 border-2 border-white relative -top-[50px] mx-auto`}
           />
         )}
-        {!isMobile ? (
+        {!isSm ? (
           <>
             {token ? (
               canEdit ? (
@@ -180,7 +181,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
               <div className="text-gray-700 mt-4 text-sm sm:text-base">{club.description || "No description"}</div>
             </div>
             <div className="flex flex-col md:w-2/5 items-center">
-              {!isMobile && (
+              {!isMd && (
                 <div className="flex flex-col items-center gap-4">
                   <Image
                     src={club.logo ? club.logo : "/assets/default-logo.png"}

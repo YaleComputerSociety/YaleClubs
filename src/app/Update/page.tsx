@@ -173,15 +173,17 @@ const UpdatePage = () => {
       return;
     }
 
-    if (formData.backgroundImage == "") {
-      delete formData.backgroundImage;
-    }
+    Object.keys(formData).forEach((key) => {
+      const value = formData[key as keyof IClubInput];
+      if (typeof value === "string" && value.trim() === "") {
+        delete formData[key as keyof IClubInput];
+      }
+      if (typeof value === "number" && value === 0) {
+        delete formData[key as keyof IClubInput];
+      }
+    });
 
-    if (formData.logo == "") {
-      delete formData.logo;
-    }
-
-    console.log("Club Data:", formData);
+    console.table(formData);
     const clubId = searchParams.get("clubId");
     const token = getCookie("token");
     if (clubId && token) {
@@ -248,7 +250,7 @@ const UpdatePage = () => {
               <button className="text-gray-400 py-2 px-4 rounded-lg">Back</button>
             </Link>
             <div className="flex items-center space-x-4 justify-center flex-grow">
-              <h1 className="text-3xl font-bold text-center pb-2">{formData.name}</h1>
+              <h1 className="text-3xl font-bold text-center pb-2">{formData.name ?? ""}</h1>
             </div>
             <div className="w-16"></div>
           </div>
@@ -263,10 +265,10 @@ const UpdatePage = () => {
                     Name
                     <input
                       type="text"
-                      value={formData.name}
+                      value={formData.name ?? ""}
                       onChange={(e) => handleChange("name", e.target.value)}
                       className="w-full border border-gray-300 rounded-lg p-2"
-                      placeholder={formData.name}
+                      placeholder={formData.name ?? ""}
                     />
                   </label>
                   {validationErrors.subheader && <p className="text-red-500">{validationErrors.subheader}</p>}
@@ -276,7 +278,7 @@ const UpdatePage = () => {
                     Subheader
                     <input
                       type="text"
-                      value={formData.subheader}
+                      value={formData.subheader ?? ""}
                       onChange={(e) => handleChange("subheader", e.target.value)}
                       className="w-full border border-gray-300 rounded-lg p-2"
                       placeholder="Subheader"
@@ -287,7 +289,7 @@ const UpdatePage = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Description
                   <textarea
-                    value={formData.description}
+                    value={formData.description ?? ""}
                     onChange={(e) => handleChange("description", e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2 h-60 resize-none"
                   ></textarea>
@@ -304,7 +306,7 @@ const UpdatePage = () => {
               <div className="space-y-0">
                 <AffiliationsDropdown selectedAffiliations={formData.affiliations || []} handleChange={handleChange} />
               </div>
-              <SchoolDropdown selectedSchool={formData.school as School} handleChange={handleChange} />
+              <SchoolDropdown selectedSchool={(formData.school as School) ?? ""} handleChange={handleChange} />
             </div>
 
             {/* Center Section */}
@@ -330,7 +332,7 @@ const UpdatePage = () => {
                   Application Form
                   <input
                     type="text"
-                    value={formData.applyForm}
+                    value={formData.applyForm ?? ""}
                     onChange={(e) => handleChange("applyForm", e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2"
                     placeholder="Link to application form"
@@ -343,7 +345,7 @@ const UpdatePage = () => {
                   Mailing List Form
                   <input
                     type="text"
-                    value={formData.mailingListForm}
+                    value={formData.mailingListForm ?? ""}
                     onChange={(e) => handleChange("mailingListForm", e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2"
                     placeholder="Link to mailing list form"
@@ -356,7 +358,7 @@ const UpdatePage = () => {
                   How to join
                   <input
                     type="text"
-                    value={formData.howToJoin}
+                    value={formData.howToJoin ?? ""}
                     onChange={(e) => handleChange("howToJoin", e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2"
                     placeholder="How to join"
@@ -373,7 +375,7 @@ const UpdatePage = () => {
                   Instagram
                   <input
                     type="text"
-                    value={formData.instagram}
+                    value={formData.instagram ?? ""}
                     onChange={(e) => handleChange("instagram", e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2"
                     placeholder="@username"
@@ -386,7 +388,7 @@ const UpdatePage = () => {
                   Email
                   <input
                     type="email"
-                    value={formData.email}
+                    value={formData.email ?? ""}
                     onChange={(e) => handleChange("email", e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2"
                     placeholder="email@domain.com"
@@ -399,7 +401,7 @@ const UpdatePage = () => {
                   Website
                   <input
                     type="url"
-                    value={formData.website}
+                    value={formData.website ?? ""}
                     onChange={(e) => handleChange("website", e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2"
                     placeholder="yalecomputersociety.org"
@@ -412,7 +414,7 @@ const UpdatePage = () => {
                   Calendar Link
                   <input
                     type="url"
-                    value={formData.calendarLink}
+                    value={formData.calendarLink ?? ""}
                     onChange={(e) => handleChange("calendarLink", e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2"
                     placeholder="Link to Google Calendar"
@@ -425,7 +427,7 @@ const UpdatePage = () => {
                   Meeting
                   <input
                     type="text"
-                    value={formData.meeting}
+                    value={formData.meeting ?? ""}
                     onChange={(e) => handleChange("meeting", e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2"
                     placeholder="Tuesdays from 4:00-6:00 PM on Cross Campus"
