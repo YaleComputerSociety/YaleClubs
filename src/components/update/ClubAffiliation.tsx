@@ -1,26 +1,39 @@
-import { Category, ClubLeader, IClubInput, Affiliation } from "@/lib/models/Club";
 import React, { useState, useRef, useEffect } from "react";
+import { IClubInput, Affiliation } from "@/lib/models/Club";
 
-interface AffiliationDropdownProps {
-  selectedAffiliation: Affiliation[] | null;
-  handleChange: (
-    field: keyof IClubInput,
-    value: string | number | ClubLeader[] | Affiliation[] | undefined | Category[],
-  ) => void;
+interface AffiliationsDropdownProps {
+  selectedAffiliations: Affiliation[];
+  additionalAffiliations?: string[];
+  handleChange: (field: keyof IClubInput, value: string | number | Affiliation[] | undefined) => void;
 }
 
-const AffiliationDropdown: React.FC<AffiliationDropdownProps> = ({ selectedAffiliation, handleChange }) => {
+const AffiliationsDropdown: React.FC<AffiliationsDropdownProps> = ({
+  selectedAffiliations,
+  additionalAffiliations = [],
+  handleChange,
+}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const allAffiliations = Object.values(Affiliation);
+  const allAffiliations = [
+    ...Object.values(Affiliation),
+    ...additionalAffiliations.filter((cat) => !Object.values(Affiliation).includes(cat as Affiliation)),
+  ];
 
-  const handleSelect = (affiliation: string) => {
-    if (selectedAffiliation && selectedAffiliation.includes(affiliation as Affiliation)) return;
-    handleChange("affiliations", [affiliation as Affiliation]); // "affiliations" matches the IClubInput type
-    setIsDropdownOpen(false);
+  const toggleAffiliation = (Affiliation: string) => {
+    if (selectedAffiliations.includes(Affiliation as Affiliation)) return;
+    const updatedAffiliations = [...selectedAffiliations, Affiliation as Affiliation];
+    handleChange("affiliations", updatedAffiliations);
   };
 
+  const removeAffiliation = (Affiliation: string) => {
+    handleChange(
+      "affiliations",
+      selectedAffiliations.filter((cat) => cat !== Affiliation),
+    );
+  };
+
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -42,33 +55,44 @@ const AffiliationDropdown: React.FC<AffiliationDropdownProps> = ({ selectedAffil
           onClick={() => setIsDropdownOpen((prev) => !prev)}
           className="border border-gray-300 rounded-lg px-4 py-2 cursor-pointer bg-white"
         >
-          {selectedAffiliation && selectedAffiliation.length > 0 ? (
-            <span className="text-gray-800 truncate">{selectedAffiliation}</span>
+          {selectedAffiliations.length > 0 ? (
+            <span>{selectedAffiliations.join(", ")}</span>
           ) : (
-            <span className="text-gray-400 truncate">Select an affiliation</span>
+            <span className="text-gray-400">Select categories</span>
           )}
         </div>
       </label>
 
       {isDropdownOpen && (
         <div className="absolute mt-1 max-h-60 w-full overflow-y-auto bg-white border border-gray-300 rounded-lg shadow-lg z-10">
-          {allAffiliations.map((affiliation: Affiliation) => (
+          {allAffiliations.map((Affiliation) => (
             <div
-              key={affiliation}
+              key={Affiliation}
               className={`cursor-pointer px-4 py-2 ${
-                selectedAffiliation?.includes(affiliation as Affiliation)
+                selectedAffiliations.includes(Affiliation as Affiliation)
                   ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                   : "hover:bg-gray-200"
               }`}
-              onClick={() => handleSelect(affiliation)}
+              onClick={() => toggleAffiliation(Affiliation)}
             >
-              {affiliation}
+              {Affiliation}
             </div>
           ))}
         </div>
       )}
+      {/* Selected Affiliations as Cards */}
+      <div className="flex gap-2 whitespace-nowrap w-full flex-wrap mt-4">
+        {selectedAffiliations.map((Affiliation: Affiliation, index: number) => (
+          <div key={index} className="flex items-center bg-gray-200 rounded px-2 py-1 text-sm">
+            {Affiliation}
+            <button onClick={() => removeAffiliation(Affiliation)} className="ml-2 text-red-500 font-bold hover:text-red-700">
+              &times;
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
-export default AffiliationDropdown;
+export default AffiliationsDropdown;

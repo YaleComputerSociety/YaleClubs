@@ -17,6 +17,7 @@ import SchoolDropdown from "@/components/update/SchoolDropdown";
 import Image from "next/image";
 
 import { getCookie } from "cookies-next";
+import AffiliationsDropdown from "@/components/update/ClubAffiliation";
 
 const UpdatePage = () => {
   const searchParams = useSearchParams();
@@ -254,9 +255,6 @@ const UpdatePage = () => {
             </Link>
             <div className="flex items-center space-x-4 justify-center flex-grow">
               <h1 className="text-3xl font-bold text-center pb-2">{formData.name}</h1>
-              <button onClick={() => toggleModal()} className="bg-white p-2 rounded-full shadow hover:shadow-md">
-                <Image src="/assets/edit-3-svgrepo-com.svg" alt="Edit Icon" width={16} height={16} />
-              </button>
             </div>
             <div className="w-16"></div>
           </div>
@@ -266,6 +264,19 @@ const UpdatePage = () => {
             {/* Left Section */}
             <div className="space-y-2">
               <div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Name
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => handleChange("name", e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg p-2"
+                      placeholder={formData.name}
+                    />
+                  </label>
+                  {validationErrors.subheader && <p className="text-red-500">{validationErrors.subheader}</p>}
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Subheader
@@ -297,7 +308,7 @@ const UpdatePage = () => {
                 />
               </div>
               <div className="space-y-0">
-                <AffiliationDropdown selectedAffiliation={formData.affiliations || []} handleChange={handleChange} />
+                <AffiliationsDropdown selectedAffiliations={formData.affiliations || []} handleChange={handleChange} />
               </div>
               <SchoolDropdown selectedSchool={formData.school as School} handleChange={handleChange} />
             </div>
@@ -440,37 +451,6 @@ const UpdatePage = () => {
               </button>
             </div>
           </div>
-          {isModalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-              <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-                <h2 className="text-lg font-semibold mb-4">Edit Club Name</h2>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => handleChange("name", e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-2 mb-4"
-                />
-                {validationErrors.name && <p className="text-red-500">{validationErrors.name}</p>}
-                <div className="flex justify-end space-x-2">
-                  <button
-                    onClick={toggleModal}
-                    className="bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleSave();
-                      toggleModal();
-                    }}
-                    className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
-                  >
-                    Save
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </main>
       <Footer />
