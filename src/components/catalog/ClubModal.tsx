@@ -183,7 +183,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
               {!isMobile && (
                 <div className="flex flex-col items-center gap-4">
                   <Image
-                    src={club.logo ?? "/assets/default-logo.png"}
+                    src={club.logo ? club.logo : "/assets/default-logo.png"}
                     alt="Club Logo"
                     width={100}
                     height={100}

@@ -36,7 +36,7 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
           </div>
         </div>
         <Image
-          src={club.logo ?? "/assets/default-logo.png"}
+          src={club.logo && club.logo.trim() !== "" ? club.logo : "/assets/default-logo.png"}
           alt="Club Logo"
           width={100}
           height={100}
