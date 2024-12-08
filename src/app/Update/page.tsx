@@ -75,7 +75,7 @@ const UpdatePage = () => {
         if (value && value.length > 150) return "Subheader must not exceed 150 characters.";
         return "";
       case "description":
-        if (value && value.length > 1000) return "Description must not exceed 1000 characters.";
+        if (value && value.length > 1500) return "Description must not exceed 1500 characters.";
         return "";
       case "applyForm":
         if (value && value.length > 200) return "Application form must not exceed 200 characters.";
