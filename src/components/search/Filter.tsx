@@ -50,7 +50,7 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label }: FilterProp
             selectedItems.map((item) => (
               <div
                 key={item}
-                className="bg-gray-200 px-2 py-1 rounded-full text-sm flex items-center space-x-1 min-w-[120px] flex-shrink-0 justify-between"
+                className="bg-gray-200 px-2 py-1 rounded-full text-sm flex items-center space-x-1 flex-shrink-0 justify-between"
               >
                 <span className="truncate">{item}</span>
                 <button
