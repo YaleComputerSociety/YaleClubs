@@ -10,8 +10,6 @@ import Catalog from "../components/catalog/Catalog";
 import { IClub } from "@/lib/models/Club";
 import SearchControl from "@/components/search/SearchControl";
 
-import { getCookie } from "cookies-next";
-import jwt from "jsonwebtoken";
 import SurveyBanner from "@/components/Survey";
 import SearchWrapper from "@/components/search/SearchWrapper";
 
@@ -25,7 +23,7 @@ export default function Home() {
       try {
         setIsLoading(true);
         const response = await axios.get<IClub[]>("/api/clubs");
-        console.log("API message:", response.data);
+        // console.log("API message:", response.data);
         setClubs(response.data);
       } catch (error) {
         console.error("Error fetching API message:", error);
@@ -35,15 +33,6 @@ export default function Home() {
     };
     fetchApiMessage();
   }, []);
-
-  // token
-  useEffect(() => {
-    const token = getCookie("token");
-    if (token) {
-      const decoded = jwt.decode(token.toString());
-      console.log(decoded);
-    }
-  });
 
   return (
     <AuthWrapper>
