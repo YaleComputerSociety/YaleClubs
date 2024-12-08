@@ -11,8 +11,6 @@ type ClubCardProps = {
 };
 
 const ClubCard = ({ club, onClick }: ClubCardProps) => {
-  const categories = club.categories || ["tag1", "tag2", "tag3"]; // Use categories from API if available
-
   return (
     <div
       className="border border-gray-200 rounded-xl p-3 md:p-6 flex flex-col gap-2 w-full cursor-pointer"
@@ -24,8 +22,14 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
             {club.name}
           </div>
           <div className="mt-3 flex gap-2 overflow-auto whitespace-nowrap text-ellipsis scrollbar-hide">
-            {categories.map((tag, index) => (
+            {club.school && <span className="bg-[#acf] rounded px-2 py-1 text-xs">{club.school}</span>}
+            {club.categories?.map((tag, index) => (
               <span key={index} className="bg-[#eee] rounded px-2 py-1 text-xs">
+                {tag}
+              </span>
+            ))}
+            {club.affiliations?.map((tag, index) => (
+              <span key={index} className="bg-[#feb] rounded px-2 py-1 text-xs">
                 {tag}
               </span>
             ))}

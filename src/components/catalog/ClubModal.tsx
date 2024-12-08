@@ -158,7 +158,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
               </div>
               {club.school && (
                 <div className="flex gap-2 whitespace-nowrap w-full flex-wrap mt-4">
-                  <span className="bg-[#ccf] rounded px-2 py-1 text-sm">{club.school}</span>
+                  <span className="bg-[#acf] rounded px-2 py-1 text-sm">{club.school}</span>
                 </div>
               )}
               {((club.affiliations && club.affiliations.length > 0) ||
@@ -170,7 +170,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
                     </span>
                   ))}
                   {club.affiliations?.map((tag, index) => (
-                    <span key={index} className="bg-[#fdf] rounded px-2 py-1 text-sm">
+                    <span key={index} className="bg-[#feb] rounded px-2 py-1 text-sm">
                       {tag}
                     </span>
                   ))}
