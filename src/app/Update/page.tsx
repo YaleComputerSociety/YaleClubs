@@ -11,10 +11,8 @@ import Link from "next/link";
 import EditableImageSection from "@/components/update/EditImage";
 import ClubLeadersSection from "@/components/update/EditLeaders";
 import CategoriesDropdown from "@/components/update/ClubCategories";
-import AffiliationDropdown from "@/components/update/ClubAffiliation";
 import IntensityDropdown from "@/components/update/IntensityDropdown";
 import SchoolDropdown from "@/components/update/SchoolDropdown";
-import Image from "next/image";
 
 import { getCookie } from "cookies-next";
 import AffiliationsDropdown from "@/components/update/ClubAffiliation";
@@ -22,7 +20,6 @@ import AffiliationsDropdown from "@/components/update/ClubAffiliation";
 const UpdatePage = () => {
   const searchParams = useSearchParams();
   const [club, setClub] = useState<IClub | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState<IClubInput>({
     name: "", // done
@@ -198,7 +195,6 @@ const UpdatePage = () => {
       })
         .then((response) => {
           if (response.ok) {
-            alert("Club updated successfully");
             window.location.href = "/";
           } else {
             alert("Failed to update club");
@@ -210,8 +206,6 @@ const UpdatePage = () => {
         });
     }
   };
-
-  const toggleModal = () => setIsModalOpen((prev) => !prev);
 
   if (isLoading) {
     return (

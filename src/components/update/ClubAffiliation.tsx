@@ -85,7 +85,10 @@ const AffiliationsDropdown: React.FC<AffiliationsDropdownProps> = ({
         {selectedAffiliations.map((Affiliation: Affiliation, index: number) => (
           <div key={index} className="flex items-center bg-gray-200 rounded px-2 py-1 text-sm">
             {Affiliation}
-            <button onClick={() => removeAffiliation(Affiliation)} className="ml-2 text-red-500 font-bold hover:text-red-700">
+            <button
+              onClick={() => removeAffiliation(Affiliation)}
+              className="ml-2 text-red-500 font-bold hover:text-red-700"
+            >
               &times;
             </button>
           </div>
