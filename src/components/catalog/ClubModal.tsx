@@ -22,6 +22,8 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
   const [errorMessage, setErrorMessage] = useState("");
   const token = Cookies.get("token");
 
+  console.table(club);
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
