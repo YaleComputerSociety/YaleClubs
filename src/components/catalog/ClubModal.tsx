@@ -16,10 +16,13 @@ type ClubModalProps = {
 
 const ClubModal = ({ club, onClose }: ClubModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
-  const isMobile = useMediaQuery({ maxWidth: 767 });
+  const isSm = useMediaQuery({ maxWidth: 640 });
+  const isMd = useMediaQuery({ maxWidth: 768 });
   const [canEdit, setCanEdit] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const token = Cookies.get("token");
+
+  console.table(club);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -74,6 +77,12 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
         ref={modalRef}
         className="relative bg-white rounded-lg max-w-3xl w-full mx-4 md:mx-auto h-5/6 max-h-[1000px] overflow-hidden flex flex-col"
       >
+        <div
+          onClick={onClose}
+          className="absolute top-2 left-2 p-[0.3rem] px-[0.5rem] pt-[0.2rem] font-bold text-2xl rounded-full text-white bg-black bg-opacity-60 leading-none"
+        >
+          &times;
+        </div>
         <Image
           src={club.backgroundImage || "/assets/default-background.png"}
           alt="bg"
@@ -84,7 +93,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
             e.currentTarget.src = "/assets/default-background.png";
           }}
         />
-        {isMobile && (
+        {isMd && (
           <Image
             src={club.logo ?? "/assets/default-logo.png"}
             alt="Club Logo"
@@ -93,12 +102,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
             className={`${club.logo ? "rounded-2xl" : ""} flex-shrink-0 border-2 border-white relative -top-[50px] mx-auto`}
           />
         )}
-        {/* <Link href={`/Update?clubId=${club._id}`}>
-          <button className="absolute top-4 right-4 px-4 py-2 text-lg font-medium text-white bg-indigo-600 rounded shadow hover:bg-indigo-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-            Edit Here
-          </button>
-        </Link> */}
-        {!isMobile ? (
+        {!isSm ? (
           <>
             {token ? (
               canEdit ? (
@@ -158,22 +162,19 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
               </div>
               {club.school && (
                 <div className="flex gap-2 whitespace-nowrap w-full flex-wrap mt-4">
-                  <span className="bg-[#ccf] rounded px-2 py-1 text-sm">{club.school}</span>
+                  <span className="bg-[#acf] rounded px-2 py-1 text-sm">{club.school}</span>
                 </div>
               )}
-              {club.affiliations && club.affiliations.length > 0 && (
+              {((club.affiliations && club.affiliations.length > 0) ||
+                (club.categories && club.categories.length > 0)) && (
                 <div className="flex gap-2 whitespace-nowrap w-full flex-wrap mt-4">
-                  {club.affiliations.map((tag, index) => (
-                    <span key={index} className="bg-[#fdf] rounded px-2 py-1 text-sm">
+                  {club.categories?.map((tag, index) => (
+                    <span key={index} className="bg-[#eee] rounded px-2 py-1 text-sm">
                       {tag}
                     </span>
                   ))}
-                </div>
-              )}
-              {club.categories && club.categories.length > 0 && (
-                <div className="flex gap-2 whitespace-nowrap w-full flex-wrap mt-4">
-                  {club.categories.map((tag, index) => (
-                    <span key={index} className="bg-[#eee] rounded px-2 py-1 text-sm">
+                  {club.affiliations?.map((tag, index) => (
+                    <span key={index} className="bg-[#feb] rounded px-2 py-1 text-sm">
                       {tag}
                     </span>
                   ))}
@@ -182,10 +183,10 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
               <div className="text-gray-700 mt-4 text-sm sm:text-base">{club.description || "No description"}</div>
             </div>
             <div className="flex flex-col md:w-2/5 items-center">
-              {!isMobile && (
+              {!isMd && (
                 <div className="flex flex-col items-center gap-4">
                   <Image
-                    src={club.logo ?? "/assets/default-logo.png"}
+                    src={club.logo ? club.logo : "/assets/default-logo.png"}
                     alt="Club Logo"
                     width={100}
                     height={100}

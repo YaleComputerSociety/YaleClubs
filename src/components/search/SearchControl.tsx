@@ -14,7 +14,6 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSchools, setSelectedSchools] = useState<string[]>([School.COLLEGE]);
-  const [selectedAffiliations, setSelectedAffiliations] = useState<string[]>([]);
   const [trie, setTrie] = useState<Trie | null>(null);
 
   // Initialize Trie with club names
@@ -48,58 +47,26 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
       filteredBySearch = clubs.filter((club) => matchingNames.includes(club.name.toLowerCase().trim()));
     }
 
-    // Filter by categories
-    const filteredByCategories =
-      selectedCategories.length > 0
-        ? filteredBySearch.filter((club) =>
-            selectedCategories.some((selectedCategory) =>
-              club.categories ? club.categories.includes(selectedCategory as Category) : false,
-            ),
-          )
-        : filteredBySearch;
+    const filteredClubs = filteredBySearch
+      .filter((club) =>
+        selectedSchools.length > 0 ? selectedSchools.some((school) => club.school?.includes?.(school)) : true,
+      )
+      .filter((club) =>
+        selectedCategories.length > 0
+          ? selectedCategories.some(
+              (category) =>
+                club.categories?.includes(category as Category) || club.affiliations?.includes(category as Affiliation),
+            )
+          : true,
+      );
 
-    // Filter by schools
-    const filteredBySchools =
-      selectedSchools.length > 0
-        ? filteredByCategories.filter((club) =>
-            selectedSchools.some((selectedSchool) => club.school?.includes?.(selectedSchool)),
-          )
-        : filteredByCategories;
-
-    // Filter by affiliations
-    const filteredByAffiliations =
-      selectedAffiliations.length > 0
-        ? filteredBySchools.filter((club) =>
-            selectedAffiliations.some((selectedAffiliation) =>
-              club.affiliations?.includes?.(selectedAffiliation as Affiliation),
-            ),
-          )
-        : filteredBySchools;
-
-    // Update the current clubs
-    setCurrentClubs(filteredByAffiliations);
+    setCurrentClubs(filteredClubs);
     setIsLoading(false);
-  }, [
-    searchQuery,
-    selectedCategories,
-    selectedSchools,
-    selectedAffiliations,
-    trie,
-    clubs,
-    setCurrentClubs,
-    setIsLoading,
-  ]);
+  }, [searchQuery, selectedCategories, selectedSchools, trie, clubs, setCurrentClubs, setIsLoading]);
 
-  // Render the component
   return (
     <div className="search-control flex flex-wrap gap-2 max-w-[1400px] flex-col items-center sm:flex-row pb-4">
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      <FilterButton
-        selectedItems={selectedCategories}
-        setSelectedItems={setSelectedCategories}
-        allItems={Object.values(Category)}
-        label="Categories"
-      />
       <FilterButton
         selectedItems={selectedSchools}
         setSelectedItems={setSelectedSchools}
@@ -107,10 +74,10 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
         label="Schools"
       />
       <FilterButton
-        selectedItems={selectedAffiliations}
-        setSelectedItems={setSelectedAffiliations}
-        allItems={Object.values(Affiliation)}
-        label="Affiliations"
+        selectedItems={selectedCategories}
+        setSelectedItems={setSelectedCategories}
+        allItems={[...Object.values(Category), ...Object.values(Affiliation)].sort()}
+        label="Categories"
       />
     </div>
   );

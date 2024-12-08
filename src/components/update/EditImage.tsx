@@ -76,6 +76,7 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
               Edit {currentField === "backgroundImage" ? "Background Image" : "Logo"}
             </h2>
             <p>Please input a publicly-accessible URL.</p>
+            <p className="mb-4 text-sm text-gray-500">Try uploading your image to imgur.com or postimages.org.</p>
             <input
               type="text"
               value={inputValue}

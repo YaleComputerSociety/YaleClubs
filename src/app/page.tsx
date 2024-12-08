@@ -10,8 +10,6 @@ import Catalog from "../components/catalog/Catalog";
 import { IClub } from "@/lib/models/Club";
 import SearchControl from "@/components/search/SearchControl";
 
-import { getCookie } from "cookies-next";
-import jwt from "jsonwebtoken";
 import SurveyBanner from "@/components/Survey";
 import SearchWrapper from "@/components/search/SearchWrapper";
 
@@ -25,7 +23,7 @@ export default function Home() {
       try {
         setIsLoading(true);
         const response = await axios.get<IClub[]>("/api/clubs");
-        console.log("API message:", response.data);
+        // console.log("API message:", response.data);
         setClubs(response.data);
       } catch (error) {
         console.error("Error fetching API message:", error);
@@ -36,15 +34,6 @@ export default function Home() {
     fetchApiMessage();
   }, []);
 
-  // token
-  useEffect(() => {
-    const token = getCookie("token");
-    if (token) {
-      const decoded = jwt.decode(token.toString());
-      console.log(decoded);
-    }
-  });
-
   return (
     <AuthWrapper>
       <main className="w-full">
@@ -53,7 +42,7 @@ export default function Home() {
           <div className="flex flex-col w-full h-screen px-5 md:px-20">
             <div className="mt-20 md:mt-24"></div>
             <h1 className="text-3xl font-bold text-black">Browse Clubs</h1>
-            <h2 className="text-xl mb-8">Finding Clubs has Never Been Easier.</h2>
+            <h2 className="text-xl mb-4 md:mb-8">Finding Clubs has Never Been Easier.</h2>
             <SearchWrapper>
               <SearchControl clubs={clubs} setCurrentClubs={setCurrentClubs} setIsLoading={setIsLoading} />
             </SearchWrapper>

@@ -11,17 +11,15 @@ import Link from "next/link";
 import EditableImageSection from "@/components/update/EditImage";
 import ClubLeadersSection from "@/components/update/EditLeaders";
 import CategoriesDropdown from "@/components/update/ClubCategories";
-import AffiliationDropdown from "@/components/update/ClubAffiliation";
 import IntensityDropdown from "@/components/update/IntensityDropdown";
 import SchoolDropdown from "@/components/update/SchoolDropdown";
-import Image from "next/image";
 
 import { getCookie } from "cookies-next";
+import AffiliationsDropdown from "@/components/update/ClubAffiliation";
 
 const UpdatePage = () => {
   const searchParams = useSearchParams();
   const [club, setClub] = useState<IClub | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState<IClubInput>({
     name: "", // done
@@ -77,7 +75,7 @@ const UpdatePage = () => {
         if (value && value.length > 150) return "Subheader must not exceed 150 characters.";
         return "";
       case "description":
-        if (value && value.length > 1000) return "Description must not exceed 1000 characters.";
+        if (value && value.length > 1500) return "Description must not exceed 1500 characters.";
         return "";
       case "applyForm":
         if (value && value.length > 200) return "Application form must not exceed 200 characters.";
@@ -175,15 +173,17 @@ const UpdatePage = () => {
       return;
     }
 
-    if (formData.backgroundImage == "") {
-      delete formData.backgroundImage;
-    }
+    Object.keys(formData).forEach((key) => {
+      const value = formData[key as keyof IClubInput];
+      if (typeof value === "string" && value.trim() === "") {
+        delete formData[key as keyof IClubInput];
+      }
+      if (typeof value === "number" && value === 0) {
+        delete formData[key as keyof IClubInput];
+      }
+    });
 
-    if (formData.logo == "") {
-      delete formData.logo;
-    }
-
-    console.log("Club Data:", formData);
+    console.table(formData);
     const clubId = searchParams.get("clubId");
     const token = getCookie("token");
     if (clubId && token) {
@@ -197,7 +197,6 @@ const UpdatePage = () => {
       })
         .then((response) => {
           if (response.ok) {
-            alert("Club updated successfully");
             window.location.href = "/";
           } else {
             alert("Failed to update club");
@@ -209,8 +208,6 @@ const UpdatePage = () => {
         });
     }
   };
-
-  const toggleModal = () => setIsModalOpen((prev) => !prev);
 
   if (isLoading) {
     return (
@@ -253,10 +250,7 @@ const UpdatePage = () => {
               <button className="text-gray-400 py-2 px-4 rounded-lg">Back</button>
             </Link>
             <div className="flex items-center space-x-4 justify-center flex-grow">
-              <h1 className="text-3xl font-bold text-center pb-2">{formData.name}</h1>
-              <button onClick={() => toggleModal()} className="bg-white p-2 rounded-full shadow hover:shadow-md">
-                <Image src="/assets/edit-3-svgrepo-com.svg" alt="Edit Icon" width={16} height={16} />
-              </button>
+              <h1 className="text-3xl font-bold text-center pb-2">{formData.name ?? ""}</h1>
             </div>
             <div className="w-16"></div>
           </div>
@@ -268,10 +262,23 @@ const UpdatePage = () => {
               <div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Name
+                    <input
+                      type="text"
+                      value={formData.name ?? ""}
+                      onChange={(e) => handleChange("name", e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg p-2"
+                      placeholder={formData.name ?? ""}
+                    />
+                  </label>
+                  {validationErrors.subheader && <p className="text-red-500">{validationErrors.subheader}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Subheader
                     <input
                       type="text"
-                      value={formData.subheader}
+                      value={formData.subheader ?? ""}
                       onChange={(e) => handleChange("subheader", e.target.value)}
                       className="w-full border border-gray-300 rounded-lg p-2"
                       placeholder="Subheader"
@@ -282,7 +289,7 @@ const UpdatePage = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Description
                   <textarea
-                    value={formData.description}
+                    value={formData.description ?? ""}
                     onChange={(e) => handleChange("description", e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2 h-60 resize-none"
                   ></textarea>
@@ -297,9 +304,9 @@ const UpdatePage = () => {
                 />
               </div>
               <div className="space-y-0">
-                <AffiliationDropdown selectedAffiliation={formData.affiliations || []} handleChange={handleChange} />
+                <AffiliationsDropdown selectedAffiliations={formData.affiliations || []} handleChange={handleChange} />
               </div>
-              <SchoolDropdown selectedSchool={formData.school as School} handleChange={handleChange} />
+              <SchoolDropdown selectedSchool={(formData.school as School) ?? ""} handleChange={handleChange} />
             </div>
 
             {/* Center Section */}
@@ -325,7 +332,7 @@ const UpdatePage = () => {
                   Application Form
                   <input
                     type="text"
-                    value={formData.applyForm}
+                    value={formData.applyForm ?? ""}
                     onChange={(e) => handleChange("applyForm", e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2"
                     placeholder="Link to application form"
@@ -338,7 +345,7 @@ const UpdatePage = () => {
                   Mailing List Form
                   <input
                     type="text"
-                    value={formData.mailingListForm}
+                    value={formData.mailingListForm ?? ""}
                     onChange={(e) => handleChange("mailingListForm", e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2"
                     placeholder="Link to mailing list form"
@@ -351,7 +358,7 @@ const UpdatePage = () => {
                   How to join
                   <input
                     type="text"
-                    value={formData.howToJoin}
+                    value={formData.howToJoin ?? ""}
                     onChange={(e) => handleChange("howToJoin", e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2"
                     placeholder="How to join"
@@ -368,7 +375,7 @@ const UpdatePage = () => {
                   Instagram
                   <input
                     type="text"
-                    value={formData.instagram}
+                    value={formData.instagram ?? ""}
                     onChange={(e) => handleChange("instagram", e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2"
                     placeholder="@username"
@@ -381,7 +388,7 @@ const UpdatePage = () => {
                   Email
                   <input
                     type="email"
-                    value={formData.email}
+                    value={formData.email ?? ""}
                     onChange={(e) => handleChange("email", e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2"
                     placeholder="email@domain.com"
@@ -394,7 +401,7 @@ const UpdatePage = () => {
                   Website
                   <input
                     type="url"
-                    value={formData.website}
+                    value={formData.website ?? ""}
                     onChange={(e) => handleChange("website", e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2"
                     placeholder="yalecomputersociety.org"
@@ -407,7 +414,7 @@ const UpdatePage = () => {
                   Calendar Link
                   <input
                     type="url"
-                    value={formData.calendarLink}
+                    value={formData.calendarLink ?? ""}
                     onChange={(e) => handleChange("calendarLink", e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2"
                     placeholder="Link to Google Calendar"
@@ -420,7 +427,7 @@ const UpdatePage = () => {
                   Meeting
                   <input
                     type="text"
-                    value={formData.meeting}
+                    value={formData.meeting ?? ""}
                     onChange={(e) => handleChange("meeting", e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2"
                     placeholder="Tuesdays from 4:00-6:00 PM on Cross Campus"
@@ -440,37 +447,6 @@ const UpdatePage = () => {
               </button>
             </div>
           </div>
-          {isModalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-              <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-                <h2 className="text-lg font-semibold mb-4">Edit Club Name</h2>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => handleChange("name", e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-2 mb-4"
-                />
-                {validationErrors.name && <p className="text-red-500">{validationErrors.name}</p>}
-                <div className="flex justify-end space-x-2">
-                  <button
-                    onClick={toggleModal}
-                    className="bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleSave();
-                      toggleModal();
-                    }}
-                    className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
-                  >
-                    Save
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </main>
       <Footer />

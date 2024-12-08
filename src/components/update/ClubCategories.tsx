@@ -1,13 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { IClubInput, Category } from "@/lib/models/Club";
 
-// enum Category {
-//   SPORTS = "Sports",
-//   ARTS = "Arts",
-//   TECHNOLOGY = "Technology",
-//   MUSIC = "Music",
-// }
-
 interface CategoriesDropdownProps {
   selectedCategories: Category[];
   additionalCategories?: string[];
