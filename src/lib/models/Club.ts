@@ -80,7 +80,6 @@ export enum Affiliation {
   NACC = "NACC",
   TSAI = "Tsai City",
   CASA = "La Casa",
-  DWIGHT = "Dwight Hall",
 }
 
 export enum Intensity {
