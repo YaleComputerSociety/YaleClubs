@@ -74,6 +74,12 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
         ref={modalRef}
         className="relative bg-white rounded-lg max-w-3xl w-full mx-4 md:mx-auto h-5/6 max-h-[1000px] overflow-hidden flex flex-col"
       >
+        <div
+          onClick={onClose}
+          className="absolute top-2 left-2 p-[0.3rem] px-[0.5rem] pt-[0.2rem] font-bold text-2xl rounded-full text-white bg-black bg-opacity-60 leading-none"
+        >
+          &times;
+        </div>
         <Image
           src={club.backgroundImage || "/assets/default-background.png"}
           alt="bg"
@@ -93,11 +99,6 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
             className={`${club.logo ? "rounded-2xl" : ""} flex-shrink-0 border-2 border-white relative -top-[50px] mx-auto`}
           />
         )}
-        {/* <Link href={`/Update?clubId=${club._id}`}>
-          <button className="absolute top-4 right-4 px-4 py-2 text-lg font-medium text-white bg-indigo-600 rounded shadow hover:bg-indigo-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-            Edit Here
-          </button>
-        </Link> */}
         {!isMobile ? (
           <>
             {token ? (
