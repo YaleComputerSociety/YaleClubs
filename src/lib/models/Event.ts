@@ -1,5 +1,4 @@
 import mongoose, { Document, Schema } from "mongoose";
-import { IClub } from "./Club";
 
 export enum Tag {
   FreeFood = "Free Food",
@@ -20,14 +19,9 @@ export enum Tag {
 }
 
 export interface IEventInput {
-  _id: string;
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
-
   name: string;
   description?: string;
-  club: IClub;
+  club: string;
   start: Date;
   location: string;
   registrationLink?: string;
@@ -51,16 +45,19 @@ export interface IEvent extends Document {
   tags?: Tag[];
 }
 
-const eventSchema = new Schema<IEvent>({
-  name: { type: String, required: true },
-  description: { type: String, required: true },
-  club: { type: String, required: true },
-  start: { type: Date, required: true },
-  location: { type: String, required: true },
-  registrationLink: { type: String, required: false },
-  flyer: { type: String, required: false },
-  tags: { type: [String], enum: Object.values(Tag), default: [] },
-});
+const eventSchema = new Schema<IEvent>(
+  {
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    club: { type: String, required: true },
+    start: { type: Date, required: true },
+    location: { type: String, required: true },
+    registrationLink: { type: String, required: false },
+    flyer: { type: String, required: false },
+    tags: { type: [String], enum: Object.values(Tag), default: [] },
+  },
+  { timestamps: true },
+);
 
 const Event = mongoose.models?.Event || mongoose.model<IEvent>("Event", eventSchema);
 export default Event;

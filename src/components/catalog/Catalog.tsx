@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import ClubCard from "./ClubCard";
 import ClubModal from "./ClubModal";
 import { IClub } from "@/lib/models/Club";
+import { IEvent } from "@/lib/models/Event";
 
 interface CatalogProps {
   clubs: IClub[];
+  topEvents?: IEvent[];
   isLoading: boolean;
 }
 

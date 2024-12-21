@@ -7,7 +7,7 @@ import Club, { IClub, ClubLeader } from "@/lib/models/Club";
 export async function GET(): Promise<NextResponse> {
   try {
     await connectToDatabase();
-    const events = await Event.find({});
+    const events = await Event.find().sort({ start: 1 });
     return NextResponse.json(events, { status: 200 });
   } catch (error) {
     console.error("Error reading savedData.json:", error);

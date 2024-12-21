@@ -93,6 +93,14 @@ const teamMembers = [
     linkedin: "https://www.linkedin.com/in/francis-fan-51293a236/",
     github: "https://github.com/francisfan0",
   },
+  {
+    name: "Ethan Mathieu",
+    role: "Developer",
+    headshot: "/assets/people/ethan.png",
+    website: "https://ethanmathieu.com",
+    linkedin: "https://www.linkedin.com/in/ethan-mathieu/",
+    github: "https://github.com/emath12",
+  },
 ];
 
 export default AboutPage;

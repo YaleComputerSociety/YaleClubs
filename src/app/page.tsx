@@ -8,6 +8,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Catalog from "../components/catalog/Catalog";
 import { IClub } from "@/lib/models/Club";
+import { IEvent } from "@/lib/models/Event";
 import SearchControl from "@/components/search/SearchControl";
 
 import SurveyBanner from "@/components/Survey";
@@ -16,14 +17,14 @@ import SearchWrapper from "@/components/search/SearchWrapper";
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [clubs, setClubs] = useState<IClub[]>([]);
+  const [topEvents, setTopEvents] = useState<IEvent[]>([]);
   const [currentClubs, setCurrentClubs] = useState<IClub[]>([]);
 
   useEffect(() => {
-    const fetchApiMessage = async () => {
+    const fetchClubs = async () => {
       try {
         setIsLoading(true);
         const response = await axios.get<IClub[]>("/api/clubs");
-        // console.log("API message:", response.data);
         setClubs(response.data);
       } catch (error) {
         console.error("Error fetching API message:", error);
@@ -31,7 +32,20 @@ export default function Home() {
         setIsLoading(false);
       }
     };
-    fetchApiMessage();
+
+    const fetchTopEvents = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get<IEvent[]>("/api/events");
+        setTopEvents(response.data.slice(0, 2));
+      } catch (error) {
+        console.error("Error fetching API message:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchClubs().then(() => fetchTopEvents());
   }, []);
 
   return (
@@ -46,7 +60,7 @@ export default function Home() {
             <SearchWrapper>
               <SearchControl clubs={clubs} setCurrentClubs={setCurrentClubs} setIsLoading={setIsLoading} />
             </SearchWrapper>
-            <Catalog clubs={currentClubs} isLoading={isLoading} />
+            <Catalog clubs={currentClubs} topEvents={topEvents} isLoading={isLoading} />
             <Footer />
           </div>
         </section>
