@@ -60,7 +60,9 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
           : true,
       );
 
-    setCurrentClubs(filteredClubs);
+    const sortedFilteredClubs = filteredClubs.sort((a, b) => a.name.localeCompare(b.name));
+
+    setCurrentClubs(sortedFilteredClubs);
     setIsLoading(false);
   }, [searchQuery, selectedCategories, selectedSchools, trie, clubs, setCurrentClubs, setIsLoading]);
 
