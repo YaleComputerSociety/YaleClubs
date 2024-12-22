@@ -1,14 +1,12 @@
-import { IClub } from "@/lib/models/Club";
-
 class TrieNode {
   children: Map<string, TrieNode>;
   isEndOfWord: boolean;
-  clubNames: Set<string>;
+  allCompleteWords: Set<string>;
 
   constructor() {
     this.children = new Map();
     this.isEndOfWord = false;
-    this.clubNames = new Set();
+    this.allCompleteWords = new Set();
   }
 }
 
@@ -19,7 +17,7 @@ export class Trie {
     this.root = new TrieNode();
   }
 
-  insert(word: string, clubName: string): void {
+  insert(word: string, subword: string): void {
     let currentNode = this.root;
 
     for (const char of word) {
@@ -31,7 +29,7 @@ export class Trie {
 
     currentNode.isEndOfWord = true;
 
-    currentNode.clubNames.add(clubName);
+    currentNode.allCompleteWords.add(subword);
   }
 
   search(prefix: string): string[] {
@@ -45,29 +43,29 @@ export class Trie {
     }
 
     const results: Set<string> = new Set();
-    const collectClubNames = (node: TrieNode) => {
+    const collectAllWords = (node: TrieNode) => {
       if (node.isEndOfWord) {
-        node.clubNames.forEach((name) => results.add(name));
+        node.allCompleteWords.forEach((name) => results.add(name));
       }
       for (const [, childNode] of node.children) {
-        collectClubNames(childNode);
+        collectAllWords(childNode);
       }
     };
 
-    collectClubNames(currentNode);
+    collectAllWords(currentNode);
 
     return Array.from(results);
   }
 
-  getWordsWithPrefixes(queryStrings: string[], allClubs: IClub[]): string[] {
-    if (!allClubs || allClubs.length === 0) {
-      console.warn("Empty or undefined allClubs array");
+  getWordsWithPrefixes(queryStrings: string[], allWords: string[]): string[] {
+    if (!allWords || allWords.length === 0) {
+      console.warn("Empty or undefined allWords array");
       return [];
     }
 
-    allClubs.forEach((club) => {
-      const words = club.name.toLowerCase().split(/\s+/);
-      words.forEach((word) => this.insert(word, club.name));
+    allWords.forEach((word: string) => {
+      const subwords = word.toLowerCase().split(/\s+/);
+      subwords.forEach((subword) => this.insert(subword, word));
     });
 
     let results: Set<string> | null = null;
