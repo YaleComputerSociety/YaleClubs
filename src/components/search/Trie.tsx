@@ -58,7 +58,6 @@ export class Trie {
   }
 
   getWordsWithPrefixes(queryStrings: string[], allWords: string[]): string[] {
-    console.log(allWords);
     if (!allWords || allWords.length === 0) {
       console.warn("Empty or undefined allWords array");
       return [];
