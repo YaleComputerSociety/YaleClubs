@@ -39,7 +39,10 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
         .split(" ")
         .filter((word) => word.trim() !== "");
 
-      let matchingNames = trie.getWordsWithPrefixes(queryWords, clubs);
+      let matchingNames = trie.getWordsWithPrefixes(
+        queryWords,
+        clubs.map((club) => club.name),
+      );
       matchingNames = matchingNames
         .filter((name) => name !== undefined && name !== null)
         .map((name) => name.toLowerCase());
