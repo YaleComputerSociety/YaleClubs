@@ -9,9 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@date-io/date-fns": "^2.17.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/lab": "^6.0.0-beta.20",
+    "@mui/material": "^6.2.1",
+    "@mui/x-date-pickers": "^7.23.3",
+    "@mui/x-date-pickers-pro": "^7.23.3",
     "@types/js-cookie": "^3.0.6",
     "axios": "^1.7.7",
     "cookies-next": "^5.0.2",
+    "date-fns": "^2.30.0",
     "jose": "^5.9.6",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",

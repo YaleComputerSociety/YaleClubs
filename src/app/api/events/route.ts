@@ -16,24 +16,32 @@ export async function GET(): Promise<NextResponse> {
 }
 
 export async function POST(req: Request): Promise<NextResponse> {
+  console.log("posted called");
   try {
+    console.log("post is called");
     await connectToDatabase();
 
     let body: IEventInput;
+
+    console.log("connected to DB");
+
     try {
       body = await req.json();
+      console.log(body);
     } catch (error) {
       console.error("Error parsing JSON:", error);
       return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
     }
 
     // Validate required fields
-    if (!body.name || !body.description || !body.club || !body.start || !body.location) {
+    if (!body.name || !body.description || !body.clubs || !body.start || !body.location) {
       return NextResponse.json(
         { error: "Name, description, club, start and location are required fields." },
         { status: 400 },
       );
     }
+
+    console.log("other fields done");
 
     // Validate `tags` if provided
     if (body.tags && !Array.isArray(body.tags)) {
@@ -45,13 +53,18 @@ export async function POST(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Invalid tag provided." }, { status: 400 });
     }
 
+    console.log("tags done");
+
     const event = new Event(body);
+
+    console.log(event);
 
     const savedEvent = await event.save();
 
     // Respond with the created event
-    return NextResponse.json(savedEvent, { status: 201 });
+    return NextResponse.json(savedEvent, { status: 200 });
   } catch (error) {
+    console.log("error");
     console.error("Error creating event:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }

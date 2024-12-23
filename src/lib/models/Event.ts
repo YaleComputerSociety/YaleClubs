@@ -20,8 +20,8 @@ export enum Tag {
 
 export interface IEventInput {
   name: string;
-  description?: string;
-  club: string;
+  description: string;
+  clubs: string[];
   start: Date;
   location: string;
   registrationLink?: string;
@@ -37,7 +37,7 @@ export interface IEvent extends Document {
 
   name: string;
   description: string;
-  club: string;
+  clubs: string[];
   start: Date;
   location: string;
   registrationLink?: string;
@@ -49,7 +49,7 @@ const eventSchema = new Schema<IEvent>(
   {
     name: { type: String, required: true },
     description: { type: String, required: true },
-    club: { type: String, required: true },
+    clubs: { type: [String], required: true },
     start: { type: Date, required: true },
     location: { type: String, required: true },
     registrationLink: { type: String, required: false },

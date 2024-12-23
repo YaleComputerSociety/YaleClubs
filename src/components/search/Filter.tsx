@@ -5,16 +5,22 @@ interface FilterProps {
   setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>;
   allItems: string[];
   label: string;
+  showInput?: boolean;
 }
 
-const Filter = ({ selectedItems, setSelectedItems, allItems, label }: FilterProps) => {
+const Filter = ({ selectedItems, setSelectedItems, allItems, label, showInput = false }: FilterProps) => {
   const [showDropdown, setShowDropdown] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const firstVisibleItemRef = useRef<HTMLDivElement | null>(null);
 
-  const availableItems = allItems.filter((item) => !selectedItems.includes(item));
+  const availableItems = allItems.filter(
+    (item) => !selectedItems.includes(item) && item.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   const handleAddItem = (item: string) => {
     setSelectedItems((prev) => [...prev, item]);
+    setSearchQuery(""); // Clear the search query after selecting an item
   };
 
   const handleRemoveItem = (item: string) => {
@@ -38,6 +44,13 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label }: FilterProp
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showDropdown]);
+
+  // Scroll to the first visible item when the dropdown is updated
+  useEffect(() => {
+    if (firstVisibleItemRef.current) {
+      firstVisibleItemRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [availableItems]);
 
   return (
     <div ref={dropdownRef} className="relative">
@@ -72,11 +85,23 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label }: FilterProp
       </div>
       {showDropdown && (
         <div className="absolute mt-2 w-72 max-w-full bg-white border rounded shadow-lg z-10">
+          {showInput && (
+            <div className="p-2">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full border px-3 py-2 rounded mb-2"
+                placeholder={`Search ${label.toLowerCase()}...`}
+              />
+            </div>
+          )}
           <div className="flex flex-col p-2 gap-2 max-h-72 overflow-y-auto">
             {availableItems.length > 0 ? (
-              availableItems.map((item) => (
+              availableItems.map((item, index) => (
                 <div
                   key={item}
+                  ref={index === 0 ? firstVisibleItemRef : null} // Assign ref to the first visible item
                   className="cursor-pointer hover:bg-gray-100 px-4 py-2 rounded"
                   onClick={() => handleAddItem(item)}
                 >
