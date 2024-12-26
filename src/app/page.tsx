@@ -11,7 +11,7 @@ import { IClub } from "@/lib/models/Club";
 import { IEvent } from "@/lib/models/Event";
 import SearchControl from "@/components/search/SearchControl";
 
-import SurveyBanner from "@/components/Survey";
+// import SurveyBanner from "@/components/Survey";
 import SearchWrapper from "@/components/search/SearchWrapper";
 
 export default function Home() {
@@ -33,7 +33,7 @@ export default function Home() {
       }
     };
 
-    const fetchTopEvents = async () => {
+    const fetchFeaturedEvents = async () => {
       try {
         setIsLoading(true);
         const response = await axios.get<IEvent[]>("/api/events");
@@ -45,7 +45,7 @@ export default function Home() {
       }
     };
 
-    fetchClubs().then(() => fetchTopEvents());
+    fetchClubs().then(() => fetchFeaturedEvents());
   }, []);
 
   return (
@@ -56,15 +56,20 @@ export default function Home() {
           <div className="flex flex-col w-full h-screen px-5 md:px-20">
             <div className="mt-20 md:mt-24"></div>
             <h1 className="text-3xl font-bold text-black">Browse Clubs</h1>
-            <h2 className="text-xl mb-4 md:mb-8">Finding Clubs has Never Been Easier.</h2>
+            <h2 className="text-xl mb-4 md:mb-8">Finding Clubs and their Events has Never Been Easier.</h2>
             <SearchWrapper>
-              <SearchControl clubs={clubs} setCurrentClubs={setCurrentClubs} setIsLoading={setIsLoading} />
+              <SearchControl
+                clubs={clubs}
+                setFeaturedEvents={setTopEvents}
+                setCurrentClubs={setCurrentClubs}
+                setIsLoading={setIsLoading}
+              />
             </SearchWrapper>
-            <Catalog clubs={currentClubs} topEvents={topEvents} isLoading={isLoading} />
+            <Catalog clubs={currentClubs} featuredEvents={topEvents} isLoading={isLoading} />
             <Footer />
           </div>
         </section>
-        <SurveyBanner />
+        {/* <SurveyBanner /> */}
       </main>
     </AuthWrapper>
   );

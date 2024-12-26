@@ -55,7 +55,7 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label, showInput = 
   return (
     <div ref={dropdownRef} className="relative">
       <div
-        className="border px-4 py-2 rounded cursor-pointer w-80 sm:w-60 max-w-full flex items-center justify-between h-9 md:h-11"
+        className="border px-4 py-2 rounded cursor-pointer w-full sm:w-60 max-w-full flex items-center justify-between h-9 md:h-11"
         onClick={() => setShowDropdown((prev) => !prev)}
       >
         <div className="flex items-center overflow-x-auto min-w-0 space-x-2">

@@ -4,7 +4,7 @@ import Board from "./Board";
 import Image from "next/image";
 import { getAdjustedNumMembers } from "@/lib/utils";
 import { useMediaQuery } from "react-responsive";
-import ClubModalRightLabel from "./ClubModalRightLabel";
+import ModalRightLabel from "../ModalRightLabel";
 import Link from "next/link";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
@@ -195,29 +195,29 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
                 </div>
               )}
               <div className="flex flex-col w-full sm:w-3/4 md:w-full">
-                <ClubModalRightLabel header="Website" content={club.website} link={club.website} />
-                <ClubModalRightLabel header="Email" content={club.email} link={"mailto:" + club.email} />
-                <ClubModalRightLabel
+                <ModalRightLabel header="Website" content={club.website} link={club.website} />
+                <ModalRightLabel header="Email" content={club.email} link={"mailto:" + club.email} />
+                <ModalRightLabel
                   header="Membership"
                   content={club.numMembers ? getAdjustedNumMembers(club.numMembers) + "members" : undefined}
                 />
-                <ClubModalRightLabel header="Instagram" content={club.instagram} />
-                <ClubModalRightLabel
+                <ModalRightLabel header="Instagram" content={club.instagram} />
+                <ModalRightLabel
                   header="Application Form"
                   content={club.applyForm ? "Application Form Link" : undefined}
                   link={club.applyForm}
                 />
-                <ClubModalRightLabel
+                <ModalRightLabel
                   header="Mailing List"
                   content={club.mailingListForm ? "Mailing List Link" : undefined}
                   link={club.mailingListForm}
                 />
-                <ClubModalRightLabel
+                <ModalRightLabel
                   header="Calendar"
                   content={club.calendarLink ? "Calendar Link" : undefined}
                   link={club.calendarLink}
                 />
-                <ClubModalRightLabel header="Meeting" content={club.meeting} />
+                <ModalRightLabel header="Meeting" content={club.meeting} />
               </div>
             </div>
           </div>

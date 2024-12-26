@@ -3,14 +3,16 @@ import SearchBar from "./SearchBar";
 import FilterButton from "./Filter";
 import { Affiliation, Category, IClub, School } from "@/lib/models/Club";
 import Trie from "./Trie";
+import { IEvent } from "@/lib/models/Event";
 
 interface SearchControlProps {
   clubs: IClub[];
   setCurrentClubs: React.Dispatch<React.SetStateAction<IClub[]>>;
+  setFeaturedEvents: React.Dispatch<React.SetStateAction<IEvent[]>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlProps) => {
+const SearchControl = ({ clubs, setCurrentClubs, setFeaturedEvents, setIsLoading }: SearchControlProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSchools, setSelectedSchools] = useState<string[]>([School.COLLEGE]);
@@ -25,9 +27,17 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
     setIsLoading(false);
   }, [clubs, setIsLoading]);
 
+  // On first search query, the featured events are whisked away to it can act as
+  // regular catalog.
+  useEffect(() => {
+    setFeaturedEvents([]);
+  }, [searchQuery, setSearchQuery, selectedCategories, selectedSchools]);
+
   // Filter clubs based on search query, categories, schools, and affiliations
   useEffect(() => {
     if (!trie || clubs.length === 0) return;
+
+    console.log("working!");
 
     setIsLoading(true);
 
@@ -65,7 +75,7 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
 
     setCurrentClubs(filteredClubs);
     setIsLoading(false);
-  }, [searchQuery, selectedCategories, selectedSchools, trie, clubs, setCurrentClubs, setIsLoading]);
+  }, [searchQuery, selectedCategories, selectedSchools, trie, setCurrentClubs]);
 
   return (
     <div className="search-control flex flex-wrap gap-2 max-w-[1400px] flex-col items-center sm:flex-row pb-4">

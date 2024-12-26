@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export enum Tag {
+  FeaturedEvent = "Featured Event",
   FreeFood = "Free Food",
   LimitedCapacity = "Limited Capacity",
   StartsPromptly = "Starts Promptly",

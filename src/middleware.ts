@@ -18,7 +18,6 @@ async function decodeJWTToken(token: string): Promise<any> {
 }
 
 export async function middleware(request: NextRequest) {
-  console.log("middleware");
   if (request.method === "GET") {
     return NextResponse.next();
   }

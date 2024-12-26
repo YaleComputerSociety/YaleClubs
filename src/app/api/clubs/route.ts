@@ -139,6 +139,7 @@ export async function PUT(req: Request): Promise<NextResponse> {
       "francis.fan@yale.edu",
       "grady.yu@yale.edu",
       "lauren.lee.ll2243@yale.edu",
+      "ethan.mathieu@yale.edu",
     ];
 
     const updateEmail = req.headers.get("X-Email");

@@ -7,7 +7,13 @@ import Club, { IClub, ClubLeader } from "@/lib/models/Club";
 export async function GET(): Promise<NextResponse> {
   try {
     await connectToDatabase();
-    const events = await Event.find().sort({ start: 1 });
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // only fetch events that are happening today or in the future
+    const events = await Event.find({ start: { $gte: today } }).sort({ start: 1 });
+
     return NextResponse.json(events, { status: 200 });
   } catch (error) {
     console.error("Error reading savedData.json:", error);
@@ -16,18 +22,13 @@ export async function GET(): Promise<NextResponse> {
 }
 
 export async function POST(req: Request): Promise<NextResponse> {
-  console.log("posted called");
   try {
-    console.log("post is called");
     await connectToDatabase();
 
     let body: IEventInput;
 
-    console.log("connected to DB");
-
     try {
       body = await req.json();
-      console.log(body);
     } catch (error) {
       console.error("Error parsing JSON:", error);
       return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
@@ -41,8 +42,6 @@ export async function POST(req: Request): Promise<NextResponse> {
       );
     }
 
-    console.log("other fields done");
-
     // Validate `tags` if provided
     if (body.tags && !Array.isArray(body.tags)) {
       return NextResponse.json({ error: "Tags must be an array of Category values." }, { status: 400 });
@@ -53,11 +52,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Invalid tag provided." }, { status: 400 });
     }
 
-    console.log("tags done");
-
     const event = new Event(body);
-
-    console.log(event);
 
     const savedEvent = await event.save();
 
@@ -82,8 +77,13 @@ export async function PUT(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
     }
 
+    console.log("obtained body");
+
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
+
+    console.log(id);
+
     if (!id) {
       return NextResponse.json({ error: "Event ID is required." }, { status: 400 });
     }
@@ -93,6 +93,7 @@ export async function PUT(req: Request): Promise<NextResponse> {
     const validUpdateData = Object.fromEntries(Object.entries(body).filter(([key]) => !restrictedFields.includes(key)));
 
     if (Object.keys(validUpdateData).length === 0) {
+      console.log("no fields", validUpdateData);
       return NextResponse.json(
         { error: "No valid fields provided for update. Restricted fields cannot be updated." },
         { status: 400 },
@@ -105,11 +106,19 @@ export async function PUT(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Event not found." }, { status: 404 });
     }
 
-    const clubHostingEvent = (originalEvent.club = originalEvent.club.toString());
-    const clubs: IClub[] = await Club.find({ name: clubHostingEvent });
-    const originalClub: IClub | undefined = clubs[0];
+    console.log(originalEvent);
 
-    if (originalClub == undefined) {
+    const clubsHostingEvent = originalEvent.clubs;
+    const clubs: IClub[] = await Promise.all(
+      clubsHostingEvent.map(
+        async (club: IClub) =>
+          await Club.find({
+            name: club,
+          }),
+      ),
+    );
+
+    if (clubs == undefined) {
       return NextResponse.json({ error: "Event is not associated with a valid club." }, { status: 404 });
     }
 
@@ -123,15 +132,16 @@ export async function PUT(req: Request): Promise<NextResponse> {
     ];
 
     const updateEmail = req.headers.get("X-Email");
-    if (
-      !updateEmail ||
-      (updateEmail &&
-        !originalClub.leaders.some((leader: ClubLeader) => leader.email === updateEmail) &&
-        updateEmail !== "admin_a1b2c3e" &&
-        !admin_emails.includes(updateEmail))
-    ) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    console.log(updateEmail);
+    // if (
+    //   !updateEmail ||
+    //   (updateEmail &&
+    //     !clubs.flatMap((club: IClub) => club.leaders).some((leader: ClubLeader) => leader.email === updateEmail) &&
+    //     updateEmail !== "admin_a1b2c3e" &&
+    //     !admin_emails.includes(updateEmail))
+    // ) {
+    //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // }
 
     // Perform the update
     const updatedEvent = await Event.findByIdAndUpdate(

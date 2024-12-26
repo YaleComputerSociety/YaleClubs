@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useEffect, useState, Suspense } from "react";
+import { dbDateToFrontendDate } from "@/lib/utils";
 import { IEvent, IEventInput, Tag } from "@/lib/models/Event";
 import Header from "@/components/Header";
 import AddFlyerSection from "@/components/events/update/AddFlyerSection";
-
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 import axios from "axios";
-//eslint-disable-next-line
 import Footer from "@/components/Footer";
 import Filter from "@/components/search/Filter";
 import { getCookie } from "cookies-next";
@@ -25,11 +26,10 @@ import { IClub } from "@/lib/models/Club";
 
 const CreateUpdateEventPage = () => {
   const searchParams = useSearchParams();
-  //eslint-disable-next-line
-  const [event, setEvent] = useState<IEvent | null>(null);
+  const [updatingAlreadyMadeEvent, setUpdatingAlreadyMadeEvent] = useState(false);
+  const [, setEvent] = useState<IEvent | null>(null);
   const [clubs, setClubs] = useState<IClub[]>([]);
   const [numberOfEventsLeft, setNumberOfEventsLeft] = useState(MAX_NUMBER_OF_EVENTS_PER_MONTH);
-  //eslint-disable-next-line
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState<IEventInput>({
     name: "",
@@ -41,11 +41,22 @@ const CreateUpdateEventPage = () => {
     flyer: "",
     tags: [],
   });
-  //eslint-disable-next-line
-  const [isLoading, setIsLoading] = useState(true);
+
+  const [, setIsLoading] = useState(true);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
   const [boxChecked, setBoxChecked] = useState(false);
+  const [showBoxCheckedError, setShowBoxCheckedError] = useState(false);
+  const [, setUserEmail] = useState<string | null>(null);
+
+  // const admin_emails = [
+  //   "lucas.huang@yale.edu",
+  //   "addison.goolsbee@yale.edu",
+  //   "francis.fan@yale.edu",
+  //   "grady.yu@yale.edu",
+  //   "lauren.lee.ll2243@yale.edu",
+  //   "ethan.mathieu@yale.edu",
+  // ];
 
   const validateInput = (field: keyof IEventInput, value: string | Tag[] | Date | string[] | undefined): string => {
     switch (field) {
@@ -73,8 +84,12 @@ const CreateUpdateEventPage = () => {
         if (value.length < LOCATION_MIN_LENGTH) return `Location must be at least ${LOCATION_MIN_LENGTH} characters.`;
         if (value.length > LOCATION_MAX_LENGTH) return `Location must be at most ${LOCATION_MAX_LENGTH} characters.`;
         return "";
-      case "registrationLink":
+      case "registrationLink": {
+        if (!value) return "";
+        const urlRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+)(\/[^\s]*)?$/; // regex to ensure its a valid url.
+        if (typeof value === "string" && !urlRegex.test(value)) return "Invalid URL format.";
         return "";
+      }
       case "flyer":
         return "";
       case "tags":
@@ -92,6 +107,7 @@ const CreateUpdateEventPage = () => {
         const eventId = searchParams.get("eventId");
 
         if (eventId) {
+          setUpdatingAlreadyMadeEvent(true);
           const specificEvent = allEvents.find((event: IEvent) => event._id === eventId);
           if (specificEvent) {
             const eventInput: IEventInput = {
@@ -106,6 +122,8 @@ const CreateUpdateEventPage = () => {
             };
             setEvent(specificEvent);
             setFormData(eventInput);
+            setSelectedClubs(eventInput.clubs);
+            setSelectedTags(eventInput.tags?.map((tag) => tag.toString()) ?? []);
           }
         }
       } catch {
@@ -124,7 +142,17 @@ const CreateUpdateEventPage = () => {
         setIsLoading(false);
       }
     };
-    fetchEventData().then(() => fetchClubData());
+    fetchEventData().then(() =>
+      fetchClubData().then(() => {
+        const token = Cookies.get("token");
+
+        if (token) {
+          const decoded = jwtDecode<{ email: string }>(token);
+          console.log(decoded);
+          setUserEmail(decoded.email);
+        }
+      }),
+    );
   }, []);
 
   useEffect(() => {
@@ -132,15 +160,16 @@ const CreateUpdateEventPage = () => {
       try {
         const response = await axios.get<IEvent[]>("/api/events");
         const allEvents = response.data;
-        const oneMonthAgo = new Date();
+        const oneMonthAgo = new Date(formData.start);
         oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
 
+        // first event is the considered the anchor event that dictates if you have events left
         const eventsInLastMonth = allEvents.filter((event) => {
           const eventDate = new Date(event.start);
-          return eventDate >= oneMonthAgo && event.clubs.some((club) => selectedClubs.includes(club));
+          return eventDate >= oneMonthAgo && event.clubs.some((club) => selectedClubs[0] === club);
         });
 
-        setNumberOfEventsLeft(MAX_NUMBER_OF_EVENTS_PER_MONTH - eventsInLastMonth.length);
+        setNumberOfEventsLeft(Math.max(MAX_NUMBER_OF_EVENTS_PER_MONTH - eventsInLastMonth.length, 0));
       } catch {
         console.error("Failed to fetch events count.");
       }
@@ -148,8 +177,10 @@ const CreateUpdateEventPage = () => {
 
     if (selectedClubs.length > 0) {
       fetchEventsCount();
+    } else {
+      setNumberOfEventsLeft(MAX_NUMBER_OF_EVENTS_PER_MONTH);
     }
-  }, [selectedClubs]);
+  }, [selectedClubs, formData.start]);
 
   const handleChange = (field: keyof IEventInput, value: string | Date | Tag[] | string[] | undefined) => {
     const error = validateInput(field as keyof IEventInput, value !== undefined ? value : "");
@@ -169,10 +200,10 @@ const CreateUpdateEventPage = () => {
     );
 
     setValidationErrors(errors);
+    setShowBoxCheckedError(!boxChecked);
 
-    if (Object.values(errors).some((error) => error)) {
+    if (Object.keys(errors).length > 0) {
       console.error("Form has validation errors:", errors);
-      return;
     }
 
     Object.keys(formData).forEach((key) => {
@@ -186,13 +217,13 @@ const CreateUpdateEventPage = () => {
     });
 
     const token = getCookie("token");
-    console.log(formData);
 
-    if (token) {
-      console.log("Token found");
-
-      fetch(`/api/events`, {
-        method: "POST",
+    if (token && boxChecked && numberOfEventsLeft > 0) {
+      const url = updatingAlreadyMadeEvent
+        ? `/api/events?id=${searchParams.get("eventId")}` // Append query parameter for PUT
+        : `/api/events`;
+      fetch(url, {
+        method: updatingAlreadyMadeEvent ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + token,
@@ -201,7 +232,7 @@ const CreateUpdateEventPage = () => {
       })
         .then((response) => {
           if (response.status === 200) {
-            window.location.href = "/";
+            window.location.href = "/Events";
           } else {
             alert("Failed to update event");
           }
@@ -239,13 +270,17 @@ const CreateUpdateEventPage = () => {
     handleChange("clubs", selectedClubs);
   }, [selectedClubs]);
 
+  useEffect(() => {
+    handleChange("tags", selectedTags);
+  }, [selectedTags]);
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-grow flex py-6 justify-center mt-12 px-4 sm:px-6 lg:px-8">
         <div className="bg-gray-100 rounded-lg shadow-md p-8 w-full max-w-6xl h-full">
           <div className="flex items-center justify-between px-0 mb-4 mt">
-            <Link href={`/`}>
+            <Link href={`/Events`}>
               <button className="text-gray-400 py-2 px-4 rounded-lg">Back</button>
             </Link>
             <div className="flex items-center space-x-4 justify-center flex-grow">
@@ -256,6 +291,7 @@ const CreateUpdateEventPage = () => {
           <div className="flex items-center justify-center m-4">
             <AddFlyerSection formData={formData} handleChange={handleChange} />
           </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
             <div>
               <label className="block text-sm font-medium text-gray-700">
@@ -270,17 +306,27 @@ const CreateUpdateEventPage = () => {
               {validationErrors.name && <p className="text-red-500">{validationErrors.name}</p>}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <Filter
-                selectedItems={selectedClubs}
-                setSelectedItems={setSelectedClubs}
-                allItems={clubs.map((club) => club.name)}
-                label="Hosting Club(s)"
-                showInput={true}
-              />
+              <div>
+                <Filter
+                  selectedItems={selectedClubs}
+                  setSelectedItems={setSelectedClubs}
+                  allItems={clubs.map((club) => club.name)}
+                  // allItems={clubs
+                  //   .filter(
+                  //     (club) =>
+                  //       (userEmail && club.leaders.map((leader) => leader.email).includes(userEmail)) ||
+                  //       (userEmail && admin_emails.includes(userEmail)),
+                  //   )
+                  //   .map((club) => club.name)}
+                  label="Hosting Club(s)"
+                  showInput={true}
+                />
+                {validationErrors.clubs && <p className="text-red-500">{validationErrors.clubs}</p>}
+              </div>
               <Filter
                 selectedItems={selectedTags}
                 setSelectedItems={setSelectedTags}
-                allItems={Object.values(Tag)}
+                allItems={Object.values(Tag).slice(1)}
                 label="Tags"
               />
             </div>
@@ -290,7 +336,7 @@ const CreateUpdateEventPage = () => {
                 onChange={(e) => handleChange("description", e.target.value)}
                 className="w-full border border-gray-300 rounded-lg p-2"
                 placeholder="Event Description"
-                rows={4}
+                rows={7}
               ></textarea>
               {validationErrors.description && <p className="text-red-500">{validationErrors.description}</p>}
             </div>
@@ -307,26 +353,61 @@ const CreateUpdateEventPage = () => {
               </div>
               <div>
                 <input
+                  type="text"
+                  value={formData.registrationLink ?? ""}
+                  onChange={(e) => handleChange("registrationLink", e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                  placeholder="Registration Link"
+                ></input>
+                {validationErrors.registrationLink && (
+                  <p className="text-red-500">{validationErrors.registrationLink}</p>
+                )}
+              </div>
+              <div>
+                <input
                   className="w-full border border-gray-300 rounded-lg p-2"
                   aria-label="Date and time"
                   type="datetime-local"
+                  min={dbDateToFrontendDate(new Date())}
+                  onChange={(e) => handleChange("start", e.target.value)}
+                  value={dbDateToFrontendDate(new Date(formData.start))}
                 />
+
                 {validationErrors.start && <p className="text-red-500">{validationErrors.start}</p>}
               </div>
             </div>
           </div>
           <div className="flex items-center justify-end gap-2 mt-4">
-            <p>I agree to the policies of YaleClubs</p>
+            <p>
+              I agree to the{" "}
+              <Link
+                className="text-blue-500"
+                href={
+                  "https://docs.google.com/document/d/1QruK6uS4T3s6KWY_8B6J1gZGznfwTTMvi35arUS7qQY/edit?usp=sharing"
+                }
+              >
+                policies
+              </Link>{" "}
+              of YaleClubs
+            </p>
             <input type="checkbox" id="myCheckbox" className="w-4 h-4" />
           </div>
-          {/* Save Button */}
           <div className="mb-4 mt-2 flex items-center gap-2 justify-end">
             <p>
-              Your club only has <strong>{MAX_NUMBER_OF_EVENTS_PER_MONTH}</strong> events left this month.
+              Your club only has{" "}
+              <span
+                className={`${numberOfEventsLeft === 0 || numberOfEventsLeft === 1 ? "font-bold text-red-500" : "font-bold"}`}
+              >
+                {numberOfEventsLeft}
+              </span>{" "}
+              event(s) left this month.
             </p>
             <button onClick={handleSave} className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">
               Submit
             </button>
+          </div>
+          <div className="flex items-end">
+            {showBoxCheckedError === true && <p className="text-red-500">Please agree to the policies of YaleClubs</p>}
           </div>
         </div>
       </main>
@@ -335,7 +416,7 @@ const CreateUpdateEventPage = () => {
   );
 };
 
-function UpdatePageWrapper() {
+function EventsUpdatePageWrapper() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <CreateUpdateEventPage />
@@ -343,4 +424,4 @@ function UpdatePageWrapper() {
   );
 }
 
-export default UpdatePageWrapper;
+export default EventsUpdatePageWrapper;
