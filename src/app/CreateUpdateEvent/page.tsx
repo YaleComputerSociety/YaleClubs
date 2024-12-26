@@ -217,8 +217,8 @@ const CreateUpdateEventPage = () => {
     });
 
     const token = getCookie("token");
-
-    if (token && boxChecked && numberOfEventsLeft > 0) {
+    console.log(token);
+    if ((token && boxChecked && numberOfEventsLeft > 0) || (token && boxChecked && updatingAlreadyMadeEvent)) {
       const url = updatingAlreadyMadeEvent
         ? `/api/events?id=${searchParams.get("eventId")}` // Append query parameter for PUT
         : `/api/events`;
