@@ -122,12 +122,7 @@ const AddFlyerSection: React.FC<EditableImageSectionProps> = ({ formData, handle
               className="w-full border border-gray-300 rounded-lg p-2 mb-2"
               placeholder="Enter image URL"
             />
-            <button
-              onClick={handleUpload}
-              className="py-2 px-4 mb-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-            >
-              Upload
-            </button>
+
             {errorMessage && <p className="text-red-500 text-sm mb-2">{errorMessage}</p>}
 
             {/* Cropper */}

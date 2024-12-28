@@ -59,7 +59,6 @@ const CreateUpdateEventPage = () => {
 
   const validateInput = React.useCallback(
     (field: keyof IEventInput, value: string | Tag[] | Date | string[] | undefined): string => {
-      console.log(field, value);
       switch (field) {
         case "name":
           if (value instanceof Date) return "Name must be a string.";
@@ -78,7 +77,6 @@ const CreateUpdateEventPage = () => {
           return "";
         case "clubs":
           if (!value) return "Must provide a club";
-          if (!(value instanceof Array) || value.length === 0) return "Must provide a club";
           return "";
         case "location":
           if (value instanceof Date) return "Location must be a string.";
