@@ -79,7 +79,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
       >
         <div
           onClick={onClose}
-          className="absolute top-2 left-2 p-[0.3rem] px-[0.5rem] pt-[0.2rem] font-bold text-2xl rounded-full text-white bg-black bg-opacity-60 leading-none"
+          className="absolute cursor-pointer top-2 left-2 p-[0.3rem] px-[0.5rem] pt-[0.2rem] font-bold text-2xl rounded-full text-white bg-black bg-opacity-60 leading-none"
         >
           &times;
         </div>

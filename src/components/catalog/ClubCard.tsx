@@ -46,11 +46,7 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
 
       {club.email || club.numMembers ? (
         <div className="flex flex-row items-center justify-between text-sm">
-          {club.email && (
-            <a href={`mailto:${club.email}`} className="text-blue-500 truncate max-w-xs inline-block">
-              {club.email}
-            </a>
-          )}
+          {club.email && <div className="text-blue-500 truncate max-w-xs inline-block">{club.email}</div>}
           {club.numMembers ? (
             <div className="flex-shrink-0 text-right w-full">{getAdjustedNumMembers(club.numMembers)} members</div>
           ) : null}

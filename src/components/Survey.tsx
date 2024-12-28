@@ -6,19 +6,24 @@ import { useMediaQuery } from "react-responsive";
 const SurveyBanner = () => {
   const [isVisible, setIsVisible] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 767 });
+  const BANNER_DELAY = 25000;
 
   useEffect(() => {
-    setIsVisible(false);
+    // localStorage.clear();
+    const isClosed = localStorage.getItem("surveyBannerClosed");
+    if (!isClosed) {
+      const timer = setTimeout(() => {
+        setIsVisible(true);
+      }, BANNER_DELAY);
 
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, 25000);
-
-    return () => clearTimeout(timer);
+      return () => clearTimeout(timer);
+    }
+    return;
   }, []);
 
   const handleClose = () => {
     setIsVisible(false);
+    localStorage.setItem("surveyBannerClosed", "true");
   };
 
   return (
@@ -41,7 +46,7 @@ const SurveyBanner = () => {
               Take Survey
             </a>
             <button onClick={handleClose} className="text-white text-xl hover:text-gray-300 focus:outline-none">
-              ✕
+              &times;
             </button>
           </div>
         </div>
