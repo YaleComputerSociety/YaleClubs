@@ -18,7 +18,7 @@ const ClubModalRightLabel = ({ header, content, link }: Props) => {
         </a>
       ) : (
         <div className="text-gray-500 text-right break-all min-w-0">{content}</div>
-      )}
+      )}k
     </div>
   );
 };
