@@ -2,15 +2,16 @@ type Props = {
   header: string;
   content: string | undefined;
   link?: string | undefined;
+  isSm?: boolean | undefined;
 };
 
-const ModalRightLabel = ({ header, content, link }: Props) => {
+const ModalRightLabel = ({ header, content, link, isSm = false }: Props) => {
   if (!content) {
     return null;
   }
 
   return (
-    <div className="flex flex-row justify-between gap-6 text-sm mt-4 font-semibold items-start">
+    <div className={`flex flex-row justify-between gap-6 text-sm font-semibold items-start ${!isSm ? "mt-4" : ""}`}>
       <div className="text-gray-500">{header}</div>
       {link ? (
         <a

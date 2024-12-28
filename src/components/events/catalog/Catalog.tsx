@@ -18,6 +18,9 @@ const Catalog = ({ events, clubs, isLoading }: CatalogProps) => {
 
   const handleCloseModal = () => setSelectedEvent(null);
 
+  const featuredEvents = events.slice(0, 2);
+  const otherEvents = events.slice(2);
+
   return (
     <div className="mt-1 md:mt-4">
       {isLoading ? (
@@ -25,38 +28,32 @@ const Catalog = ({ events, clubs, isLoading }: CatalogProps) => {
           <div className="w-8 h-8 border-4 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
       ) : events.length === 0 ? (
-        <div className="text-center text-gray-500 mt-10">No results found.</div>
+        <div className="text-center text-gray-500 mt-10">
+          No Upcoming Events found - if you&apos;re a club leader click Create Event to get started!
+        </div>
       ) : (
         <div className="grid gap-5 md:gap-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="md:col-span-2">
-              <FeaturedEventCard event={events[0]} onClick={() => handleClickEvent(events[0])} />
-            </div>
-
-            <div className="flex flex-col gap-4">
-              {events.slice(1, 2).map((event) => (
-                <EventCard key={event._id} event={event} onClick={() => handleClickEvent(event)} />
-              ))}
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {featuredEvents.map((event) => (
+              <FeaturedEventCard key={event._id} event={event} onClick={() => handleClickEvent(event)} />
+            ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-            {events.slice(2).map((event) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+            {otherEvents.map((event) => (
               <EventCard key={event._id} event={event} onClick={() => handleClickEvent(event)} />
             ))}
-
-            {selectedEvent && (
-              <EventModal
-                associatedClubLeaders={clubs
-                  .filter((club) => {
-                    return selectedEvent.clubs?.includes(club.name);
-                  })
-                  .flatMap((club) => club.leaders)}
-                event={selectedEvent}
-                onClose={handleCloseModal}
-              />
-            )}
           </div>
+
+          {selectedEvent && (
+            <EventModal
+              associatedClubLeaders={clubs
+                .filter((club) => selectedEvent.clubs?.includes(club.name))
+                .flatMap((club) => club.leaders)}
+              event={selectedEvent}
+              onClose={handleCloseModal}
+            />
+          )}
         </div>
       )}
     </div>

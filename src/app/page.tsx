@@ -21,31 +21,23 @@ export default function Home() {
   const [currentClubs, setCurrentClubs] = useState<IClub[]>([]);
 
   useEffect(() => {
-    const fetchClubs = async () => {
+    const fetchData = async () => {
       try {
-        setIsLoading(true);
-        const response = await axios.get<IClub[]>("/api/clubs");
-        setClubs(response.data);
+        const [clubsResponse, eventsResponse] = await Promise.all([
+          axios.get<IClub[]>("/api/clubs"),
+          axios.get<IEvent[]>("/api/events"),
+        ]);
+
+        setClubs(clubsResponse.data);
+        setTopEvents(eventsResponse.data.slice(0, 2));
       } catch (error) {
-        console.error("Error fetching API message:", error);
+        console.error("Error fetching API data:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    const fetchFeaturedEvents = async () => {
-      try {
-        setIsLoading(true);
-        const response = await axios.get<IEvent[]>("/api/events");
-        setTopEvents(response.data.slice(0, 2));
-      } catch (error) {
-        console.error("Error fetching API message:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchClubs().then(() => fetchFeaturedEvents());
+    fetchData();
   }, []);
 
   return (
@@ -60,6 +52,7 @@ export default function Home() {
             <SearchWrapper>
               <SearchControl
                 clubs={clubs}
+                featuredEvents={topEvents}
                 setFeaturedEvents={setTopEvents}
                 setCurrentClubs={setCurrentClubs}
                 setIsLoading={setIsLoading}

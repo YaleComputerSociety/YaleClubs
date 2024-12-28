@@ -45,8 +45,7 @@ const CreateUpdateEventPage = () => {
   const [, setIsLoading] = useState(true);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
-  const [boxChecked, setBoxChecked] = useState(false);
-  const [showBoxCheckedError, setShowBoxCheckedError] = useState(false);
+
   const [, setUserEmail] = useState<string | null>(null);
 
   // const admin_emails = [
@@ -58,46 +57,51 @@ const CreateUpdateEventPage = () => {
   //   "ethan.mathieu@yale.edu",
   // ];
 
-  const validateInput = (field: keyof IEventInput, value: string | Tag[] | Date | string[] | undefined): string => {
-    switch (field) {
-      case "name":
-        if (value instanceof Date) return "Name must be a string.";
-        if (value === undefined) return "Name is required.";
-        if (!value) return "Name is required.";
-        if (value.length < NAME_MIN_LENGTH) return `Name must be at least ${NAME_MIN_LENGTH} characters.`;
-        if (value.length > NAME_MAX_LENGTH) return `Name must be at most ${NAME_MAX_LENGTH} characters.`;
-        return "";
-      case "description":
-        if (value instanceof Date) return "Description must be a string.";
-        if (value === undefined) return "Description is required.";
-        if (value.length < DESCRIPTION_MIN_LENGTH)
-          return `Description must be at least ${DESCRIPTION_MIN_LENGTH} characters.`;
-        if (value.length > DESCRIPTION_MAX_LENGTH)
-          return `Description must be at most ${DESCRIPTION_MAX_LENGTH} characters.`;
-        return "";
-      case "clubs":
-        if (!value) return "Must provide a club";
-        return "";
-      case "location":
-        if (value instanceof Date) return "Location must be a string.";
-        if (value === undefined) return "Location is required.";
-        if (value.length < LOCATION_MIN_LENGTH) return `Location must be at least ${LOCATION_MIN_LENGTH} characters.`;
-        if (value.length > LOCATION_MAX_LENGTH) return `Location must be at most ${LOCATION_MAX_LENGTH} characters.`;
-        return "";
-      case "registrationLink": {
-        if (!value) return "";
-        const urlRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+)(\/[^\s]*)?$/; // regex to ensure its a valid url.
-        if (typeof value === "string" && !urlRegex.test(value)) return "Invalid URL format.";
-        return "";
+  const validateInput = React.useCallback(
+    (field: keyof IEventInput, value: string | Tag[] | Date | string[] | undefined): string => {
+      console.log(field, value);
+      switch (field) {
+        case "name":
+          if (value instanceof Date) return "Name must be a string.";
+          if (value === undefined) return "Name is required.";
+          if (!value) return "Name is required.";
+          if (value.length < NAME_MIN_LENGTH) return `Name must be at least ${NAME_MIN_LENGTH} characters.`;
+          if (value.length > NAME_MAX_LENGTH) return `Name must be at most ${NAME_MAX_LENGTH} characters.`;
+          return "";
+        case "description":
+          if (value instanceof Date) return "Description must be a string.";
+          if (value === undefined) return "Description is required.";
+          if (value.length < DESCRIPTION_MIN_LENGTH)
+            return `Description must be at least ${DESCRIPTION_MIN_LENGTH} characters.`;
+          if (value.length > DESCRIPTION_MAX_LENGTH)
+            return `Description must be at most ${DESCRIPTION_MAX_LENGTH} characters.`;
+          return "";
+        case "clubs":
+          if (!value) return "Must provide a club";
+          if (!(value instanceof Array) || value.length === 0) return "Must provide a club";
+          return "";
+        case "location":
+          if (value instanceof Date) return "Location must be a string.";
+          if (value === undefined) return "Location is required.";
+          if (value.length < LOCATION_MIN_LENGTH) return `Location must be at least ${LOCATION_MIN_LENGTH} characters.`;
+          if (value.length > LOCATION_MAX_LENGTH) return `Location must be at most ${LOCATION_MAX_LENGTH} characters.`;
+          return "";
+        case "registrationLink": {
+          if (!value) return "";
+          const urlRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+)(\/[^\s]*)?$/; // regex to ensure its a valid url.
+          if (typeof value === "string" && !urlRegex.test(value)) return "Invalid URL format.";
+          return "";
+        }
+        case "flyer":
+          return "";
+        case "tags":
+          return "";
+        default:
+          return "";
       }
-      case "flyer":
-        return "";
-      case "tags":
-        return "";
-      default:
-        return "";
-    }
-  };
+    },
+    [],
+  );
 
   useEffect(() => {
     const fetchEventData = async () => {
@@ -153,7 +157,7 @@ const CreateUpdateEventPage = () => {
         }
       }),
     );
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchEventsCount = async () => {
@@ -182,11 +186,14 @@ const CreateUpdateEventPage = () => {
     }
   }, [selectedClubs, formData.start]);
 
-  const handleChange = (field: keyof IEventInput, value: string | Date | Tag[] | string[] | undefined) => {
-    const error = validateInput(field as keyof IEventInput, value !== undefined ? value : "");
-    setValidationErrors((prev) => ({ ...prev, [field]: error }));
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  const handleChange = React.useCallback(
+    (field: keyof IEventInput, value: string | Date | Tag[] | string[] | undefined) => {
+      const error = validateInput(field as keyof IEventInput, value !== undefined ? value : "");
+      setValidationErrors((prev) => ({ ...prev, [field]: error }));
+      setFormData((prev) => ({ ...prev, [field]: value }));
+    },
+    [validateInput],
+  );
 
   const handleSave = () => {
     const errors = Object.keys(formData).reduce(
@@ -200,10 +207,10 @@ const CreateUpdateEventPage = () => {
     );
 
     setValidationErrors(errors);
-    setShowBoxCheckedError(!boxChecked);
 
     if (Object.keys(errors).length > 0) {
       console.error("Form has validation errors:", errors);
+      return;
     }
 
     Object.keys(formData).forEach((key) => {
@@ -218,10 +225,8 @@ const CreateUpdateEventPage = () => {
 
     const token = getCookie("token");
     console.log(token);
-    if ((token && boxChecked && numberOfEventsLeft > 0) || (token && boxChecked && updatingAlreadyMadeEvent)) {
-      const url = updatingAlreadyMadeEvent
-        ? `/api/events?id=${searchParams.get("eventId")}` // Append query parameter for PUT
-        : `/api/events`;
+    if ((token && numberOfEventsLeft > 0) || (token && updatingAlreadyMadeEvent)) {
+      const url = updatingAlreadyMadeEvent ? `/api/events?id=${searchParams.get("eventId")}` : `/api/events`;
       fetch(url, {
         method: updatingAlreadyMadeEvent ? "PUT" : "POST",
         headers: {
@@ -253,26 +258,18 @@ const CreateUpdateEventPage = () => {
       handleChange("start", value);
     });
 
-    const checkbox = document.getElementById("myCheckbox");
-
-    checkbox?.addEventListener("change", (e) => {
-      const isChecked = (e?.target as HTMLInputElement)?.checked;
-      setBoxChecked(isChecked);
-    });
-
     return () => {
-      checkbox?.removeEventListener("change", () => {});
       dateTimeInput?.removeEventListener("change", () => {});
     };
-  }, []);
+  }, [handleChange]);
 
   useEffect(() => {
     handleChange("clubs", selectedClubs);
-  }, [selectedClubs]);
+  }, [selectedClubs, handleChange]);
 
   useEffect(() => {
     handleChange("tags", selectedTags);
-  }, [selectedTags]);
+  }, [selectedTags, handleChange]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -377,37 +374,22 @@ const CreateUpdateEventPage = () => {
               </div>
             </div>
           </div>
-          <div className="flex items-center justify-end gap-2 mt-4">
-            <p>
-              I agree to the{" "}
-              <Link
-                className="text-blue-500"
-                href={
-                  "https://docs.google.com/document/d/1QruK6uS4T3s6KWY_8B6J1gZGznfwTTMvi35arUS7qQY/edit?usp=sharing"
-                }
-              >
-                policies
-              </Link>{" "}
-              of YaleClubs
-            </p>
-            <input type="checkbox" id="myCheckbox" className="w-4 h-4" />
-          </div>
+
           <div className="mb-4 mt-2 flex items-center gap-2 justify-end">
-            <p>
-              Your club only has{" "}
-              <span
-                className={`${numberOfEventsLeft === 0 || numberOfEventsLeft === 1 ? "font-bold text-red-500" : "font-bold"}`}
-              >
-                {numberOfEventsLeft}
-              </span>{" "}
-              event(s) left this month.
-            </p>
+            {!updatingAlreadyMadeEvent && (
+              <p>
+                Your club only has{" "}
+                <span
+                  className={`${numberOfEventsLeft === 0 || numberOfEventsLeft === 1 ? "font-bold text-red-500" : "font-bold"}`}
+                >
+                  {numberOfEventsLeft}
+                </span>{" "}
+                event(s) left this month.
+              </p>
+            )}
             <button onClick={handleSave} className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">
               Submit
             </button>
-          </div>
-          <div className="flex items-end">
-            {showBoxCheckedError === true && <p className="text-red-500">Please agree to the policies of YaleClubs</p>}
           </div>
         </div>
       </main>

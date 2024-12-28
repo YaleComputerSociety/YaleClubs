@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import SearchBar from "./SearchBar";
 import FilterButton from "./Filter";
 import { Affiliation, Category, IClub, School } from "@/lib/models/Club";
@@ -7,16 +7,25 @@ import { IEvent } from "@/lib/models/Event";
 
 interface SearchControlProps {
   clubs: IClub[];
+  featuredEvents: IEvent[];
   setCurrentClubs: React.Dispatch<React.SetStateAction<IClub[]>>;
   setFeaturedEvents: React.Dispatch<React.SetStateAction<IEvent[]>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const SearchControl = ({ clubs, setCurrentClubs, setFeaturedEvents, setIsLoading }: SearchControlProps) => {
+const SearchControl = ({
+  clubs,
+  setCurrentClubs,
+  featuredEvents,
+  setFeaturedEvents,
+  setIsLoading,
+}: SearchControlProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSchools, setSelectedSchools] = useState<string[]>([School.COLLEGE]);
   const [trie, setTrie] = useState<Trie | null>(null);
+
+  const featuredEventsRef = useRef<IEvent[]>([...featuredEvents]);
 
   // Initialize Trie with club names
   useEffect(() => {
@@ -27,17 +36,17 @@ const SearchControl = ({ clubs, setCurrentClubs, setFeaturedEvents, setIsLoading
     setIsLoading(false);
   }, [clubs, setIsLoading]);
 
-  // On first search query, the featured events are whisked away to it can act as
-  // regular catalog.
   useEffect(() => {
-    setFeaturedEvents([]);
-  }, [searchQuery, setSearchQuery, selectedCategories, selectedSchools]);
+    if (searchQuery.trim() === "") {
+      setFeaturedEvents(featuredEventsRef.current);
+    } else {
+      setFeaturedEvents([]);
+    }
+  }, [searchQuery, setFeaturedEvents]);
 
   // Filter clubs based on search query, categories, schools, and affiliations
   useEffect(() => {
     if (!trie || clubs.length === 0) return;
-
-    console.log("working!");
 
     setIsLoading(true);
 
@@ -75,7 +84,7 @@ const SearchControl = ({ clubs, setCurrentClubs, setFeaturedEvents, setIsLoading
 
     setCurrentClubs(filteredClubs);
     setIsLoading(false);
-  }, [searchQuery, selectedCategories, selectedSchools, trie, setCurrentClubs]);
+  }, [searchQuery, selectedCategories, selectedSchools, trie, clubs, setCurrentClubs, setIsLoading]);
 
   return (
     <div className="search-control flex flex-wrap gap-2 max-w-[1400px] flex-col items-center sm:flex-row pb-4">

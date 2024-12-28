@@ -2,7 +2,7 @@ import connectToDatabase from "@/lib/mongodb";
 import Event from "../../../lib/models/Event";
 import { NextResponse } from "next/server";
 import { Tag, IEventInput } from "../../../lib/models/Event";
-import Club, { IClub, ClubLeader } from "@/lib/models/Club";
+import Club, { IClub } from "@/lib/models/Club";
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -122,14 +122,14 @@ export async function PUT(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Event is not associated with a valid club." }, { status: 404 });
     }
 
-    const admin_emails = [
-      "lucas.huang@yale.edu",
-      "addison.goolsbee@yale.edu",
-      "francis.fan@yale.edu",
-      "grady.yu@yale.edu",
-      "lauren.lee.ll2243@yale.edu",
-      "ethan.mathieu@yale.edu",
-    ];
+    // const admin_emails = [
+    //   "lucas.huang@yale.edu",
+    //   "addison.goolsbee@yale.edu",
+    //   "francis.fan@yale.edu",
+    //   "grady.yu@yale.edu",
+    //   "lauren.lee.ll2243@yale.edu",
+    //   "ethan.mathieu@yale.edu",
+    // ];
 
     const updateEmail = req.headers.get("X-Email");
     console.log(updateEmail);

@@ -17,27 +17,14 @@ const EventCard = ({ event, onClick }: EventCardProps) => {
     >
       <div>
         <div className="text-2xl md:text-2xl font-semibold line-clamp-1">{event.name}</div>
-        <div className="flex gap-2 mt-1 scrollbar-hide overflow-x-auto whitespace-nowrap ">
+        <div className="flex gap-2 w-full mt-1 scrollbar-hide overflow-x-auto whitespace-nowrap ">
           {event.tags?.map((tag: Tag, index) => <TagBlock key={index} tag={tag} />)}
         </div>
 
-        <div className="text-md font-bold text-gray-600 mt-1 line-clamp-2 overflow-ellipsis">
+        <div className="text-md font-bold text-gray-600 mt-1 line-clamp-1 overflow-ellipsis">
           {event.clubs?.length ? event.clubs.join(" x ") : "No clubs listed"}
         </div>
       </div>
-
-      {event.registrationLink && (
-        <div className="mt-2">
-          <a
-            href={event.registrationLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:underline"
-          >
-            Register Here
-          </a>
-        </div>
-      )}
 
       <div className="text-sm text-gray-600 mt-auto">
         <div className="flex items-center justify-between">

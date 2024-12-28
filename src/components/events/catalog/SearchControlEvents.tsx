@@ -65,7 +65,7 @@ const SearchControlEvent = ({ events, clubsForFilter, setCurrentEvents, setIsLoa
 
     setCurrentEvents(filteredEvents);
     setIsLoading(false);
-  }, [searchQuery, selectedTags, selectedClubs, trie, setCurrentEvents, setIsLoading]);
+  }, [searchQuery, selectedTags, selectedClubs, trie, setCurrentEvents, setIsLoading, events]);
 
   return (
     <div className="search-control flex flex-wrap gap-2 max-w-[1400px] flex-col items-center sm:flex-row pb-4">

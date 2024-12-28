@@ -5,3 +5,5 @@ export const DESCRIPTION_MIN_LENGTH = 50;
 export const LOCATION_MAX_LENGTH = 100;
 export const LOCATION_MIN_LENGTH = 2;
 export const MAX_NUMBER_OF_EVENTS_PER_MONTH = 3;
+export const MAX_IMAGE_WIDTH = 240;
+export const MAX_IMAGE_HEIGHT = 240;
