@@ -279,7 +279,9 @@ const CreateUpdateEventPage = () => {
               <button className="text-gray-400 py-2 px-4 rounded-lg">Back</button>
             </Link>
             <div className="flex items-center space-x-4 justify-center flex-grow">
-              <h1 className="text-3xl font-bold text-center pb-2">Create an Event</h1>
+              <h1 className="text-3xl font-bold text-center pb-2">
+                {updatingAlreadyMadeEvent ? "Edit" : "Create"} an Event
+              </h1>
             </div>
             <div className="w-16"></div>
           </div>

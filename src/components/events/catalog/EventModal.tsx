@@ -121,7 +121,7 @@ const EventModal = ({ event, associatedClubLeaders, onClose }: EventModalProps) 
             {event.clubs?.length ? event.clubs.join(" x ") : "No clubs listed"}
           </div>
 
-          <div className="text-gray-700 text-left text-sm sm:text-base">{event.description}</div>
+          <div className="text-gray-700 text-left text-sm sm:text-base overflow-auto max-h-40">{event.description}</div>
 
           <div className="flex flex-col justify-start gap-4 w-full">
             <ModalRightLabel

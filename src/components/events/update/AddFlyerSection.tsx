@@ -65,19 +65,6 @@ const AddFlyerSection: React.FC<EditableImageSectionProps> = ({ formData, handle
     }
   };
 
-  const handleUpload = async () => {
-    if (!inputValue) {
-      setErrorMessage("Please provide a valid image URL.");
-      return;
-    }
-    try {
-      setInputValue(inputValue);
-      setErrorMessage("");
-    } catch {
-      setErrorMessage("Unable to load the image. Please check the URL.");
-    }
-  };
-
   const createImage = (url: string): Promise<HTMLImageElement> => {
     return new Promise((resolve, reject) => {
       const img = new window.Image();
@@ -90,7 +77,6 @@ const AddFlyerSection: React.FC<EditableImageSectionProps> = ({ formData, handle
 
   return (
     <div className="relative">
-      {/* Flyer Display */}
       <div className="relative w-48 h-48 rounded-lg shadow-lg">
         <Image
           src={formData.flyer || "/assets/default-logo.png"}
@@ -108,7 +94,6 @@ const AddFlyerSection: React.FC<EditableImageSectionProps> = ({ formData, handle
         </button>
       </div>
 
-      {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-[600px] max-h-[90vh] relative overflow-hidden">
@@ -125,22 +110,37 @@ const AddFlyerSection: React.FC<EditableImageSectionProps> = ({ formData, handle
 
             {errorMessage && <p className="text-red-500 text-sm mb-2">{errorMessage}</p>}
 
-            {/* Cropper */}
             {inputValue && (
-              <div className="relative w-full h-[300px] overflow-hidden">
-                <Cropper
-                  image={inputValue}
-                  crop={crop}
-                  zoom={zoom}
-                  aspect={MAX_IMAGE_WIDTH / MAX_IMAGE_HEIGHT}
-                  onCropChange={setCrop}
-                  onZoomChange={setZoom}
-                  onCropComplete={onCropComplete}
-                />
+              <div>
+                <div className="relative w-full h-[300px] overflow-hidden">
+                  <Cropper
+                    image={inputValue}
+                    crop={crop}
+                    zoom={zoom}
+                    aspect={MAX_IMAGE_WIDTH / MAX_IMAGE_HEIGHT}
+                    onCropChange={setCrop}
+                    onZoomChange={setZoom}
+                    onCropComplete={onCropComplete}
+                  />
+                </div>
+                <div className="flex items-center mt-4">
+                  <label htmlFor="zoom-slider" className="mr-4 text-sm font-medium text-gray-700">
+                    Zoom:
+                  </label>
+                  <input
+                    id="zoom-slider"
+                    type="range"
+                    min={1}
+                    max={3}
+                    step={0.1}
+                    value={zoom}
+                    onChange={(e) => setZoom(Number(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
               </div>
             )}
 
-            {/* Controls */}
             <div className="flex justify-end mt-4 space-x-4">
               <button onClick={closeModal} className="py-2 px-4 bg-gray-300 rounded-lg hover:bg-gray-400">
                 Cancel
