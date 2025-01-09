@@ -11,11 +11,22 @@ type ClubCardProps = {
 };
 
 const ClubCard = ({ club, onClick }: ClubCardProps) => {
+  // const isFollowing: boolean = false;
+  // const isNew: boolean = false;
+  const isFeatured: boolean = true;
+
   return (
     <div
       className="border border-gray-200 rounded-xl px-3 py-2 md:px-4 md:py-3 flex flex-col gap-2 w-full cursor-pointer"
       onClick={onClick}
     >
+      <div className="relative">
+        {isFeatured && (
+          <div className="absolute top-0 left-0 bg-red-500 text-white text-xs font-bold px-2 py-1 rotate-[-45deg] origin-top-left transform translate-x-[-30%] translate-y-[30%] z-10">
+            Featured
+          </div>
+        )}
+      </div>
       <div className="flex flex-row gap-4">
         <div className="flex flex-col justify-center flex-1 min-w-0">
           <div className="md:text-xl font-semibold line-clamp-1 md:line-clamp-2 overflow-hidden">{club.name}</div>
@@ -57,3 +68,10 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
 };
 
 export default ClubCard;
+
+// need to add the following:
+// - new?
+// - how many following?
+// - following functionality
+// - featured?
+// - what stage in application season they are?
