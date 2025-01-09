@@ -9,7 +9,7 @@ import Link from "next/link";
 import EditableImageSection from "@/components/update/EditImage";
 import ClubLeadersSection from "@/components/update/EditLeaders";
 import CategoriesDropdown from "@/components/update/ClubCategories";
-import IntensityDropdown from "@/components/update/IntensityDropdown";
+// import IntensityDropdown from "@/components/update/IntensityDropdown";
 import SchoolDropdown from "@/components/update/SchoolDropdown";
 
 import { getCookie } from "cookies-next";
@@ -181,7 +181,6 @@ const UpdatePage = () => {
       }
     });
 
-    console.table(formData);
     const clubId = searchParams.get("clubId");
     const token = getCookie("token");
     if (clubId && token) {
@@ -433,7 +432,7 @@ const UpdatePage = () => {
                 </label>
                 {validationErrors.meeting && <p className="text-red-500">{validationErrors.meeting}</p>}
               </div>
-              <IntensityDropdown selectedIntensity={formData.intensity as Intensity} handleChange={handleChange} />
+              {/* <IntensityDropdown selectedIntensity={formData.intensity as Intensity} handleChange={handleChange} /> */}
             </div>
           </div>
 

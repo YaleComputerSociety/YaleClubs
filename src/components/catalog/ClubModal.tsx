@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { IClub } from "@/lib/models/Club";
 import Board from "./Board";
 import Image from "next/image";
-import { getAdjustedNumMembers, getAdjustedWebsite } from "@/lib/utils";
+import { getAdjustedNumMembers, getAdjustedWebsite, getInstagramLink, getModifiedInstagram } from "@/lib/utils";
 import { useMediaQuery } from "react-responsive";
 import ClubModalRightLabel from "./ClubModalRightLabel";
 import Link from "next/link";
@@ -22,7 +22,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
   const [errorMessage, setErrorMessage] = useState("");
   const token = Cookies.get("token");
 
-  console.table(club);
+  // console.table(club);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -201,7 +201,11 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
                   header="Membership"
                   content={club.numMembers ? getAdjustedNumMembers(club.numMembers) + " members" : undefined}
                 />
-                <ClubModalRightLabel header="Instagram" content={club.instagram} />
+                <ClubModalRightLabel
+                  header="Instagram"
+                  content={getModifiedInstagram(club.instagram)}
+                  link={getInstagramLink(club.instagram)}
+                />
                 <ClubModalRightLabel
                   header="Application Form"
                   content={club.applyForm ? "Application Form" : undefined}

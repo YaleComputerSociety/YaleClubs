@@ -18,3 +18,21 @@ export const getAdjustedWebsite = (website: string | undefined): string => {
   }
   return website.replace(/(^\w+:|^)\/\//, "");
 };
+
+export const getInstagramLink = (username: string | undefined): string => {
+  if (!username) {
+    return "";
+  }
+
+  const sanitizedUsername = username.startsWith("@") ? username.slice(1) : username;
+
+  return `https://www.instagram.com/${sanitizedUsername}/`;
+};
+
+export const getModifiedInstagram = (username: string | undefined): string | undefined => {
+  if (!username) {
+    return undefined;
+  }
+
+  return username.startsWith("@") ? username : `@${username}`;
+};
