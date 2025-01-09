@@ -1,5 +1,3 @@
-// NEED TO DO's
-// 1. id and name attributes for the labels and inputs so chrome doesn't freak out
 "use client";
 
 import React, { useEffect, useState, Suspense } from "react";

@@ -22,7 +22,7 @@ const Catalog = ({ clubs, isLoading }: CatalogProps) => {
         <div className="flex justify-center items-center mt-10">
           <div className="w-8 h-8 border-4 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
-      ) : !isLoading && clubs.length === 0 ? (
+      ) : clubs.length === 0 ? (
         <div className="text-center text-gray-500 mt-10">No results found.</div>
       ) : (
         <div>

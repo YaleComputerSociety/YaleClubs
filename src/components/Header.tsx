@@ -3,12 +3,24 @@
 import Link from "next/link";
 import LogoSVG from "../../public/assets/logo";
 import { useEffect, useState } from "react";
-import { useMediaQuery } from "react-responsive";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const isMobile = useMediaQuery({ maxWidth: 767 });
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    const updateIsMobile = () => setIsMobile(mediaQuery.matches);
+
+    // Set the initial value
+    updateIsMobile();
+
+    // Add event listener for changes
+    mediaQuery.addEventListener("change", updateIsMobile);
+
+    return () => mediaQuery.removeEventListener("change", updateIsMobile);
+  }, []);
 
   useEffect(() => {
     const token = document.cookie.includes("token=");

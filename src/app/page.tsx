@@ -28,7 +28,7 @@ export default function Home() {
       } catch (error) {
         console.error("Error fetching API message:", error);
       } finally {
-        setIsLoading(false);
+        setTimeout(() => setIsLoading(false), 2); // delay bc setClubs is async
       }
     };
     fetchApiMessage();

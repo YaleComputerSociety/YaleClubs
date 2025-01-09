@@ -1,12 +1,24 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useMediaQuery } from "react-responsive";
 
 const SurveyBanner = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const isMobile = useMediaQuery({ maxWidth: 767 });
   const BANNER_DELAY = 25000;
+  const [isVisible, setIsVisible] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    const updateIsMobile = () => setIsMobile(mediaQuery.matches);
+
+    // Set the initial value
+    updateIsMobile();
+
+    // Add event listener for changes
+    mediaQuery.addEventListener("change", updateIsMobile);
+
+    return () => mediaQuery.removeEventListener("change", updateIsMobile);
+  }, []);
 
   useEffect(() => {
     // localStorage.clear();

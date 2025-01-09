@@ -10,6 +10,14 @@ interface SearchControlProps {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+const ResetButton = ({ onReset }: { onReset: () => void }) => {
+  return (
+    <button onClick={onReset} className="bg-[#f66] text-white px-4 rounded">
+      Reset
+    </button>
+  );
+};
+
 const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -70,7 +78,7 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
   }, [searchQuery, selectedCategories, selectedSchools, trie, clubs, setCurrentClubs, setIsLoading]);
 
   return (
-    <div className="search-control flex flex-wrap gap-2 max-w-[1400px] flex-col items-center sm:flex-row pb-4">
+    <div className="search-control flex flex-wrap gap-2 max-w-[1400px] flex-col items-center sm:flex-row pb-4 [&>*]:h-9 sm:[&>*]:h-11">
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <FilterButton
         selectedItems={selectedSchools}
@@ -83,6 +91,13 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
         setSelectedItems={setSelectedCategories}
         allItems={[...Object.values(Category), ...Object.values(Affiliation)].sort()}
         label="Categories"
+      />
+      <ResetButton
+        onReset={() => {
+          setSearchQuery("");
+          setSelectedCategories([]);
+          setSelectedSchools([]);
+        }}
       />
     </div>
   );
