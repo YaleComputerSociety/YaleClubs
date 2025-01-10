@@ -8,6 +8,7 @@ import ClubModalRightLabel from "./ClubModalRightLabel";
 import Link from "next/link";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import FollowButton from "./Star.tsx";
 
 type ClubModalProps = {
   club: IClub;
@@ -159,6 +160,13 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
                 className={`text-center md:text-left ${club.name.length > 100 ? "text-xl md:text-2xl" : "text-2xl md:text-3xl"} font-bold`}
               >
                 {club.name}
+                {token ? (
+                  <div>
+                    <FollowButton isLoggedIn={true}/>
+                  </div>
+                ) : (
+                  <FollowButton isLoggedIn={false} />
+                )}
               </div>
               {club.school && (
                 <div className="flex gap-2 whitespace-nowrap w-full flex-wrap mt-4">

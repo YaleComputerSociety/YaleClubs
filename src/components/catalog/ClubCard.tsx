@@ -6,7 +6,7 @@ import Image from "next/image";
 import { getAdjustedNumMembers } from "@/lib/utils";
 import FollowButton from "./Star.tsx";
 import Cookies from "js-cookie";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 type ClubCardProps = {
   club: IClub;
@@ -59,7 +59,9 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
           className="rounded-2xl flex-shrink-0 w-16 md:w-[70px] h-16 md:h-[70px]"
           priority
         />
-        {isLoggedIn && <FollowButton />}
+        <div>
+          <FollowButton isLoggedIn={isLoggedIn} />
+        </div>
       </div>
       <div className="text-sm md:text:lg text-gray-800 line-clamp-3">{club.description ?? "No description"}</div>
 

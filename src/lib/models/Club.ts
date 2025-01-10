@@ -143,6 +143,7 @@ export interface IClub extends Document {
   howToJoin?: string;
   scraped?: boolean;
   inactive?: boolean;
+  followers: number;
 }
 
 // Club Schema
@@ -170,6 +171,7 @@ const clubSchema = new Schema<IClub>(
     howToJoin: { type: String },
     scraped: { type: Boolean },
     inactive: { type: Boolean },
+    followers: { type: Number, default: 0 }
   },
   { timestamps: true },
 );
