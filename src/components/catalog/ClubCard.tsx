@@ -1,9 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { IClub } from "@/lib/models/Club";
 import Image from "next/image";
 import { getAdjustedNumMembers } from "@/lib/utils";
+import FollowButton from "./Star.tsx";
+import Cookies from "js-cookie";
+import jwtDecode from "jwt-decode";
 
 type ClubCardProps = {
   club: IClub;
@@ -11,6 +14,21 @@ type ClubCardProps = {
 };
 
 const ClubCard = ({ club, onClick }: ClubCardProps) => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (token) {
+      try {
+        jwtDecode(token);
+        setIsLoggedIn(true);
+      } catch (err) {
+        console.error("not logged in:", err);
+        setIsLoggedIn(false);
+      }
+    }
+  }, []);
+
   return (
     <div
       className="border border-gray-200 rounded-xl px-3 py-2 md:px-4 md:py-3 flex flex-col gap-2 w-full cursor-pointer"
@@ -41,6 +59,7 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
           className="rounded-2xl flex-shrink-0 w-16 md:w-[70px] h-16 md:h-[70px]"
           priority
         />
+        {isLoggedIn && <FollowButton />}
       </div>
       <div className="text-sm md:text:lg text-gray-800 line-clamp-3">{club.description ?? "No description"}</div>
 
