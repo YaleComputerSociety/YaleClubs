@@ -20,10 +20,18 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
   const isSm = useMediaQuery({ maxWidth: 640 });
   const isMd = useMediaQuery({ maxWidth: 768 });
   const [canEdit, setCanEdit] = useState(false);
+  const [followers, setFollowers] = useState(club.followers);
   const [errorMessage, setErrorMessage] = useState("");
   const token = Cookies.get("token");
+  let netid = "";
 
-  // console.table(club);
+  if (token) {
+    try {
+      netid = jwtDecode<{ netid: string }>(token).netid;
+    } catch (error) {
+      console.error("Failed to decode token:", error);
+    }
+  }
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -71,6 +79,10 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
       }
     }
   }, [club.leaders, token]);
+
+  const handleFollowersUpdate = (newFollowers: number) => {
+    setFollowers(newFollowers);
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -160,13 +172,14 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
                 className={`text-center md:text-left ${club.name.length > 100 ? "text-xl md:text-2xl" : "text-2xl md:text-3xl"} font-bold`}
               >
                 {club.name}
-                {token ? (
-                  <div>
-                    <FollowButton isLoggedIn={true}/>
-                  </div>
-                ) : (
-                  <FollowButton isLoggedIn={false} />
-                )}
+                <div className="mt-4">
+                  <FollowButton
+                    isLoggedIn={!!token}
+                    clubId={club._id}
+                    netid={netid}
+                    onFollowersUpdate={handleFollowersUpdate}
+                  />
+                </div>
               </div>
               {club.school && (
                 <div className="flex gap-2 whitespace-nowrap w-full flex-wrap mt-4">
@@ -230,6 +243,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
                   link={club.calendarLink}
                 />
                 <ClubModalRightLabel header="Meeting" content={club.meeting} />
+                <ClubModalRightLabel header="Followers" content={followers} />
               </div>
             </div>
           </div>

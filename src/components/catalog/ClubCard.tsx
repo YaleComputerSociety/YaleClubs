@@ -15,16 +15,19 @@ type ClubCardProps = {
 
 const ClubCard = ({ club, onClick }: ClubCardProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [netid, setNetid] = useState<string | null>(null);
 
   useEffect(() => {
     const token = Cookies.get("token");
     if (token) {
       try {
-        jwtDecode(token);
+        const decoded = jwtDecode<{ netid: string }>(token);
         setIsLoggedIn(true);
+        setNetid(decoded.netid);
       } catch (err) {
-        console.error("not logged in:", err);
+        console.error("Invalid token:", err);
         setIsLoggedIn(false);
+        setNetid(null);
       }
     }
   }, []);
@@ -60,7 +63,7 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
           priority
         />
         <div>
-          <FollowButton isLoggedIn={isLoggedIn} />
+          <FollowButton isLoggedIn={isLoggedIn} clubId={club._id} netid={netid || ""} />
         </div>
       </div>
       <div className="text-sm md:text:lg text-gray-800 line-clamp-3">{club.description ?? "No description"}</div>

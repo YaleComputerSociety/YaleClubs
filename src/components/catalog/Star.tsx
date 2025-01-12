@@ -1,51 +1,65 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 type FollowButtonProps = {
-  isLoggedIn: boolean; // Prop to check if the user is logged in
+  isLoggedIn: boolean;
+  clubId: string;
+  netid: string;
+  onFollowersUpdate?: (newFollowers: number) => void; 
 };
 
-const FollowButton: React.FC<FollowButtonProps> = ({ isLoggedIn }) => {
+const FollowButton: React.FC<FollowButtonProps> = ({ isLoggedIn, clubId, netid, onFollowersUpdate }) => {
   const [isStarred, setIsStarred] = useState(false);
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
-  const toggleStar = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation(); // Prevent parent click events
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
+    const fetchFollowStatus = async () => {
+      try {
+        const response = await fetch(`/api/follow?netid=${netid}&clubId=${clubId}`);
+        const data = await response.json();
+        setIsStarred(data.isFollowing);
+      } catch (error) {
+        console.error("Error fetching follow status:", error);
+      }
+    };
+
+    fetchFollowStatus();
+  }, [isLoggedIn, netid, clubId]);
+
+  const toggleStar = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
 
     if (!isLoggedIn) {
-      setShowLoginPrompt(true);
+      alert("Please log in to follow this club.");
       return;
     }
-    setIsStarred((prev) => !prev);
+
+    try {
+      const response = await fetch("/api/follow", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ netid, clubId }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setIsStarred(data.isFollowing);
+        if (onFollowersUpdate) {
+          onFollowersUpdate(data.followers); 
+        }
+      }
+    } catch (error) {
+      console.error("Error toggling follow status:", error);
+    }
   };
 
-  const closeLoginPrompt = () => setShowLoginPrompt(false);
-
   return (
-    <div>
-      <button
-        onClick={toggleStar}
-        className={`text-2xl focus:outline-none ${isStarred ? "text-yellow-500" : "text-gray-400"}`}
-      >
-        {isStarred ? "⭐" : "☆"}
-      </button>
-
-      {showLoginPrompt && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-          onClick={closeLoginPrompt} 
-        >
-          <div className="bg-white rounded-lg p-6 shadow-lg" onClick={(e) => e.stopPropagation()}>
-            <p className="mt-2 text-gray-600">Please log in to follow a club.</p>
-            <button
-              onClick={closeLoginPrompt}
-              className="mt-4 px-4 py-2 text-white bg-indigo-600 rounded shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
+    <button
+      onClick={toggleStar}
+      className={`text-2xl focus:outline-none ${isStarred ? "text-yellow-500" : "text-gray-400"}`}
+    >
+      {isStarred ? "⭐" : "☆"}
+    </button>
   );
 };
 
