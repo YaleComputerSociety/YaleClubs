@@ -12,27 +12,60 @@ import SearchControl from "@/components/search/SearchControl";
 
 import SurveyBanner from "@/components/Survey";
 import SearchWrapper from "@/components/search/SearchWrapper";
+import jwtDecode from "jwt-decode";
+import Cookies from "js-cookie";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [clubs, setClubs] = useState<IClub[]>([]);
   const [currentClubs, setCurrentClubs] = useState<IClub[]>([]);
+  // const [netid, setNetid] = useState<string | null>(null);
+  const [followedClubs, setFollowedClubs] = useState<string[]>([]);
 
   useEffect(() => {
-    const fetchApiMessage = async () => {
+    const fetchFollowedClubs = async (netid: string): Promise<string[]> => {
       try {
-        setIsLoading(true);
-        const response = await axios.get<IClub[]>("/api/clubs");
-        // console.log("API message:", response.data);
-        setClubs(response.data);
-      } catch (error) {
-        console.error("Error fetching API message:", error);
-      } finally {
-        setTimeout(() => setIsLoading(false), 2); // delay bc setClubs is async
+        const response = await axios.get<string[]>(`/api/user/followed-clubs?netid=${netid}`);
+        return response.data; // Directly use the array returned by the API
+      } catch (err) {
+        console.error("Error fetching followed clubs:", err);
+        return [];
       }
     };
-    fetchApiMessage();
-  }, []);
+
+    const initialize = async () => {
+      const token = Cookies.get("token");
+      if (token) {
+        try {
+          const decoded = jwtDecode<{ netid: string }>(token);
+          // setNetid(decoded.netid);
+
+          const followedClubs = await fetchFollowedClubs(decoded.netid); // Directly assign the array
+          console.log("Followed Clubs:", followedClubs);
+          setFollowedClubs(followedClubs); // Update the state with the array
+        } catch (err) {
+          console.error("Invalid token:", err);
+          // setNetid(null);
+        }
+      }
+
+      const fetchApiMessage = async () => {
+        try {
+          setIsLoading(true);
+          const response = await axios.get<IClub[]>("/api/clubs");
+          setClubs(response.data);
+        } catch (error) {
+          console.error("Error fetching API message:", error);
+        } finally {
+          setTimeout(() => setIsLoading(false), 2); // delay because setClubs is async
+        }
+      };
+
+      await fetchApiMessage();
+    };
+
+    initialize();
+  }, [setFollowedClubs, setClubs, setIsLoading]);
 
   return (
     <AuthWrapper>
@@ -44,7 +77,12 @@ export default function Home() {
             <h1 className="text-3xl font-bold text-black">Browse Clubs</h1>
             <h2 className="text-xl mb-4 md:mb-8">Finding Clubs has Never Been Easier.</h2>
             <SearchWrapper>
-              <SearchControl clubs={clubs} setCurrentClubs={setCurrentClubs} setIsLoading={setIsLoading} />
+              <SearchControl
+                clubs={clubs}
+                setCurrentClubs={setCurrentClubs}
+                setIsLoading={setIsLoading}
+                followedClubs={followedClubs}
+              />
             </SearchWrapper>
             <Catalog clubs={currentClubs} isLoading={isLoading} />
             <Footer />
