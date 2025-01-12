@@ -7,7 +7,7 @@ interface FilterProps {
   label: string;
 }
 
-const MAX_TOGGLE_WIDTH = 450; // Maximum width of the filter toggle before showing "+x"
+const MAX_TOGGLE_WIDTH = 320; // Maximum width of the filter toggle before showing "+x" -- should match min width of filter toggle
 const DROPDOWN_WIDTH = "20rem"; // You can adjust this as needed
 
 const Filter = ({ selectedItems, setSelectedItems, allItems, label }: FilterProps) => {
@@ -67,7 +67,7 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label }: FilterProp
     <div ref={dropdownRef} className="relative">
       {/* Filter Toggle */}
       <div
-        className="border px-4 py-2 rounded cursor-pointer min-w-[12rem] max-w-[30rem] flex items-center justify-between h-9 md:h-11"
+        className="border px-4 py-2 rounded cursor-pointer min-w-[20rem] max-w-[30rem] flex items-center justify-between h-9 md:h-11"
         onClick={() => setShowDropdown((prev) => !prev)}
       >
         {/* Toggle Summary */}
