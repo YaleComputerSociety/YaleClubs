@@ -8,6 +8,7 @@ interface SearchControlProps {
   clubs: IClub[];
   setCurrentClubs: React.Dispatch<React.SetStateAction<IClub[]>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  // followedClubs: string[];
 }
 
 const ResetButton = ({ onReset }: { onReset: () => void }) => {
@@ -18,11 +19,17 @@ const ResetButton = ({ onReset }: { onReset: () => void }) => {
   );
 };
 
-const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlProps) => {
+const SearchControl = ({
+  clubs,
+  setCurrentClubs,
+  setIsLoading,
+  // followedClubs
+}: SearchControlProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSchools, setSelectedSchools] = useState<string[]>([School.COLLEGE]);
   const [trie, setTrie] = useState<Trie | null>(null);
+  // const [showFollowedOnly, setShowFollowedOnly] = useState<string[]>([]);
 
   // Initialize Trie with club names
   useEffect(() => {
@@ -70,6 +77,7 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
             )
           : true,
       );
+    // .filter((club) => (showFollowedOnly ? followedClubs?.includes(club._id) : true));
 
     const sortedFilteredClubs = filteredClubs.sort((a, b) => a.name.localeCompare(b.name));
 
@@ -92,6 +100,12 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
         allItems={[...Object.values(Category), ...Object.values(Affiliation)].sort()}
         label="Categories"
       />
+      {/* <FilterButton
+        selectedItems={showFollowedOnly}
+        setSelectedItems={setShowFollowedOnly}
+        allItems={["Followed"]}
+        label="Followed"
+      /> */}
       <ResetButton
         onReset={() => {
           setSearchQuery("");
