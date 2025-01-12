@@ -8,7 +8,7 @@ interface SearchControlProps {
   clubs: IClub[];
   setCurrentClubs: React.Dispatch<React.SetStateAction<IClub[]>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  // followedClubs: string[];
+  followedClubs: string[];
 }
 
 const ResetButton = ({ onReset }: { onReset: () => void }) => {
@@ -19,17 +19,12 @@ const ResetButton = ({ onReset }: { onReset: () => void }) => {
   );
 };
 
-const SearchControl = ({
-  clubs,
-  setCurrentClubs,
-  setIsLoading,
-  // followedClubs
-}: SearchControlProps) => {
+const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: SearchControlProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSchools, setSelectedSchools] = useState<string[]>([School.COLLEGE]);
   const [trie, setTrie] = useState<Trie | null>(null);
-  // const [showFollowedOnly, setShowFollowedOnly] = useState<string[]>([]);
+  const [showFollowedOnly, setShowFollowedOnly] = useState<string[]>([]);
 
   // Initialize Trie with club names
   useEffect(() => {
@@ -76,6 +71,9 @@ const SearchControl = ({
                 club.categories?.includes(category as Category) || club.affiliations?.includes(category as Affiliation),
             )
           : true,
+      )
+      .filter(
+        (club) => (showFollowedOnly.includes("Followed") ? followedClubs?.includes(club._id) : true), // Followed filter
       );
     // .filter((club) => (showFollowedOnly ? followedClubs?.includes(club._id) : true));
 
@@ -83,7 +81,17 @@ const SearchControl = ({
 
     setCurrentClubs(sortedFilteredClubs);
     setIsLoading(false);
-  }, [searchQuery, selectedCategories, selectedSchools, trie, clubs, setCurrentClubs, setIsLoading]);
+  }, [
+    searchQuery,
+    selectedCategories,
+    selectedSchools,
+    trie,
+    clubs,
+    setCurrentClubs,
+    setIsLoading,
+    followedClubs,
+    showFollowedOnly,
+  ]);
 
   return (
     <div className="search-control flex flex-wrap gap-2 max-w-[1400px] flex-col items-center sm:flex-row pb-4 [&>*]:h-9 sm:[&>*]:h-11">
@@ -100,12 +108,12 @@ const SearchControl = ({
         allItems={[...Object.values(Category), ...Object.values(Affiliation)].sort()}
         label="Categories"
       />
-      {/* <FilterButton
+      <FilterButton
         selectedItems={showFollowedOnly}
         setSelectedItems={setShowFollowedOnly}
         allItems={["Followed"]}
         label="Followed"
-      /> */}
+      />
       <ResetButton
         onReset={() => {
           setSearchQuery("");
