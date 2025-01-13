@@ -12,7 +12,7 @@ import SearchControl from "@/components/search/SearchControl";
 
 import SurveyBanner from "@/components/Survey";
 import SearchWrapper from "@/components/search/SearchWrapper";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 
 export default function Home() {

@@ -50,10 +50,15 @@ export async function POST(req: Request) {
           // Unfollow the club
           console.log("we are here");
           await User.findOneAndUpdate({ netid }, { $pull: { followedClubs: clubId } }, { new: true });
+          await Club.findOneAndUpdate(
+            mongoose.Types.ObjectId.createFromHexString(clubId),
+            { $setOnInsert: { followers: 0 } },
+            { upsert: true, new: true },
+          );
           const updatedClub = await Club.findOneAndUpdate(
-            { clubId },
-            { $setOnInsert: { followers: 0 }, $inc: { followers: -1 } }, // Decrease follower count
-            { upsert: true },
+            mongoose.Types.ObjectId.createFromHexString(clubId),
+            { $inc: { followers: -1 } },
+            { new: true },
           );
 
           console.log(`Unfollowed club ${clubId}. Updated followers count: ${updatedClub?.followers}`);
@@ -68,11 +73,17 @@ export async function POST(req: Request) {
             throw new Error(`Failed to update user with netid ${netid}`);
           }
 
-          const updatedClub = await Club.findByIdAndUpdate(
-            clubId,
-            { $setOnInsert: { followers: 0 }, $inc: { followers: 1 } },
-            { upsert: true },
+          await Club.findByIdAndUpdate(
+            mongoose.Types.ObjectId.createFromHexString(clubId),
+            { $setOnInsert: { followers: 0 } },
+            { upsert: true, new: true },
           );
+          const updatedClub = await Club.findByIdAndUpdate(
+            mongoose.Types.ObjectId.createFromHexString(clubId),
+            { $inc: { followers: 1 } },
+            { new: true },
+          );
+
           if (!updatedClub) {
             throw new Error(`Failed to update club with id ${clubId}`);
           }
