@@ -12,7 +12,7 @@ const SearchBar = ({ searchQuery, setSearchQuery }: SearchBarProps) => {
       value={searchQuery}
       onChange={(e) => setSearchQuery(e.target.value)}
       placeholder="Search..."
-      className="px-4 py-2 w-full sm:w-80 border rounded text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-text h-9 md:h-11"
+      className="px-4 py-2 w-full sm:w-80 lg:w-96 xl:w-[32rem] border rounded text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-text h-11"
     />
   );
 };

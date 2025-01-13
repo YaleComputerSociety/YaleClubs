@@ -7,13 +7,13 @@ interface FilterProps {
   label: string;
 }
 
-const MAX_TOGGLE_WIDTH = 320; // Maximum width of the filter toggle before showing "+x" -- should match min width of filter toggle
-const DROPDOWN_WIDTH = "20rem"; // You can adjust this as needed
+const MAX_TOGGLE_WIDTH = 320; // Maximum width of the filter toggle before showing "+x" -- just make sure it can fit the longest possible filter + some buffer
 
 const Filter = ({ selectedItems, setSelectedItems, allItems, label }: FilterProps) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const availableItems = allItems.filter(
     (item) => !selectedItems.includes(item) && item.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -34,9 +34,15 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label }: FilterProp
     }
   };
 
+  const handleClearAll = () => {
+    setSelectedItems([]);
+    setSearchTerm("");
+  };
+
   useEffect(() => {
     if (showDropdown) {
       document.addEventListener("mousedown", handleClickOutside);
+      searchInputRef.current?.focus();
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
     }
@@ -67,56 +73,88 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label }: FilterProp
     <div ref={dropdownRef} className="relative">
       {/* Filter Toggle */}
       <div
-        className="border px-4 py-2 rounded cursor-pointer min-w-[20rem] max-w-[30rem] flex items-center justify-between h-9 md:h-11"
+        className="px-2 py-2 rounded cursor-pointer min-w-[5rem] max-w-[20rem] flex items-center justify-between h-10 md:h-11 hover:bg-gray-100 transition-colors duration-200"
         onClick={() => setShowDropdown((prev) => !prev)}
       >
-        {/* Toggle Summary */}
         <div className="flex items-center overflow-hidden min-w-0 space-x-2">
           {selectedItems.length > 0 ? (
-            <span className="truncate text-gray-800">{getToggleSummary()}</span>
+            <span className="truncate text-blue-500">{getToggleSummary()}</span>
           ) : (
             <span className="text-gray-600">{label}</span>
           )}
         </div>
-        {/* <span className="ml-2">&#x25BC;</span> */}
+        {selectedItems.length > 0 ? (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleClearAll();
+            }}
+            className="ml-2 text-gray-500 hover:text-gray-700 focus:outline-none"
+          >
+            &#x2715;
+          </button>
+        ) : (
+          <span className="ml-2">&#x25BC;</span>
+        )}
       </div>
 
       {/* Dropdown */}
       {showDropdown && (
-        <div className={`absolute mt-2 ${DROPDOWN_WIDTH} max-w-full bg-white border rounded shadow-lg z-10`}>
-          {/* Search Input */}
-          <div className="p-2 border-b flex flex-wrap items-center gap-1">
-            {selectedItems.map((item) => (
-              <div
-                key={item}
-                className="bg-blue-100 text-blue-600 px-2 py-1 rounded-lg flex items-center space-x-1 text-sm"
-              >
-                <span>{item}</span>
-                <button
-                  onClick={() => handleRemoveItem(item)}
-                  className="text-blue-500 hover:text-blue-700 focus:outline-none"
-                >
-                  &#x2715;
-                </button>
+        <div className={`absolute mt-2 w-96 bg-white border rounded shadow-lg z-10`}>
+          {/* Tags Section (Conditional) */}
+          {selectedItems.length > 0 && (
+            <div className="p-2 border-b flex items-center">
+              <div className="flex flex-wrap gap-1 flex-grow">
+                {selectedItems.map((item) => (
+                  <div
+                    key={item}
+                    className="bg-gray-200 text-gray-600 px-2 py-1 rounded-lg flex items-center space-x-1 text-sm"
+                  >
+                    <span>{item}</span>
+                    <button
+                      onClick={() => handleRemoveItem(item)}
+                      className="text-gray-500 hover:text-red-700 focus:outline-none"
+                    >
+                      &#x2715;
+                    </button>
+                  </div>
+                ))}
               </div>
-            ))}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleClearAll();
+                }}
+                className="ml-2 text-gray-500 hover:text-gray-700 focus:outline-none"
+              >
+                &#x2715;
+              </button>
+            </div>
+          )}
+
+          {/* Search Input */}
+          <div className="p-2">
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder={`Search ${label.toLowerCase()}...`}
-              className="flex-1 px-2 py-1 border rounded focus:outline-none focus:ring focus:border-blue-300 text-sm"
+              className="w-full px-2 py-1 border rounded-lg leading-relaxed focus:outline-none focus:ring focus:border-blue-300 text-sm"
+              ref={searchInputRef}
             />
           </div>
 
           {/* Available Items */}
-          <div className="flex flex-col p-2 gap-2 max-h-72 overflow-y-auto">
+          <div className="flex flex-col max-h-72 overflow-y-auto">
             {availableItems.length > 0 ? (
               availableItems.map((item) => (
                 <div
                   key={item}
                   className="cursor-pointer hover:bg-gray-100 px-4 py-2 rounded"
-                  onClick={() => handleAddItem(item)}
+                  onClick={() => {
+                    handleAddItem(item);
+                    searchInputRef.current?.focus(); // make sure input remains focused
+                  }}
                 >
                   {item}
                 </div>
