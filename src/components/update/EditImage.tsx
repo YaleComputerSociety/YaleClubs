@@ -50,7 +50,7 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
 
       {/* Logo */}
       <div className="absolute -bottom-6 right-16">
-        <div className="relative w-48 h-48 rounded-lg shadow-lg">
+        <div className="relative w-48 h-48 rounded-lg shadow-lg bg-white flex items-center justify-center">
           <Image
             src={formData.logo || "/assets/default-logo.png"}
             alt="Logo"

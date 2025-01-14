@@ -139,6 +139,7 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
           setSearchQuery("");
           setSelectedCategories([]);
           setSelectedSchools([]);
+          setShowFollowedOnly(false);
         }}
       />
     </div>
