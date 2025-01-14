@@ -23,13 +23,33 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSchools, setSelectedSchools] = useState<string[]>([School.COLLEGE]);
   const [trie, setTrie] = useState<Trie | null>(null);
+  // This mapping will let us relate any search key (name or alias) back to its club name.
+  const [searchKeyToClubName, setSearchKeyToClubName] = useState<Record<string, string>>({});
 
-  // Initialize Trie with club names
+  // Initialize Trie with club names and aliases along with a mapping for lookups.
   useEffect(() => {
     setIsLoading(true);
     const newTrie = new Trie();
-    clubs.forEach((club) => newTrie.insert(club.name, ""));
+    const mapping: Record<string, string> = {};
+
+    clubs.forEach((club) => {
+      // Insert the club name
+      const clubNameLower = club.name.toLowerCase().trim();
+      newTrie.insert(clubNameLower, "");
+      mapping[clubNameLower] = club.name;
+      // Insert aliases, if any
+      if (club.aliases) {
+        club.aliases.forEach((alias) => {
+          const aliasLower = alias.toLowerCase().trim();
+          newTrie.insert(aliasLower, "");
+          // Map the alias to the club's actual name
+          mapping[aliasLower] = club.name;
+        });
+      }
+    });
+
     setTrie(newTrie);
+    setSearchKeyToClubName(mapping);
     setIsLoading(false);
   }, [clubs, setIsLoading]);
 
@@ -47,15 +67,19 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
         .split(" ")
         .filter((word) => word.trim() !== "");
 
-      let matchingNames = trie.getWordsWithPrefixes(
-        queryWords,
-        clubs.map((club) => club.name),
-      );
-      matchingNames = matchingNames
-        .filter((name) => name !== undefined && name !== null)
-        .map((name) => name.toLowerCase());
+      // Instead of only sending club names, we now pass all keys (names and aliases)
+      const allSearchKeys = Object.keys(searchKeyToClubName);
+      const matchingKeys = trie.getWordsWithPrefixes(queryWords, allSearchKeys);
 
-      filteredBySearch = clubs.filter((club) => matchingNames.includes(club.name.toLowerCase().trim()));
+      // Remove any undefined/null, then map each search key back to the club name
+      const matchingClubNames = matchingKeys
+        .filter((key) => key !== undefined && key !== null)
+        .map((key) => searchKeyToClubName[key.toLowerCase().trim()])
+        // Deduplicate
+        .filter((value, index, self) => self.indexOf(value) === index)
+        .map((name) => name.toLowerCase().trim());
+
+      filteredBySearch = clubs.filter((club) => matchingClubNames.includes(club.name.toLowerCase().trim()));
     }
 
     const filteredClubs = filteredBySearch
@@ -75,7 +99,16 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
 
     setCurrentClubs(sortedFilteredClubs);
     setIsLoading(false);
-  }, [searchQuery, selectedCategories, selectedSchools, trie, clubs, setCurrentClubs, setIsLoading]);
+  }, [
+    searchQuery,
+    selectedCategories,
+    selectedSchools,
+    trie,
+    clubs,
+    setCurrentClubs,
+    setIsLoading,
+    searchKeyToClubName,
+  ]);
 
   return (
     <div className="search-control flex flex-wrap gap-2 max-w-[1400px] flex-col items-center sm:flex-row pb-4 [&>*]:h-9 sm:[&>*]:h-11">
