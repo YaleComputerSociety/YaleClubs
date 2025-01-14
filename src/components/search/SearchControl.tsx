@@ -74,7 +74,6 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
           : true,
       )
       .filter((club) => (showFollowedOnly ? followedClubs.includes(club._id) : true));
-    // .filter((club) => (showFollowedOnly ? followedClubs?.includes(club._id) : true));
 
     const sortedFilteredClubs = filteredClubs.sort((a, b) => a.name.localeCompare(b.name));
 
@@ -108,7 +107,7 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
         label="Categories"
       />
       <FollowFilter showFollowedOnly={showFollowedOnly} setShowFollowedOnly={setShowFollowedOnly} />
-      
+
       <ResetButton
         onReset={() => {
           setSearchQuery("");

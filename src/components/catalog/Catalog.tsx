@@ -15,35 +15,6 @@ interface CatalogProps {
 
 const Catalog = ({ clubs, isLoading, followedClubs, setFollowedClubs }: CatalogProps) => {
   const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
-  // const [followedClubs, setFollowedClubs] = useState<string[]>([]);
-
-  // const token = Cookies.get("token");
-  // let netid = "";
-
-  // if (token) {
-  //   try {
-  //     netid = jwtDecode<{ netid: string }>(token).netid;
-  //   } catch (error) {
-  //     console.error("Failed to decode token:", error);
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     try {
-  //       // get /users&netid
-  //       const response = await axios.get("/api/users", {
-  //         params: { netid: netid },
-  //       });
-
-  //       setFollowedClubs(response.data.user.followedClubs);
-  //     } catch (error) {
-  //       console.error("Failed to fetch user data:", error);
-  //     }
-  //   };
-
-  //   fetchUser();
-  // }, [netid]);
 
   const handleCloseModal = () => setSelectedClub(null);
 
