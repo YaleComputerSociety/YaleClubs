@@ -273,18 +273,8 @@ const UpdatePage = () => {
                   </label>
                   {validationErrors.subheader && <p className="text-red-500">{validationErrors.subheader}</p>}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Subheader
-                    <input
-                      type="text"
-                      value={formData.subheader ?? ""}
-                      onChange={(e) => handleChange("subheader", e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg p-2"
-                      placeholder="Subheader"
-                    />
-                  </label>
-                  {validationErrors.subheader && <p className="text-red-500">{validationErrors.subheader}</p>}
+                <div className="space-y-0">
+                  <AliasesDropdown selectedAliases={formData.aliases || []} handleChange={handleChange} />
                 </div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Description
@@ -297,9 +287,6 @@ const UpdatePage = () => {
                 {validationErrors.description && <p className="text-red-500">{validationErrors.description}</p>}
               </div>
               <div className="space-y-0">
-                <AliasesDropdown selectedAliases={formData.aliases || []} handleChange={handleChange} />
-              </div>
-              <div className="space-y-0">
                 <CategoriesDropdown
                   selectedCategories={formData.categories || []}
                   additionalCategories={formData.categories || []}
@@ -309,7 +296,9 @@ const UpdatePage = () => {
               <div className="space-y-0">
                 <AffiliationsDropdown selectedAffiliations={formData.affiliations || []} handleChange={handleChange} />
               </div>
-              <SchoolDropdown selectedSchool={(formData.school as School) ?? ""} handleChange={handleChange} />
+              <div className="space-y-0">
+                <SchoolDropdown selectedSchool={(formData.school as School) ?? ""} handleChange={handleChange} />
+              </div>
             </div>
 
             {/* Center Section */}
