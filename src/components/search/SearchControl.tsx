@@ -29,6 +29,11 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
     setIsLoading(true);
     const newTrie = new Trie();
     clubs.forEach((club) => newTrie.insert(club.name, ""));
+    clubs.forEach((club) => {
+      if (club.aliases) {
+        club.aliases.forEach((alias) => newTrie.insert(alias, club.name));
+      }
+    });
     setTrie(newTrie);
     setIsLoading(false);
   }, [clubs, setIsLoading]);
