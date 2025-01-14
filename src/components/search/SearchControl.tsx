@@ -3,11 +3,13 @@ import SearchBar from "./SearchBar";
 import FilterButton from "./Filter";
 import { Affiliation, Category, IClub, School } from "@/lib/models/Club";
 import Trie from "./Trie";
+import FollowFilter from "./FollowFilter";
 
 interface SearchControlProps {
   clubs: IClub[];
   setCurrentClubs: React.Dispatch<React.SetStateAction<IClub[]>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  followedClubs: string[];
 }
 
 const ResetButton = ({ onReset }: { onReset: () => void }) => {
@@ -18,11 +20,12 @@ const ResetButton = ({ onReset }: { onReset: () => void }) => {
   );
 };
 
-const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlProps) => {
+const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: SearchControlProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSchools, setSelectedSchools] = useState<string[]>([School.COLLEGE]);
   const [trie, setTrie] = useState<Trie | null>(null);
+  const [showFollowedOnly, setShowFollowedOnly] = useState(false);
   // This mapping will let us relate any search key (name or alias) back to its club name.
   const [searchKeyToClubName, setSearchKeyToClubName] = useState<Record<string, string>>({});
 
@@ -93,7 +96,8 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
                 club.categories?.includes(category as Category) || club.affiliations?.includes(category as Affiliation),
             )
           : true,
-      );
+      )
+      .filter((club) => (showFollowedOnly ? followedClubs.includes(club._id) : true));
 
     const sortedFilteredClubs = filteredClubs.sort((a, b) => a.name.localeCompare(b.name));
 
@@ -107,6 +111,8 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
     clubs,
     setCurrentClubs,
     setIsLoading,
+    followedClubs,
+    showFollowedOnly,
     searchKeyToClubName,
   ]);
 
@@ -126,6 +132,7 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
           allItems={[...Object.values(Category), ...Object.values(Affiliation)].sort()}
           label="Categories"
         />
+        <FollowFilter showFollowedOnly={showFollowedOnly} setShowFollowedOnly={setShowFollowedOnly} />
       </div>
       <ResetButton
         onReset={() => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { IClub } from "@/lib/models/Club";
 import Board from "./Board";
 import Image from "next/image";
@@ -8,21 +8,43 @@ import ClubModalRightLabel from "./ClubModalRightLabel";
 import Link from "next/link";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import FollowButton from "./Star";
 
 type ClubModalProps = {
   club: IClub;
   onClose: () => void;
+  followedClubs: string[];
+  setFollowedClubs: Dispatch<SetStateAction<string[]>>;
 };
 
-const ClubModal = ({ club, onClose }: ClubModalProps) => {
+const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs }: ClubModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const isSm = useMediaQuery({ maxWidth: 640 });
   const isMd = useMediaQuery({ maxWidth: 768 });
   const [canEdit, setCanEdit] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const token = Cookies.get("token");
 
-  // console.table(club);
+  const token = Cookies.get("token");
+  const isFollowing = followedClubs.includes(club._id);
+  const initialFollowingRef = React.useRef(followedClubs.includes(club._id));
+  const initialFollowing = initialFollowingRef.current;
+
+  // whether or not to add/subtract a follower based on the individual's recent follow status
+  const calculateFollowerAdjustment = (isFollowing: boolean, initialFollowing: boolean) => {
+    return isFollowing === initialFollowing ? 0 : isFollowing ? 1 : -1;
+  };
+
+  let netid = "";
+
+  if (token) {
+    try {
+      netid = jwtDecode<{ netid: string }>(token).netid;
+    } catch (error) {
+      console.error("Failed to decode token:", error);
+    }
+  }
+
+  console.table(club);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -61,6 +83,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
           "francis.fan@yale.edu",
           "grady.yu@yale.edu",
           "lauren.lee.ll2243@yale.edu",
+          "koray.akduman@yale.edu",
         ];
 
         const isBoardMember = club.leaders.some((leader) => leader.email === userEmail);
@@ -159,6 +182,16 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
                 className={`text-center md:text-left ${club.name.length > 100 ? "text-xl md:text-2xl" : "text-2xl md:text-3xl"} font-bold`}
               >
                 {club.name}
+                <div className="mt-4">
+                  <FollowButton
+                    isLoggedIn={!!token}
+                    isFollowing={isFollowing}
+                    netid={netid || ""}
+                    clubId={club._id}
+                    followedClubs={followedClubs}
+                    setFollowedClubs={setFollowedClubs}
+                  />
+                </div>
               </div>
               {club.school && (
                 <div className="flex gap-2 whitespace-nowrap w-full flex-wrap mt-4">
@@ -222,6 +255,16 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
                   link={club.calendarLink}
                 />
                 <ClubModalRightLabel header="Meeting" content={club.meeting} />
+                <ClubModalRightLabel
+                  header="Followers"
+                  content={
+                    club.followers
+                      ? String(club.followers + calculateFollowerAdjustment(isFollowing, initialFollowing))
+                      : isFollowing
+                        ? "1"
+                        : "0"
+                  }
+                />
               </div>
             </div>
           </div>
