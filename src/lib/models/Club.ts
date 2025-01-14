@@ -74,7 +74,7 @@ export enum Intensity {
 export enum RecruitmentStatus {
   NOSELECTION = "No Selection",
   APPCLOSED = "Closed",
-  APPENDS = "Closes on...",
+  APPENDS = "Open",
   APPOPENS = "Opens on...",
 }
 

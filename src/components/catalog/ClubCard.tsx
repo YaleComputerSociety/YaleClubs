@@ -40,7 +40,7 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
             return "Applications Closed";
           }
 
-          return `Applications Due ${formattedDate}`;
+          return `Applications Close ${formattedDate}`;
         }
         return "Applications Closing Soon";
       case RecruitmentStatus.APPOPENS:

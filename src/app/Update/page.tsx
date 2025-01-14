@@ -109,6 +109,12 @@ const UpdatePage = () => {
       case "logo":
         if (value && value.length > 300) return `${field} URL must not exceed 300 characters.`;
         return "";
+      // case "recruitmentStartDate":
+      //   if (!value) return "Needs start date.";
+      //   return "";
+      // case "recruitmentEndDate":
+      //   if (!value) return "Needs end date.";
+      //   return "";
       default:
         return "";
     }
