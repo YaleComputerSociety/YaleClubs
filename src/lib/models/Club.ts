@@ -73,9 +73,9 @@ export enum Intensity {
 
 export enum RecruitmentStatus {
   NOSELECTION = "No Selection",
-  APPCLOSED = "Application Closed",
-  APPENDS = "Application Closing ... Date",
-  APPOPENS = "Application Opens soon ... Date",
+  APPCLOSED = "Closed",
+  APPENDS = "Closes on...",
+  APPOPENS = "Opens on...",
 }
 
 export interface ClubLeader {
