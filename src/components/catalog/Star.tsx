@@ -7,7 +7,6 @@ type FollowButtonProps = {
   clubId: string;
   followedClubs: string[];
   setFollowedClubs: Dispatch<SetStateAction<string[]>>;
-  setFollowingChanged: Dispatch<SetStateAction<boolean>>;
 };
 
 const FollowButton: React.FC<FollowButtonProps> = ({
@@ -17,7 +16,6 @@ const FollowButton: React.FC<FollowButtonProps> = ({
   clubId,
   followedClubs,
   setFollowedClubs,
-  setFollowingChanged,
 }) => {
   const toggleStar = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -32,7 +30,6 @@ const FollowButton: React.FC<FollowButtonProps> = ({
         ? followedClubs.filter((id: string) => id !== clubId)
         : [...followedClubs, clubId];
       setFollowedClubs(updatedClubs);
-      setFollowingChanged(!isFollowing);
 
       await fetch("/api/follow", {
         method: "POST",

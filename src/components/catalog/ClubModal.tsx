@@ -23,10 +23,17 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs }: ClubModal
   const isMd = useMediaQuery({ maxWidth: 768 });
   const [canEdit, setCanEdit] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [followingChanged, setFollowingChanged] = useState(false);
 
   const token = Cookies.get("token");
   const isFollowing = followedClubs.includes(club._id);
+  const initialFollowingRef = React.useRef(followedClubs.includes(club._id));
+  const initialFollowing = initialFollowingRef.current;
+
+  // whether or not to add/subtract a follower based on the individual's recent follow status
+  const calculateFollowerAdjustment = (isFollowing: boolean, initialFollowing: boolean) => {
+    return isFollowing === initialFollowing ? 0 : isFollowing ? 1 : -1;
+  };
+
   let netid = "";
 
   if (token) {
@@ -183,7 +190,6 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs }: ClubModal
                     clubId={club._id}
                     followedClubs={followedClubs}
                     setFollowedClubs={setFollowedClubs}
-                    setFollowingChanged={setFollowingChanged}
                   />
                 </div>
               </div>
@@ -253,8 +259,8 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs }: ClubModal
                   header="Followers"
                   content={
                     club.followers
-                      ? ((club.followers + (followingChanged && isFollowing ? 1 : 0)) as unknown as string)
-                      : followingChanged && isFollowing
+                      ? String(club.followers + calculateFollowerAdjustment(isFollowing, initialFollowing))
+                      : isFollowing
                         ? "1"
                         : "0"
                   }
