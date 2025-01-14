@@ -7,13 +7,13 @@ type FollowFilterProps = {
 
 const FollowFilter: React.FC<FollowFilterProps> = ({ showFollowedOnly, setShowFollowedOnly }) => {
   return (
-    <label className="flex items-center text-gray-600 space-x-2">
+    <label className="flex items-center text-gray-600 space-x-2 cursor-pointer">
       <span>Followed</span>
       <input
         type="checkbox"
         checked={showFollowedOnly}
         onChange={(e) => setShowFollowedOnly(e.target.checked)}
-        className="w-6 h-6  focus:from-indigo-500 to-blue-500 border-gray-300 rounded"
+        className="w-6 h-6  focus:from-indigo-500 to-blue-500 border-gray-300 rounded cursor-pointer"
       />
     </label>
   );

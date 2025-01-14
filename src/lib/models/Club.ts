@@ -113,6 +113,7 @@ export interface IClubInput {
   howToJoin?: string;
   scraped?: boolean;
   inactive?: boolean;
+  aliases?: string[];
 }
 
 // Use this when fetching a club
@@ -144,6 +145,7 @@ export interface IClub extends Document {
   scraped?: boolean;
   inactive?: boolean;
   followers: number;
+  aliases?: string[];
 }
 
 // Club Schema
@@ -172,6 +174,7 @@ const clubSchema = new Schema<IClub>(
     scraped: { type: Boolean },
     inactive: { type: Boolean },
     followers: { type: Number, required: true, default: 0 },
+    aliases: { type: [String], default: [] },
   },
   { timestamps: true },
 );

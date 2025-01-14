@@ -14,7 +14,7 @@ interface SearchControlProps {
 
 const ResetButton = ({ onReset }: { onReset: () => void }) => {
   return (
-    <button onClick={onReset} className="bg-[#f66] text-white px-4 rounded">
+    <button onClick={onReset} className="bg-[#f66] text-white px-4 h-10 rounded flex items-center justify-center">
       Reset
     </button>
   );
@@ -26,13 +26,33 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
   const [selectedSchools, setSelectedSchools] = useState<string[]>([School.COLLEGE]);
   const [trie, setTrie] = useState<Trie | null>(null);
   const [showFollowedOnly, setShowFollowedOnly] = useState(false);
+  // This mapping will let us relate any search key (name or alias) back to its club name.
+  const [searchKeyToClubName, setSearchKeyToClubName] = useState<Record<string, string>>({});
 
-  // Initialize Trie with club names
+  // Initialize Trie with club names and aliases along with a mapping for lookups.
   useEffect(() => {
     setIsLoading(true);
     const newTrie = new Trie();
-    clubs.forEach((club) => newTrie.insert(club.name, ""));
+    const mapping: Record<string, string> = {};
+
+    clubs.forEach((club) => {
+      // Insert the club name
+      const clubNameLower = club.name.toLowerCase().trim();
+      newTrie.insert(clubNameLower, "");
+      mapping[clubNameLower] = club.name;
+      // Insert aliases, if any
+      if (club.aliases) {
+        club.aliases.forEach((alias) => {
+          const aliasLower = alias.toLowerCase().trim();
+          newTrie.insert(aliasLower, "");
+          // Map the alias to the club's actual name
+          mapping[aliasLower] = club.name;
+        });
+      }
+    });
+
     setTrie(newTrie);
+    setSearchKeyToClubName(mapping);
     setIsLoading(false);
   }, [clubs, setIsLoading]);
 
@@ -50,15 +70,19 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
         .split(" ")
         .filter((word) => word.trim() !== "");
 
-      let matchingNames = trie.getWordsWithPrefixes(
-        queryWords,
-        clubs.map((club) => club.name),
-      );
-      matchingNames = matchingNames
-        .filter((name) => name !== undefined && name !== null)
-        .map((name) => name.toLowerCase());
+      // Instead of only sending club names, we now pass all keys (names and aliases)
+      const allSearchKeys = Object.keys(searchKeyToClubName);
+      const matchingKeys = trie.getWordsWithPrefixes(queryWords, allSearchKeys);
 
-      filteredBySearch = clubs.filter((club) => matchingNames.includes(club.name.toLowerCase().trim()));
+      // Remove any undefined/null, then map each search key back to the club name
+      const matchingClubNames = matchingKeys
+        .filter((key) => key !== undefined && key !== null)
+        .map((key) => searchKeyToClubName[key.toLowerCase().trim()])
+        // Deduplicate
+        .filter((value, index, self) => self.indexOf(value) === index)
+        .map((name) => name.toLowerCase().trim());
+
+      filteredBySearch = clubs.filter((club) => matchingClubNames.includes(club.name.toLowerCase().trim()));
     }
 
     const filteredClubs = filteredBySearch
@@ -89,25 +113,27 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
     setIsLoading,
     followedClubs,
     showFollowedOnly,
+    searchKeyToClubName,
   ]);
 
   return (
-    <div className="search-control flex flex-wrap gap-2 max-w-[1400px] flex-col items-center sm:flex-row pb-4 [&>*]:h-9 sm:[&>*]:h-11">
+    <div className="search-control flex flex-wrap gap-2 max-w-[1400px] items-center pb-4">
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      <FilterButton
-        selectedItems={selectedSchools}
-        setSelectedItems={setSelectedSchools}
-        allItems={Object.values(School)}
-        label="Schools"
-      />
-      <FilterButton
-        selectedItems={selectedCategories}
-        setSelectedItems={setSelectedCategories}
-        allItems={[...Object.values(Category), ...Object.values(Affiliation)].sort()}
-        label="Categories"
-      />
-      <FollowFilter showFollowedOnly={showFollowedOnly} setShowFollowedOnly={setShowFollowedOnly} />
-
+      <div className="flex flex-wrap gap-2 sm:flex-row sm:gap-4">
+        <FilterButton
+          selectedItems={selectedSchools}
+          setSelectedItems={setSelectedSchools}
+          allItems={Object.values(School)}
+          label="Schools"
+        />
+        <FilterButton
+          selectedItems={selectedCategories}
+          setSelectedItems={setSelectedCategories}
+          allItems={[...Object.values(Category), ...Object.values(Affiliation)].sort()}
+          label="Categories"
+        />
+        <FollowFilter showFollowedOnly={showFollowedOnly} setShowFollowedOnly={setShowFollowedOnly} />
+      </div>
       <ResetButton
         onReset={() => {
           setSearchQuery("");
