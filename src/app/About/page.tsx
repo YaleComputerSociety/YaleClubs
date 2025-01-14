@@ -94,6 +94,14 @@ const teamMembers = [
     github: "https://github.com/francisfan0",
   },
   {
+    name: "Ethan Mathieu",
+    role: "Developer",
+    headshot: "/assets/people/ethan.jpg",
+    website: "https://ethanmathieu.com/",
+    linkedin: "https://www.linkedin.com/in/ethan-mathieu/",
+    github: "https://github.com/emath12",
+  },
+  {
     name: "Marie Bong",
     role: "Marketing",
     // headshot: "/assets/people/ethanmathieu.jpg",
