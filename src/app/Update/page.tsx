@@ -49,6 +49,11 @@ const UpdatePage = () => {
     intensity: Intensity.CASUAL,
     howToJoin: "",
     school: School.COLLEGE,
+    inactive: false,
+    scraped: false,
+    recruitmentStatus: RecruitmentStatus.NOSELECTION,
+    recruitmentStartDate: undefined,
+    recruitmentEndDate: undefined,
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -139,6 +144,11 @@ const UpdatePage = () => {
               intensity: Intensity[specificClub.intensity as keyof typeof Intensity] || Intensity.CASUAL,
               howToJoin: specificClub.howToJoin || "",
               school: specificClub.school || School.COLLEGE,
+              inactive: specificClub.inactive || false,
+              scraped: specificClub.scraped || false,
+              recruitmentStatus: specificClub.recruitmentStatus || RecruitmentStatus.NOSELECTION,
+              recruitmentStartDate: specificClub.recruitmentStartDate || undefined,
+              recruitmentEndDate: specificClub.recruitmentEndDate || undefined,
             };
             setClub(specificClub);
             setFormData(clubInput);
@@ -156,7 +166,17 @@ const UpdatePage = () => {
 
   const handleChange = (
     field: keyof IClubInput,
-    value: string | number | ClubLeader[] | Affiliation[] | undefined | Category[] | School | Intensity,
+    value:
+      | string
+      | number
+      | ClubLeader[]
+      | Affiliation[]
+      | undefined
+      | Category[]
+      | School
+      | Intensity
+      | RecruitmentStatus
+      | Date,
   ) => {
     const error = validateInput(field as keyof IClubInput, value !== undefined ? String(value) : "");
     setValidationErrors((prev) => ({ ...prev, [field]: error }));
@@ -164,6 +184,7 @@ const UpdatePage = () => {
   };
 
   const handleSave = () => {
+    console.log("Saving form data:", formData);
     const errors = Object.keys(formData).reduce(
       (acc, field) => {
         const value = formData[field as keyof IClubInput];
@@ -329,7 +350,7 @@ const UpdatePage = () => {
               />
               {(formData.recruitmentStatus === RecruitmentStatus.APPENDS ||
                 formData.recruitmentStatus === RecruitmentStatus.APPOPENS) && (
-                <div className="bg-gray-300 rounded-lg">
+                <div className="bg-gray-300 rounded-lg p-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Application Form
@@ -343,20 +364,78 @@ const UpdatePage = () => {
                     </label>
                     {validationErrors.applyForm && <p className="text-red-500">{validationErrors.applyForm}</p>}
                   </div>
-                  <div>
+                  {formData.recruitmentStatus === RecruitmentStatus.APPOPENS && (
+                    <div className="mt-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {formData.recruitmentStatus === RecruitmentStatus.APPOPENS && "Application Opens"}
+                        <input
+                          type="date"
+                          value={formData.recruitmentStartDate ? formData.recruitmentStartDate.toString() : ""}
+                          onChange={(e) => handleChange("recruitmentStartDate", e.target.value)}
+                          className="w-full border border-gray-300 rounded-lg p-2"
+                        />
+                      </label>
+                      {validationErrors.applicationDeadline && (
+                        <p className="text-red-500">{validationErrors.applicationDeadline}</p>
+                      )}
+                    </div>
+                  )}
+                  <div className="mt-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Date
+                      {formData.recruitmentStatus === RecruitmentStatus.APPOPENS && "Application Closes"}
+                      {formData.recruitmentStatus === RecruitmentStatus.APPENDS && "Application Closes"}
                       <input
-                        type="text"
-                        value={formData.applyForm ?? ""}
-                        onChange={(e) => handleChange("applyForm", e.target.value)}
+                        type="date"
+                        value={formData.recruitmentEndDate ? formData.recruitmentEndDate.toString() : ""}
+                        onChange={(e) => handleChange("recruitmentEndDate", e.target.value)}
                         className="w-full border border-gray-300 rounded-lg p-2"
-                        placeholder="Link to application form"
                       />
                     </label>
+                    {validationErrors.applicationDeadline && (
+                      <p className="text-red-500">{validationErrors.applicationDeadline}</p>
+                    )}
                   </div>
                 </div>
               )}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Instagram
+                  <input
+                    type="text"
+                    value={formData.instagram ?? ""}
+                    onChange={(e) => handleChange("instagram", e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-2"
+                    placeholder="@username"
+                  />
+                </label>
+                {validationErrors.instagram && <p className="text-red-500">{validationErrors.instagram}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Email
+                  <input
+                    type="email"
+                    value={formData.email ?? ""}
+                    onChange={(e) => handleChange("email", e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-2"
+                    placeholder="email@domain.com"
+                  />
+                </label>
+                {validationErrors.email && <p className="text-red-500">{validationErrors.email}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Website
+                  <input
+                    type="url"
+                    value={formData.website ?? ""}
+                    onChange={(e) => handleChange("website", e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-2"
+                    placeholder="yalecomputersociety.org"
+                  />
+                </label>
+                {validationErrors.website && <p className="text-red-500">{validationErrors.website}</p>}
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Membership
@@ -397,45 +476,6 @@ const UpdatePage = () => {
                   />
                 </label>
                 {validationErrors.howToJoin && <p className="text-red-500">{validationErrors.howToJoin}</p>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Instagram
-                  <input
-                    type="text"
-                    value={formData.instagram ?? ""}
-                    onChange={(e) => handleChange("instagram", e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-2"
-                    placeholder="@username"
-                  />
-                </label>
-                {validationErrors.instagram && <p className="text-red-500">{validationErrors.instagram}</p>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email
-                  <input
-                    type="email"
-                    value={formData.email ?? ""}
-                    onChange={(e) => handleChange("email", e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-2"
-                    placeholder="email@domain.com"
-                  />
-                </label>
-                {validationErrors.email && <p className="text-red-500">{validationErrors.email}</p>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Website
-                  <input
-                    type="url"
-                    value={formData.website ?? ""}
-                    onChange={(e) => handleChange("website", e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-2"
-                    placeholder="yalecomputersociety.org"
-                  />
-                </label>
-                {validationErrors.website && <p className="text-red-500">{validationErrors.website}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">

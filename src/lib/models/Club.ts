@@ -99,31 +99,32 @@ const ClubLeaderSchema = new Schema({
 // Use this when creating/updating a club
 export interface IClubInput {
   name: string;
-  subheader?: string;
-  description?: string;
-  categories?: Category[];
+  subheader?: string | undefined;
+  description?: string | undefined;
+  categories?: Category[] | undefined;
   leaders: ClubLeader[];
-  affiliations?: Affiliation[];
-  school?: School;
-  logo?: string;
-  backgroundImage?: string;
-  numMembers?: number;
-  website?: string;
-  email?: string;
-  instagram?: string;
-  applyForm?: string;
-  mailingListForm?: string;
-  meeting?: string;
-  calendarLink?: string;
-  yaleConnectId?: number;
-  intensity?: Intensity;
-  howToJoin?: string;
-  scraped?: boolean;
-  inactive?: boolean;
-  applicationStatus?: string;
-  followersCount?: number;
-  recruitmentStatus?: RecruitmentStatus;
-  recruitmentDate?: Date;
+  affiliations?: Affiliation[] | undefined;
+  school?: School | undefined;
+  logo?: string | undefined;
+  backgroundImage?: string | undefined;
+  numMembers?: number | undefined;
+  website?: string | undefined;
+  email?: string | undefined;
+  instagram?: string | undefined;
+  applyForm?: string | undefined;
+  mailingListForm?: string | undefined;
+  meeting?: string | undefined;
+  calendarLink?: string | undefined;
+  yaleConnectId?: number | undefined;
+  intensity?: Intensity | undefined;
+  howToJoin?: string | undefined;
+  scraped?: boolean | undefined;
+  inactive?: boolean | undefined;
+  applicationStatus?: string | undefined;
+  followersCount?: number | undefined;
+  recruitmentStatus?: RecruitmentStatus | undefined;
+  recruitmentStartDate?: Date | undefined;
+  recruitmentEndDate?: Date | undefined;
 }
 
 // Use this when fetching a club
@@ -157,7 +158,8 @@ export interface IClub extends Document {
   applicationStatus?: string;
   followersCount?: number;
   recruitmentStatus?: RecruitmentStatus;
-  recruitmentDate?: Date;
+  recruitmentStartDate?: Date;
+  recruitmentEndDate?: Date;
 }
 
 // Club Schema
@@ -187,6 +189,9 @@ const clubSchema = new Schema<IClub>(
     inactive: { type: Boolean },
     applicationStatus: { type: String },
     followersCount: { type: Number },
+    recruitmentStatus: { type: String, enum: Object.values(RecruitmentStatus) },
+    recruitmentStartDate: { type: Date },
+    recruitmentEndDate: { type: Date },
   },
   { timestamps: true },
 );

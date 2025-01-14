@@ -1,5 +1,5 @@
 import React from "react";
-import { IClub } from "@/lib/models/Club";
+import { IClub, RecruitmentStatus } from "@/lib/models/Club";
 import Image from "next/image";
 import { getAdjustedNumMembers } from "@/lib/utils";
 
@@ -13,32 +13,86 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
     if (!club.updatedAt) return false;
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    // return new Date(club.updatedAt) > thirtyDaysAgo;
-    // change this to return false for now
     return false;
   };
 
   const getApplicationStatus = () => {
-    const statuses = [
-      "Applications Open • Due Feb 1",
-      "Applications Opening Soon • Jan 15",
-      "Applications Closed • Next Cycle in Fall",
-      "Applications Under Review",
-    ];
-    return statuses[club.name.length % statuses.length];
+    if (!club.recruitmentStatus || club.recruitmentStatus === RecruitmentStatus.NOSELECTION) {
+      return null;
+    }
+
+    switch (club.recruitmentStatus) {
+      case RecruitmentStatus.APPCLOSED:
+        return "Applications Closed";
+      case RecruitmentStatus.APPENDS:
+        if (club.recruitmentEndDate) {
+          const date = new Date(club.recruitmentEndDate);
+          const now = new Date();
+
+          const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+
+          const formattedDate = localDate.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          });
+
+          if (date < now) {
+            return "Applications Closed";
+          }
+
+          return `Applications Due ${formattedDate}`;
+        }
+        return "Applications Closing Soon";
+      case RecruitmentStatus.APPOPENS:
+        if (club.recruitmentStartDate) {
+          const date = new Date(club.recruitmentStartDate);
+          const endDate = club.recruitmentEndDate ? new Date(club.recruitmentEndDate) : null;
+          const now = new Date();
+
+          const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+
+          const formattedDate = localDate.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          });
+
+          const endlocalDate = endDate ? new Date(endDate.getTime() + date.getTimezoneOffset() * 60000) : null;
+
+          const endformattedDate = endlocalDate
+            ? endlocalDate.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              })
+            : "";
+
+          if (endDate && endDate < now) {
+            return "Applications Closed";
+          }
+
+          if (date < now) {
+            if (endDate) {
+              return `Applications Open Until ${endformattedDate}`;
+            }
+            return "Applications Open";
+          }
+
+          return `Applications Open ${formattedDate}`;
+        }
+        return "Applications Opening Soon";
+      default:
+        return null;
+    }
   };
 
-  // can change this later
   const isFeatured: boolean = false;
-
   const applicationStatus = getApplicationStatus();
   const hasApplicationStatus = applicationStatus !== null;
 
   return (
-    <div className="relative">
+    <div className="relative w-full max-w-2xl">
       <div
         className={`border border-gray-200 rounded-xl px-3 py-2 md:px-4 md:py-3 flex flex-col gap-2 w-full cursor-pointer hover:border-gray-300 transition-colors ${
-          hasApplicationStatus ? "rounded-b-none border-b-0" : ""
+          hasApplicationStatus ? "rounded-b-none border-b-0" : "h-full"
         }`}
         onClick={onClick}
       >
@@ -63,7 +117,7 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
                 <div className="md:text-xl font-semibold line-clamp-1 md:line-clamp-2 overflow-hidden">{club.name}</div>
               </div>
             </div>
-            <div className="mt-3 flex gap-2 overflow-auto whitespace-nowrap text-ellipsis scrollbar-hide">
+            <div className="mt-3 flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
               {club.school && <span className="bg-[#acf] rounded px-2 py-1 text-xs">{club.school}</span>}
               {club.categories?.map((tag, index) => (
                 <span key={index} className="bg-[#eee] rounded px-2 py-1 text-xs">
@@ -88,21 +142,24 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
         </div>
         <div className="text-sm md:text:lg text-gray-800 line-clamp-3">{club.description ?? "No description"}</div>
 
-        <div className="flex flex-row items-center justify-between text-sm mt-2">
-          <div className="flex items-center gap-2">
+        {club.email || club.numMembers ? (
+          <div className="flex flex-row items-center justify-between text-sm">
             {club.email && <div className="text-blue-500 truncate max-w-xs inline-block">{club.email}</div>}
+            {club.numMembers ? (
+              <div className="flex-shrink-0 text-right w-full">{getAdjustedNumMembers(club.numMembers)} members</div>
+            ) : null}
           </div>
-          {club.numMembers ? (
-            <div className="flex-shrink-0 text-right w-full">{getAdjustedNumMembers(club.numMembers)} members</div>
-          ) : null}
-        </div>
+        ) : null}
       </div>
 
       {hasApplicationStatus && (
-        <div className="w-full border border-gray-200 border-t-0 rounded-b-xl overflow-hidden">
+        <div
+          className="w-full border border-gray-200 border-t-0 rounded-b-xl overflow-hidden cursor-pointer"
+          onClick={onClick}
+        >
           <div className="w-full bg-purple-50 py-2 px-3 md:px-4">
             <div className="flex items-center justify-center">
-              <span className="text-purple-800 text-sm font-medium">{applicationStatus}</span>
+              <span className="line-clamp-1 text-purple-800 text-sm font-medium">{applicationStatus}</span>
             </div>
           </div>
         </div>
@@ -112,10 +169,3 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
 };
 
 export default ClubCard;
-
-// need to add the following:
-// - new?
-// - how many following?
-// - following functionality
-// - featured?
-// - what stage in application season they are?
