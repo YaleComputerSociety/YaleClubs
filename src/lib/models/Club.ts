@@ -71,6 +71,13 @@ export enum Intensity {
   Intense = "Intense Commitment",
 }
 
+export enum RecruitmentStatus {
+  NOSELECTION = "No Selection",
+  APPCLOSED = "Application Closed",
+  APPENDS = "Application Closing ... Date",
+  APPOPENS = "Application Opens soon ... Date",
+}
+
 export interface ClubLeader {
   email: string;
   name: string;
@@ -115,6 +122,8 @@ export interface IClubInput {
   inactive?: boolean;
   applicationStatus?: string;
   followersCount?: number;
+  recruitmentStatus?: RecruitmentStatus;
+  recruitmentDate?: Date;
 }
 
 // Use this when fetching a club
@@ -147,6 +156,8 @@ export interface IClub extends Document {
   inactive?: boolean;
   applicationStatus?: string;
   followersCount?: number;
+  recruitmentStatus?: RecruitmentStatus;
+  recruitmentDate?: Date;
 }
 
 // Club Schema

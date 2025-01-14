@@ -1,7 +1,16 @@
 "use client";
 
 import React, { useEffect, useState, Suspense } from "react";
-import { IClub, IClubInput, Category, Affiliation, ClubLeader, Intensity, School } from "@/lib/models/Club";
+import {
+  IClub,
+  IClubInput,
+  Category,
+  Affiliation,
+  ClubLeader,
+  Intensity,
+  School,
+  RecruitmentStatus,
+} from "@/lib/models/Club";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useSearchParams } from "next/navigation";
@@ -14,6 +23,7 @@ import SchoolDropdown from "@/components/update/SchoolDropdown";
 
 import { getCookie } from "cookies-next";
 import AffiliationsDropdown from "@/components/update/ClubAffiliation";
+import RecruitmentStatusDropdown from "@/components/update/RecruitmentDropdown";
 
 const UpdatePage = () => {
   const searchParams = useSearchParams();
@@ -309,6 +319,44 @@ const UpdatePage = () => {
             {/* Center Section */}
             <div className="space-y-2">
               <ClubLeadersSection leaders={formData.leaders || []} handleChange={handleChange} />
+            </div>
+
+            {/* Right Section */}
+            <div className="space-y-2">
+              <RecruitmentStatusDropdown
+                selectedRecruitment={formData.recruitmentStatus as RecruitmentStatus}
+                handleChange={handleChange}
+              />
+              {(formData.recruitmentStatus === RecruitmentStatus.APPENDS ||
+                formData.recruitmentStatus === RecruitmentStatus.APPOPENS) && (
+                <div className="bg-gray-300 rounded-lg">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Application Form
+                      <input
+                        type="text"
+                        value={formData.applyForm ?? ""}
+                        onChange={(e) => handleChange("applyForm", e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg p-2"
+                        placeholder="Link to application form"
+                      />
+                    </label>
+                    {validationErrors.applyForm && <p className="text-red-500">{validationErrors.applyForm}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Date
+                      <input
+                        type="text"
+                        value={formData.applyForm ?? ""}
+                        onChange={(e) => handleChange("applyForm", e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg p-2"
+                        placeholder="Link to application form"
+                      />
+                    </label>
+                  </div>
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Membership
@@ -323,19 +371,6 @@ const UpdatePage = () => {
                   />
                 </label>
                 {validationErrors.numMembers && <p className="text-red-500">{validationErrors.numMembers}</p>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Application Form
-                  <input
-                    type="text"
-                    value={formData.applyForm ?? ""}
-                    onChange={(e) => handleChange("applyForm", e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-2"
-                    placeholder="Link to application form"
-                  />
-                </label>
-                {validationErrors.applyForm && <p className="text-red-500">{validationErrors.applyForm}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -363,10 +398,6 @@ const UpdatePage = () => {
                 </label>
                 {validationErrors.howToJoin && <p className="text-red-500">{validationErrors.howToJoin}</p>}
               </div>
-            </div>
-
-            {/* Right Section */}
-            <div className="space-y-2">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Instagram
