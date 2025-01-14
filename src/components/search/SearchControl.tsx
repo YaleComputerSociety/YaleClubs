@@ -12,7 +12,7 @@ interface SearchControlProps {
 
 const ResetButton = ({ onReset }: { onReset: () => void }) => {
   return (
-    <button onClick={onReset} className="bg-[#f66] text-white px-4 rounded">
+    <button onClick={onReset} className="bg-[#f66] text-white px-4 h-10 rounded flex items-center justify-center">
       Reset
     </button>
   );
@@ -111,20 +111,22 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
   ]);
 
   return (
-    <div className="search-control flex flex-wrap gap-2 max-w-[1400px] flex-col items-center sm:flex-row pb-4 [&>*]:h-9 sm:[&>*]:h-11">
+    <div className="search-control flex flex-wrap gap-2 max-w-[1400px] items-center pb-4">
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      <FilterButton
-        selectedItems={selectedSchools}
-        setSelectedItems={setSelectedSchools}
-        allItems={Object.values(School)}
-        label="Schools"
-      />
-      <FilterButton
-        selectedItems={selectedCategories}
-        setSelectedItems={setSelectedCategories}
-        allItems={[...Object.values(Category), ...Object.values(Affiliation)].sort()}
-        label="Categories"
-      />
+      <div className="flex flex-wrap gap-2 sm:flex-row sm:gap-4">
+        <FilterButton
+          selectedItems={selectedSchools}
+          setSelectedItems={setSelectedSchools}
+          allItems={Object.values(School)}
+          label="Schools"
+        />
+        <FilterButton
+          selectedItems={selectedCategories}
+          setSelectedItems={setSelectedCategories}
+          allItems={[...Object.values(Category), ...Object.values(Affiliation)].sort()}
+          label="Categories"
+        />
+      </div>
       <ResetButton
         onReset={() => {
           setSearchQuery("");
