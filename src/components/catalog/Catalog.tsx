@@ -1,47 +1,49 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ClubCard from "./ClubCard";
 import ClubModal from "./ClubModal";
 import { IClub } from "@/lib/models/Club";
-import axios from "axios";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
+// import axios from "axios";
+// import Cookies from "js-cookie";
+// import { jwtDecode } from "jwt-decode";
 
 interface CatalogProps {
   clubs: IClub[];
   isLoading: boolean;
+  followedClubs: string[] | []; // Allow null
+  setFollowedClubs: React.Dispatch<React.SetStateAction<string[] | []>>;
 }
 
-const Catalog = ({ clubs, isLoading }: CatalogProps) => {
+const Catalog = ({ clubs, isLoading, followedClubs, setFollowedClubs }: CatalogProps) => {
   const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
-  const [followedClubs, setFollowedClubs] = useState<string[]>([]);
+  // const [followedClubs, setFollowedClubs] = useState<string[]>([]);
 
-  const token = Cookies.get("token");
-  let netid = "";
+  // const token = Cookies.get("token");
+  // let netid = "";
 
-  if (token) {
-    try {
-      netid = jwtDecode<{ netid: string }>(token).netid;
-    } catch (error) {
-      console.error("Failed to decode token:", error);
-    }
-  }
+  // if (token) {
+  //   try {
+  //     netid = jwtDecode<{ netid: string }>(token).netid;
+  //   } catch (error) {
+  //     console.error("Failed to decode token:", error);
+  //   }
+  // }
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        // get /users&netid
-        const response = await axios.get("/api/users", {
-          params: { netid: netid },
-        });
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     try {
+  //       // get /users&netid
+  //       const response = await axios.get("/api/users", {
+  //         params: { netid: netid },
+  //       });
 
-        setFollowedClubs(response.data.user.followedClubs);
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-      }
-    };
+  //       setFollowedClubs(response.data.user.followedClubs);
+  //     } catch (error) {
+  //       console.error("Failed to fetch user data:", error);
+  //     }
+  //   };
 
-    fetchUser();
-  }, []);
+  //   fetchUser();
+  // }, [netid]);
 
   const handleCloseModal = () => setSelectedClub(null);
 

@@ -3,6 +3,7 @@ import SearchBar from "./SearchBar";
 import FilterButton from "./Filter";
 import { Affiliation, Category, IClub, School } from "@/lib/models/Club";
 import Trie from "./Trie";
+import FollowFilter from "./FollowFilter";
 
 interface SearchControlProps {
   clubs: IClub[];
@@ -24,7 +25,7 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSchools, setSelectedSchools] = useState<string[]>([School.COLLEGE]);
   const [trie, setTrie] = useState<Trie | null>(null);
-  const [showFollowedOnly, setShowFollowedOnly] = useState<string[]>([]);
+  const [showFollowedOnly, setShowFollowedOnly] = useState(false);
 
   // Initialize Trie with club names
   useEffect(() => {
@@ -72,9 +73,7 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
             )
           : true,
       )
-      .filter(
-        (club) => (showFollowedOnly.includes("Followed") ? followedClubs?.includes(club._id) : true), // Followed filter
-      );
+      .filter((club) => (showFollowedOnly ? followedClubs.includes(club._id) : true));
     // .filter((club) => (showFollowedOnly ? followedClubs?.includes(club._id) : true));
 
     const sortedFilteredClubs = filteredClubs.sort((a, b) => a.name.localeCompare(b.name));
@@ -108,12 +107,8 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
         allItems={[...Object.values(Category), ...Object.values(Affiliation)].sort()}
         label="Categories"
       />
-      <FilterButton
-        selectedItems={showFollowedOnly}
-        setSelectedItems={setShowFollowedOnly}
-        allItems={["Followed"]}
-        label="Followed"
-      />
+      <FollowFilter showFollowedOnly={showFollowedOnly} setShowFollowedOnly={setShowFollowedOnly} />
+      
       <ResetButton
         onReset={() => {
           setSearchQuery("");
