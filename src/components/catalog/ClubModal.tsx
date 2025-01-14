@@ -23,6 +23,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
   // const [isFollowing, setIsFollowing] = useState(false);
   const [followers, setFollowers] = useState(club.followers);
   const [errorMessage, setErrorMessage] = useState("");
+  const [followingList, setFollowingList] = useState([]);
   const token = Cookies.get("token");
   let netid = "";
 
@@ -33,6 +34,31 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
       console.error("Failed to decode token:", error);
     }
   }
+
+  useEffect(() => {
+    const fetchFollowingList = async () => {
+      try {
+        const response = await fetch("/api/follow", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ netid }),
+        });
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        setFollowingList(data.followedClubs || []);
+      } catch (error) {
+        console.error("Error fetching following list:", error);
+      }
+    };
+    if (netid != "") {
+      fetchFollowingList();
+    }
+  }, [netid]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -81,9 +107,9 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
     }
   }, [club.leaders, token]);
 
-  const handleFollowersUpdate = (newFollowers: number, newIsFollowing: boolean) => {
+  const handleFollowersUpdate = (newFollowers: number) => {
     setFollowers(newFollowers);
-    setIsFollowing(newIsFollowing);
+    // setIsFollowing(newIsFollowing);
   };
 
   // useEffect(() => {
@@ -197,6 +223,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
                     clubId={club._id}
                     netid={netid}
                     onFollowersUpdate={handleFollowersUpdate}
+                    followingList = {followingList}
                   />
                 </div>
               </div>
