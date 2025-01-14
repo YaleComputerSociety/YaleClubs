@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { IClub } from "@/lib/models/Club";
 import Image from "next/image";
 import { getAdjustedNumMembers } from "@/lib/utils";
-import FollowButton from "./Star.tsx";
+import FollowButton from "./Star";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 

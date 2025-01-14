@@ -39,7 +39,7 @@ const FollowButton: React.FC<FollowButtonProps> = ({ isLoggedIn, clubId, netid, 
       const response = await fetch("/api/follow", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ netid, clubId }),
+        body: JSON.stringify({ netid, clubId, }),
       });
 
       if (response.ok) {
