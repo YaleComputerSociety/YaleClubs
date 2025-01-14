@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { parseString } from "xml2js";
 import jwt from "jsonwebtoken";
+import connectToDatabase from "../../../../lib/mongodb";
+import Users from "../../../../lib/models/Users";
 
 export async function GET(request: Request): Promise<NextResponse> {
   const BASE_URL = process.env.BASE_URL as string;
@@ -59,6 +61,16 @@ export async function GET(request: Request): Promise<NextResponse> {
       const yaliesJSON = await yaliesResponse.json();
       const email = yaliesJSON[0].email;
 
+      await connectToDatabase();
+      const existingUser = await Users.findOne({ netid });
+      if (!existingUser) {
+        console.log(`Creating new user for NetID: ${netid}`);
+        await Users.create({
+          netid,
+        });
+      } else {
+        console.log(`User already exists for NetID: ${netid}`);
+      }
       const token = jwt.sign({ netid, email }, JWT_SECRET, {
         expiresIn: "7d",
       });

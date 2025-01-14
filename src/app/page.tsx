@@ -11,28 +11,60 @@ import { IClub } from "@/lib/models/Club";
 import SearchControl from "@/components/search/SearchControl";
 
 import SurveyBanner from "@/components/Survey";
-import SearchWrapper from "@/components/search/SearchWrapper";
+// import SearchWrapper from "@/components/search/SearchWrapper";
+
+// import axios from "axios";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [clubs, setClubs] = useState<IClub[]>([]);
   const [currentClubs, setCurrentClubs] = useState<IClub[]>([]);
+  const [followedClubs, setFollowedClubs] = useState<string[]>([]);
+  const token = Cookies.get("token");
+  let netid = "";
+
+  if (token) {
+    try {
+      netid = jwtDecode<{ netid: string }>(token).netid;
+    } catch (error) {
+      console.error("Failed to decode token:", error);
+    }
+  }
 
   useEffect(() => {
     const fetchApiMessage = async () => {
       try {
         setIsLoading(true);
         const response = await axios.get<IClub[]>("/api/clubs");
-        // console.log("API message:", response.data);
         setClubs(response.data);
       } catch (error) {
         console.error("Error fetching API message:", error);
       } finally {
-        setTimeout(() => setIsLoading(false), 2); // delay bc setClubs is async
+        setTimeout(() => setIsLoading(false), 2); // delay because setClubs is async
       }
     };
+
     fetchApiMessage();
-  }, []);
+  }, [setFollowedClubs, setClubs, setIsLoading]);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        // get /users&netid
+        const response = await axios.get("/api/users", {
+          params: { netid: netid },
+        });
+
+        setFollowedClubs(response.data.user.followedClubs);
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+    };
+
+    fetchUser();
+  }, [netid]);
 
   return (
     <AuthWrapper>
@@ -43,10 +75,20 @@ export default function Home() {
             <div className="mt-20 md:mt-24"></div>
             <h1 className="text-3xl font-bold text-black">Browse Clubs</h1>
             <h2 className="text-xl mb-4 md:mb-8">Finding Clubs has Never Been Easier.</h2>
-            <SearchWrapper>
-              <SearchControl clubs={clubs} setCurrentClubs={setCurrentClubs} setIsLoading={setIsLoading} />
-            </SearchWrapper>
-            <Catalog clubs={currentClubs} isLoading={isLoading} />
+            {/* <SearchWrapper> */}
+            <SearchControl
+              clubs={clubs}
+              setCurrentClubs={setCurrentClubs}
+              setIsLoading={setIsLoading}
+              followedClubs={followedClubs}
+            />
+            {/* </SearchWrapper> */}
+            <Catalog
+              clubs={currentClubs}
+              isLoading={isLoading}
+              followedClubs={followedClubs}
+              setFollowedClubs={setFollowedClubs}
+            />
             <Footer />
           </div>
         </section>

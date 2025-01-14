@@ -2,18 +2,31 @@ import React, { useState } from "react";
 import ClubCard from "./ClubCard";
 import ClubModal from "./ClubModal";
 import { IClub } from "@/lib/models/Club";
+// import axios from "axios";
+// import Cookies from "js-cookie";
+// import { jwtDecode } from "jwt-decode";
 
 interface CatalogProps {
   clubs: IClub[];
   isLoading: boolean;
+  followedClubs: string[] | []; // Allow null
+  setFollowedClubs: React.Dispatch<React.SetStateAction<string[] | []>>;
 }
 
-const Catalog = ({ clubs, isLoading }: CatalogProps) => {
+const Catalog = ({ clubs, isLoading, followedClubs, setFollowedClubs }: CatalogProps) => {
   const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
 
   const handleCloseModal = () => setSelectedClub(null);
 
-  const renderClubItem = (club: IClub) => <ClubCard key={club._id} club={club} onClick={() => setSelectedClub(club)} />;
+  const renderClubItem = (club: IClub) => (
+    <ClubCard
+      key={club._id}
+      club={club}
+      setFollowedClubs={setFollowedClubs}
+      followedClubs={followedClubs}
+      onClick={() => setSelectedClub(club)}
+    />
+  );
   renderClubItem.displayName = "RenderClubItem";
 
   return (
@@ -28,7 +41,14 @@ const Catalog = ({ clubs, isLoading }: CatalogProps) => {
         <div>
           <div className="grid gap-5 md:gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center">
             {clubs.map(renderClubItem)}
-            {selectedClub && <ClubModal club={selectedClub} onClose={handleCloseModal} />}
+            {selectedClub && (
+              <ClubModal
+                club={selectedClub}
+                onClose={handleCloseModal}
+                setFollowedClubs={setFollowedClubs}
+                followedClubs={followedClubs}
+              />
+            )}
           </div>
         </div>
       )}

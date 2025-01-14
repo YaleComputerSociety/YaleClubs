@@ -1,14 +1,41 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { IClub, RecruitmentStatus } from "@/lib/models/Club";
 import Image from "next/image";
 import { getAdjustedNumMembers } from "@/lib/utils";
+import FollowButton from "./Star";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 type ClubCardProps = {
   club: IClub;
   onClick: () => void;
+  followedClubs: string[];
+  setFollowedClubs: Dispatch<SetStateAction<string[]>>;
 };
 
-const ClubCard = ({ club, onClick }: ClubCardProps) => {
+const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs }: ClubCardProps) => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [netid, setNetid] = useState<string | null>(null);
+
+  const isFollowing = followedClubs.includes(club._id);
+
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode<{ netid: string }>(token);
+        setIsLoggedIn(true);
+        setNetid(decoded.netid);
+      } catch (err) {
+        console.error("Invalid token:", err);
+        setIsLoggedIn(false);
+        setNetid(null);
+      }
+    }
+  }, []);
+
   const isNew = () => {
     if (!club.updatedAt) return false;
     const thirtyDaysAgo = new Date();
@@ -139,6 +166,16 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
             className="rounded-2xl flex-shrink-0 w-16 md:w-[70px] h-16 md:h-[70px]"
             priority
           />
+          <div>
+            <FollowButton
+              isLoggedIn={isLoggedIn}
+              isFollowing={isFollowing}
+              netid={netid || ""}
+              clubId={club._id}
+              followedClubs={followedClubs}
+              setFollowedClubs={setFollowedClubs}
+            />
+          </div>
         </div>
         <div className="text-sm md:text:lg text-gray-800 line-clamp-3">{club.description ?? "No description"}</div>
 
@@ -151,7 +188,6 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
           </div>
         ) : null}
       </div>
-
       {hasApplicationStatus && (
         <div
           className="w-full border border-gray-200 border-t-0 rounded-b-xl overflow-hidden cursor-pointer"

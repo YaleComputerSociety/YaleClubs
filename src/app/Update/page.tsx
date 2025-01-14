@@ -24,6 +24,7 @@ import SchoolDropdown from "@/components/update/SchoolDropdown";
 import { getCookie } from "cookies-next";
 import AffiliationsDropdown from "@/components/update/ClubAffiliation";
 import RecruitmentStatusDropdown from "@/components/update/RecruitmentDropdown";
+import AliasesDropdown from "@/components/update/ClubAliases";
 
 const UpdatePage = () => {
   const searchParams = useSearchParams();
@@ -54,6 +55,7 @@ const UpdatePage = () => {
     recruitmentStatus: RecruitmentStatus.NOSELECTION,
     recruitmentStartDate: undefined,
     recruitmentEndDate: undefined,
+    aliases: [],
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -155,6 +157,7 @@ const UpdatePage = () => {
               recruitmentStatus: specificClub.recruitmentStatus || RecruitmentStatus.NOSELECTION,
               recruitmentStartDate: specificClub.recruitmentStartDate || undefined,
               recruitmentEndDate: specificClub.recruitmentEndDate || undefined,
+              aliases: specificClub.aliases || [],
             };
             setClub(specificClub);
             setFormData(clubInput);
@@ -182,7 +185,8 @@ const UpdatePage = () => {
       | School
       | Intensity
       | RecruitmentStatus
-      | Date,
+      | Date
+      | string[],
   ) => {
     const error = validateInput(field as keyof IClubInput, value !== undefined ? String(value) : "");
     setValidationErrors((prev) => ({ ...prev, [field]: error }));
@@ -307,18 +311,8 @@ const UpdatePage = () => {
                   </label>
                   {validationErrors.subheader && <p className="text-red-500">{validationErrors.subheader}</p>}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Subheader
-                    <input
-                      type="text"
-                      value={formData.subheader ?? ""}
-                      onChange={(e) => handleChange("subheader", e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg p-2"
-                      placeholder="Subheader"
-                    />
-                  </label>
-                  {validationErrors.subheader && <p className="text-red-500">{validationErrors.subheader}</p>}
+                <div className="space-y-0">
+                  <AliasesDropdown selectedAliases={formData.aliases || []} handleChange={handleChange} />
                 </div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Description
@@ -340,7 +334,9 @@ const UpdatePage = () => {
               <div className="space-y-0">
                 <AffiliationsDropdown selectedAffiliations={formData.affiliations || []} handleChange={handleChange} />
               </div>
-              <SchoolDropdown selectedSchool={(formData.school as School) ?? ""} handleChange={handleChange} />
+              <div className="space-y-0">
+                <SchoolDropdown selectedSchool={(formData.school as School) ?? ""} handleChange={handleChange} />
+              </div>
             </div>
 
             {/* Center Section */}

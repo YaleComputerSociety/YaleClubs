@@ -125,6 +125,7 @@ export interface IClubInput {
   recruitmentStatus?: RecruitmentStatus | undefined;
   recruitmentStartDate?: Date | undefined;
   recruitmentEndDate?: Date | undefined;
+  aliases?: string[];
 }
 
 // Use this when fetching a club
@@ -160,6 +161,8 @@ export interface IClub extends Document {
   recruitmentStatus?: RecruitmentStatus;
   recruitmentStartDate?: Date;
   recruitmentEndDate?: Date;
+  followers: number;
+  aliases?: string[];
 }
 
 // Club Schema
@@ -192,6 +195,8 @@ const clubSchema = new Schema<IClub>(
     recruitmentStatus: { type: String, enum: Object.values(RecruitmentStatus) },
     recruitmentStartDate: { type: Date },
     recruitmentEndDate: { type: Date },
+    followers: { type: Number, required: true, default: 0 },
+    aliases: { type: [String], default: [] },
   },
   { timestamps: true },
 );
