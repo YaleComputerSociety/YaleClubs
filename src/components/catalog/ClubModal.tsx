@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { IClub } from "@/lib/models/Club";
 import Board from "./Board";
 import Image from "next/image";
@@ -8,23 +8,25 @@ import ClubModalRightLabel from "./ClubModalRightLabel";
 import Link from "next/link";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
-import FollowButton from "./Star.tsx";
+import FollowButton from "./Star";
 
 type ClubModalProps = {
   club: IClub;
   onClose: () => void;
+  followedClubs: string[];
+  setFollowedClubs: Dispatch<SetStateAction<string[]>>;
 };
 
-const ClubModal = ({ club, onClose }: ClubModalProps) => {
+const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs }: ClubModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const isSm = useMediaQuery({ maxWidth: 640 });
   const isMd = useMediaQuery({ maxWidth: 768 });
   const [canEdit, setCanEdit] = useState(false);
-  // const [isFollowing, setIsFollowing] = useState(false);
-  const [followers, setFollowers] = useState(club.followers);
   const [errorMessage, setErrorMessage] = useState("");
-  const [followingList, setFollowingList] = useState([]);
+  const [followingChanged, setFollowingChanged] = useState(false);
+
   const token = Cookies.get("token");
+  const isFollowing = followedClubs.includes(club._id);
   let netid = "";
 
   if (token) {
@@ -35,30 +37,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
     }
   }
 
-  useEffect(() => {
-    const fetchFollowingList = async () => {
-      try {
-        const response = await fetch("/api/follow", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ netid }),
-        });
-        if (!response.ok) {
-          throw new Error(`Error: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        setFollowingList(data.followedClubs || []);
-      } catch (error) {
-        console.error("Error fetching following list:", error);
-      }
-    };
-    if (netid != "") {
-      fetchFollowingList();
-    }
-  }, [netid]);
+  console.table(club);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -97,6 +76,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
           "francis.fan@yale.edu",
           "grady.yu@yale.edu",
           "lauren.lee.ll2243@yale.edu",
+          "koray.akduman@yale.edu",
         ];
 
         const isBoardMember = club.leaders.some((leader) => leader.email === userEmail);
@@ -106,28 +86,6 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
       }
     }
   }, [club.leaders, token]);
-
-  const handleFollowersUpdate = (newFollowers: number) => {
-    setFollowers(newFollowers);
-    // setIsFollowing(newIsFollowing);
-  };
-
-  // useEffect(() => {
-  //   const fetchFollowStatus = async () => {
-  //     try {
-  //       const response = await fetch(`/api/follow?netid=${netid}&clubId=${club._id}`);
-  //       if (response.ok) {
-  //         const data = await response.json();
-  //         setIsFollowing(data.isFollowing);
-  //         // setFollowers(data.followers || club.followers);
-  //       }
-  //     } catch (error) {
-  //       console.error("Failed to fetch follow status:", error);
-  //     }
-  //   };
-
-  //   if (token) fetchFollowStatus();
-  // }, [netid, club._id, token, club.followers]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -220,10 +178,12 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
                 <div className="mt-4">
                   <FollowButton
                     isLoggedIn={!!token}
+                    isFollowing={isFollowing}
+                    netid={netid || ""}
                     clubId={club._id}
-                    netid={netid}
-                    onFollowersUpdate={handleFollowersUpdate}
-                    followingList = {followingList}
+                    followedClubs={followedClubs}
+                    setFollowedClubs={setFollowedClubs}
+                    setFollowingChanged={setFollowingChanged}
                   />
                 </div>
               </div>
@@ -289,7 +249,16 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
                   link={club.calendarLink}
                 />
                 <ClubModalRightLabel header="Meeting" content={club.meeting} />
-                <ClubModalRightLabel header="Followers" content={followers ? followers : "0"} />
+                <ClubModalRightLabel
+                  header="Followers"
+                  content={
+                    club.followers
+                      ? ((club.followers + (followingChanged && isFollowing ? 1 : 0)) as unknown as string)
+                      : followingChanged && isFollowing
+                        ? "1"
+                        : "0"
+                  }
+                />
               </div>
             </div>
           </div>

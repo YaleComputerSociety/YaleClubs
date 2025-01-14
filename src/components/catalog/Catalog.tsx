@@ -3,6 +3,8 @@ import ClubCard from "./ClubCard";
 import ClubModal from "./ClubModal";
 import { IClub } from "@/lib/models/Club";
 import axios from "axios";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 interface CatalogProps {
   clubs: IClub[];
@@ -13,11 +15,26 @@ const Catalog = ({ clubs, isLoading }: CatalogProps) => {
   const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
   const [followedClubs, setFollowedClubs] = useState<string[]>([]);
 
+  const token = Cookies.get("token");
+  let netid = "";
+
+  if (token) {
+    try {
+      netid = jwtDecode<{ netid: string }>(token).netid;
+    } catch (error) {
+      console.error("Failed to decode token:", error);
+    }
+  }
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get<{ followedClubs: string[] }>("/users");
-        setFollowedClubs(response.data.followedClubs);
+        // get /users&netid
+        const response = await axios.get("/api/users", {
+          params: { netid: netid },
+        });
+
+        setFollowedClubs(response.data.user.followedClubs);
       } catch (error) {
         console.error("Failed to fetch user data:", error);
       }
@@ -51,7 +68,14 @@ const Catalog = ({ clubs, isLoading }: CatalogProps) => {
         <div>
           <div className="grid gap-5 md:gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center">
             {clubs.map(renderClubItem)}
-            {selectedClub && <ClubModal club={selectedClub} onClose={handleCloseModal} />}
+            {selectedClub && (
+              <ClubModal
+                club={selectedClub}
+                onClose={handleCloseModal}
+                setFollowedClubs={setFollowedClubs}
+                followedClubs={followedClubs}
+              />
+            )}
           </div>
         </div>
       )}

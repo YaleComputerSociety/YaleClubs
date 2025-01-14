@@ -74,6 +74,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs }: ClubCardPr
             clubId={club._id}
             followedClubs={followedClubs}
             setFollowedClubs={setFollowedClubs}
+            setFollowingChanged={() => {}}
           />
         </div>
       </div>

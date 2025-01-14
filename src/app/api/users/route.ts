@@ -14,6 +14,7 @@ export async function GET(req: Request): Promise<NextResponse> {
     await connectToDatabase();
 
     const user = await User.findOne({ netid });
+    console.log(user);
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
