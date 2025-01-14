@@ -61,6 +61,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
           "francis.fan@yale.edu",
           "grady.yu@yale.edu",
           "lauren.lee.ll2243@yale.edu",
+          "koray.akduman@yale.edu",
         ];
 
         const isBoardMember = club.leaders.some((leader) => leader.email === userEmail);
