@@ -4,7 +4,7 @@ type FollowButtonProps = {
   isLoggedIn: boolean;
   clubId: string;
   netid: string;
-  onFollowersUpdate?: (newFollowers: number) => void; 
+  onFollowersUpdate?: (newFollowers: number) => void;
 };
 
 const FollowButton: React.FC<FollowButtonProps> = ({ isLoggedIn, clubId, netid, onFollowersUpdate }) => {
@@ -45,7 +45,7 @@ const FollowButton: React.FC<FollowButtonProps> = ({ isLoggedIn, clubId, netid, 
         const data = await response.json();
         setIsStarred(data.isFollowing);
         if (onFollowersUpdate) {
-          onFollowersUpdate(data.followers); 
+          onFollowersUpdate(data.followers);
         }
       }
     } catch (error) {
