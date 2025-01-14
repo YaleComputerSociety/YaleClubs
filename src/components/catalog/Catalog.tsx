@@ -10,6 +10,9 @@ interface CatalogProps {
 
 const Catalog = ({ clubs, isLoading }: CatalogProps) => {
   const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
+  const [followedClubs, setFollowedClubs] = useState<string[]>([]);
+
+  
 
   const handleCloseModal = () => setSelectedClub(null);
 

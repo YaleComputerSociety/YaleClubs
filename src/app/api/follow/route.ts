@@ -117,30 +117,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
-
-export async function GET(req: Request): Promise<NextResponse> {
-  try {
-    const url = new URL(req.url);
-    const netid = url.searchParams.get("netid");
-    const clubId = url.searchParams.get("clubId");
-
-    if (!netid || !clubId || !mongoose.Types.ObjectId.isValid(clubId)) {
-      return NextResponse.json({ error: "Invalid NetID or Club ID" }, { status: 400 });
-    }
-
-    await connectToDatabase();
-
-    const user = await User.findOne({ netid });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    const isFollowing = user.followedClubs.includes(clubId);
-
-    return NextResponse.json({ isFollowing }, { status: 200 });
-  } catch (error) {
-    console.error("Error checking follow status:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-  }
-}
