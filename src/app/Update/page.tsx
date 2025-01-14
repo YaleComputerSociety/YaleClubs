@@ -14,6 +14,7 @@ import SchoolDropdown from "@/components/update/SchoolDropdown";
 
 import { getCookie } from "cookies-next";
 import AffiliationsDropdown from "@/components/update/ClubAffiliation";
+import AliasesDropdown from "@/components/update/ClubAliases";
 
 const UpdatePage = () => {
   const searchParams = useSearchParams();
@@ -39,6 +40,7 @@ const UpdatePage = () => {
     intensity: Intensity.CASUAL,
     howToJoin: "",
     school: School.COLLEGE,
+    aliases: [],
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -129,6 +131,7 @@ const UpdatePage = () => {
               intensity: Intensity[specificClub.intensity as keyof typeof Intensity] || Intensity.CASUAL,
               howToJoin: specificClub.howToJoin || "",
               school: specificClub.school || School.COLLEGE,
+              aliases: specificClub.aliases || [],
             };
             setClub(specificClub);
             setFormData(clubInput);
@@ -146,7 +149,7 @@ const UpdatePage = () => {
 
   const handleChange = (
     field: keyof IClubInput,
-    value: string | number | ClubLeader[] | Affiliation[] | undefined | Category[] | School | Intensity,
+    value: string | number | ClubLeader[] | Affiliation[] | undefined | Category[] | School | Intensity | string[],
   ) => {
     const error = validateInput(field as keyof IClubInput, value !== undefined ? String(value) : "");
     setValidationErrors((prev) => ({ ...prev, [field]: error }));
@@ -292,6 +295,9 @@ const UpdatePage = () => {
                   ></textarea>
                 </label>
                 {validationErrors.description && <p className="text-red-500">{validationErrors.description}</p>}
+              </div>
+              <div className="space-y-0">
+                <AliasesDropdown selectedAliases={formData.aliases || []} handleChange={handleChange} />
               </div>
               <div className="space-y-0">
                 <CategoriesDropdown
