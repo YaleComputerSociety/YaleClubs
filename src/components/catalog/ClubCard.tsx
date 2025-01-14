@@ -1,21 +1,25 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { IClub } from "@/lib/models/Club";
 import Image from "next/image";
 import { getAdjustedNumMembers } from "@/lib/utils";
-import FollowButton from "./Star.tsx";
+import FollowButton from "./Star";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 
 type ClubCardProps = {
   club: IClub;
   onClick: () => void;
+  followedClubs: string[];
+  setFollowedClubs: Dispatch<SetStateAction<string[]>>;
 };
 
-const ClubCard = ({ club, onClick }: ClubCardProps) => {
+const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs }: ClubCardProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [netid, setNetid] = useState<string | null>(null);
+
+  const isFollowing = followedClubs.includes(club._id);
 
   useEffect(() => {
     const token = Cookies.get("token");
@@ -63,7 +67,14 @@ const ClubCard = ({ club, onClick }: ClubCardProps) => {
           priority
         />
         <div>
-          <FollowButton isLoggedIn={isLoggedIn} clubId={club._id} netid={netid || ""} />
+          <FollowButton
+            isLoggedIn={isLoggedIn}
+            isFollowing={isFollowing}
+            netid={netid || ""}
+            clubId={club._id}
+            followedClubs={followedClubs}
+            setFollowedClubs={setFollowedClubs}
+          />
         </div>
       </div>
       <div className="text-sm md:text:lg text-gray-800 line-clamp-3">{club.description ?? "No description"}</div>

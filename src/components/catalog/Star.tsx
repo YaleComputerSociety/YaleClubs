@@ -1,31 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 
 type FollowButtonProps = {
   isLoggedIn: boolean;
-  clubId: string;
+  isFollowing: boolean;
   netid: string;
-  onFollowersUpdate?: (newFollowers: number) => void;
+  clubId: string;
+  followedClubs: string[];
+  setFollowedClubs: Dispatch<SetStateAction<string[]>>;
 };
 
-const FollowButton: React.FC<FollowButtonProps> = ({ isLoggedIn, clubId, netid, onFollowersUpdate }) => {
-  const [isStarred, setIsStarred] = useState(false);
-
-  useEffect(() => {
-    if (!isLoggedIn) return;
-
-    const fetchFollowStatus = async () => {
-      try {
-        const response = await fetch(`/api/follow?netid=${netid}&clubId=${clubId}`);
-        const data = await response.json();
-        setIsStarred(data.isFollowing);
-      } catch (error) {
-        console.error("Error fetching follow status:", error);
-      }
-    };
-
-    fetchFollowStatus();
-  }, [isLoggedIn, netid, clubId]);
-
+const FollowButton: React.FC<FollowButtonProps> = ({
+  isLoggedIn,
+  isFollowing,
+  netid,
+  clubId,
+  followedClubs,
+  setFollowedClubs,
+}) => {
   const toggleStar = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
 
@@ -35,19 +26,16 @@ const FollowButton: React.FC<FollowButtonProps> = ({ isLoggedIn, clubId, netid, 
     }
 
     try {
-      const response = await fetch("/api/follow", {
+      const updatedClubs = isFollowing
+        ? followedClubs.filter((id: string) => id !== clubId)
+        : [...followedClubs, clubId];
+      setFollowedClubs(updatedClubs);
+
+      await fetch("/api/follow", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ netid, clubId }),
+        body: JSON.stringify({ netid, clubId, isFollowing: !isFollowing }),
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        setIsStarred(data.isFollowing);
-        if (onFollowersUpdate) {
-          onFollowersUpdate(data.followers);
-        }
-      }
     } catch (error) {
       console.error("Error toggling follow status:", error);
     }
@@ -56,9 +44,9 @@ const FollowButton: React.FC<FollowButtonProps> = ({ isLoggedIn, clubId, netid, 
   return (
     <button
       onClick={toggleStar}
-      className={`text-2xl focus:outline-none ${isStarred ? "text-yellow-500" : "text-gray-400"}`}
+      className={`text-2xl focus:outline-none ${isFollowing ? "text-yellow-500" : "text-gray-400"}`}
     >
-      {isStarred ? "⭐" : "☆"}
+      {isFollowing ? "⭐" : "☆"}
     </button>
   );
 };

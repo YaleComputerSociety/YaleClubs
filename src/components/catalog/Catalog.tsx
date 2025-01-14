@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ClubCard from "./ClubCard";
 import ClubModal from "./ClubModal";
 import { IClub } from "@/lib/models/Club";
+import axios from "axios";
 
 interface CatalogProps {
   clubs: IClub[];
@@ -12,11 +13,30 @@ const Catalog = ({ clubs, isLoading }: CatalogProps) => {
   const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
   const [followedClubs, setFollowedClubs] = useState<string[]>([]);
 
-  
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get<{ followedClubs: string[] }>("/users");
+        setFollowedClubs(response.data.followedClubs);
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const handleCloseModal = () => setSelectedClub(null);
 
-  const renderClubItem = (club: IClub) => <ClubCard key={club._id} club={club} onClick={() => setSelectedClub(club)} />;
+  const renderClubItem = (club: IClub) => (
+    <ClubCard
+      key={club._id}
+      club={club}
+      setFollowedClubs={setFollowedClubs}
+      followedClubs={followedClubs}
+      onClick={() => setSelectedClub(club)}
+    />
+  );
   renderClubItem.displayName = "RenderClubItem";
 
   return (
