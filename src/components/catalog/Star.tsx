@@ -5,9 +5,10 @@ type FollowButtonProps = {
   clubId: string;
   netid: string;
   onFollowersUpdate?: (newFollowers: number) => void;
+  followingList: string[];
 };
 
-const FollowButton: React.FC<FollowButtonProps> = ({ isLoggedIn, clubId, netid, onFollowersUpdate }) => {
+const FollowButton: React.FC<FollowButtonProps> = ({ isLoggedIn, clubId, netid, onFollowersUpdate, followingList }) => {
   const [isStarred, setIsStarred] = useState(false);
 
   useEffect(() => {
