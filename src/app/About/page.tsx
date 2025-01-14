@@ -93,6 +93,30 @@ const teamMembers = [
     linkedin: "https://www.linkedin.com/in/francis-fan-51293a236/",
     github: "https://github.com/francisfan0",
   },
+  {
+    name: "Ethan Mathieu",
+    role: "Developer",
+    headshot: "/assets/people/ethan.jpg",
+    website: "https://ethanmathieu.com/",
+    linkedin: "https://www.linkedin.com/in/ethan-mathieu/",
+    github: "https://github.com/emath12",
+  },
+  {
+    name: "Marie Bong",
+    role: "Marketing",
+    // headshot: "/assets/people/ethanmathieu.jpg",
+    // website: "https://github.com/emath12",
+    // linkedin: "linkedin.com/in/ethan-mathieu",
+    // github: "ethanmathieu.com ",
+  },
+  {
+    name: "Michael Chu",
+    role: "Marketing",
+    // headshot: "/assets/people/ethanmathieu.jpg",
+    // website: "https://github.com/emath12",
+    // linkedin: "linkedin.com/in/ethan-mathieu",
+    // github: "ethanmathieu.com ",
+  },
 ];
 
 export default AboutPage;
