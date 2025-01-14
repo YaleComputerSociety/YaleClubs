@@ -39,8 +39,8 @@ const AliasesDropdown: React.FC<AliasesDropdownProps> = ({ selectedAliases, hand
       setError("Alias must be under 50 characters.");
       return;
     }
-    if (selectedAliases.length >= 5) {
-      setError("You can only add up to 5 aliases.");
+    if (selectedAliases.length >= 2) {
+      setError("You can only add up to 2 aliases.");
       return;
     }
     if (selectedAliases.includes(trimmedAlias)) {
