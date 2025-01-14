@@ -28,10 +28,10 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading }: SearchControlPr
   useEffect(() => {
     setIsLoading(true);
     const newTrie = new Trie();
-    clubs.forEach((club) => newTrie.insert(club.name, ""));
     clubs.forEach((club) => {
+      newTrie.insert(club.name, "");
       if (club.aliases) {
-        club.aliases.forEach((alias) => newTrie.insert(alias, club.name));
+        club.aliases.forEach((alias) => newTrie.insert(alias, ""));
       }
     });
     setTrie(newTrie);
