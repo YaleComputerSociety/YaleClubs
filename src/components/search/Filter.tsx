@@ -100,7 +100,7 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label }: FilterProp
 
       {/* Dropdown */}
       {showDropdown && (
-        <div className={`absolute mt-2 w-96 bg-white border rounded shadow-lg z-10`}>
+        <div className="absolute mt-2 sm:w-full sm:left-0 lg:w-96 bg-white border rounded shadow-lg z-10">
           {/* Tags Section (Conditional) */}
           {selectedItems.length > 0 && (
             <div className="p-2 border-b flex items-center">
