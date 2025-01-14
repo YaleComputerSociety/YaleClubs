@@ -21,6 +21,7 @@ const admin_emails = [
   "francis.fan@yale.edu",
   "grady.yu@yale.edu",
   "lauren.lee.ll2243@yale.edu",
+  "koray.akduman@yale.edu",
 ];
 
 // POST request
