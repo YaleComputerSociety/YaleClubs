@@ -20,7 +20,7 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
   const isSm = useMediaQuery({ maxWidth: 640 });
   const isMd = useMediaQuery({ maxWidth: 768 });
   const [canEdit, setCanEdit] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false);
+  // const [isFollowing, setIsFollowing] = useState(false);
   const [followers, setFollowers] = useState(club.followers);
   const [errorMessage, setErrorMessage] = useState("");
   const token = Cookies.get("token");
@@ -86,22 +86,22 @@ const ClubModal = ({ club, onClose }: ClubModalProps) => {
     setIsFollowing(newIsFollowing);
   };
 
-  useEffect(() => {
-    const fetchFollowStatus = async () => {
-      try {
-        const response = await fetch(`/api/follow?netid=${netid}&clubId=${club._id}`);
-        if (response.ok) {
-          const data = await response.json();
-          setIsFollowing(data.isFollowing);
-          setFollowers(data.followers || club.followers);
-        }
-      } catch (error) {
-        console.error("Failed to fetch follow status:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchFollowStatus = async () => {
+  //     try {
+  //       const response = await fetch(`/api/follow?netid=${netid}&clubId=${club._id}`);
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         setIsFollowing(data.isFollowing);
+  //         // setFollowers(data.followers || club.followers);
+  //       }
+  //     } catch (error) {
+  //       console.error("Failed to fetch follow status:", error);
+  //     }
+  //   };
 
-    if (token) fetchFollowStatus();
-  }, [netid, club._id, token, club.followers]);
+  //   if (token) fetchFollowStatus();
+  // }, [netid, club._id, token, club.followers]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
