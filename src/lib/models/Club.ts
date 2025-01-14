@@ -171,7 +171,7 @@ const clubSchema = new Schema<IClub>(
     howToJoin: { type: String },
     scraped: { type: Boolean },
     inactive: { type: Boolean },
-    followers: { type: Number, default: 0 }
+    followers: { type: Number, required: true, default: 0 },
   },
   { timestamps: true },
 );
