@@ -44,7 +44,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs }: ClubModal
     }
   }
 
-  console.table(club);
+  // console.table(club);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

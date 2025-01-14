@@ -37,17 +37,23 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
 
     clubs.forEach((club) => {
       // Insert the club name
-      const clubNameLower = club.name.toLowerCase().trim();
-      newTrie.insert(clubNameLower, "");
-      mapping[clubNameLower] = club.name;
+      if (typeof club.name === "string") {
+        const clubNameLower = club.name.toLowerCase().trim();
+        newTrie.insert(clubNameLower, "");
+        mapping[clubNameLower] = club.name;
+      }
       // Insert aliases, if any
-      if (club.aliases) {
-        club.aliases.forEach((alias) => {
-          const aliasLower = alias.toLowerCase().trim();
-          newTrie.insert(aliasLower, "");
-          // Map the alias to the club's actual name
-          mapping[aliasLower] = club.name;
-        });
+      if (Array.isArray(club.aliases)) {
+        if (club.aliases) {
+          club.aliases.forEach((alias) => {
+            if (typeof alias === "string") {
+              const aliasLower = alias.toLowerCase().trim();
+              newTrie.insert(aliasLower, "");
+              // Map the alias to the club's actual name
+              mapping[aliasLower] = club.name;
+            }
+          });
+        }
       }
     });
 
@@ -76,10 +82,9 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
 
       // Remove any undefined/null, then map each search key back to the club name
       const matchingClubNames = matchingKeys
-        .filter((key) => key !== undefined && key !== null)
-        .map((key) => searchKeyToClubName[key.toLowerCase().trim()])
-        // Deduplicate
-        .filter((value, index, self) => self.indexOf(value) === index)
+        .filter((key) => typeof key === "string" && key.trim() !== "") // Ensure key is a valid string
+        .map((key) => searchKeyToClubName[key.toLowerCase().trim()]) // Map to club name
+        .filter((value, index, self) => value && self.indexOf(value) === index) // Deduplicate and exclude undefined
         .map((name) => name.toLowerCase().trim());
 
       filteredBySearch = clubs.filter((club) => matchingClubNames.includes(club.name.toLowerCase().trim()));
