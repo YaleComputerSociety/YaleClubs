@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ClubCard from "./ClubCard";
 import ClubModal from "./ClubModal";
 import { IClub } from "@/lib/models/Club";
@@ -13,8 +13,20 @@ interface CatalogProps {
 const Catalog = ({ clubs, isLoading, followedClubs, setFollowedClubs }: CatalogProps) => {
   const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
   const [visibleClubs, setVisibleClubs] = useState(50); // Initial number of clubs to show
+  const firstRef = useRef(true);
 
   const handleCloseModal = () => setSelectedClub(null);
+
+  const initialFollowedClubsRef = useRef<string[]>([]);
+
+  useEffect(() => {
+    if (followedClubs && firstRef.current) {
+      initialFollowedClubsRef.current = followedClubs;
+      firstRef.current = false;
+    }
+  }, [followedClubs]);
+
+  const initialFollowedClubs = initialFollowedClubsRef.current;
 
   const renderClubItem = (club: IClub) => (
     <ClubCard
@@ -23,6 +35,7 @@ const Catalog = ({ clubs, isLoading, followedClubs, setFollowedClubs }: CatalogP
       setFollowedClubs={setFollowedClubs}
       followedClubs={followedClubs}
       onClick={() => setSelectedClub(club)}
+      initialFollowing={initialFollowedClubs.includes(club._id)}
     />
   );
 
@@ -57,6 +70,7 @@ const Catalog = ({ clubs, isLoading, followedClubs, setFollowedClubs }: CatalogP
                 onClose={handleCloseModal}
                 setFollowedClubs={setFollowedClubs}
                 followedClubs={followedClubs}
+                initialFollowing={initialFollowedClubs.includes(selectedClub._id)}
               />
             )}
           </div>

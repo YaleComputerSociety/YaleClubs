@@ -12,15 +12,14 @@ type ClubCardProps = {
   onClick: () => void;
   followedClubs: string[];
   setFollowedClubs: Dispatch<SetStateAction<string[]>>;
+  initialFollowing: boolean;
 };
 
-const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs }: ClubCardProps) => {
+const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollowing }: ClubCardProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [netid, setNetid] = useState<string | null>(null);
 
   const isFollowing = followedClubs.includes(club._id);
-  const initialFollowingRef = React.useRef(followedClubs.includes(club._id));
-  const initialFollowing = initialFollowingRef.current;
 
   const adjustedFollowers = club.followers
     ? String(club.followers + (isFollowing === initialFollowing ? 0 : isFollowing ? 1 : -1))

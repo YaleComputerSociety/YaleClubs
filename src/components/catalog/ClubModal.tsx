@@ -15,9 +15,10 @@ type ClubModalProps = {
   onClose: () => void;
   followedClubs: string[];
   setFollowedClubs: Dispatch<SetStateAction<string[]>>;
+  initialFollowing: boolean;
 };
 
-const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs }: ClubModalProps) => {
+const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFollowing }: ClubModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const isSm = useMediaQuery({ maxWidth: 640 });
   const isMd = useMediaQuery({ maxWidth: 768 });
@@ -28,8 +29,6 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs }: ClubModal
 
   const token = Cookies.get("token");
   const isFollowing = followedClubs.includes(club._id);
-  const initialFollowingRef = React.useRef(followedClubs.includes(club._id));
-  const initialFollowing = initialFollowingRef.current;
 
   const adjustedFollowers = club.followers
     ? String(club.followers + (isFollowing === initialFollowing ? 0 : isFollowing ? 1 : -1))
