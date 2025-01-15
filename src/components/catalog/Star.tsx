@@ -21,7 +21,7 @@ const FollowButton: React.FC<FollowButtonProps> = ({
     e.stopPropagation();
 
     if (!isLoggedIn) {
-      alert("Please log in to follow this club.");
+      alert("Log in to follow clubs.");
       return;
     }
 

@@ -12,13 +12,13 @@ interface SearchControlProps {
   followedClubs: string[];
 }
 
-const ResetButton = ({ onReset }: { onReset: () => void }) => {
-  return (
-    <button onClick={onReset} className="bg-[#f66] text-white px-4 h-10 rounded flex items-center justify-center">
-      Reset
-    </button>
-  );
-};
+// const ResetButton = ({ onReset }: { onReset: () => void }) => {
+//   return (
+//     <button onClick={onReset} className="bg-[#f66] text-white px-4 h-10 rounded flex items-center justify-center">
+//       Reset
+//     </button>
+//   );
+// };
 
 const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: SearchControlProps) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -139,14 +139,14 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
         />
         <FollowFilter showFollowedOnly={showFollowedOnly} setShowFollowedOnly={setShowFollowedOnly} />
       </div>
-      <ResetButton
+      {/* <ResetButton
         onReset={() => {
           setSearchQuery("");
           setSelectedCategories([]);
           setSelectedSchools([]);
           setShowFollowedOnly(false);
         }}
-      />
+      /> */}
     </div>
   );
 };
