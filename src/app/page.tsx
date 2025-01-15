@@ -59,7 +59,9 @@ export default function Home() {
 
         setFollowedClubs(response.data.user.followedClubs);
       } catch (error) {
-        console.error("Failed to fetch user data:", error);
+        if (axios.isAxiosError(error) && error.response?.status === 500) {
+          console.error("Server error:", error);
+        }
       }
     };
 
