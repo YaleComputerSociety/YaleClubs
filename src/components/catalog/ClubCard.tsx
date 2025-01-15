@@ -158,23 +158,28 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs }: ClubCardPr
               ))}
             </div>
           </div>
-          <Image
-            src={club.logo && club.logo.trim() !== "" ? club.logo : "/assets/default-logo.png"}
-            alt="Club Logo"
-            width={100}
-            height={100}
-            className="rounded-2xl flex-shrink-0 w-16 md:w-[70px] h-16 md:h-[70px]"
-            priority
-          />
           <div>
-            <FollowButton
-              isLoggedIn={isLoggedIn}
-              isFollowing={isFollowing}
-              netid={netid || ""}
-              clubId={club._id}
-              followedClubs={followedClubs}
-              setFollowedClubs={setFollowedClubs}
+            <Image
+              src={club.logo && club.logo.trim() !== "" ? club.logo : "/assets/default-logo.png"}
+              alt="Club Logo"
+              width={100}
+              height={100}
+              className="rounded-2xl flex-shrink-0 w-16 md:w-[70px] h-16 md:h-[70px]"
+              priority
             />
+            <div className="flex flex-col items-center">
+              <FollowButton
+                isLoggedIn={isLoggedIn}
+                isFollowing={isFollowing}
+                netid={netid || ""}
+                clubId={club._id}
+                followedClubs={followedClubs}
+                setFollowedClubs={setFollowedClubs}
+              />
+              <div className="text-sm text-gray-500">
+                {club.followers} follower{club.followers == 1 ? "" : "s"}{" "}
+              </div>
+            </div>
           </div>
         </div>
         <div className="text-sm md:text:lg text-gray-800 line-clamp-3">{club.description ?? "No description"}</div>
