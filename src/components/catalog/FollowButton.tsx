@@ -44,7 +44,7 @@ const FollowButton: React.FC<FollowButtonProps> = ({
   return (
     <button
       onClick={toggleStar}
-      className={`mr-1 py-1 rounded-lg text-md font-semibold focus:outline-none text-blue-400 duration-200 hover:scale-110`}
+      className={`mr-1 py-1 rounded-lg text-md font-semibold focus:outline-none text-blue-400 transition-transform duration-200 hover:scale-110 ${isFollowing ? "text-sm md:text-base" : ""}`}
     >
       {isFollowing ? "Following" : "Follow"}
     </button>

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { IClub, RecruitmentStatus } from "@/lib/models/Club";
 import Image from "next/image";
-import FollowButton from "./Star";
+import FollowButton from "./FollowButton";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 
@@ -167,7 +167,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
               {club.description ?? "No description"}
             </div>
           </div>
-          <div>
+          <div className="flex flex-col items-center">
             <Image
               src={club.logo && club.logo.trim() !== "" ? club.logo : "/assets/default-logo.png"}
               alt="Club Logo"

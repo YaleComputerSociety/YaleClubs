@@ -8,7 +8,7 @@ import ClubModalRightLabel from "./ClubModalRightLabel";
 import Link from "next/link";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
-import FollowButton from "./Star";
+import FollowButton from "./FollowButton";
 
 type ClubModalProps = {
   club: IClub;
@@ -129,7 +129,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
             alt="Club Logo"
             width={100}
             height={100}
-            className={`${club.logo ? "rounded-2xl" : ""} flex-shrink-0 border-2 border-white relative -top-[50px] mx-auto`}
+            className={`${club.logo ? "rounded-2xl" : ""} flex-shrink-0 relative -top-[50px] mx-auto`}
           />
         )}
         {!isSm ? (
