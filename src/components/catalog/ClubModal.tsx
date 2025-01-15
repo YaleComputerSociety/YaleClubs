@@ -23,6 +23,8 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs }: ClubModal
   const isMd = useMediaQuery({ maxWidth: 768 });
   const [canEdit, setCanEdit] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [netid, setNetid] = useState<string | null>(null);
 
   const token = Cookies.get("token");
   const isFollowing = followedClubs.includes(club._id);
@@ -34,15 +36,26 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs }: ClubModal
     return isFollowing === initialFollowing ? 0 : isFollowing ? 1 : -1;
   };
 
-  let netid = "";
+  const adjustedFollowers = club.followers
+    ? String(club.followers + calculateFollowerAdjustment(isFollowing, initialFollowing))
+    : isFollowing
+      ? "1"
+      : "0";
 
-  if (token) {
-    try {
-      netid = jwtDecode<{ netid: string }>(token).netid;
-    } catch (error) {
-      console.error("Failed to decode token:", error);
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode<{ netid: string }>(token);
+        setIsLoggedIn(true);
+        setNetid(decoded.netid);
+      } catch (err) {
+        console.error("Invalid token:", err);
+        setIsLoggedIn(false);
+        setNetid(null);
+      }
     }
-  }
+  }, []);
 
   // console.table(club);
 
@@ -179,12 +192,16 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs }: ClubModal
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex flex-col md:w-3/5">
               <div
-                className={`text-center md:text-left ${club.name.length > 100 ? "text-xl md:text-2xl" : "text-2xl md:text-3xl"} font-bold`}
+                className={`text-center md:text-left ${club.name.length > 100 ? "text-xl md:text-2xl" : "text-2xl md:text-2xl"} font-bold`}
               >
                 {club.name}
-                <div className="mt-4">
+                <div className="flex flex-row items-center text-base gap-2 mt-1">
+                  <div className="text-gray-500">
+                    {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}
+                  </div>
+                  •
                   <FollowButton
-                    isLoggedIn={!!token}
+                    isLoggedIn={isLoggedIn}
                     isFollowing={isFollowing}
                     netid={netid || ""}
                     clubId={club._id}
@@ -255,16 +272,6 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs }: ClubModal
                   link={club.calendarLink}
                 />
                 <ClubModalRightLabel header="Meeting" content={club.meeting} />
-                <ClubModalRightLabel
-                  header="Followers"
-                  content={
-                    club.followers
-                      ? String(club.followers + calculateFollowerAdjustment(isFollowing, initialFollowing))
-                      : isFollowing
-                        ? "1"
-                        : "0"
-                  }
-                />
               </div>
             </div>
           </div>
