@@ -21,7 +21,7 @@ const FollowButton: React.FC<FollowButtonProps> = ({
     e.stopPropagation();
 
     if (!isLoggedIn) {
-      alert("Please log in to follow this club.");
+      alert("Log in to follow clubs.");
       return;
     }
 
@@ -44,9 +44,9 @@ const FollowButton: React.FC<FollowButtonProps> = ({
   return (
     <button
       onClick={toggleStar}
-      className={`text-2xl focus:outline-none ${isFollowing ? "text-yellow-500" : "text-gray-400"}`}
+      className={`mr-1 py-1 rounded-lg text-md font-semibold focus:outline-none text-blue-400 transition-transform duration-200 hover:scale-110 ${isFollowing ? "text-sm md:text-base" : ""}`}
     >
-      {isFollowing ? "⭐" : "☆"}
+      {isFollowing ? "Following" : "Follow"}
     </button>
   );
 };

@@ -64,7 +64,6 @@ export class Trie {
     }
 
     allWords.forEach((word: string) => {
-      console.log("beaver");
       const subwords = word.toLowerCase().split(/\s+/);
       subwords.forEach((subword) => this.insert(subword, word));
     });

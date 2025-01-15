@@ -194,7 +194,6 @@ const UpdatePage = () => {
   };
 
   const handleSave = () => {
-    console.log("Saving form data:", formData);
     const errors = Object.keys(formData).reduce(
       (acc, field) => {
         const value = formData[field as keyof IClubInput];

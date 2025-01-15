@@ -8,41 +8,48 @@ import ClubModalRightLabel from "./ClubModalRightLabel";
 import Link from "next/link";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
-import FollowButton from "./Star";
+import FollowButton from "./FollowButton";
 
 type ClubModalProps = {
   club: IClub;
   onClose: () => void;
   followedClubs: string[];
   setFollowedClubs: Dispatch<SetStateAction<string[]>>;
+  initialFollowing: boolean;
 };
 
-const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs }: ClubModalProps) => {
+const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFollowing }: ClubModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const isSm = useMediaQuery({ maxWidth: 640 });
   const isMd = useMediaQuery({ maxWidth: 768 });
   const [canEdit, setCanEdit] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [netid, setNetid] = useState<string | null>(null);
 
   const token = Cookies.get("token");
   const isFollowing = followedClubs.includes(club._id);
-  const initialFollowingRef = React.useRef(followedClubs.includes(club._id));
-  const initialFollowing = initialFollowingRef.current;
 
-  // whether or not to add/subtract a follower based on the individual's recent follow status
-  const calculateFollowerAdjustment = (isFollowing: boolean, initialFollowing: boolean) => {
-    return isFollowing === initialFollowing ? 0 : isFollowing ? 1 : -1;
-  };
+  const adjustedFollowers = club.followers
+    ? String(club.followers + (isFollowing === initialFollowing ? 0 : isFollowing ? 1 : -1))
+    : isFollowing
+      ? "1"
+      : "0";
 
-  let netid = "";
-
-  if (token) {
-    try {
-      netid = jwtDecode<{ netid: string }>(token).netid;
-    } catch (error) {
-      console.error("Failed to decode token:", error);
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode<{ netid: string }>(token);
+        setIsLoggedIn(true);
+        setNetid(decoded.netid);
+      } catch (err) {
+        console.error("Invalid token:", err);
+        setIsLoggedIn(false);
+        setNetid(null);
+      }
     }
-  }
+  }, []);
 
   // console.table(club);
 
@@ -122,7 +129,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs }: ClubModal
             alt="Club Logo"
             width={100}
             height={100}
-            className={`${club.logo ? "rounded-2xl" : ""} flex-shrink-0 border-2 border-white relative -top-[50px] mx-auto`}
+            className={`${club.logo ? "rounded-2xl" : ""} flex-shrink-0 relative -top-[50px] mx-auto`}
           />
         )}
         {!isSm ? (
@@ -179,12 +186,16 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs }: ClubModal
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex flex-col md:w-3/5">
               <div
-                className={`text-center md:text-left ${club.name.length > 100 ? "text-xl md:text-2xl" : "text-2xl md:text-3xl"} font-bold`}
+                className={`text-center md:text-left ${club.name.length > 100 ? "text-xl md:text-2xl" : "text-2xl md:text-2xl"} font-bold`}
               >
                 {club.name}
-                <div className="mt-4">
+                <div className="flex flex-row items-center text-base gap-2 mt-1">
+                  <div className="text-gray-500">
+                    {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}
+                  </div>
+                  •
                   <FollowButton
-                    isLoggedIn={!!token}
+                    isLoggedIn={isLoggedIn}
                     isFollowing={isFollowing}
                     netid={netid || ""}
                     clubId={club._id}
@@ -255,16 +266,6 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs }: ClubModal
                   link={club.calendarLink}
                 />
                 <ClubModalRightLabel header="Meeting" content={club.meeting} />
-                <ClubModalRightLabel
-                  header="Followers"
-                  content={
-                    club.followers
-                      ? String(club.followers + calculateFollowerAdjustment(isFollowing, initialFollowing))
-                      : isFollowing
-                        ? "1"
-                        : "0"
-                  }
-                />
               </div>
             </div>
           </div>

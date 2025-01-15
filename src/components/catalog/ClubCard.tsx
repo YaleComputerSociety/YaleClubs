@@ -3,8 +3,7 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { IClub, RecruitmentStatus } from "@/lib/models/Club";
 import Image from "next/image";
-import { getAdjustedNumMembers } from "@/lib/utils";
-import FollowButton from "./Star";
+import FollowButton from "./FollowButton";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 
@@ -13,13 +12,20 @@ type ClubCardProps = {
   onClick: () => void;
   followedClubs: string[];
   setFollowedClubs: Dispatch<SetStateAction<string[]>>;
+  initialFollowing: boolean;
 };
 
-const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs }: ClubCardProps) => {
+const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollowing }: ClubCardProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [netid, setNetid] = useState<string | null>(null);
 
   const isFollowing = followedClubs.includes(club._id);
+
+  const adjustedFollowers = club.followers
+    ? String(club.followers + (isFollowing === initialFollowing ? 0 : isFollowing ? 1 : -1))
+    : isFollowing
+      ? "1"
+      : "0";
 
   useEffect(() => {
     const token = Cookies.get("token");
@@ -144,7 +150,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs }: ClubCardPr
                 <div className="md:text-xl font-semibold line-clamp-1 md:line-clamp-2 overflow-hidden">{club.name}</div>
               </div>
             </div>
-            <div className="mt-3 flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
+            <div className="mt-2 flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
               {club.school && <span className="bg-[#acf] rounded px-2 py-1 text-xs">{club.school}</span>}
               {club.categories?.map((tag, index) => (
                 <span key={index} className="bg-[#eee] rounded px-2 py-1 text-xs">
@@ -157,36 +163,42 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs }: ClubCardPr
                 </span>
               ))}
             </div>
+            <div className="text-sm md:text:lg text-gray-800 line-clamp-3 mt-2">
+              {club.description ?? "No description"}
+            </div>
           </div>
-          <Image
-            src={club.logo && club.logo.trim() !== "" ? club.logo : "/assets/default-logo.png"}
-            alt="Club Logo"
-            width={100}
-            height={100}
-            className="rounded-2xl flex-shrink-0 w-16 md:w-[70px] h-16 md:h-[70px]"
-            priority
-          />
-          <div>
-            <FollowButton
-              isLoggedIn={isLoggedIn}
-              isFollowing={isFollowing}
-              netid={netid || ""}
-              clubId={club._id}
-              followedClubs={followedClubs}
-              setFollowedClubs={setFollowedClubs}
+          <div className="flex flex-col items-center">
+            <Image
+              src={club.logo && club.logo.trim() !== "" ? club.logo : "/assets/default-logo.png"}
+              alt="Club Logo"
+              width={100}
+              height={100}
+              className="rounded-xl flex-shrink-0 w-16 md:w-[70px] h-16 md:h-[70px]"
             />
+            <div className="flex flex-col items-center">
+              <FollowButton
+                isLoggedIn={isLoggedIn}
+                isFollowing={isFollowing}
+                netid={netid || ""}
+                clubId={club._id}
+                followedClubs={followedClubs}
+                setFollowedClubs={setFollowedClubs}
+              />
+              <div className="text-sm text-gray-500">
+                {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}
+              </div>
+            </div>
           </div>
         </div>
-        <div className="text-sm md:text:lg text-gray-800 line-clamp-3">{club.description ?? "No description"}</div>
 
-        {club.email || club.numMembers ? (
+        {/* {club.email || club.numMembers ? (
           <div className="flex flex-row items-center justify-between text-sm">
             {club.email && <div className="text-blue-500 truncate max-w-xs inline-block">{club.email}</div>}
             {club.numMembers ? (
               <div className="flex-shrink-0 text-right w-full">{getAdjustedNumMembers(club.numMembers)} members</div>
             ) : null}
           </div>
-        ) : null}
+        ) : null} */}
       </div>
       {hasApplicationStatus && (
         <div
