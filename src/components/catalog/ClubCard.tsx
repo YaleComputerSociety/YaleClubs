@@ -166,8 +166,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs }: ClubCardPr
               alt="Club Logo"
               width={100}
               height={100}
-              className="rounded-2xl flex-shrink-0 w-16 md:w-[70px] h-16 md:h-[70px]"
-              priority
+              className="rounded-xl flex-shrink-0 w-16 md:w-[70px] h-16 md:h-[70px]"
             />
             <div className="flex flex-col items-center">
               <FollowButton

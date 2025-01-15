@@ -1,20 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ClubCard from "./ClubCard";
 import ClubModal from "./ClubModal";
 import { IClub } from "@/lib/models/Club";
-// import axios from "axios";
-// import Cookies from "js-cookie";
-// import { jwtDecode } from "jwt-decode";
 
 interface CatalogProps {
   clubs: IClub[];
   isLoading: boolean;
-  followedClubs: string[] | []; // Allow null
+  followedClubs: string[] | [];
   setFollowedClubs: React.Dispatch<React.SetStateAction<string[] | []>>;
 }
 
 const Catalog = ({ clubs, isLoading, followedClubs, setFollowedClubs }: CatalogProps) => {
   const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
+  const [visibleClubs, setVisibleClubs] = useState(50); // Initial number of clubs to show
 
   const handleCloseModal = () => setSelectedClub(null);
 
@@ -27,7 +25,19 @@ const Catalog = ({ clubs, isLoading, followedClubs, setFollowedClubs }: CatalogP
       onClick={() => setSelectedClub(club)}
     />
   );
-  renderClubItem.displayName = "RenderClubItem";
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+        setVisibleClubs((prev) => Math.min(prev + 50, clubs.length));
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [clubs.length]);
 
   return (
     <div className="mt-1 md:mt-4">
@@ -40,7 +50,7 @@ const Catalog = ({ clubs, isLoading, followedClubs, setFollowedClubs }: CatalogP
       ) : (
         <div>
           <div className="grid gap-5 md:gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center">
-            {clubs.map(renderClubItem)}
+            {clubs.slice(0, visibleClubs).map(renderClubItem)}
             {selectedClub && (
               <ClubModal
                 club={selectedClub}
@@ -50,6 +60,11 @@ const Catalog = ({ clubs, isLoading, followedClubs, setFollowedClubs }: CatalogP
               />
             )}
           </div>
+          {visibleClubs < clubs.length && (
+            <div className="flex justify-center items-center mt-10">
+              <div className="w-8 h-8 border-4 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          )}
         </div>
       )}
     </div>
