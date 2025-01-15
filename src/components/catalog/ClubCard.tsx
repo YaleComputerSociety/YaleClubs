@@ -3,7 +3,6 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { IClub, RecruitmentStatus } from "@/lib/models/Club";
 import Image from "next/image";
-import { getAdjustedNumMembers } from "@/lib/utils";
 import FollowButton from "./Star";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
@@ -144,7 +143,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs }: ClubCardPr
                 <div className="md:text-xl font-semibold line-clamp-1 md:line-clamp-2 overflow-hidden">{club.name}</div>
               </div>
             </div>
-            <div className="mt-3 flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
+            <div className="mt-2 flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
               {club.school && <span className="bg-[#acf] rounded px-2 py-1 text-xs">{club.school}</span>}
               {club.categories?.map((tag, index) => (
                 <span key={index} className="bg-[#eee] rounded px-2 py-1 text-xs">
@@ -156,6 +155,9 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs }: ClubCardPr
                   {tag}
                 </span>
               ))}
+            </div>
+            <div className="text-sm md:text:lg text-gray-800 line-clamp-3 mt-2">
+              {club.description ?? "No description"}
             </div>
           </div>
           <div>
@@ -182,16 +184,15 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs }: ClubCardPr
             </div>
           </div>
         </div>
-        <div className="text-sm md:text:lg text-gray-800 line-clamp-3">{club.description ?? "No description"}</div>
 
-        {club.email || club.numMembers ? (
+        {/* {club.email || club.numMembers ? (
           <div className="flex flex-row items-center justify-between text-sm">
             {club.email && <div className="text-blue-500 truncate max-w-xs inline-block">{club.email}</div>}
             {club.numMembers ? (
               <div className="flex-shrink-0 text-right w-full">{getAdjustedNumMembers(club.numMembers)} members</div>
             ) : null}
           </div>
-        ) : null}
+        ) : null} */}
       </div>
       {hasApplicationStatus && (
         <div
