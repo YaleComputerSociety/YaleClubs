@@ -19,6 +19,14 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs }: ClubCardPr
   const [netid, setNetid] = useState<string | null>(null);
 
   const isFollowing = followedClubs.includes(club._id);
+  const initialFollowingRef = React.useRef(followedClubs.includes(club._id));
+  const initialFollowing = initialFollowingRef.current;
+
+  const adjustedFollowers = club.followers
+    ? String(club.followers + (isFollowing === initialFollowing ? 0 : isFollowing ? 1 : -1))
+    : isFollowing
+      ? "1"
+      : "0";
 
   useEffect(() => {
     const token = Cookies.get("token");
@@ -178,7 +186,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs }: ClubCardPr
                 setFollowedClubs={setFollowedClubs}
               />
               <div className="text-sm text-gray-500">
-                {club.followers} follower{club.followers == 1 ? "" : "s"}{" "}
+                {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}
               </div>
             </div>
           </div>

@@ -31,13 +31,8 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs }: ClubModal
   const initialFollowingRef = React.useRef(followedClubs.includes(club._id));
   const initialFollowing = initialFollowingRef.current;
 
-  // whether or not to add/subtract a follower based on the individual's recent follow status
-  const calculateFollowerAdjustment = (isFollowing: boolean, initialFollowing: boolean) => {
-    return isFollowing === initialFollowing ? 0 : isFollowing ? 1 : -1;
-  };
-
   const adjustedFollowers = club.followers
-    ? String(club.followers + calculateFollowerAdjustment(isFollowing, initialFollowing))
+    ? String(club.followers + (isFollowing === initialFollowing ? 0 : isFollowing ? 1 : -1))
     : isFollowing
       ? "1"
       : "0";
