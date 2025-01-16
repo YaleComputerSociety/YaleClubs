@@ -371,7 +371,11 @@ const UpdatePage = () => {
                         {formData.recruitmentStatus === RecruitmentStatus.APPOPENS && "Application Opens"}
                         <input
                           type="date"
-                          value={formData.recruitmentStartDate ? formData.recruitmentStartDate.toString() : ""}
+                          value={
+                            formData.recruitmentStartDate
+                              ? new Date(formData.recruitmentStartDate).toISOString().split("T")[0]
+                              : ""
+                          }
                           onChange={(e) => handleChange("recruitmentStartDate", e.target.value)}
                           className="w-full border border-gray-300 rounded-lg p-2"
                         />
@@ -387,7 +391,11 @@ const UpdatePage = () => {
                       {formData.recruitmentStatus === RecruitmentStatus.APPENDS && "Application Closes"}
                       <input
                         type="date"
-                        value={formData.recruitmentEndDate ? formData.recruitmentEndDate.toString() : ""}
+                        value={
+                          formData.recruitmentEndDate
+                            ? new Date(formData.recruitmentEndDate).toISOString().split("T")[0]
+                            : ""
+                        }
                         onChange={(e) => handleChange("recruitmentEndDate", e.target.value)}
                         className="w-full border border-gray-300 rounded-lg p-2"
                       />
