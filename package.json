@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@next/third-parties": "^15.1.4",
     "@types/js-cookie": "^3.0.6",
     "axios": "^1.7.7",
     "cookies-next": "^5.0.2",
