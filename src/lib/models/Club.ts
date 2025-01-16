@@ -37,6 +37,7 @@ export enum Category {
   VeteranMilitary = "Veteran/Military",
   VisualArts = "Visual Arts",
   Wellness = "Wellness",
+  Consulting = "Consulting",
 }
 
 export enum School {
