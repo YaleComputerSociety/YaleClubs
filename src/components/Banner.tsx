@@ -21,7 +21,7 @@ const Banner = () => {
   }, []);
 
   useEffect(() => {
-    // localStorage.clear();
+    localStorage.clear(); // MAKE SURE TO COMMENT THIS OUT WHEN COMMITTING
     const isClosed = localStorage.getItem("bannerClosed");
     if (!isClosed) {
       const timer = setTimeout(() => {
