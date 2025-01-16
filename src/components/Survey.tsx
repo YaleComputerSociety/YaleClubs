@@ -45,48 +45,44 @@ const SurveyBanner = () => {
       }`}
     >
       {isMobile ? (
-        <div className="flex items-center justify-center gap-5 py-0 text-center text-sm">
+        <div className="flex justify-center gap-5 px-5 py-0 text-l">
           <p>
-            We value your feedback! Take a quick{" "}
             <a
               href="https://docs.google.com/forms/d/e/1FAIpQLSdBM9ccbynx2eQKVdCkpPDW-sIJArTWqUlMGGKuXz175iq0Og/viewform"
               target="_blank"
               rel="noopener noreferrer"
               className="underline"
             >
-              survey
-            </a>{" "}
-            to help us improve.{" "}
+              We value your feedback! Take a quick survey to help us improve.
+            </a>
           </p>
-          <button onClick={handleClose} className="text-white hover:text-gray-300 focus:outline-none px-8">
+          <button onClick={handleClose} className="text-white hover:text-gray-300 focus:outline-none px-2 text-4xl">
             &times;
           </button>
         </div>
       ) : (
         <div className="flex items-center justify-between px-0 py-2">
           {/* Centered message */}
-          <div className="text-center flex-grow">
+          <div className="text-center flex-grow text-xl">
             <p>
-              We value your feedback! Take a quick{" "}
               <a
                 href="https://docs.google.com/forms/d/e/1FAIpQLSdBM9ccbynx2eQKVdCkpPDW-sIJArTWqUlMGGKuXz175iq0Og/viewform"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline"
               >
-                survey
-              </a>{" "}
-              to help us improve.
+                We value your feedback! Take a quick survey to help us improve.
+              </a>
             </p>
           </div>
 
           {/* Close button */}
           <button
             onClick={handleClose}
-            className="text-white text-l hover:text-gray-300 focus:outline-none ml-4 px-2"
+            className="text-white text-l hover:text-gray-300 focus:outline-none ml-4 px-2 text-2xl"
             aria-label="Close banner"
           >
-            ✕
+            &times;
           </button>
         </div>
       )}
