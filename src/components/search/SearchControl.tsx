@@ -104,7 +104,12 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
       )
       .filter((club) => (showFollowedOnly ? followedClubs.includes(club._id) : true));
 
-    const sortedFilteredClubs = filteredClubs.sort((a, b) => a.name.localeCompare(b.name));
+    const sortedFilteredClubs = filteredClubs.sort((a, b) => {
+      if (b.followers !== a.followers) {
+        return b.followers - a.followers;
+      }
+      return a.name.toLowerCase().localeCompare(b.name.toLowerCase(), undefined, { sensitivity: "base" });
+    });
 
     setCurrentClubs(sortedFilteredClubs);
     setIsLoading(false);
