@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "npm run lint && dotenv -e .env.dev next dev",
+    "devprod": "npm run lint && dotenv -e .env.prod next dev",
     "build": "dotenv -e .env.prod next build",
     "start": "dotenv -e .env.prod next start",
     "lint": "next lint"
