@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 
 const SurveyBanner = () => {
-  const BANNER_DELAY = 25000;
+  const BANNER_DELAY = 5000;
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -21,7 +21,7 @@ const SurveyBanner = () => {
   }, []);
 
   useEffect(() => {
-    // localStorage.clear();
+    localStorage.clear();
     const isClosed = localStorage.getItem("surveyBannerClosed");
     if (!isClosed) {
       const timer = setTimeout(() => {
@@ -40,47 +40,50 @@ const SurveyBanner = () => {
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 z-50 bg-indigo-600 text-white transition-transform duration-500 ${
+      className={`fixed ${isMobile ? "py-4" : "py-5"} top-0 left-0 right-0 z-50 bg-indigo-600 text-white transition-transform duration-500 ${
         isVisible ? "translate-y-0" : "-translate-y-full"
       }`}
     >
       {isMobile ? (
-        <div className="flex flex-col items-center justify-center px-6 py-2 text-center">
-          <p className="text-lg font-semibold mt-1">We value your feedback!</p>
-          <p className="mt-2 text-sm">Take a quick survey to help us improve.</p>
-          <div className="flex items-center gap-4 mt-5 mb-4">
+        <div className="flex justify-center gap-5 px-5 py-0 text-l">
+          <p>
             <a
-              href="https://docs.google.com/forms/d/e/1FAIpQLSdWza7qy36fv--_etRTFof-uX7zogo9mrQPi4mg2uAkQBxDEw/viewform?usp=sf_link"
+              href="https://docs.google.com/forms/d/e/1FAIpQLSdBM9ccbynx2eQKVdCkpPDW-sIJArTWqUlMGGKuXz175iq0Og/viewform"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-2 text-sm font-semibold bg-white text-indigo-600 rounded-full hover:bg-gray-200"
+              className="underline"
             >
-              Take Survey
+              We value your feedback! Take a quick survey to help us improve.
             </a>
-            <button onClick={handleClose} className="text-white text-xl hover:text-gray-300 focus:outline-none">
-              &times;
-            </button>
-          </div>
+          </p>
+          <button onClick={handleClose} className="text-white hover:text-gray-300 focus:outline-none px-2 text-4xl">
+            &times;
+          </button>
         </div>
       ) : (
-        <div className="flex flex-col md:flex-row items-center justify-between px-10 py-24 md:px-20 md:py-12">
-          <div className="text-center md:text-left text-lg md:text-xl font-semibold">
-            <p>We value your feedback!</p>
-            <p className="mt-2">Take a quick survey to help us improve.</p>
+        <div className="flex items-center justify-between px-0 py-2">
+          {/* Centered message */}
+          <div className="text-center flex-grow text-xl">
+            <p>
+              <a
+                href="https://docs.google.com/forms/d/e/1FAIpQLSdBM9ccbynx2eQKVdCkpPDW-sIJArTWqUlMGGKuXz175iq0Og/viewform"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                We value your feedback! Take a quick survey to help us improve.
+              </a>
+            </p>
           </div>
-          <div className="flex items-center gap-4 mt-6 md:mt-0">
-            <a
-              href="https://docs.google.com/forms/d/e/1FAIpQLSdWza7qy36fv--_etRTFof-uX7zogo9mrQPi4mg2uAkQBxDEw/viewform?usp=sf_link"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-3 text-lg font-semibold bg-white text-indigo-600 rounded-full hover:bg-gray-200"
-            >
-              Take Survey
-            </a>
-            <button onClick={handleClose} className="text-white text-2xl hover:text-gray-300 focus:outline-none">
-              ✕
-            </button>
-          </div>
+
+          {/* Close button */}
+          <button
+            onClick={handleClose}
+            className="text-white text-l hover:text-gray-300 focus:outline-none ml-4 px-2 text-2xl"
+            aria-label="Close banner"
+          >
+            &times;
+          </button>
         </div>
       )}
     </div>
