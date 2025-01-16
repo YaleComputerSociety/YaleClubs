@@ -45,7 +45,7 @@ const SurveyBanner = () => {
       }`}
     >
       {isMobile ? (
-        <div className="flex flex-col items-center justify-center px-0 py-0 text-center">
+        <div className="flex items-center justify-center gap-5 py-0 text-center text-sm">
           <p>
             We value your feedback! Take a quick{" "}
             <a
@@ -58,12 +58,12 @@ const SurveyBanner = () => {
             </a>{" "}
             to help us improve.{" "}
           </p>
-          <button onClick={handleClose} className="text-white hover:text-gray-300 focus:outline-none">
+          <button onClick={handleClose} className="text-white hover:text-gray-300 focus:outline-none px-8">
             &times;
           </button>
         </div>
       ) : (
-        <div className="flex items-center justify-between px-10 py-2">
+        <div className="flex items-center justify-between px-0 py-2">
           {/* Centered message */}
           <div className="text-center flex-grow">
             <p>
@@ -83,7 +83,7 @@ const SurveyBanner = () => {
           {/* Close button */}
           <button
             onClick={handleClose}
-            className="text-white text-l hover:text-gray-300 focus:outline-none ml-4"
+            className="text-white text-l hover:text-gray-300 focus:outline-none ml-4 px-2"
             aria-label="Close banner"
           >
             ✕
