@@ -18,8 +18,6 @@ export default function ScrollableLeaders({ leaders }: { leaders: ClubLeader[] }
     handleScroll();
   }, []);
 
-  console.table(leaders);
-
   return (
     <>
       {leaders.length > 0 && (
