@@ -6,7 +6,6 @@ export enum Category {
   Administrative = "Administrative",
   AdvocacySocialJusticeGlobalAffairs = "Advocacy, Social Justice, Global Affairs",
   AdvocacyPolicy = "Advocacy/Policy",
-  BusinessandEntrepreneurship = "Business and Entrepreneurship",
   Comedy = "Comedy",
   CommunityOutreach = "Community Outreach",
   Consulting = "Consulting",
