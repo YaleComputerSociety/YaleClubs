@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 import SearchBar from "./SearchBar";
 import FilterButton from "./Filter";
 import { Affiliation, Category, IClub, School } from "@/lib/models/Club";
@@ -28,6 +29,19 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
   const [showFollowedOnly, setShowFollowedOnly] = useState(false);
   // This mapping will let us relate any search key (name or alias) back to its club name.
   const [searchKeyToClubName, setSearchKeyToClubName] = useState<Record<string, string>>({});
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (token) {
+      try {
+        setIsLoggedIn(true);
+      } catch (err) {
+        console.error("Invalid token:", err);
+        setIsLoggedIn(false);
+      }
+    }
+  }, []);
 
   // Initialize Trie with club names and aliases along with a mapping for lookups.
   useEffect(() => {
@@ -142,7 +156,7 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
           allItems={[...Object.values(Category), ...Object.values(Affiliation)].sort()}
           label="Categories"
         />
-        <FollowFilter showFollowedOnly={showFollowedOnly} setShowFollowedOnly={setShowFollowedOnly} />
+        {isLoggedIn && <FollowFilter showFollowedOnly={showFollowedOnly} setShowFollowedOnly={setShowFollowedOnly} />}
       </div>
       {/* <ResetButton
         onReset={() => {
