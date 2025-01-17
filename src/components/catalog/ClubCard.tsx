@@ -104,7 +104,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
 
           if (date < now) {
             if (endDate) {
-              return `Applications Open Until ${endformattedDate}`;
+              return `Applications Close ${endformattedDate}`;
             }
             return "Applications Open";
           }
