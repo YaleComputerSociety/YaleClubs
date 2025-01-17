@@ -20,7 +20,7 @@ const Catalog = ({ clubs, isLoading, followedClubs, setFollowedClubs }: CatalogP
   const initialFollowedClubsRef = useRef<string[]>([]);
 
   useEffect(() => {
-    if (followedClubs && firstRef.current) {
+    if (followedClubs.length > 0 && firstRef.current) {
       initialFollowedClubsRef.current = followedClubs;
       firstRef.current = false;
     }

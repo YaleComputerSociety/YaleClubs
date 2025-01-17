@@ -36,6 +36,7 @@ const Header = () => {
 
       if (response.ok) {
         setIsLoggedIn(false);
+        window.location.reload();
       } else {
         console.error("Logout failed:", response.statusText);
       }
