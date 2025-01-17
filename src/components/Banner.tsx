@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-const SurveyBanner = () => {
+const Banner = () => {
   const BANNER_DELAY = 5000;
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -21,8 +21,8 @@ const SurveyBanner = () => {
   }, []);
 
   useEffect(() => {
-    localStorage.clear();
-    const isClosed = localStorage.getItem("surveyBannerClosed");
+    // localStorage.clear(); // MAKE SURE TO COMMENT THIS OUT WHEN COMMITTING
+    const isClosed = localStorage.getItem("bannerClosed");
     if (!isClosed) {
       const timer = setTimeout(() => {
         setIsVisible(true);
@@ -35,7 +35,7 @@ const SurveyBanner = () => {
 
   const handleClose = () => {
     setIsVisible(false);
-    localStorage.setItem("surveyBannerClosed", "true");
+    localStorage.setItem("bannerClosed", "true");
   };
 
   return (
@@ -53,7 +53,7 @@ const SurveyBanner = () => {
               rel="noopener noreferrer"
               className="underline"
             >
-              We value your feedback! Take a quick survey to help us improve.
+              We want your feedback! Take a quick survey to help us improve.
             </a>
           </p>
           <button onClick={handleClose} className="text-white hover:text-gray-300 focus:outline-none px-2 text-4xl">
@@ -69,9 +69,8 @@ const SurveyBanner = () => {
                 href="https://docs.google.com/forms/d/e/1FAIpQLSdBM9ccbynx2eQKVdCkpPDW-sIJArTWqUlMGGKuXz175iq0Og/viewform"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="underline"
               >
-                We value your feedback! Take a quick survey to help us improve.
+                We want your feedback! Take a quick <span className="underline">survey</span> to help us improve.
               </a>
             </p>
           </div>
@@ -79,8 +78,7 @@ const SurveyBanner = () => {
           {/* Close button */}
           <button
             onClick={handleClose}
-            className="text-white text-l hover:text-gray-300 focus:outline-none ml-4 px-2 text-2xl"
-            aria-label="Close banner"
+            className="text-white hover:text-gray-300 focus:outline-none px-2 text-4xl mr-4"
           >
             &times;
           </button>
@@ -90,4 +88,4 @@ const SurveyBanner = () => {
   );
 };
 
-export default SurveyBanner;
+export default Banner;

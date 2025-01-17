@@ -182,7 +182,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
           </div>
         )}
 
-        <div className="flex flex-col overflow-y-auto overflow-x-hidden m-4 md:m-8 -mt-[50px] md:mt-4">
+        <div className="flex flex-col overflow-y-auto overflow-x-hidden px-4 md:px-8 pb-4 md:pb-4 -mt-[50px] md:mt-4">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex flex-col md:w-3/5">
               <div
