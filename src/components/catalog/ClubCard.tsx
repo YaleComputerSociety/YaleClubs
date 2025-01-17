@@ -73,7 +73,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
             return "Applications Closed";
           }
 
-          return `Applications Close ${formattedDate}`;
+          return `Applications Open Until ${formattedDate}`;
         }
         return "Applications Closing Soon";
       case RecruitmentStatus.APPOPENS:

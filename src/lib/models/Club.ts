@@ -9,6 +9,7 @@ export enum Category {
   BusinessandEntrepreneurship = "Business and Entrepreneurship",
   Comedy = "Comedy",
   CommunityOutreach = "Community Outreach",
+  Consulting = "Consulting",
   Cultural = "Cultural",
   Dance = "Dance",
   EntrepreneurialBusiness = "Entrepreneurial/Business",
