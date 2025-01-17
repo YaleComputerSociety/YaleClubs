@@ -59,12 +59,28 @@ const UpdatePage = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
 
+  function isValidUrl(value: string): boolean {
+    try {
+      // Will throw if `value` isn't a valid URL
+      new URL(value);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   const validateInput = (field: keyof IClubInput, value: string): string => {
+    const validSchools = Object.values(School) as string[];
+
     switch (field) {
       case "name":
         if (!value) return "Name is required.";
-        if (value.length < 3) return "Name must be at least 3 characters.";
-        if (value.length > 100) return "Name must not exceed 100 characters.";
+        if (value.length < 2) return "Name must be at least 2 characters.";
+        if (value.length > 150) return "Name must not exceed 150 characters.";
+        return "";
+      case "school":
+        if (!value) return "School is required.";
+        if (!validSchools.includes(value)) return "Invalid school value. Please select a valid school.";
         return "";
       case "email":
         if (!value) return "";
@@ -79,7 +95,7 @@ const UpdatePage = () => {
       case "numMembers":
         if (!value) return "";
         if (Number(value) < 0) return "Number of members cannot be negative.";
-        if (Number(value) > 100000) return "Number of members must not exceed 100,000.";
+        if (Number(value) > 10000) return "Number of members must not exceed 10,000.";
         return "";
       case "instagram":
         if (!value) return "";
@@ -99,7 +115,7 @@ const UpdatePage = () => {
         if (value && value.length > 200) return "Mailing list form must not exceed 200 characters.";
         return "";
       case "calendarLink":
-        if (value && value.length > 200) return "Calendary link must not exceed 200 characters.";
+        if (value && value.length > 200) return "Calendar link must not exceed 200 characters.";
         return "";
       case "meeting":
         if (value && value.length > 200) return `${field} must not exceed 200 characters.`;
@@ -109,7 +125,8 @@ const UpdatePage = () => {
         return "";
       case "backgroundImage":
       case "logo":
-        if (value && value.length > 300) return `${field} URL must not exceed 300 characters.`;
+        if (value && value.length > 600) return `${field} URL must not exceed 600 characters.`;
+        if (value && !isValidUrl(value)) return "Invalid URL.";
         return "";
       // case "recruitmentStartDate":
       //   if (!value) return "Needs start date.";
@@ -204,6 +221,11 @@ const UpdatePage = () => {
       {} as Record<string, string>,
     );
 
+    if (Array.isArray(formData.categories)) {
+      const validCategories = Object.values(Category) as string[]; // Convert enum to string array
+      formData.categories = formData.categories.filter((cat) => validCategories.includes(cat as string));
+    }
+
     setValidationErrors(errors);
 
     if (Object.values(errors).some((error) => error)) {
@@ -292,7 +314,7 @@ const UpdatePage = () => {
             <div className="w-16"></div>
           </div>
 
-          <EditableImageSection formData={formData} handleChange={handleChange} />
+          <EditableImageSection formData={formData} handleChange={handleChange} validationErrors={validationErrors} />
           <div className="grid grid-cols-3 gap-4 py-8">
             {/* Left Section */}
             <div className="space-y-2">
