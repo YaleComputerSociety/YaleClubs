@@ -124,7 +124,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
   return (
     <div className="relative w-full max-w-2xl">
       <div
-        className={`border border-gray-200 rounded-xl flex flex-col justify-between w-full cursor-pointer hover:border-gray-300 transition-colors h-full`}
+        className={`bg-white rounded-xl flex flex-col justify-between w-full cursor-pointer h-full shadow-sm  `}
         onClick={onClick}
       >
         {isNew() && (

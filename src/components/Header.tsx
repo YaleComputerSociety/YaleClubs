@@ -46,7 +46,7 @@ const Header = () => {
   };
 
   return (
-    <div className="header w-full flex flex-row fixed z-50 justify-between py-5 px-5 md:px-20 bg-white">
+    <div className="header w-full flex flex-row fixed z-50 justify-between py-5 px-5 md:px-20 bg-background">
       <Link href="/" className="flex flex-row items-center">
         <Image src="/assets/logo.svg" alt="Logo" width={35} height={35} unoptimized />
         <div className="ml-5 font-semibold text-xl">YaleClubs</div>
