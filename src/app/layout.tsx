@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: "Yale Clubs",
   description: "With Yale Clubs, finding clubs has never been easier",
   icons: {
-    icon: "assets/icon.png",
+    icon: "assets/logo.svg",
   },
 };
 
