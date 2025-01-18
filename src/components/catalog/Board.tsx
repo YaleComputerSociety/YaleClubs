@@ -41,10 +41,10 @@ export default function ScrollableLeaders({ leaders }: { leaders: ClubLeader[] }
                   <div className="flex flex-col items-start">
                     <div className="flex flex-row justify-between w-full">
                       <div className="text-md font-semibold">{leader.name}</div>
-                      {leader.year && <div className="">{"'" + (leader.year % 100)} </div>}
+                      {(leader.year?.valueOf() || 0) > 0 && <div>{"'" + (leader.year ? leader.year % 100 : "")} </div>}
                     </div>
-                    <div className="">{leader.email}</div>
-                    <div className="">{leader.role}</div>
+                    <div>{leader.email}</div>
+                    <div>{leader.role}</div>
                   </div>
                 </div>
               ))}

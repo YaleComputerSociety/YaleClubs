@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import LogoSVG from "../../public/assets/logo";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const Header = () => {
@@ -36,6 +36,7 @@ const Header = () => {
 
       if (response.ok) {
         setIsLoggedIn(false);
+        window.location.reload();
       } else {
         console.error("Logout failed:", response.statusText);
       }
@@ -45,9 +46,9 @@ const Header = () => {
   };
 
   return (
-    <div className="header w-full flex flex-row fixed z-50 justify-between py-5 px-5 md:px-20 bg-white">
+    <div className="header w-full flex flex-row fixed z-50 justify-between py-5 px-5 md:px-20 bg-background">
       <Link href="/" className="flex flex-row items-center">
-        <LogoSVG />
+        <Image src="/assets/logo.svg" alt="Logo" width={35} height={35} unoptimized />
         <div className="ml-5 font-semibold text-xl">YaleClubs</div>
       </Link>
 
@@ -79,7 +80,7 @@ const Header = () => {
                         handleLogout();
                         setIsMenuOpen(false);
                       }}
-                      className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full shadow-md hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
+                      className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-clubTaro to-clubTaro rounded-full shadow-md hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
                     >
                       Sign Out
                     </button>
@@ -87,7 +88,7 @@ const Header = () => {
                     <Link
                       href="/api/auth/redirect"
                       onClick={() => setIsMenuOpen(false)}
-                      className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full shadow-md hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
+                      className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-clubTaro to-clubTaro rounded-full shadow-md hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
                     >
                       Sign In
                     </Link>
@@ -111,14 +112,14 @@ const Header = () => {
           {isLoggedIn ? (
             <button
               onClick={handleLogout}
-              className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full shadow-md hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
+              className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-clubTaro to-clubTaro rounded-full shadow-md hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
             >
               Sign Out
             </button>
           ) : (
             <Link
               href="/api/auth/redirect"
-              className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full shadow-md hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
+              className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-clubTaro to-clubTaro rounded-full shadow-md hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
             >
               Sign In
             </Link>

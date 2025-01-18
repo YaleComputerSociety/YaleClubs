@@ -124,9 +124,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
   return (
     <div className="relative w-full max-w-2xl">
       <div
-        className={`border border-gray-200 rounded-xl px-3 py-2 md:px-4 md:py-3 flex flex-col gap-2 w-full cursor-pointer hover:border-gray-300 transition-colors ${
-          hasApplicationStatus ? "rounded-b-none border-b-0" : "h-full"
-        }`}
+        className={`bg-white rounded-xl flex flex-col justify-between w-full cursor-pointer h-full shadow-sm  `}
         onClick={onClick}
       >
         {isNew() && (
@@ -143,7 +141,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
             </div>
           </div>
         )}
-        <div className="flex flex-row gap-4">
+        <div className="flex flex-row gap-4 px-3 py-2 md:px-4 md:py-3 ">
           <div className="flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -173,7 +171,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
               alt="Club Logo"
               width={100}
               height={100}
-              className="rounded-xl flex-shrink-0 w-16 md:w-[70px] h-16 md:h-[70px]"
+              className="rounded-xl flex-shrink-0 w-16 md:w-[80px] h-16 md:h-[80px]"
             />
             <div className="flex flex-col items-center">
               <FollowButton
@@ -190,28 +188,16 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
             </div>
           </div>
         </div>
-
-        {/* {club.email || club.numMembers ? (
-          <div className="flex flex-row items-center justify-between text-sm">
-            {club.email && <div className="text-blue-500 truncate max-w-xs inline-block">{club.email}</div>}
-            {club.numMembers ? (
-              <div className="flex-shrink-0 text-right w-full">{getAdjustedNumMembers(club.numMembers)} members</div>
-            ) : null}
-          </div>
-        ) : null} */}
-      </div>
-      {hasApplicationStatus && (
-        <div
-          className="w-full border border-gray-200 border-t-0 rounded-b-xl overflow-hidden cursor-pointer"
-          onClick={onClick}
-        >
-          <div className="w-full bg-purple-50 py-2 px-3 md:px-4">
-            <div className="flex items-center justify-center">
-              <span className="line-clamp-1 text-purple-800 text-sm font-medium">{applicationStatus}</span>
+        {hasApplicationStatus && (
+          <div className="w-full overflow-hidden cursor-pointer" onClick={onClick}>
+            <div className="w-full bg-purple-50 py-2 px-3 md:px-4">
+              <div className="flex items-center justify-center">
+                <span className="line-clamp-1 text-purple-800 text-sm font-medium">{applicationStatus}</span>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

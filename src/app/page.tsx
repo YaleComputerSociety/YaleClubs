@@ -10,7 +10,7 @@ import Catalog from "../components/catalog/Catalog";
 import { IClub } from "@/lib/models/Club";
 import SearchControl from "@/components/search/SearchControl";
 
-import SurveyBanner from "@/components/Survey";
+import Banner from "@/components/Banner";
 // import SearchWrapper from "@/components/search/SearchWrapper";
 
 // import axios from "axios";
@@ -70,10 +70,10 @@ export default function Home() {
 
   return (
     <AuthWrapper>
-      <main className="w-full">
-        <section className="h-screen">
+      <main className=" flex flex-col min-h-screen">
+        <div className="flex-grow">
           <Header />
-          <div className="flex flex-col w-full h-screen px-5 md:px-20">
+          <div className="flex flex-col w-full px-5 md:px-20">
             <div className="mt-20 md:mt-24"></div>
             <h1 className="text-3xl font-bold text-black">Browse Clubs</h1>
             <h2 className="text-xl mb-4 md:mb-8">Finding Clubs has Never Been Easier.</h2>
@@ -91,10 +91,10 @@ export default function Home() {
               followedClubs={followedClubs}
               setFollowedClubs={setFollowedClubs}
             />
-            <Footer />
           </div>
-        </section>
-        <SurveyBanner />
+        </div>
+        <Footer />
+        <Banner />
       </main>
     </AuthWrapper>
   );

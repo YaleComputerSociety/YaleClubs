@@ -5,24 +5,52 @@ import Image from "next/image";
 interface EditableImageSectionProps {
   formData: IClubInput;
   handleChange: (field: keyof IClubInput, value: string | number | ClubLeader[] | undefined) => void;
+  validationErrors: Record<keyof IClubInput, string>;
 }
 
-const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, handleChange }) => {
+const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, handleChange, validationErrors }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentField, setCurrentField] = useState<"backgroundImage" | "logo">("backgroundImage");
   const [inputValue, setInputValue] = useState("");
+  const [modalError, setModalError] = useState("");
+
+  // Simple URL validator
+  const isValidUrl = (value: string) => {
+    try {
+      new URL(value);
+      return true;
+    } catch {
+      return false;
+    }
+  };
 
   const openModal = (field: "backgroundImage" | "logo") => {
     setCurrentField(field);
+    // Load current value into the text field
     setInputValue(formData[field] as string);
+    // Clear any previous error
+    setModalError("");
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setModalError("");
   };
 
   const handleSave = () => {
+    // 1) Check length
+    if (inputValue && inputValue.length > 600) {
+      setModalError("URL must not exceed 600 characters.");
+      return;
+    }
+    // 2) Check format
+    if (inputValue && !isValidUrl(inputValue)) {
+      setModalError("Invalid URL format.");
+      return;
+    }
+
+    // If no errors, save and close
     handleChange(currentField, inputValue);
     closeModal();
   };
@@ -47,6 +75,7 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
           </button>
         </div>
       </div>
+      {validationErrors?.backgroundImage && <p className="text-red-500 mt-2">{validationErrors.backgroundImage}</p>}
 
       {/* Logo */}
       <div className="absolute -bottom-6 right-16">
@@ -67,6 +96,7 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
           <Image src="/assets/edit-3-svgrepo-com.svg" alt="Edit Icon" width={24} height={24} />
         </button>
       </div>
+      {validationErrors?.logo && <p className="text-red-500 mt-2 text-right pr-16">{validationErrors.logo}</p>}
 
       {/* Modal */}
       {isModalOpen && (
@@ -80,11 +110,18 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
             <input
               type="text"
               value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg p-2 mb-4"
+              onChange={(e) => {
+                setInputValue(e.target.value);
+                setModalError(""); // Clear error while typing
+              }}
+              className="w-full border border-gray-300 rounded-lg p-2 mb-2"
               placeholder="Enter image URL"
             />
-            <div className="flex justify-end space-x-4">
+
+            {/* Display any modal-specific error */}
+            {modalError && <p className="text-red-500 mb-2">{modalError}</p>}
+
+            <div className="flex justify-end space-x-4 mt-4">
               <button onClick={closeModal} className="py-2 px-4 bg-gray-300 rounded-lg hover:bg-gray-400">
                 Cancel
               </button>
