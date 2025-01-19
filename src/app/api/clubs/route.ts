@@ -76,7 +76,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     return NextResponse.json(savedClub, { status: 201 });
   } catch (error) {
     console.error("Error creating club:", error);
-    return NextResponse.json({ error: "Joe Server Error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
