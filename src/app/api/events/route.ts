@@ -8,11 +8,7 @@ export async function GET(): Promise<NextResponse> {
   try {
     await connectToDatabase();
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    // only fetch events that are happening today or in the future
-    const events = await Event.find({ start: { $gte: today } }).sort({ start: 1 });
+    const events = await Event.find().sort({ start: 1 });
 
     return NextResponse.json(events, { status: 200 });
   } catch (error) {

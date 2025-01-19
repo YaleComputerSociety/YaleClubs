@@ -6,9 +6,10 @@ import { MdOutlineArrowForwardIos } from "react-icons/md";
 interface CarouselProps<T> {
   items: T[];
   ItemComponent: React.ComponentType<{ event: T; onClick: () => void }>;
+  onItemClick: (event: T) => void;
 }
 
-const Carousel = <T extends IEvent>({ items, ItemComponent }: CarouselProps<T>) => {
+const Carousel = <T extends IEvent>({ items, ItemComponent, onItemClick }: CarouselProps<T>) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handlePrevious = () => {
@@ -28,7 +29,7 @@ const Carousel = <T extends IEvent>({ items, ItemComponent }: CarouselProps<T>) 
   return (
     <div className="relative w-full h-full">
       <div className="relative h-full">
-        <ItemComponent event={items[currentIndex]} onClick={() => {}} />
+        <ItemComponent event={items[currentIndex]} onClick={() => onItemClick(items[currentIndex])} />
 
         <button
           onClick={handlePrevious}

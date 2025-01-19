@@ -15,7 +15,7 @@ const FeaturedEventCard = ({ event, onClick }: FeaturedEventCardProps) => {
     <div className="relative w-full h-96 rounded-xl overflow-hidden cursor-pointer group" onClick={onClick}>
       {/* Background Image */}
       <Image
-        src={event.flyer && event.flyer.trim() !== "" ? event.flyer : "/assets/default-background.png"}
+        src={event?.flyer && event?.flyer.trim() !== "" ? event?.flyer : "/assets/default-background.png"}
         alt="Event Flyer"
         fill
         className="object-cover transition-transform duration-300 group-hover:scale-105"

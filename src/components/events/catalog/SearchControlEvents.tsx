@@ -1,3 +1,4 @@
+// SearchControlEvent.tsx
 import React, { useEffect, useState } from "react";
 import SearchBar from "@/components/search/SearchBar";
 import Filter from "@/components/search/Filter";
@@ -9,31 +10,35 @@ import { Tag } from "@/lib/models/Event";
 interface SearchControlProps {
   clubsForFilter: IClub[];
   events: IEvent[];
-  setCurrentEvents: React.Dispatch<React.SetStateAction<IEvent[]>>;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setCurrentUpcomingEvents: React.Dispatch<React.SetStateAction<IEvent[]>>;
+  setCurrentPastEvents: React.Dispatch<React.SetStateAction<IEvent[]>>;
 }
 
-const SearchControlEvent = ({ events, clubsForFilter, setCurrentEvents, setIsLoading }: SearchControlProps) => {
+const SearchControlEvent = ({
+  events,
+  clubsForFilter,
+  setCurrentUpcomingEvents,
+  setCurrentPastEvents,
+}: SearchControlProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
   const [trie, setTrie] = useState<Trie | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
 
   // Initialize Trie with event names once
   useEffect(() => {
-    setIsLoading(true);
     const newTrie = new Trie();
     events.forEach((event) => newTrie.insert(event.name, ""));
     setTrie(newTrie);
-    setIsLoading(false);
-  }, [events, setIsLoading]);
+  }, [events]);
 
   // Filter events based on search query, tags, and clubs
   useEffect(() => {
     if (!trie || events.length === 0) return;
-    console.log("working!");
-    console.log("searchQuery", searchQuery);
-    setIsLoading(true);
+
+    setIsSearching(true);
+    const now = new Date();
 
     // Filter by search query
     let filteredBySearch = events;
@@ -63,9 +68,19 @@ const SearchControlEvent = ({ events, clubsForFilter, setCurrentEvents, setIsLoa
         selectedTags.length > 0 ? selectedTags.some((tag) => event.tags?.includes(tag as Tag)) : true,
       );
 
-    setCurrentEvents(filteredEvents);
-    setIsLoading(false);
-  }, [searchQuery, selectedTags, selectedClubs, trie, setCurrentEvents, setIsLoading, events]);
+    // Split filtered events into upcoming and past
+    const upcoming = filteredEvents
+      .filter((event) => new Date(event.start) >= now)
+      .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+
+    const past = filteredEvents
+      .filter((event) => new Date(event.start) < now)
+      .sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime());
+
+    setCurrentUpcomingEvents(upcoming);
+    setCurrentPastEvents(past);
+    setIsSearching(false);
+  }, [searchQuery, selectedTags, selectedClubs, trie, setCurrentUpcomingEvents, setCurrentPastEvents, events]);
 
   return (
     <div className="search-control flex flex-wrap gap-2 max-w-[1400px] flex-col items-center sm:flex-row pb-4">
@@ -80,7 +95,6 @@ const SearchControlEvent = ({ events, clubsForFilter, setCurrentEvents, setIsLoa
       <Filter
         selectedItems={selectedTags}
         setSelectedItems={setSelectedTags}
-        // so you don't have Featured Event as a drop down.
         allItems={Object.values(Tag).slice(1)}
         label="Tags"
       />

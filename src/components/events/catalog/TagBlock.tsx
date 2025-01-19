@@ -25,5 +25,5 @@ const tagColors: Record<Tag, string> = {
 
 export const TagBlock = ({ tag }: TagProps) => {
   const tagColor = tagColors[tag] || "bg-gray-200 text-gray-800"; // Default color if no match
-  return <span className={`rounded px-2 py-1 text-sm ${tagColor}`}>{tag}</span>;
+  return <span className={`rounded px-2 py-1 text-sm ${tagColor} w-fit line-clamp-1`}>{tag}</span>;
 };

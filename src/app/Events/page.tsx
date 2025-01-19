@@ -1,79 +1,196 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { usePathname } from "next/navigation";
+import axios from "axios";
+import Link from "next/link";
+
+// Components
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AuthWrapper from "@/components/AuthWrapper";
 import SearchControlEvent from "@/components/events/catalog/SearchControlEvents";
-import { IEvent } from "@/lib/models/Event";
-import { useState } from "react";
 import Catalog from "@/components/events/catalog/Catalog";
-import axios from "axios";
-import { IClub } from "@/lib/models/Club";
+
+// Icons
 import { FaPlus } from "react-icons/fa";
-import Link from "next/link";
+import { MdLockOutline } from "react-icons/md";
+
+// Types
+import { IEvent } from "@/lib/models/Event";
+import { IClub } from "@/lib/models/Club";
+
+const useSkeletonCount = () => {
+  const [skeletonCount, setSkeletonCount] = useState(8);
+
+  useEffect(() => {
+    const calculateSkeletons = () => {
+      const containerWidth = window.innerWidth - 40;
+      let itemsPerRow;
+      if (containerWidth < 640)
+        itemsPerRow = 1; // sm
+      else if (containerWidth < 768)
+        itemsPerRow = 2; // md
+      else if (containerWidth < 1024)
+        itemsPerRow = 3; // lg
+      else itemsPerRow = 4; // xl
+
+      const itemHeight = 256;
+      const viewportHeight = window.innerHeight;
+      const rowsThatFit = Math.ceil(viewportHeight / itemHeight);
+      const rowsToShow = rowsThatFit + 1;
+
+      setSkeletonCount(itemsPerRow * rowsToShow);
+    };
+
+    calculateSkeletons();
+    window.addEventListener("resize", calculateSkeletons);
+    return () => window.removeEventListener("resize", calculateSkeletons);
+  }, []);
+
+  return skeletonCount;
+};
 
 export default function EventsPage() {
   const [events, setEvents] = useState<IEvent[]>([]);
-  const [currentEvents, setCurrentEvents] = useState<IEvent[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [clubs, setClubs] = useState<IClub[]>([]);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUpcomingEvents, setCurrentUpcomingEvents] = useState<IEvent[]>([]);
+  const [currentPastEvents, setCurrentPastEvents] = useState<IEvent[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  const pathname = usePathname();
+  const skeletonCount = useSkeletonCount();
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        setIsLoading(true);
-        const response = await axios.get<IEvent[]>("/api/events");
-        setEvents(response.data);
-      } catch (error) {
-        console.error("Error fetching API message:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    const fetchClubs = async () => {
-      try {
-        setIsLoading(true);
-        const response = await axios.get<IClub[]>("/api/clubs");
-        setClubs(response.data);
-      } catch (error) {
-        console.error("Error fetching API message:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchEvents().then(() => fetchClubs());
+    setIsLoggedIn(document.cookie.includes("token="));
   }, []);
+
+  const featuredEvents = useMemo(() => {
+    if (!events.length) return [];
+    return [events[0]];
+  }, [events]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsInitialLoading(true);
+        setError(null);
+
+        const [eventsResponse, clubsResponse] = await Promise.all([
+          axios.get<IEvent[]>("/api/events"),
+          axios.get<IClub[]>("/api/clubs"),
+        ]);
+
+        setEvents(eventsResponse.data);
+        setClubs(clubsResponse.data);
+
+        // Split and sort events
+        const now = new Date();
+        const upcoming = eventsResponse.data
+          .filter((event) => new Date(event.start) >= now)
+          .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+
+        const past = eventsResponse.data
+          .filter((event) => new Date(event.start) < now)
+          .sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime());
+
+        setCurrentUpcomingEvents(upcoming);
+        setCurrentPastEvents(past);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setError("Failed to load events. Please try again later.");
+      } finally {
+        setIsInitialLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen">
+        <Header />
+        <main className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] px-4">
+          <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="p-3 bg-violet-100 rounded-full">
+                <MdLockOutline className="w-8 h-8 text-violet-600" />
+              </div>
+              <h1 className="text-2xl font-bold text-gray-900">Welcome to YaleClubs Events</h1>
+              <p className="text-lg text-gray-600">Discover and join exciting events happening around our campus</p>
+            </div>
+            <div className="p-4 rounded-md text-center">
+              <p className="text-gray-700">
+                Please{" "}
+                <a
+                  href={`/api/auth/redirect?from=${pathname}`}
+                  className="inline-flex items-center font-semibold text-violet-600 hover:text-violet-500 transition-colors"
+                >
+                  log in
+                  <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>{" "}
+                to view and participate in events
+              </p>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <AuthWrapper>
-      <main className="w-full">
-        <section className="h-screen">
-          <Header />
-          <div className="flex flex-col w-full h-screen px-5 md:px-20">
+      <main className="flex flex-col min-h-screen">
+        <Header />
+        <div className="flex-grow">
+          <div className="flex flex-col w-full px-5 md:px-20">
             <div className="mt-20 md:mt-24"></div>
-            <div className=" flex flex-col md:flex-row lg:flex-row items-center justify-between">
+
+            <div className="flex flex-col md:flex-row lg:flex-row items-center justify-between mb-6">
               <SearchControlEvent
                 clubsForFilter={clubs}
                 events={events}
-                setCurrentEvents={setCurrentEvents}
-                setIsLoading={setIsLoading}
+                setCurrentUpcomingEvents={setCurrentUpcomingEvents}
+                setCurrentPastEvents={setCurrentPastEvents}
               />
-              <Link href="/CreateUpdateEvent">
-                <button className="flex mb-3 items-center font-semibold  justify-center gap-2 flex-row rounded-full text-xl drop-shadow-md transition hover:shadow-lg  hover:bg-violet-500 bg-violet-600 text-white px-5 py-3">
-                  <FaPlus /> Create Event
-                </button>
-              </Link>
             </div>
-            <h1 className="text-3xl font-bold text-black">Discover Events</h1>
-            <h2 className="text-xl mb-4 md:mb-8">Finding Upcoming Campus Events has Never Been Easier.</h2>
-            <Catalog clubs={clubs} events={currentEvents} isLoading={isLoading} />
-            <Footer />
+
+            <div className="flex items-center justify-between w-full">
+              <div className="flex-1">
+                <h1 className="text-3xl font-bold text-black">Discover Events</h1>
+                <h2 className="text-xl mb-4 md:mb-8">Finding Upcoming Campus Events has Never Been Easier.</h2>
+              </div>
+              <div className="flex items-center">
+                <Link href="/CreateUpdateEvent">
+                  <button className="flex items-center font-semibold justify-center gap-2 flex-row rounded-full text-xl drop-shadow-md transition hover:shadow-lg hover:bg-violet-500 bg-violet-600 text-white px-5 py-3">
+                    <FaPlus /> Create Event
+                  </button>
+                </Link>
+              </div>
+            </div>
+
+            {error && <div className="w-full p-4 mb-4 text-red-700 bg-red-100 rounded-lg">{error}</div>}
+
+            <div className="w-full">
+              <Catalog
+                clubs={clubs}
+                featuredEvents={featuredEvents}
+                upcomingEvents={currentUpcomingEvents}
+                pastEvents={currentPastEvents}
+                isLoading={isInitialLoading}
+                showFeatured={currentUpcomingEvents.length + currentPastEvents.length === events.length}
+                skeletonCount={skeletonCount}
+              />
+            </div>
           </div>
-        </section>
-        {/* <SurveyBanner /> */}
+        </div>
+        <Footer />
       </main>
     </AuthWrapper>
   );
