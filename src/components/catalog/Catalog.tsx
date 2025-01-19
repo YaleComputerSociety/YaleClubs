@@ -81,7 +81,6 @@ const Catalog = ({ clubs, isLoading, followedClubs, setFollowedClubs }: CatalogP
           )}
         </div>
       )}
-      {selectedClub && <ClubModal club={selectedClub} onClose={handleCloseModal} />}
     </div>
   );
 };

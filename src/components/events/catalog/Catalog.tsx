@@ -4,6 +4,7 @@ import FeaturedEventCard from "./FeaturedEventCard";
 import { IEvent } from "@/lib/models/Event";
 import EventModal from "./EventModal";
 import { IClub } from "@/lib/models/Club";
+import Carousel from "./Carousel";
 
 interface CatalogProps {
   clubs: IClub[];
@@ -22,7 +23,7 @@ const Catalog = ({ events, clubs, isLoading }: CatalogProps) => {
   const otherEvents = events.slice(2);
 
   return (
-    <div className="mt-1 md:mt-4">
+    <div>
       {isLoading ? (
         <div className="flex justify-center items-center mt-10">
           <div className="w-8 h-8 border-4 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
@@ -32,32 +33,33 @@ const Catalog = ({ events, clubs, isLoading }: CatalogProps) => {
           No Upcoming Events found - if you&apos;re a club leader click Create Event to get started!
         </div>
       ) : (
-        <div>
-          <h1 className="text-3xl font-bold text-black">Discover Events</h1>
-          <h2 className="text-xl mb-4 md:mb-8">Finding Upcoming Campus Events has Never Been Easier.</h2>
-          <div className="grid gap-5 md:gap-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {featuredEvents.map((event) => (
-                <FeaturedEventCard key={event._id} event={event} onClick={() => handleClickEvent(event)} />
-              ))}
-            </div>
+        <div className="flex flex-col gap-8">
+          {/* <div>
+            {featuredEvents.map((event) => (
+              <FeaturedEventCard key={event._id} event={event} onClick={() => handleClickEvent(event)} />
+            ))}
+          </div> */}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+          <Carousel items={featuredEvents} ItemComponent={FeaturedEventCard} />
+
+          <div>
+            <h1 className="text-2xl font-bold mb-4">Upcoming Events</h1>
+            <div className="flex flex-wrap gap-3 justify-start">
               {otherEvents.map((event) => (
                 <EventCard key={event._id} event={event} onClick={() => handleClickEvent(event)} />
               ))}
             </div>
-
-            {selectedEvent && (
-              <EventModal
-                associatedClubLeaders={clubs
-                  .filter((club) => selectedEvent.clubs?.includes(club.name))
-                  .flatMap((club) => club.leaders)}
-                event={selectedEvent}
-                onClose={handleCloseModal}
-              />
-            )}
           </div>
+
+          {selectedEvent && (
+            <EventModal
+              associatedClubLeaders={clubs
+                .filter((club) => selectedEvent.clubs?.includes(club.name))
+                .flatMap((club) => club.leaders)}
+              event={selectedEvent}
+              onClose={handleCloseModal}
+            />
+          )}
         </div>
       )}
     </div>

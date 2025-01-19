@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AuthWrapper from "@/components/AuthWrapper";
-import SearchWrapper from "@/components/search/SearchWrapper";
 import SearchControlEvent from "@/components/events/catalog/SearchControlEvents";
 import { IEvent } from "@/lib/models/Event";
 import { useState } from "react";
@@ -56,21 +55,20 @@ export default function EventsPage() {
           <div className="flex flex-col w-full h-screen px-5 md:px-20">
             <div className="mt-20 md:mt-24"></div>
             <div className=" flex flex-col md:flex-row lg:flex-row items-center justify-between">
-              <SearchWrapper>
-                <SearchControlEvent
-                  clubsForFilter={clubs}
-                  events={events}
-                  setCurrentEvents={setCurrentEvents}
-                  setIsLoading={setIsLoading}
-                />
-              </SearchWrapper>
+              <SearchControlEvent
+                clubsForFilter={clubs}
+                events={events}
+                setCurrentEvents={setCurrentEvents}
+                setIsLoading={setIsLoading}
+              />
               <Link href="/CreateUpdateEvent">
                 <button className="flex mb-3 items-center font-semibold  justify-center gap-2 flex-row rounded-full text-xl drop-shadow-md transition hover:shadow-lg  hover:bg-violet-500 bg-violet-600 text-white px-5 py-3">
                   <FaPlus /> Create Event
                 </button>
               </Link>
             </div>
-
+            <h1 className="text-3xl font-bold text-black">Discover Events</h1>
+            <h2 className="text-xl mb-4 md:mb-8">Finding Upcoming Campus Events has Never Been Easier.</h2>
             <Catalog clubs={clubs} events={currentEvents} isLoading={isLoading} />
             <Footer />
           </div>

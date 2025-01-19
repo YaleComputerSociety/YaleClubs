@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, Suspense } from "react";
 import { dbDateToFrontendDate } from "@/lib/utils";
+
 import { IEvent, IEventInput, Tag } from "@/lib/models/Event";
 import Header from "@/components/Header";
 import AddFlyerSection from "@/components/events/update/AddFlyerSection";

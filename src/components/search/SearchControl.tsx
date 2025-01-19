@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
+import FollowFilter from "./FollowFilter";
+import Cookies from "js-cookie";
 import SearchBar from "./SearchBar";
 import FilterButton from "./Filter";
 import { Affiliation, Category, IClub, School } from "@/lib/models/Club";
@@ -76,14 +78,6 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
     setSearchKeyToClubName(mapping);
     setIsLoading(false);
   }, [clubs, setIsLoading]);
-
-  useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setFeaturedEvents(featuredEventsRef.current);
-    } else {
-      setFeaturedEvents([]);
-    }
-  }, [searchQuery, setFeaturedEvents]);
 
   // Filter clubs based on search query, categories, schools, and affiliations
   useEffect(() => {

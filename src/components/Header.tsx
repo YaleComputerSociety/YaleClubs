@@ -3,8 +3,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useMediaQuery } from "react-responsive";
-import { RxHamburgerMenu } from "react-icons/rx";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);

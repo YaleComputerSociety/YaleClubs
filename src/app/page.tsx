@@ -36,7 +36,7 @@ export default function Home() {
   }
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchApiMessage = async () => {
       try {
         const [clubsResponse, eventsResponse] = await Promise.all([
           axios.get<IClub[]>("/api/clubs"),

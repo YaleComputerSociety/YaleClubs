@@ -35,9 +35,9 @@ export async function POST(req: Request): Promise<NextResponse> {
     }
 
     // Validate required fields
-    if (!body.name || !body.description || !body.clubs || !body.start || !body.location) {
+    if (!body.name || !body.description || !body.clubs || !body.start || !body.location || !body.flyer) {
       return NextResponse.json(
-        { error: "Name, description, club, start and location are required fields." },
+        { error: "Name, description, club, start, flyer and location are required fields." },
         { status: 400 },
       );
     }
