@@ -46,7 +46,7 @@ const Banner = ({ onHeightChange }: { onHeightChange: (height: number) => void }
   return (
     <div
       ref={bannerRef}
-      className={`fixed ${isMobile ? "py-4" : "py-5"} top-0 left-0 right-0 z-50 bg-clubTaro text-white transition-transform duration-1000 ${
+      className={`fixed ${isMobile ? "py-4" : "py-5"} top-0 left-0 right-0 z-50 bg-clubPurple text-white transition-transform duration-1000 ${
         isVisible ? "translate-y-0" : "-translate-y-full"
       }`}
     >

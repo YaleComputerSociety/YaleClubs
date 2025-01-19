@@ -47,6 +47,9 @@ const Header = () => {
     }
   };
 
+  const authButton =
+    "px-6 py-2 text-sm font-medium text-white bg-clubPurple rounded-full shadow-md hover:bg-clubBlurple focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap";
+
   return (
     <div
       style={{ marginTop: `${bannerHeight}px` }}
@@ -87,16 +90,12 @@ const Header = () => {
                           handleLogout();
                           setIsMenuOpen(false);
                         }}
-                        className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-clubTaro to-clubTaro rounded-full shadow-md hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
+                        className={authButton}
                       >
                         Sign Out
                       </button>
                     ) : (
-                      <Link
-                        href="/api/auth/redirect"
-                        onClick={() => setIsMenuOpen(false)}
-                        className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-clubTaro to-clubTaro rounded-full shadow-md hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
-                      >
+                      <Link href="/api/auth/redirect" onClick={() => setIsMenuOpen(false)} className={authButton}>
                         Sign In
                       </Link>
                     )}
@@ -117,17 +116,11 @@ const Header = () => {
               Feedback
             </Link>
             {isLoggedIn ? (
-              <button
-                onClick={handleLogout}
-                className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-clubTaro to-clubTaro rounded-full shadow-md hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
-              >
+              <button onClick={handleLogout} className={authButton}>
                 Sign Out
               </button>
             ) : (
-              <Link
-                href="/api/auth/redirect"
-                className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-clubTaro to-clubTaro rounded-full shadow-md hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
-              >
+              <Link href="/api/auth/redirect" className={authButton}>
                 Sign In
               </Link>
             )}
