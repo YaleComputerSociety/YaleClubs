@@ -411,8 +411,8 @@ const UpdatePage = () => {
                   )}
                   <div className="mt-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {formData.recruitmentStatus === RecruitmentStatus.APPOPENS && "Application Closes"}
-                      {formData.recruitmentStatus === RecruitmentStatus.APPENDS && "Application Closes"}
+                      {formData.recruitmentStatus === RecruitmentStatus.APPOPENS && "Application Closes (Midnight of)"}
+                      {formData.recruitmentStatus === RecruitmentStatus.APPENDS && "Application Closes (Midnight of)"}
                       <input
                         type="date"
                         value={
