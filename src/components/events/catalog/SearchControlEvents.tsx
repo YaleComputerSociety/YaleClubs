@@ -1,4 +1,3 @@
-// SearchControlEvent.tsx
 import React, { useEffect, useState } from "react";
 import SearchBar from "@/components/search/SearchBar";
 import Filter from "@/components/search/Filter";
@@ -83,21 +82,23 @@ const SearchControlEvent = ({
   }, [searchQuery, selectedTags, selectedClubs, trie, setCurrentUpcomingEvents, setCurrentPastEvents, events]);
 
   return (
-    <div className="search-control flex flex-wrap gap-2 max-w-[1400px] flex-col items-center sm:flex-row pb-4">
+    <div className="search-control w-full flex flex-col sm:flex-row flex-wrap gap-2 items-center pb-4">
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      <Filter
-        selectedItems={selectedClubs}
-        setSelectedItems={setSelectedClubs}
-        allItems={clubsForFilter.map((club) => club.name)}
-        label="Clubs"
-        showInput={true}
-      />
-      <Filter
-        selectedItems={selectedTags}
-        setSelectedItems={setSelectedTags}
-        allItems={Object.values(Tag).slice(1)}
-        label="Tags"
-      />
+      <div className="flex flex-wrap gap-2 sm:flex-row sm:gap-4 justify-start">
+        <Filter
+          selectedItems={selectedClubs}
+          setSelectedItems={setSelectedClubs}
+          allItems={clubsForFilter.map((club) => club.name)}
+          label="Clubs"
+          showInput={true}
+        />
+        <Filter
+          selectedItems={selectedTags}
+          setSelectedItems={setSelectedTags}
+          allItems={Object.values(Tag).slice(1)}
+          label="Tags"
+        />
+      </div>
     </div>
   );
 };

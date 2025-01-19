@@ -62,96 +62,88 @@ const Header = () => {
           <div className="ml-5 font-semibold text-xl">YaleClubs</div>
         </Link>
 
-      {isMobile ? (
-        <div className="relative">
-          <button onClick={() => setIsMenuOpen((prev) => !prev)} className="text-4xl focus:outline-none">
-            ☰
-          </button>
-          {isMenuOpen && (
-            <div className="absolute right-0 top-full bg-white shadow-lg rounded-md p-10">
-              <ul className="flex flex-col items-start gap-4">
-                <li>
-                  <Link href="/Events" onClick={() => setIsMenuOpen(false)}>
-                    Events
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/Catalog" onClick={() => setIsMenuOpen(false)}>
-                    Catalog
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/About" onClick={() => setIsMenuOpen(false)}>
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="https://docs.google.com/forms/d/e/1FAIpQLSdBM9ccbynx2eQKVdCkpPDW-sIJArTWqUlMGGKuXz175iq0Og/viewform?usp=sf_link"
-                    target="_blank"
-                  >
-                    Feedback
-                  </Link>
-                </li>
-                <li>
-                  {isLoggedIn ? (
-                    <button
-                      onClick={() => {
-                        handleLogout();
-                        setIsMenuOpen(false);
-                      }}
-                      className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-clubTaro to-clubTaro rounded-full shadow-md hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
-                    >
-                      Sign Out
-                    </button>
-                  ) : (
-                    <Link
-                      href="/api/auth/redirect"
-                      onClick={() => setIsMenuOpen(false)}
-                      className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-clubTaro to-clubTaro rounded-full shadow-md hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
-                    >
-                      Sign In
-                    </Link>
-                  )}
-                </li>
-              </ul>
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="hidden sm:flex flex-row items-center gap-x-11">
-          <Link href="/Events">
-            <div className="text-md">Events</div>
-          </Link>
-          <Link href="/Catalog">
-            <div className="text-md">Catalog</div>
-          </Link>
-          <Link href="/About">
-            <div className="text-md">About</div>
-          </Link>
-          <Link
-            href="https://docs.google.com/forms/d/e/1FAIpQLSdBM9ccbynx2eQKVdCkpPDW-sIJArTWqUlMGGKuXz175iq0Og/viewform?usp=sf_link"
-            target="_blank"
-          >
-            Feedback
-          </Link>
-          {isLoggedIn ? (
-            <button
-              onClick={handleLogout}
-              className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-clubTaro to-clubTaro rounded-full shadow-md hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
-            >
-              Sign Out
+        {isMobile ? (
+          <div className="relative">
+            <button onClick={() => setIsMenuOpen((prev) => !prev)} className="text-4xl focus:outline-none">
+              ☰
             </button>
-          ) : (
-            <Link
-              href="/api/auth/redirect"
-              className="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-clubTaro to-clubTaro rounded-full shadow-md hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
-            >
-              Sign In
+            {isMenuOpen && (
+              <div className="absolute right-0 top-full bg-white shadow-lg rounded-md p-10">
+                <ul className="flex flex-col items-start gap-4">
+                  <li>
+                    <Link href="/Events" onClick={() => setIsMenuOpen(false)}>
+                      Events
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/" onClick={() => setIsMenuOpen(false)}>
+                      Catalog
+                    </Link>
+                  </li>
+
+                  <li>
+                    <Link href="/About" onClick={() => setIsMenuOpen(false)}>
+                      About
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="https://docs.google.com/forms/d/e/1FAIpQLSdBM9ccbynx2eQKVdCkpPDW-sIJArTWqUlMGGKuXz175iq0Og/viewform?usp=sf_link"
+                      target="_blank"
+                    >
+                      Feedback
+                    </Link>
+                  </li>
+                  <li>
+                    {isLoggedIn ? (
+                      <button
+                        onClick={() => {
+                          handleLogout();
+                          setIsMenuOpen(false);
+                        }}
+                        className={authButton}
+                      >
+                        Sign Out
+                      </button>
+                    ) : (
+                      <Link href="/api/auth/redirect" onClick={() => setIsMenuOpen(false)} className={authButton}>
+                        Sign In
+                      </Link>
+                    )}
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="hidden sm:flex flex-row items-center gap-x-11">
+            <Link href="/Events">
+              <div className="text-md">Events</div>
             </Link>
-          )}
-        </div>
-      )}
+            <Link href="/">
+              <div className="text-md">Catalog</div>
+            </Link>
+            <Link href="/About">
+              <div className="text-md">About</div>
+            </Link>
+            <Link
+              href="https://docs.google.com/forms/d/e/1FAIpQLSdBM9ccbynx2eQKVdCkpPDW-sIJArTWqUlMGGKuXz175iq0Og/viewform?usp=sf_link"
+              target="_blank"
+            >
+              Feedback
+            </Link>
+            {isLoggedIn ? (
+              <button onClick={handleLogout} className={authButton}>
+                Sign Out
+              </button>
+            ) : (
+              <Link href="/api/auth/redirect" className={authButton}>
+                Sign In
+              </Link>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
