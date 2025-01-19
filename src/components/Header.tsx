@@ -3,11 +3,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import Banner from "./Banner";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [bannerHeight, setBannerHeight] = useState(0);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 767px)");
@@ -45,12 +47,20 @@ const Header = () => {
     }
   };
 
+  const authButton =
+    "px-6 py-2 text-sm font-medium text-white bg-clubPurple rounded-full shadow-md hover:bg-clubBlurple focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap";
+
   return (
-    <div className="header w-full flex flex-row fixed z-50 justify-between py-5 px-5 md:px-20 bg-background">
-      <Link href="/" className="flex flex-row items-center">
-        <Image src="/assets/logo.svg" alt="Logo" width={35} height={35} unoptimized />
-        <div className="ml-5 font-semibold text-xl">YaleClubs</div>
-      </Link>
+    <div
+      style={{ marginTop: `${bannerHeight}px` }}
+      className="w-full flex flex-col fixed z-50 transition-[margin-top] duration-1000"
+    >
+      <Banner onHeightChange={(height) => setBannerHeight(height)} />
+      <div className="flex flex-row w-full justify-between p-5 md:px-20 bg-background">
+        <Link href="/" className="flex flex-row items-center">
+          <Image src="/assets/logo.svg" alt="Logo" width={35} height={35} unoptimized />
+          <div className="ml-5 font-semibold text-xl">YaleClubs</div>
+        </Link>
 
       {isMobile ? (
         <div className="relative">
