@@ -69,7 +69,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
             day: "numeric",
           });
 
-          if (date < now) {
+          if (localDate < now) {
             return "Applications Closed";
           }
 
@@ -98,11 +98,11 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
               })
             : "";
 
-          if (endDate && endDate < now) {
+          if (endlocalDate && endlocalDate < now) {
             return "Applications Closed";
           }
 
-          if (date < now) {
+          if (localDate < now) {
             if (endDate) {
               return `Applications Close ${endformattedDate}`;
             }
@@ -120,6 +120,8 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
   const isFeatured: boolean = false;
   const applicationStatus = getApplicationStatus();
   const hasApplicationStatus = applicationStatus !== null;
+
+  console.log("date");
 
   return (
     <div className="relative w-full max-w-2xl">
