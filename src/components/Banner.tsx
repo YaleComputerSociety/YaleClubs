@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
-const Banner = () => {
+const Banner = ({ onHeightChange }: { onHeightChange: (height: number) => void }) => {
   const BANNER_DELAY = 5000;
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const bannerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 767px)");
@@ -26,21 +27,26 @@ const Banner = () => {
     if (!isClosed) {
       const timer = setTimeout(() => {
         setIsVisible(true);
+        if (bannerRef.current) {
+          onHeightChange(bannerRef.current.offsetHeight);
+        }
       }, BANNER_DELAY);
 
       return () => clearTimeout(timer);
     }
     return;
-  }, []);
+  }, [onHeightChange]);
 
   const handleClose = () => {
     setIsVisible(false);
     localStorage.setItem("bannerClosed", "true");
+    onHeightChange(0);
   };
 
   return (
     <div
-      className={`fixed ${isMobile ? "py-4" : "py-5"} top-0 left-0 right-0 z-50 bg-indigo-600 text-white transition-transform duration-500 ${
+      ref={bannerRef}
+      className={`fixed ${isMobile ? "py-4" : "py-5"} top-0 left-0 right-0 z-50 bg-clubTaro text-white transition-transform duration-1000 ${
         isVisible ? "translate-y-0" : "-translate-y-full"
       }`}
     >
