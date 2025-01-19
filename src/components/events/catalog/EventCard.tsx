@@ -26,6 +26,16 @@ const EventCard = ({ event, onClick }: EventCardProps) => {
         <div className="text-sm font-bold text-gray-600 line-clamp-1">
           {event.clubs?.length ? event.clubs.join(" x ") : "No clubs listed"}
         </div>
+
+        <div className="flex flex-col text-sm mb-2">
+          <div className="truncate">{event.location}</div>
+          <div className="truncate">
+            {new Date(event.start).toLocaleString(undefined, {
+              dateStyle: "medium",
+              timeStyle: "short",
+            })}
+          </div>
+        </div>
         <div className="flex gap-1 scrollbar-hide overflow-x-auto">
           {event.tags?.slice(0, 2).map((tag: Tag, index) => <TagBlock key={index} tag={tag} />)}
         </div>

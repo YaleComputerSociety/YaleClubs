@@ -28,40 +28,43 @@ const Carousel = <T extends IEvent>({ items, ItemComponent, onItemClick }: Carou
 
   return (
     <div className="relative w-full h-full">
-      <div className="relative h-full">
+      <div className="w-full h-full">
         <ItemComponent event={items[currentIndex]} onClick={() => onItemClick(items[currentIndex])} />
 
-        <button
-          onClick={handlePrevious}
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center 
-                   bg-white/80 hover:bg-white rounded-full shadow-lg transition-all"
-          aria-label="Previous item"
-        >
-          <MdOutlineArrowBackIos size={20} />
-        </button>
-
-        <button
-          onClick={handleNext}
-          className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center 
-                   bg-white/80 hover:bg-white rounded-full shadow-lg transition-all"
-          aria-label="Next item"
-        >
-          <MdOutlineArrowForwardIos size={20} />
-        </button>
+        <div className="absolute top-4 left-4 flex gap-2 z-10">
+          {items.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => handleDotClick(index)}
+              className={`w-2 h-2 rounded-full transition-all ${
+                index === currentIndex ? "bg-white w-4" : "bg-white/60 hover:bg-white/80 drop-shadow-lg"
+              }`}
+              aria-label={`Go to item ${index + 1}`}
+            />
+          ))}
+        </div>
       </div>
 
-      <div className="absolute top-4 left-4 flex gap-2 z-10">
-        {items.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => handleDotClick(index)}
-            className={`w-2 h-2 rounded-full transition-all ${
-              index === currentIndex ? "bg-white w-4" : "bg-white/60 hover:bg-white/80 drop-shadow-lg"
-            }`}
-            aria-label={`Go to item ${index + 1}`}
-          />
-        ))}
-      </div>
+      {/* Arrows in margins */}
+      <button
+        onClick={handlePrevious}
+        className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 
+                 flex items-center justify-center bg-white/80 hover:bg-white 
+                 rounded-full shadow-lg transition-all"
+        aria-label="Previous item"
+      >
+        <MdOutlineArrowBackIos size={20} />
+      </button>
+
+      <button
+        onClick={handleNext}
+        className="absolute right-0 top-1/2 translate-x-1/2 -translate-y-1/2 w-10 h-10 
+                 flex items-center justify-center bg-white/80 hover:bg-white 
+                 rounded-full shadow-lg transition-all"
+        aria-label="Next item"
+      >
+        <MdOutlineArrowForwardIos size={20} />
+      </button>
     </div>
   );
 };

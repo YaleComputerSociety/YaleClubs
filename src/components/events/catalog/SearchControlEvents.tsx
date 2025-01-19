@@ -24,7 +24,7 @@ const SearchControlEvent = ({
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
   const [trie, setTrie] = useState<Trie | null>(null);
-  const [isSearching, setIsSearching] = useState(false);
+  const [, setIsSearching] = useState(false);
 
   // Initialize Trie with event names once
   useEffect(() => {

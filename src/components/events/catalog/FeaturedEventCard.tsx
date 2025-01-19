@@ -13,7 +13,6 @@ type FeaturedEventCardProps = {
 const FeaturedEventCard = ({ event, onClick }: FeaturedEventCardProps) => {
   return (
     <div className="relative w-full h-96 rounded-xl overflow-hidden cursor-pointer group" onClick={onClick}>
-      {/* Background Image */}
       <Image
         src={event?.flyer && event?.flyer.trim() !== "" ? event?.flyer : "/assets/default-background.png"}
         alt="Event Flyer"
@@ -22,7 +21,6 @@ const FeaturedEventCard = ({ event, onClick }: FeaturedEventCardProps) => {
         priority
       />
 
-      {/* Gradient Overlay */}
       <>
         <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
@@ -34,7 +32,7 @@ const FeaturedEventCard = ({ event, onClick }: FeaturedEventCardProps) => {
           {event.clubs?.length ? event.clubs.join(" x ") : "No clubs listed"}
         </div>
 
-        {/* <div className="flex flex-col text-sm text-gray-300 mb-2">
+        <div className="flex flex-col text-sm text-white mb-2">
           <div className="truncate">{event.location}</div>
           <div className="truncate">
             {new Date(event.start).toLocaleString(undefined, {
@@ -42,7 +40,7 @@ const FeaturedEventCard = ({ event, onClick }: FeaturedEventCardProps) => {
               timeStyle: "short",
             })}
           </div>
-        </div> */}
+        </div>
         <div className="flex gap-2 mb-3 overflow-x-auto scrollbar-hide whitespace-nowrap">
           {event.tags?.map((tag: Tag, index) => <TagBlock key={index} tag={tag} />)}
         </div>

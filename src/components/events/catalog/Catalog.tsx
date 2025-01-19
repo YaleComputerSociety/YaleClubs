@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import EventCard from "./EventCard";
 import FeaturedEventCard from "./FeaturedEventCard";
 import { IEvent } from "@/lib/models/Event";
