@@ -15,6 +15,15 @@ export async function GET(): Promise<NextResponse> {
   }
 }
 
+const admin_emails = [
+  "lucas.huang@yale.edu",
+  "addison.goolsbee@yale.edu",
+  "francis.fan@yale.edu",
+  "grady.yu@yale.edu",
+  "lauren.lee.ll2243@yale.edu",
+  "koray.akduman@yale.edu",
+];
+
 // POST request
 export async function POST(req: Request): Promise<NextResponse> {
   try {
@@ -117,7 +126,15 @@ export async function PUT(req: Request): Promise<NextResponse> {
     }
 
     // Disallow updates to restricted fields
-    const restrictedFields = ["yaleConnectId", "scraped", "inactive", "_id", "createdAt", "updatedAt"];
+    const restrictedFields = [
+      "yaleConnectId",
+      "scraped",
+      "inactive",
+      "_id",
+      "createdAt",
+      "updatedAt",
+      "followersCount",
+    ];
     const validUpdateData = Object.fromEntries(Object.entries(body).filter(([key]) => !restrictedFields.includes(key)));
 
     if (Object.keys(validUpdateData).length === 0) {
@@ -197,8 +214,8 @@ export async function DELETE(req: Request): Promise<NextResponse> {
     // Connect to the database
     await connectToDatabase();
 
-    const netid = req.headers.get("X-NetID");
-    if (netid !== "admin_a1b2c3e") {
+    const email = req.headers.get("X-Email");
+    if (!(email === "admin_a1b2c3e" || (email && admin_emails.includes(email)))) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

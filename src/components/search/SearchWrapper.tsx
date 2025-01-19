@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState, useRef } from "react";
 
 const SearchWrapper = ({ children }: { children: React.ReactNode }) => {
@@ -46,7 +48,7 @@ const SearchWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <div
-        className={`${isSticky ? "fixed left-0 w-full z-50 bg-white shadow px-5 md:py-2 md:px-20" : ""}`}
+        className={`${isSticky ? "fixed left-0 w-full z-40 bg-white shadow px-5 md:py-2 md:px-20" : ""}`}
         style={{ top: `${headerHeight}px` }}
       >
         {children}

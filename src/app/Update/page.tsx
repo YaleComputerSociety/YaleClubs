@@ -1,9 +1,16 @@
-// NEED TO DO's
-// 1. id and name attributes for the labels and inputs so chrome doesn't freak out
 "use client";
 
 import React, { useEffect, useState, Suspense } from "react";
-import { IClub, IClubInput, Category, Affiliation, ClubLeader, Intensity, School } from "@/lib/models/Club";
+import {
+  IClub,
+  IClubInput,
+  Category,
+  Affiliation,
+  ClubLeader,
+  Intensity,
+  School,
+  RecruitmentStatus,
+} from "@/lib/models/Club";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useSearchParams } from "next/navigation";
@@ -11,11 +18,13 @@ import Link from "next/link";
 import EditableImageSection from "@/components/update/EditImage";
 import ClubLeadersSection from "@/components/update/EditLeaders";
 import CategoriesDropdown from "@/components/update/ClubCategories";
-import IntensityDropdown from "@/components/update/IntensityDropdown";
+// import IntensityDropdown from "@/components/update/IntensityDropdown";
 import SchoolDropdown from "@/components/update/SchoolDropdown";
 
 import { getCookie } from "cookies-next";
 import AffiliationsDropdown from "@/components/update/ClubAffiliation";
+import RecruitmentStatusDropdown from "@/components/update/RecruitmentDropdown";
+import AliasesDropdown from "@/components/update/ClubAliases";
 
 const UpdatePage = () => {
   const searchParams = useSearchParams();
@@ -41,15 +50,37 @@ const UpdatePage = () => {
     intensity: Intensity.CASUAL,
     howToJoin: "",
     school: School.COLLEGE,
+    inactive: false,
+    scraped: false,
+    recruitmentStatus: RecruitmentStatus.NOSELECTION,
+    recruitmentStartDate: undefined,
+    recruitmentEndDate: undefined,
+    aliases: [],
   });
   const [isLoading, setIsLoading] = useState(true);
 
+  function isValidUrl(value: string): boolean {
+    try {
+      // Will throw if `value` isn't a valid URL
+      new URL(value);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   const validateInput = (field: keyof IClubInput, value: string): string => {
+    const validSchools = Object.values(School) as string[];
+
     switch (field) {
       case "name":
         if (!value) return "Name is required.";
-        if (value.length < 3) return "Name must be at least 3 characters.";
-        if (value.length > 100) return "Name must not exceed 100 characters.";
+        if (value.length < 2) return "Name must be at least 2 characters.";
+        if (value.length > 150) return "Name must not exceed 150 characters.";
+        return "";
+      case "school":
+        if (!value) return "School is required.";
+        if (!validSchools.includes(value)) return "Invalid school value. Please select a valid school.";
         return "";
       case "email":
         if (!value) return "";
@@ -64,7 +95,7 @@ const UpdatePage = () => {
       case "numMembers":
         if (!value) return "";
         if (Number(value) < 0) return "Number of members cannot be negative.";
-        if (Number(value) > 100000) return "Number of members must not exceed 100,000.";
+        if (Number(value) > 10000) return "Number of members must not exceed 10,000.";
         return "";
       case "instagram":
         if (!value) return "";
@@ -84,7 +115,7 @@ const UpdatePage = () => {
         if (value && value.length > 200) return "Mailing list form must not exceed 200 characters.";
         return "";
       case "calendarLink":
-        if (value && value.length > 200) return "Calendary link must not exceed 200 characters.";
+        if (value && value.length > 200) return "Calendar link must not exceed 200 characters.";
         return "";
       case "meeting":
         if (value && value.length > 200) return `${field} must not exceed 200 characters.`;
@@ -94,8 +125,15 @@ const UpdatePage = () => {
         return "";
       case "backgroundImage":
       case "logo":
-        if (value && value.length > 300) return `${field} URL must not exceed 300 characters.`;
+        if (value && value.length > 600) return `${field} URL must not exceed 600 characters.`;
+        if (value && !isValidUrl(value)) return "Invalid URL.";
         return "";
+      // case "recruitmentStartDate":
+      //   if (!value) return "Needs start date.";
+      //   return "";
+      // case "recruitmentEndDate":
+      //   if (!value) return "Needs end date.";
+      //   return "";
       default:
         return "";
     }
@@ -131,6 +169,12 @@ const UpdatePage = () => {
               intensity: Intensity[specificClub.intensity as keyof typeof Intensity] || Intensity.CASUAL,
               howToJoin: specificClub.howToJoin || "",
               school: specificClub.school || School.COLLEGE,
+              inactive: specificClub.inactive || false,
+              scraped: specificClub.scraped || false,
+              recruitmentStatus: specificClub.recruitmentStatus || RecruitmentStatus.NOSELECTION,
+              recruitmentStartDate: specificClub.recruitmentStartDate || undefined,
+              recruitmentEndDate: specificClub.recruitmentEndDate || undefined,
+              aliases: specificClub.aliases || [],
             };
             setClub(specificClub);
             setFormData(clubInput);
@@ -148,7 +192,18 @@ const UpdatePage = () => {
 
   const handleChange = (
     field: keyof IClubInput,
-    value: string | number | ClubLeader[] | Affiliation[] | undefined | Category[] | School | Intensity,
+    value:
+      | string
+      | number
+      | ClubLeader[]
+      | Affiliation[]
+      | undefined
+      | Category[]
+      | School
+      | Intensity
+      | RecruitmentStatus
+      | Date
+      | string[],
   ) => {
     const error = validateInput(field as keyof IClubInput, value !== undefined ? String(value) : "");
     setValidationErrors((prev) => ({ ...prev, [field]: error }));
@@ -165,6 +220,11 @@ const UpdatePage = () => {
       },
       {} as Record<string, string>,
     );
+
+    if (Array.isArray(formData.categories)) {
+      const validCategories = Object.values(Category) as string[]; // Convert enum to string array
+      formData.categories = formData.categories.filter((cat) => validCategories.includes(cat as string));
+    }
 
     setValidationErrors(errors);
 
@@ -183,7 +243,6 @@ const UpdatePage = () => {
       }
     });
 
-    console.table(formData);
     const clubId = searchParams.get("clubId");
     const token = getCookie("token");
     if (clubId && token) {
@@ -240,6 +299,8 @@ const UpdatePage = () => {
     );
   }
 
+  console.log("formData", formData);
+
   return (
     <div className="flex flex-col">
       <Header />
@@ -255,7 +316,7 @@ const UpdatePage = () => {
             <div className="w-16"></div>
           </div>
 
-          <EditableImageSection formData={formData} handleChange={handleChange} />
+          <EditableImageSection formData={formData} handleChange={handleChange} validationErrors={validationErrors} />
           <div className="grid grid-cols-3 gap-4 py-8">
             {/* Left Section */}
             <div className="space-y-2">
@@ -273,18 +334,8 @@ const UpdatePage = () => {
                   </label>
                   {validationErrors.subheader && <p className="text-red-500">{validationErrors.subheader}</p>}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Subheader
-                    <input
-                      type="text"
-                      value={formData.subheader ?? ""}
-                      onChange={(e) => handleChange("subheader", e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg p-2"
-                      placeholder="Subheader"
-                    />
-                  </label>
-                  {validationErrors.subheader && <p className="text-red-500">{validationErrors.subheader}</p>}
+                <div className="space-y-0">
+                  <AliasesDropdown selectedAliases={formData.aliases || []} handleChange={handleChange} />
                 </div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Description
@@ -306,70 +357,79 @@ const UpdatePage = () => {
               <div className="space-y-0">
                 <AffiliationsDropdown selectedAffiliations={formData.affiliations || []} handleChange={handleChange} />
               </div>
-              <SchoolDropdown selectedSchool={(formData.school as School) ?? ""} handleChange={handleChange} />
+              <div className="space-y-0">
+                <SchoolDropdown selectedSchool={(formData.school as School) ?? ""} handleChange={handleChange} />
+              </div>
             </div>
 
             {/* Center Section */}
             <div className="space-y-2">
               <ClubLeadersSection leaders={formData.leaders || []} handleChange={handleChange} />
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Membership
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    value={formData.numMembers || ""}
-                    onChange={(e) => handleChange("numMembers", parseInt(e.target.value) || 0)}
-                    className="w-full border border-gray-300 rounded-lg p-2"
-                    placeholder="Enter number of members"
-                  />
-                </label>
-                {validationErrors.numMembers && <p className="text-red-500">{validationErrors.numMembers}</p>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Application Form
-                  <input
-                    type="text"
-                    value={formData.applyForm ?? ""}
-                    onChange={(e) => handleChange("applyForm", e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-2"
-                    placeholder="Link to application form"
-                  />
-                </label>
-                {validationErrors.applyForm && <p className="text-red-500">{validationErrors.applyForm}</p>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Mailing List Form
-                  <input
-                    type="text"
-                    value={formData.mailingListForm ?? ""}
-                    onChange={(e) => handleChange("mailingListForm", e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-2"
-                    placeholder="Link to mailing list form"
-                  />
-                </label>
-                {validationErrors.mailingListForm && <p className="text-red-500">{validationErrors.mailingListForm}</p>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  How to join
-                  <input
-                    type="text"
-                    value={formData.howToJoin ?? ""}
-                    onChange={(e) => handleChange("howToJoin", e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-2"
-                    placeholder="How to join"
-                  />
-                </label>
-                {validationErrors.howToJoin && <p className="text-red-500">{validationErrors.howToJoin}</p>}
-              </div>
             </div>
 
             {/* Right Section */}
             <div className="space-y-2">
+              <RecruitmentStatusDropdown
+                selectedRecruitment={formData.recruitmentStatus as RecruitmentStatus}
+                handleChange={handleChange}
+              />
+              {(formData.recruitmentStatus === RecruitmentStatus.APPENDS ||
+                formData.recruitmentStatus === RecruitmentStatus.APPOPENS) && (
+                <div className="bg-gray-300 rounded-lg p-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Application Form
+                      <input
+                        type="text"
+                        value={formData.applyForm ?? ""}
+                        onChange={(e) => handleChange("applyForm", e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg p-2"
+                        placeholder="Link to application form"
+                      />
+                    </label>
+                    {validationErrors.applyForm && <p className="text-red-500">{validationErrors.applyForm}</p>}
+                  </div>
+                  {formData.recruitmentStatus === RecruitmentStatus.APPOPENS && (
+                    <div className="mt-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {formData.recruitmentStatus === RecruitmentStatus.APPOPENS && "Application Opens"}
+                        <input
+                          type="date"
+                          value={
+                            formData.recruitmentStartDate
+                              ? new Date(formData.recruitmentStartDate).toISOString().split("T")[0]
+                              : ""
+                          }
+                          onChange={(e) => handleChange("recruitmentStartDate", e.target.value)}
+                          className="w-full border border-gray-300 rounded-lg p-2"
+                        />
+                      </label>
+                      {validationErrors.applicationDeadline && (
+                        <p className="text-red-500">{validationErrors.applicationDeadline}</p>
+                      )}
+                    </div>
+                  )}
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {formData.recruitmentStatus === RecruitmentStatus.APPOPENS && "Application Closes (Midnight of)"}
+                      {formData.recruitmentStatus === RecruitmentStatus.APPENDS && "Application Closes (Midnight of)"}
+                      <input
+                        type="date"
+                        value={
+                          formData.recruitmentEndDate
+                            ? new Date(formData.recruitmentEndDate).toISOString().split("T")[0]
+                            : ""
+                        }
+                        onChange={(e) => handleChange("recruitmentEndDate", e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg p-2"
+                      />
+                    </label>
+                    {validationErrors.applicationDeadline && (
+                      <p className="text-red-500">{validationErrors.applicationDeadline}</p>
+                    )}
+                  </div>
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Instagram
@@ -411,6 +471,47 @@ const UpdatePage = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Membership
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={formData.numMembers || ""}
+                    onChange={(e) => handleChange("numMembers", parseInt(e.target.value) || 0)}
+                    className="w-full border border-gray-300 rounded-lg p-2"
+                    placeholder="Enter number of members"
+                  />
+                </label>
+                {validationErrors.numMembers && <p className="text-red-500">{validationErrors.numMembers}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Mailing List Form
+                  <input
+                    type="text"
+                    value={formData.mailingListForm ?? ""}
+                    onChange={(e) => handleChange("mailingListForm", e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-2"
+                    placeholder="Link to mailing list form"
+                  />
+                </label>
+                {validationErrors.mailingListForm && <p className="text-red-500">{validationErrors.mailingListForm}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  How to join
+                  <input
+                    type="text"
+                    value={formData.howToJoin ?? ""}
+                    onChange={(e) => handleChange("howToJoin", e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg p-2"
+                    placeholder="How to join"
+                  />
+                </label>
+                {validationErrors.howToJoin && <p className="text-red-500">{validationErrors.howToJoin}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Calendar Link
                   <input
                     type="url"
@@ -435,7 +536,7 @@ const UpdatePage = () => {
                 </label>
                 {validationErrors.meeting && <p className="text-red-500">{validationErrors.meeting}</p>}
               </div>
-              <IntensityDropdown selectedIntensity={formData.intensity as Intensity} handleChange={handleChange} />
+              {/* <IntensityDropdown selectedIntensity={formData.intensity as Intensity} handleChange={handleChange} /> */}
             </div>
           </div>
 

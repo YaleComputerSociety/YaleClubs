@@ -49,7 +49,7 @@ const AboutPage: React.FC = () => {
 const teamMembers = [
   {
     name: "Addison Goolsbee",
-    role: "Team Lead",
+    role: "CEO",
     website: "https://addisongoolsbee.com",
     headshot: "/assets/people/addison.jpg",
     linkedin: "https://www.linkedin.com/in/addisongoolsbee/",
@@ -96,10 +96,60 @@ const teamMembers = [
   {
     name: "Ethan Mathieu",
     role: "Developer",
-    headshot: "/assets/people/ethan.png",
-    website: "https://ethanmathieu.com",
+    headshot: "/assets/people/ethan.jpg",
+    website: "https://ethanmathieu.com/",
     linkedin: "https://www.linkedin.com/in/ethan-mathieu/",
     github: "https://github.com/emath12",
+  },
+  {
+    name: "Marie Bong",
+    role: "Marketing Lead",
+    headshot: "/assets/people/marie.jpg",
+    linkedin: "https://www.linkedin.com/in/mariebong/",
+  },
+  {
+    name: "Michelle Zheng",
+    role: "CMO",
+    headshot: "/assets/people/michy.jpg",
+    linkedin: "https://www.linkedin.com/in/mzheng8/overlay/photo/",
+  },
+  {
+    name: "Amanda Huang",
+    role: "Marketing",
+    headshot: "/assets/people/amanda.jpg",
+    linkedin: "https://linkedin.com/in/amandaminhuang/",
+  },
+  {
+    name: "Matteo Balbarin",
+    role: "Director of Marketing Ops",
+    headshot: "/assets/people/matteo.jpg",
+    linkedin: "https://linkedin.com/in/mateo-balbarin-849395237/",
+    github: "https://github.com/mateo1442/",
+  },
+  {
+    name: "Michael Chu",
+    role: "Ideas Man",
+    headshot: "/assets/people/michael.jpg",
+    linkedin: "https://linkedin.com/in/michael-chu-a28034203/",
+  },
+  {
+    name: "Alec Aceves-Acosta",
+    role: "Keeper of Secrets",
+    headshot: "/assets/people/alec.jpg",
+    linkedin: "https://linkedin.com/in/michael-chu-a28034203/",
+  },
+
+  {
+    name: "Lily Lin",
+    role: "UX Designer",
+    headshot: "/assets/people/lily.jpg",
+    linkedin: "https://linkedin.com/in/zhiyu-lily-lin/",
+  },
+  {
+    name: "Aditya Das",
+    role: "UX Designer",
+    headshot: "/assets/people/aditya.jpg",
+    linkedin: "https://linkedin.com/in/aditya-das-me/",
   },
 ];
 

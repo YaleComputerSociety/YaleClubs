@@ -11,6 +11,8 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        clubTaro: "#cc88f9",
+        clubBlurple: "#4c3eff",
       },
     },
   },
