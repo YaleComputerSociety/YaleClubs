@@ -47,16 +47,16 @@ const CreateUpdateEventPage = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
 
-  const [, setUserEmail] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
-  // const admin_emails = [
-  //   "lucas.huang@yale.edu",
-  //   "addison.goolsbee@yale.edu",
-  //   "francis.fan@yale.edu",
-  //   "grady.yu@yale.edu",
-  //   "lauren.lee.ll2243@yale.edu",
-  //   "ethan.mathieu@yale.edu",
-  // ];
+  const admin_emails = [
+    "lucas.huang@yale.edu",
+    "addison.goolsbee@yale.edu",
+    "francis.fan@yale.edu",
+    "grady.yu@yale.edu",
+    "lauren.lee.ll2243@yale.edu",
+    "ethan.mathieu@yale.edu",
+  ];
 
   const validateInput = React.useCallback(
     (field: keyof IEventInput, value: string | Tag[] | Date | string[] | undefined): string => {
@@ -308,14 +308,14 @@ const CreateUpdateEventPage = () => {
                 <Filter
                   selectedItems={selectedClubs}
                   setSelectedItems={setSelectedClubs}
-                  allItems={clubs.map((club) => club.name)}
-                  // allItems={clubs
-                  //   .filter(
-                  //     (club) =>
-                  //       (userEmail && club.leaders.map((leader) => leader.email).includes(userEmail)) ||
-                  //       (userEmail && admin_emails.includes(userEmail)),
-                  //   )
-                  //   .map((club) => club.name)}
+                  // allItems={clubs.map((club) => club.name)}
+                  allItems={clubs
+                    .filter(
+                      (club) =>
+                        (userEmail && club.leaders.map((leader) => leader.email).includes(userEmail)) ||
+                        (userEmail && admin_emails.includes(userEmail)),
+                    )
+                    .map((club) => club.name)}
                   label="Hosting Club(s)"
                   showInput={true}
                 />
