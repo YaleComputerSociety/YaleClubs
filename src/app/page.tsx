@@ -8,7 +8,6 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Catalog from "../components/catalog/Catalog";
 import { IClub } from "@/lib/models/Club";
-import { IEvent } from "@/lib/models/Event";
 import SearchControl from "@/components/search/SearchControl";
 
 // import SearchWrapper from "@/components/search/SearchWrapper";
@@ -20,7 +19,7 @@ import { jwtDecode } from "jwt-decode";
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [clubs, setClubs] = useState<IClub[]>([]);
-  const [topEvents, setTopEvents] = useState<IEvent[]>([]);
+
   const [currentClubs, setCurrentClubs] = useState<IClub[]>([]);
   const [followedClubs, setFollowedClubs] = useState<string[]>([]);
   const token = Cookies.get("token");
@@ -37,13 +36,9 @@ export default function Home() {
   useEffect(() => {
     const fetchApiMessage = async () => {
       try {
-        const [clubsResponse, eventsResponse] = await Promise.all([
-          axios.get<IClub[]>("/api/clubs"),
-          axios.get<IEvent[]>("/api/events"),
-        ]);
+        const clubsResponse = await axios.get<IClub[]>("/api/clubs");
 
         setClubs(clubsResponse.data);
-        setTopEvents(eventsResponse.data.slice(0, 2));
       } catch (error) {
         console.error("Error fetching API data:", error);
       } finally {
@@ -85,8 +80,6 @@ export default function Home() {
             {/* <SearchWrapper> */}
             <SearchControl
               clubs={clubs}
-              featuredEvents={topEvents}
-              setFeaturedEvents={setTopEvents}
               setCurrentClubs={setCurrentClubs}
               setIsLoading={setIsLoading}
               followedClubs={followedClubs}

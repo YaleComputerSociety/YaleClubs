@@ -5,13 +5,12 @@ import SearchBar from "./SearchBar";
 import FilterButton from "./Filter";
 import { Affiliation, Category, IClub, School } from "@/lib/models/Club";
 import Trie from "./Trie";
-import { IEvent } from "@/lib/models/Event";
 
 interface SearchControlProps {
   clubs: IClub[];
-  featuredEvents: IEvent[];
+
   setCurrentClubs: React.Dispatch<React.SetStateAction<IClub[]>>;
-  setFeaturedEvents: React.Dispatch<React.SetStateAction<IEvent[]>>;
+
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   followedClubs: string[];
 }
