@@ -1,4 +1,6 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 type FollowButtonProps = {
   isLoggedIn: boolean;
@@ -17,6 +19,21 @@ const FollowButton: React.FC<FollowButtonProps> = ({
   followedClubs,
   setFollowedClubs,
 }) => {
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const t = Cookies.get("token");
+    if (t) {
+      try {
+        jwtDecode<{ netid: string }>(t);
+        setToken(t);
+      } catch (err) {
+        console.error("Invalid token:", err);
+        setToken(null);
+      }
+    }
+  }, []);
+
   const toggleStar = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
 
@@ -33,7 +50,10 @@ const FollowButton: React.FC<FollowButtonProps> = ({
 
       await fetch("/api/follow", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
         body: JSON.stringify({ netid, clubId, isFollowing: !isFollowing }),
       });
     } catch (error) {
