@@ -13,22 +13,14 @@ interface SearchControlProps {
   followedClubs: string[];
 }
 
-// const ResetButton = ({ onReset }: { onReset: () => void }) => {
-//   return (
-//     <button onClick={onReset} className="bg-[#f66] text-white px-4 h-10 rounded flex items-center justify-center">
-//       Reset
-//     </button>
-//   );
-// };
-
 const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: SearchControlProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSchools, setSelectedSchools] = useState<string[]>([School.COLLEGE]);
   const [trie, setTrie] = useState<Trie | null>(null);
   const [showFollowedOnly, setShowFollowedOnly] = useState(false);
-  // This mapping will let us relate any search key (name or alias) back to its club name.
-  const [searchKeyToClubName, setSearchKeyToClubName] = useState<Record<string, string>>({});
+  // Mapping now allows an alias (or club name key) to map to multiple club names.
+  const [searchKeyToClubName, setSearchKeyToClubName] = useState<Record<string, string[]>>({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -47,27 +39,33 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
   useEffect(() => {
     setIsLoading(true);
     const newTrie = new Trie();
-    const mapping: Record<string, string> = {};
+    const mapping: Record<string, string[]> = {};
 
     clubs.forEach((club) => {
       // Insert the club name
       if (typeof club.name === "string") {
         const clubNameLower = club.name.toLowerCase().trim();
         newTrie.insert(clubNameLower, "");
-        mapping[clubNameLower] = club.name;
+        // If already exists, push the club name to the array.
+        if (mapping[clubNameLower]) {
+          mapping[clubNameLower].push(club.name);
+        } else {
+          mapping[clubNameLower] = [club.name];
+        }
       }
       // Insert aliases, if any
       if (Array.isArray(club.aliases)) {
-        if (club.aliases) {
-          club.aliases.forEach((alias) => {
-            if (typeof alias === "string") {
-              const aliasLower = alias.toLowerCase().trim();
-              newTrie.insert(aliasLower, "");
-              // Map the alias to the club's actual name
-              mapping[aliasLower] = club.name;
+        club.aliases.forEach((alias) => {
+          if (typeof alias === "string") {
+            const aliasLower = alias.toLowerCase().trim();
+            newTrie.insert(aliasLower, "");
+            if (mapping[aliasLower]) {
+              mapping[aliasLower].push(club.name);
+            } else {
+              mapping[aliasLower] = [club.name];
             }
-          });
-        }
+          }
+        });
       }
     });
 
@@ -94,12 +92,20 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
       const allSearchKeys = Object.keys(searchKeyToClubName);
       const matchingKeys = trie.getWordsWithPrefixes(queryWords, allSearchKeys);
 
-      // Remove any undefined/null, then map each search key back to the club name
-      const matchingClubNames = matchingKeys
-        .filter((key) => typeof key === "string" && key.trim() !== "") // Ensure key is a valid string
-        .map((key) => searchKeyToClubName[key.toLowerCase().trim()]) // Map to club name
-        .filter((value, index, self) => value && self.indexOf(value) === index) // Deduplicate and exclude undefined
-        .map((name) => name.toLowerCase().trim());
+      // Map each matching key back to the club names (flattening the arrays and deduplicating).
+      const matchingClubNames = Array.from(
+        // Set lets us deduplicate the club aliases before converting back to an array
+        new Set(
+          matchingKeys
+            .filter((key) => typeof key === "string" && key.trim() !== "")
+            .flatMap((key) => {
+              const clubNames = searchKeyToClubName[key.toLowerCase().trim()] || [];
+              // Filter out any empty aliases before returning them
+              return clubNames.filter((name) => name.trim() !== "");
+            })
+            .map((name) => name.toLowerCase().trim()),
+        ),
+      );
 
       filteredBySearch = clubs.filter((club) => matchingClubNames.includes(club.name.toLowerCase().trim()));
     }
