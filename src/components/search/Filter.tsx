@@ -5,15 +5,17 @@ interface FilterProps {
   setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>;
   allItems: string[];
   label: string;
+  showInput?: boolean;
 }
 
-const MAX_TOGGLE_WIDTH = 320; // Maximum width of the filter toggle before showing "+x" -- just make sure it can fit the longest possible filter + some buffer
+const MAX_TOGGLE_WIDTH = 320; // Maximum width before showing "+x"
 
-const Filter = ({ selectedItems, setSelectedItems, allItems, label }: FilterProps) => {
+const Filter = ({ selectedItems, setSelectedItems, allItems, label, showInput = true }: FilterProps) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const firstVisibleItemRef = useRef<HTMLDivElement | null>(null);
 
   const availableItems = allItems.filter(
     (item) => !selectedItems.includes(item) && item.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -22,6 +24,7 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label }: FilterProp
   const handleAddItem = (item: string) => {
     setSelectedItems((prev) => [...prev, item]);
     setSearchTerm(""); // Clear the search term
+    searchInputRef.current?.focus();
   };
 
   const handleRemoveItem = (item: string) => {
@@ -51,6 +54,13 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label }: FilterProp
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showDropdown]);
+
+  // Scroll to first visible item when dropdown is updated
+  useEffect(() => {
+    if (firstVisibleItemRef.current) {
+      firstVisibleItemRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [availableItems]);
 
   const getToggleSummary = () => {
     const visibleFilters: string[] = [];
@@ -101,7 +111,7 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label }: FilterProp
       {/* Dropdown */}
       {showDropdown && (
         <div className="absolute mt-2 sm:w-full sm:left-0 lg:w-96 bg-white border rounded shadow-lg z-10">
-          {/* Tags Section (Conditional) */}
+          {/* Selected Tags Section */}
           {selectedItems.length > 0 && (
             <div className="p-2 border-b flex items-center">
               <div className="flex flex-wrap gap-1 flex-grow">
@@ -133,28 +143,28 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label }: FilterProp
           )}
 
           {/* Search Input */}
-          <div className="p-2">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={`Search ${label.toLowerCase()}...`}
-              className="w-full px-2 py-1 border rounded-lg leading-relaxed focus:outline-none focus:ring focus:border-blue-300 text-sm"
-              ref={searchInputRef}
-            />
-          </div>
+          {showInput && (
+            <div className="p-2">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder={`Search ${label.toLowerCase()}...`}
+                className="w-full px-2 py-1 border rounded-lg leading-relaxed focus:outline-none focus:ring focus:border-blue-300 text-sm"
+                ref={searchInputRef}
+              />
+            </div>
+          )}
 
           {/* Available Items */}
           <div className="flex flex-col max-h-72 overflow-y-auto">
             {availableItems.length > 0 ? (
-              availableItems.map((item) => (
+              availableItems.map((item, index) => (
                 <div
                   key={item}
+                  ref={index === 0 ? firstVisibleItemRef : null}
                   className="cursor-pointer hover:bg-gray-100 px-4 py-2 rounded"
-                  onClick={() => {
-                    handleAddItem(item);
-                    searchInputRef.current?.focus(); // make sure input remains focused
-                  }}
+                  onClick={() => handleAddItem(item)}
                 >
                   {item}
                 </div>

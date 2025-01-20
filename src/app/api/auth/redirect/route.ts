@@ -21,9 +21,10 @@ export async function GET(request: Request): Promise<NextResponse> {
 
   const { searchParams } = new URL(request.url);
   const ticket = searchParams.get("ticket");
+  const from = searchParams.get("from") || "/"; // Default to home if no 'from' parameter
 
   if (ticket) {
-    const ticketQuery = `https://secure.its.yale.edu/cas/serviceValidate?ticket=${ticket}&service=${process.env.BASE_URL}/api/auth/redirect`;
+    const ticketQuery = `https://secure.its.yale.edu/cas/serviceValidate?ticket=${ticket}&service=${process.env.BASE_URL}/api/auth/redirect?from=${from}`;
     const response = await fetch(ticketQuery);
     const xml = await response.text();
 
@@ -74,7 +75,10 @@ export async function GET(request: Request): Promise<NextResponse> {
       const token = jwt.sign({ netid, email }, JWT_SECRET, {
         expiresIn: "7d",
       });
-      const response = NextResponse.redirect(`${process.env.BASE_URL}/`);
+
+      const redirectPath = from && from.includes("/Events") ? "/Events" : "/";
+
+      const response = NextResponse.redirect(`${process.env.BASE_URL}${redirectPath}`);
       response.cookies.set("token", token, {
         secure: true,
         path: "/",
@@ -85,10 +89,8 @@ export async function GET(request: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Authentication failed: " + e }, { status: 401 });
     }
   } else {
-    const BASE_URL = process.env.BASE_URL as string;
-    if (!BASE_URL) {
-      throw new Error("Please define the BASE_URL environment variable");
-    }
-    return NextResponse.redirect(`https://secure.its.yale.edu/cas/login?service=${BASE_URL}/api/auth/redirect`);
+    return NextResponse.redirect(
+      `https://secure.its.yale.edu/cas/login?service=${BASE_URL}/api/auth/redirect?from=${from}`,
+    );
   }
 }

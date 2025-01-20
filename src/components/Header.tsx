@@ -71,6 +71,17 @@ const Header = () => {
               <div className="absolute right-0 top-full bg-white shadow-lg rounded-md p-10">
                 <ul className="flex flex-col items-start gap-4">
                   <li>
+                    <Link href="/Events" onClick={() => setIsMenuOpen(false)}>
+                      Events
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/" onClick={() => setIsMenuOpen(false)}>
+                      Catalog
+                    </Link>
+                  </li>
+
+                  <li>
                     <Link href="/About" onClick={() => setIsMenuOpen(false)}>
                       About
                     </Link>
@@ -106,6 +117,12 @@ const Header = () => {
           </div>
         ) : (
           <div className="hidden sm:flex flex-row items-center gap-x-11">
+            <Link href="/Events">
+              <div className="text-md">Events</div>
+            </Link>
+            <Link href="/">
+              <div className="text-md">Catalog</div>
+            </Link>
             <Link href="/About">
               <div className="text-md">About</div>
             </Link>
