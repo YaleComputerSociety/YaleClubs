@@ -126,16 +126,13 @@ export async function PUT(req: Request): Promise<NextResponse> {
     }
 
     // Disallow updates to restricted fields
-    const restrictedFields = [
-      "yaleConnectId",
-      "scraped",
-      "inactive",
-      "_id",
-      "createdAt",
-      "updatedAt",
-      "followersCount",
-    ];
-    const validUpdateData = Object.fromEntries(Object.entries(body).filter(([key]) => !restrictedFields.includes(key)));
+    const restrictedFields = ["yaleConnectId", "scraped", "inactive", "_id", "createdAt", "updatedAt", "followers"];
+    const allowedFields = Object.keys({} as IClubInput);
+    const validUpdateData = Object.fromEntries(
+      Object.entries(body).filter(([key]) => allowedFields.includes(key) && !restrictedFields.includes(key)),
+    );
+
+    console.log("Valid update data:", validUpdateData);
 
     if (Object.keys(validUpdateData).length === 0) {
       return NextResponse.json(
