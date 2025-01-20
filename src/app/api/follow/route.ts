@@ -16,7 +16,6 @@ export async function POST(req: Request) {
 
     try {
       await connectToDatabase();
-      console.log("Connected to database successfully.");
     } catch (error) {
       console.error("Error connecting to the database:", error);
       return NextResponse.json({ error: "Database connection failed" }, { status: 500 });

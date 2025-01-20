@@ -299,8 +299,6 @@ const UpdatePage = () => {
     );
   }
 
-  console.log("formData", formData);
-
   return (
     <div className="flex flex-col">
       <Header />

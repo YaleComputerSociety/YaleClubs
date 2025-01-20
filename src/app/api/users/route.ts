@@ -12,7 +12,6 @@ export async function GET(req: Request): Promise<NextResponse> {
     if (netid) {
       // Logic for fetching a single user
       const user = await User.findOne({ netid });
-      console.log(user);
 
       if (!user) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });
