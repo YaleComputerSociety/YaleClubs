@@ -19,7 +19,6 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
   const [selectedSchools, setSelectedSchools] = useState<string[]>([School.COLLEGE]);
   const [trie, setTrie] = useState<Trie | null>(null);
   const [showFollowedOnly, setShowFollowedOnly] = useState(false);
-  // Mapping now allows an alias (or club name key) to map to multiple club names.
   const [searchKeyToClubName, setSearchKeyToClubName] = useState<Record<string, string[]>>({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
