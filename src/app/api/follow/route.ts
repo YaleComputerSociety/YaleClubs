@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
+import { jwtDecode } from "jwt-decode";
 import connectToDatabase from "../../../lib/mongodb";
 import User from "../../../lib/models/Users";
 import Club from "../../../lib/models/Club";
@@ -8,10 +9,19 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const { netid, clubId, isFollowing: shouldFollow } = body;
-    if (!netid || !clubId || shouldFollow === undefined) {
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) throw new Error("Authorization token missing or invalid");
+
+    // Decode the token
+    const token = authHeader.split(" ")[1];
+    const decoded = jwtDecode<{ netid: string }>(token);
+    const netid = decoded.netid; // Assuming the payload contains the netid field
+    if (!netid) throw new Error("Token is missing required 'netid' field");
+
+    const { clubId, isFollowing: shouldFollow } = body;
+    if (!clubId || shouldFollow === undefined) {
       console.error("Missing netid or clubId or followed in request body");
-      return NextResponse.json({ error: "netid and clubId and followed boolean are required" }, { status: 400 });
+      throw new Error("netid and clubId and followed boolean are required");
     }
 
     await connectToDatabase();
@@ -32,24 +42,20 @@ export async function POST(req: Request) {
         throw new Error("boolean does not match database");
       } else if (!shouldFollow && isAlreadyFollowing) {
         // if following and match database, unfollow
-        await User.findOneAndUpdate(
-          { netid },
-          { $pull: { followedClubs: clubId } },
-          { new: true, session }
-        );
+        await User.findOneAndUpdate({ netid }, { $pull: { followedClubs: clubId } }, { new: true, session });
 
         // Ensure club has a followers field (e.g., set to 0 if missing)
         await Club.findOneAndUpdate(
           { _id: clubId },
           { $setOnInsert: { followers: 0 } },
-          { upsert: true, new: true, session }
+          { upsert: true, new: true, session },
         );
 
         // Decrement followers, but only if > 0
         await Club.findOneAndUpdate(
           { _id: clubId, followers: { $gt: 0 } },
           { $inc: { followers: -1 } },
-          { new: true, session }
+          { new: true, session },
         );
       } else if (shouldFollow && !isAlreadyFollowing) {
         // if not following and matches db
@@ -66,7 +72,7 @@ export async function POST(req: Request) {
         await Club.findByIdAndUpdate(
           mongoose.Types.ObjectId.createFromHexString(clubId),
           { $setOnInsert: { followers: 0 } },
-          { upsert: true, new: true , session},
+          { upsert: true, new: true, session },
         );
         const updatedClub = await Club.findByIdAndUpdate(
           mongoose.Types.ObjectId.createFromHexString(clubId),

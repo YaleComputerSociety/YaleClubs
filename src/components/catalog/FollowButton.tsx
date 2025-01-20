@@ -3,18 +3,14 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 
 type FollowButtonProps = {
-  isLoggedIn: boolean;
   isFollowing: boolean;
-  netid: string;
   clubId: string;
   followedClubs: string[];
   setFollowedClubs: Dispatch<SetStateAction<string[]>>;
 };
 
 const FollowButton: React.FC<FollowButtonProps> = ({
-  isLoggedIn,
   isFollowing,
-  netid,
   clubId,
   followedClubs,
   setFollowedClubs,
@@ -37,7 +33,7 @@ const FollowButton: React.FC<FollowButtonProps> = ({
   const toggleStar = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
 
-    if (!isLoggedIn) {
+    if (!token) {
       alert("Log in to follow clubs.");
       return;
     }
@@ -54,7 +50,7 @@ const FollowButton: React.FC<FollowButtonProps> = ({
           "Content-Type": "application/json",
           Authorization: "Bearer " + token,
         },
-        body: JSON.stringify({ netid, clubId, isFollowing: !isFollowing }),
+        body: JSON.stringify({ clubId, isFollowing: !isFollowing }),
       });
     } catch (error) {
       console.error("Error toggling follow status:", error);
