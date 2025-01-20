@@ -1,22 +1,19 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
 
-// Components
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AuthWrapper from "@/components/AuthWrapper";
 import SearchControlEvent from "@/components/events/catalog/SearchControlEvents";
 import Catalog from "@/components/events/catalog/Catalog";
 
-// Icons
 import { FaPlus } from "react-icons/fa";
 import { MdLockOutline } from "react-icons/md";
 
-// Types
 import { IEvent } from "@/lib/models/Event";
 import { IClub } from "@/lib/models/Club";
 
@@ -27,13 +24,10 @@ const useSkeletonCount = () => {
     const calculateSkeletons = () => {
       const containerWidth = window.innerWidth - 40;
       let itemsPerRow;
-      if (containerWidth < 640)
-        itemsPerRow = 1; // sm
-      else if (containerWidth < 768)
-        itemsPerRow = 2; // md
-      else if (containerWidth < 1024)
-        itemsPerRow = 3; // lg
-      else itemsPerRow = 4; // xl
+      if (containerWidth < 640) itemsPerRow = 1;
+      else if (containerWidth < 768) itemsPerRow = 2;
+      else if (containerWidth < 1024) itemsPerRow = 3;
+      else itemsPerRow = 4;
 
       const itemHeight = 256;
       const viewportHeight = window.innerHeight;
@@ -51,6 +45,15 @@ const useSkeletonCount = () => {
   return skeletonCount;
 };
 
+function getRandomThree(array: IEvent[]) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled.slice(0, 3);
+}
+
 export default function EventsPage() {
   const [events, setEvents] = useState<IEvent[]>([]);
   const [clubs, setClubs] = useState<IClub[]>([]);
@@ -59,6 +62,7 @@ export default function EventsPage() {
   const [currentUpcomingEvents, setCurrentUpcomingEvents] = useState<IEvent[]>([]);
   const [currentPastEvents, setCurrentPastEvents] = useState<IEvent[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [featuredEvents, setFeaturedEvents] = useState<IEvent[]>([]);
 
   const pathname = usePathname();
   const skeletonCount = useSkeletonCount();
@@ -66,11 +70,6 @@ export default function EventsPage() {
   useEffect(() => {
     setIsLoggedIn(document.cookie.includes("token="));
   }, []);
-
-  const featuredEvents = useMemo(() => {
-    if (!events.length) return [];
-    return [events[0]];
-  }, [events]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -98,6 +97,7 @@ export default function EventsPage() {
 
         setCurrentUpcomingEvents(upcoming);
         setCurrentPastEvents(past);
+        setFeaturedEvents(getRandomThree(upcoming));
       } catch (error) {
         console.error("Error fetching data:", error);
         setError("Failed to load events. Please try again later.");
