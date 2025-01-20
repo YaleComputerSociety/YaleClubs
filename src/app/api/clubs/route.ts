@@ -106,6 +106,36 @@ const generateChangeLog = (
   return changes.join(", ");
 };
 
+const IClubInputKeys = {
+  name: "",
+  subheader: "",
+  description: "",
+  categories: undefined,
+  leaders: [],
+  affiliations: undefined,
+  school: undefined,
+  logo: "",
+  backgroundImage: "",
+  numMembers: undefined,
+  website: "",
+  email: "",
+  instagram: "",
+  applyForm: "",
+  mailingListForm: "",
+  meeting: "",
+  calendarLink: "",
+  yaleConnectId: undefined,
+  intensity: undefined,
+  howToJoin: "",
+  scraped: undefined,
+  inactive: undefined,
+  applicationStatus: "",
+  recruitmentStatus: undefined,
+  recruitmentStartDate: undefined,
+  recruitmentEndDate: undefined,
+  aliases: [],
+};
+
 export async function PUT(req: Request): Promise<NextResponse> {
   try {
     // Connect to the database
@@ -126,8 +156,8 @@ export async function PUT(req: Request): Promise<NextResponse> {
     }
 
     // Disallow updates to restricted fields
-    const restrictedFields = ["yaleConnectId", "scraped", "inactive", "_id", "createdAt", "updatedAt"];
-    const allowedFields = Object.keys({} as IClubInput);
+    const restrictedFields = ["yaleConnectId", "scraped", "inactive", "_id", "createdAt", "updatedAt", "followers"];
+    const allowedFields = Object.keys(IClubInputKeys);
     const validUpdateData = Object.fromEntries(
       Object.entries(body).filter(([key]) => allowedFields.includes(key) && !restrictedFields.includes(key)),
     );

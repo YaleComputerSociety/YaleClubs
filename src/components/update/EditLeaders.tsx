@@ -87,6 +87,14 @@ const ClubLeadersSection: React.FC<{
     handleChange("leaders", updatedLeaders);
   };
 
+  const moveLeader = (fromIndex: number, toIndex: number) => {
+    if (toIndex < 0 || toIndex >= leaders.length) return;
+    const updatedLeaders = [...leaders];
+    const [movedLeader] = updatedLeaders.splice(fromIndex, 1);
+    updatedLeaders.splice(toIndex, 0, movedLeader);
+    handleChange("leaders", updatedLeaders);
+  };
+
   return (
     <div>
       <p className="block text-sm font-medium text-gray-700 mb-2">Board</p>
@@ -95,9 +103,38 @@ const ClubLeadersSection: React.FC<{
           <li key={index} className="flex items-center p-1 rounded-lg mb-2 hover">
             <div>
               <p className="font-medium">{leader.name || "Unnamed Board Member"}</p>
-              <p className="text-sm text-gray-600">Role: {leader.role || "Not Specified"}</p>
+              {leader.role && <p className="text-sm text-gray-600">Role: {leader.role}</p>}
             </div>
             <div className="ml-auto flex space-x-1">
+              {index > 0 && (
+                <button
+                  onClick={() => moveLeader(index, index - 1)}
+                  className="text-white p-1 rounded-lg hover:bg-gray-300"
+                >
+                  <Image
+                    src="/assets/up-arrow-svgrepo-com.svg"
+                    alt="Up Arrow"
+                    width={24}
+                    height={24}
+                    className="w-6 h-6"
+                  />
+                </button>
+              )}
+
+              {index < leaders.length - 1 && (
+                <button
+                  onClick={() => moveLeader(index, index + 1)}
+                  className="text-white p-1 rounded-lg hover:bg-gray-300"
+                >
+                  <Image
+                    src="/assets/up-arrow-svgrepo-com.svg"
+                    alt="Down Arrow"
+                    width={24}
+                    height={24}
+                    className="w-6 h-6 transform rotate-180"
+                  />
+                </button>
+              )}
               <button
                 onClick={() => openModal(leader, index)}
                 className="bg-gray-300 text-white py-1 px-3 rounded-lg hover:bg-gray-400"
@@ -119,7 +156,7 @@ const ClubLeadersSection: React.FC<{
                 <div className="w-4 h-4">
                   <Image
                     src="/assets/cross-svgrepo-com (1).svg"
-                    alt="Edit Icon"
+                    alt="Delete Icon"
                     width={24}
                     height={24}
                     className="w-full h-full"
@@ -134,22 +171,21 @@ const ClubLeadersSection: React.FC<{
         Add Board Member
       </button>
 
-      {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 shadow-lg w-96">
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          onClick={closeModal}
+        >
+          <div className="bg-white rounded-lg p-6 shadow-lg w-96" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-lg font-semibold mb-4">{isEditing ? "Edit Leader" : "Add New Leader"}</h2>
             {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-            <p className="text-sm text-gray-500 mb-4">
-              Fields marked with <span className="text-red-500">*</span> are required.
-            </p>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
-                <span className="text-red-500">*</span> Name
+                Name
                 <input
                   type="text"
                   value={currentLeader.name}
-                  onChange={(e) => setCurrentLeader((prev) => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) => setCurrentLeader({ ...currentLeader, name: e.target.value })}
                   className="w-full border border-gray-300 rounded-lg p-2"
                   placeholder="Peter Salovey"
                 />
@@ -157,11 +193,11 @@ const ClubLeadersSection: React.FC<{
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
-                <span className="text-red-500">*</span> Yale Email
+                Email
                 <input
                   type="email"
                   value={currentLeader.email}
-                  onChange={(e) => setCurrentLeader((prev) => ({ ...prev, email: e.target.value }))}
+                  onChange={(e) => setCurrentLeader({ ...currentLeader, email: e.target.value })}
                   className="w-full border border-gray-300 rounded-lg p-2"
                   placeholder="peter.salovey@yale.edu"
                 />
@@ -173,7 +209,7 @@ const ClubLeadersSection: React.FC<{
                 <input
                   type="text"
                   value={currentLeader.role}
-                  onChange={(e) => setCurrentLeader((prev) => ({ ...prev, role: e.target.value }))}
+                  onChange={(e) => setCurrentLeader({ ...currentLeader, role: e.target.value })}
                   className="w-full border border-gray-300 rounded-lg p-2"
                   placeholder="President"
                 />
@@ -187,14 +223,9 @@ const ClubLeadersSection: React.FC<{
                   inputMode="numeric"
                   pattern="[0-9]*"
                   value={currentLeader.year || ""}
-                  onChange={(e) =>
-                    setCurrentLeader((prev) => ({
-                      ...prev,
-                      year: parseInt(e.target.value, 10),
-                    }))
-                  }
+                  onChange={(e) => setCurrentLeader({ ...currentLeader, year: Number(e.target.value) })}
                   className="w-full border border-gray-300 rounded-lg p-2"
-                  placeholder="1983"
+                  placeholder="2027"
                 />
               </label>
             </div>
