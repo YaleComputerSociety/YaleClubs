@@ -69,7 +69,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
             day: "numeric",
           });
 
-          if (date < now) {
+          if (localDate.getTime() + 24 * 60 * 60 * 1000 < now.getTime()) {
             return "Applications Closed";
           }
 
@@ -98,11 +98,11 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
               })
             : "";
 
-          if (endDate && endDate < now) {
+          if (endlocalDate && endlocalDate.getTime() + 24 * 60 * 60 * 1000 < now.getTime()) {
             return "Applications Closed";
           }
 
-          if (date < now) {
+          if (localDate.getTime() + 24 * 60 * 60 * 1000 < now.getTime()) {
             if (endDate) {
               return `Applications Close ${endformattedDate}`;
             }
@@ -190,7 +190,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
         </div>
         {hasApplicationStatus && (
           <div className="w-full overflow-hidden cursor-pointer" onClick={onClick}>
-            <div className="w-full bg-purple-50 py-2 px-3 md:px-4">
+            <div className="w-full bg-purple-50 py-2 px-3 md:px-4 rounded-b-xl">
               <div className="flex items-center justify-center">
                 <span className="line-clamp-1 text-purple-800 text-sm font-medium">{applicationStatus}</span>
               </div>

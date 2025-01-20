@@ -10,7 +10,6 @@ import Catalog from "../components/catalog/Catalog";
 import { IClub } from "@/lib/models/Club";
 import SearchControl from "@/components/search/SearchControl";
 
-import Banner from "@/components/Banner";
 // import SearchWrapper from "@/components/search/SearchWrapper";
 
 // import axios from "axios";
@@ -94,7 +93,6 @@ export default function Home() {
           </div>
         </div>
         <Footer />
-        <Banner />
       </main>
     </AuthWrapper>
   );
