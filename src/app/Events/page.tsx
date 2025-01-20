@@ -152,15 +152,6 @@ export default function EventsPage() {
           <div className="flex flex-col w-full px-5 md:px-20">
             <div className="mt-20 md:mt-24"></div>
 
-            <div className="flex flex-col md:flex-row lg:flex-row items-center justify-between mb-6">
-              <SearchControlEvent
-                clubsForFilter={clubs}
-                events={events}
-                setCurrentUpcomingEvents={setCurrentUpcomingEvents}
-                setCurrentPastEvents={setCurrentPastEvents}
-              />
-            </div>
-
             <div className="flex items-center justify-between w-full">
               <div className="flex-1">
                 <h1 className="text-3xl font-bold text-black">Discover Events</h1>
@@ -173,6 +164,15 @@ export default function EventsPage() {
                   </button>
                 </Link>
               </div>
+            </div>
+
+            <div className="flex flex-col md:flex-row lg:flex-row items-center justify-between mb-6">
+              <SearchControlEvent
+                clubsForFilter={clubs}
+                events={events}
+                setCurrentUpcomingEvents={setCurrentUpcomingEvents}
+                setCurrentPastEvents={setCurrentPastEvents}
+              />
             </div>
 
             {error && <div className="w-full p-4 mb-4 text-red-700 bg-red-100 rounded-lg">{error}</div>}
