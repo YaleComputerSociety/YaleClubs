@@ -24,8 +24,6 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
   const isMd = useMediaQuery({ maxWidth: 768 });
   const [canEdit, setCanEdit] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [netid, setNetid] = useState<string | null>(null);
 
   const token = Cookies.get("token");
   const isFollowing = followedClubs.includes(club._id);
@@ -35,21 +33,6 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
     : isFollowing
       ? "1"
       : "0";
-
-  useEffect(() => {
-    const token = Cookies.get("token");
-    if (token) {
-      try {
-        const decoded = jwtDecode<{ netid: string }>(token);
-        setIsLoggedIn(true);
-        setNetid(decoded.netid);
-      } catch (err) {
-        console.error("Invalid token:", err);
-        setIsLoggedIn(false);
-        setNetid(null);
-      }
-    }
-  }, []);
 
   // console.table(club);
 
@@ -136,7 +119,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
           <>
             {token ? (
               canEdit ? (
-                <Link href={`/Update?clubId=${club._id}`}>
+                <Link href={`/update?clubId=${club._id}`}>
                   <button className="absolute top-4 right-4 px-4 py-2 text-lg font-medium text-white bg-indigo-600 rounded shadow hover:bg-indigo-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     Edit Club
                   </button>
@@ -195,9 +178,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
                   </div>
                   •
                   <FollowButton
-                    isLoggedIn={isLoggedIn}
                     isFollowing={isFollowing}
-                    netid={netid || ""}
                     clubId={club._id}
                     followedClubs={followedClubs}
                     setFollowedClubs={setFollowedClubs}

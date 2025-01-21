@@ -7,22 +7,24 @@ export async function GET(req: Request): Promise<NextResponse> {
     const url = new URL(req.url);
     const netid = url.searchParams.get("netid");
 
-    if (!netid) {
-      return NextResponse.json({ error: "Invalid NetID" }, { status: 400 });
-    }
-
     await connectToDatabase();
 
-    const user = await User.findOne({ netid });
-    console.log(user);
+    if (netid) {
+      // Logic for fetching a single user
+      const user = await User.findOne({ netid });
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      if (!user) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      }
+
+      return NextResponse.json({ user }, { status: 200 });
+    } else {
+      // Logic for fetching all users
+      const users = await User.find({});
+      return NextResponse.json(users, { status: 200 });
     }
-
-    return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
-    console.error("Error fetching user:", error);
+    console.error("Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

@@ -111,7 +111,7 @@ const teamMembers = [
     name: "Michelle Zheng",
     role: "CMO",
     headshot: "/assets/people/michy.jpg",
-    linkedin: "https://www.linkedin.com/in/mzheng8/overlay/photo/",
+    linkedin: "https://www.linkedin.com/in/mzheng8/",
   },
   {
     name: "Amanda Huang",
