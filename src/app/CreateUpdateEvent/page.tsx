@@ -30,6 +30,7 @@ const CreateUpdateEventPage = () => {
   const [updatingAlreadyMadeEvent, setUpdatingAlreadyMadeEvent] = useState(false);
   const [, setEvent] = useState<IEvent | null>(null);
   const [clubs, setClubs] = useState<IClub[]>([]);
+  const [availeHostClubs, setAvailHostClubs] = useState<string[]>([]);
   const [numberOfEventsLeft, setNumberOfEventsLeft] = useState(MAX_NUMBER_OF_EVENTS_PER_MONTH);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState<IEventInput>({
@@ -43,7 +44,7 @@ const CreateUpdateEventPage = () => {
     tags: [],
   });
 
-  const [, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
 
@@ -131,36 +132,44 @@ const CreateUpdateEventPage = () => {
         }
       } catch {
         console.error("Failed to fetch events.");
-      } finally {
-        setIsLoading(false);
       }
     };
+
     const fetchClubData = async () => {
       try {
         const response = await axios.get<IClub[]>("/api/clubs");
-        setClubs(response.data);
+        const clubs = response.data;
+        setClubs(clubs);
       } catch {
         console.error("Failed to fetch clubs.");
-      } finally {
-        setIsLoading(false);
       }
     };
-    fetchEventData().then(() =>
-      fetchClubData().then(() => {
-        const token = Cookies.get("token");
 
-        if (token) {
-          const decoded = jwtDecode<{ email: string; netid: string }>(token);
-          console.log(decoded);
-          if (decoded.netid == "efm28") {
-            setUserEmail("ethan.mathieu@yale.edu");
-          } else {
-            setUserEmail(decoded.email);
-          }
-        }
-      }),
-    );
+    // Get user email first, then fetch data in parallel
+    const token = Cookies.get("token");
+    if (token) {
+      const decoded = jwtDecode<{ email: string; netid: string }>(token);
+      const email = decoded.netid === "efm28" ? "ethan.mathieu@yale.edu" : decoded.email;
+      setUserEmail(email);
+
+      Promise.all([fetchEventData(), fetchClubData()])
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
   }, [searchParams]);
+
+  useEffect(() => {
+    if (clubs.length > 0 && userEmail) {
+      const availableClubs = clubs
+        .filter((club) => club.leaders.map((leader) => leader.email).includes(userEmail))
+        .map((club) => club.name);
+      setAvailHostClubs(availableClubs);
+    }
+  }, [clubs, userEmail]);
 
   useEffect(() => {
     const fetchEventsCount = async () => {
@@ -227,7 +236,6 @@ const CreateUpdateEventPage = () => {
     });
 
     const token = getCookie("token");
-    console.log(token);
     if ((token && numberOfEventsLeft > 0) || (token && updatingAlreadyMadeEvent)) {
       const url = updatingAlreadyMadeEvent ? `/api/events?id=${searchParams.get("eventId")}` : `/api/events`;
       fetch(url, {
@@ -250,7 +258,7 @@ const CreateUpdateEventPage = () => {
           alert("Failed to update event");
         });
     } else {
-      console.error("No token found");
+      alert("Out of events for that club");
     }
   };
 
@@ -273,6 +281,14 @@ const CreateUpdateEventPage = () => {
   useEffect(() => {
     handleChange("tags", selectedTags);
   }, [selectedTags, handleChange]);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center mt-10">
+        <div className="w-8 h-8 border-4 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -318,10 +334,8 @@ const CreateUpdateEventPage = () => {
                 <Filter
                   selectedItems={selectedClubs}
                   setSelectedItems={setSelectedClubs}
-                  allItems={clubs
-                    .filter((club) => userEmail && club.leaders.map((leader) => leader.email).includes(userEmail))
-                    .map((club) => club.name)}
-                  label="Search clubs you are officer"
+                  allItems={availeHostClubs}
+                  label="Hosting club(s)"
                   showInput={true}
                 />
                 {validationErrors.clubs && <p className="text-red-500">{validationErrors.clubs}</p>}
