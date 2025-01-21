@@ -1,11 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { IClub, RecruitmentStatus } from "@/lib/models/Club";
 import Image from "next/image";
 import FollowButton from "./FollowButton";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
 
 type ClubCardProps = {
   club: IClub;
@@ -16,9 +14,6 @@ type ClubCardProps = {
 };
 
 const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollowing }: ClubCardProps) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [netid, setNetid] = useState<string | null>(null);
-
   const isFollowing = followedClubs.includes(club._id);
 
   const adjustedFollowers = club.followers
@@ -26,21 +21,6 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
     : isFollowing
       ? "1"
       : "0";
-
-  useEffect(() => {
-    const token = Cookies.get("token");
-    if (token) {
-      try {
-        const decoded = jwtDecode<{ netid: string }>(token);
-        setIsLoggedIn(true);
-        setNetid(decoded.netid);
-      } catch (err) {
-        console.error("Invalid token:", err);
-        setIsLoggedIn(false);
-        setNetid(null);
-      }
-    }
-  }, []);
 
   const isNew = () => {
     if (!club.updatedAt) return false;
@@ -175,9 +155,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
             />
             <div className="flex flex-col items-center">
               <FollowButton
-                isLoggedIn={isLoggedIn}
                 isFollowing={isFollowing}
-                netid={netid || ""}
                 clubId={club._id}
                 followedClubs={followedClubs}
                 setFollowedClubs={setFollowedClubs}

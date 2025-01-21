@@ -41,19 +41,19 @@ export enum Category {
 
 export enum School {
   COLLEGE = "Yale College",
-  LAW = "Law School",
-  DRAMA = "School of Drama",
-  MEDICINE = "School of Medicine",
-  ENVIRONMENT = "School of the Environment",
-  ARCHITECTURE = "School of Architecture",
-  MANAGEMENT = "School of Management",
-  GSAS = "Graduate School of Arts & Sciences",
-  HEALTH = "School of Public Health",
-  JACKSON = "Jackson School of Global Affairs",
-  NURSING = "School of Nursing",
-  MUSIC = "School of Music",
   DIVINITY = "Divinity School",
+  GSAS = "Graduate School of Arts & Sciences",
+  JACKSON = "Jackson School of Global Affairs",
+  LAW = "Law School",
   POSTDOC = "Postdoctoral",
+  ARCHITECTURE = "School of Architecture",
+  DRAMA = "School of Drama",
+  ENVIRONMENT = "School of the Environment",
+  MANAGEMENT = "School of Management",
+  MEDICINE = "School of Medicine",
+  MUSIC = "School of Music",
+  NURSING = "School of Nursing",
+  HEALTH = "School of Public Health",
 }
 
 export enum Affiliation {
@@ -121,7 +121,6 @@ export interface IClubInput {
   scraped?: boolean | undefined;
   inactive?: boolean | undefined;
   applicationStatus?: string | undefined;
-  followersCount?: number | undefined;
   recruitmentStatus?: RecruitmentStatus | undefined;
   recruitmentStartDate?: Date | undefined;
   recruitmentEndDate?: Date | undefined;
@@ -157,7 +156,6 @@ export interface IClub extends Document {
   scraped?: boolean;
   inactive?: boolean;
   applicationStatus?: string;
-  followersCount?: number;
   recruitmentStatus?: RecruitmentStatus;
   recruitmentStartDate?: Date;
   recruitmentEndDate?: Date;
@@ -191,7 +189,6 @@ const clubSchema = new Schema<IClub>(
     scraped: { type: Boolean },
     inactive: { type: Boolean },
     applicationStatus: { type: String },
-    followersCount: { type: Number },
     recruitmentStatus: { type: String, enum: Object.values(RecruitmentStatus) },
     recruitmentStartDate: { type: Date },
     recruitmentEndDate: { type: Date },
