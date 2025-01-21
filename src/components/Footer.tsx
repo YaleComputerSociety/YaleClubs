@@ -6,7 +6,8 @@ const Footer = () => {
         Yale is a registered trademark of Yale University. This website is student run and is maintained, hosted, and
         operated independently of Yale University. The activities on this website are not supervised or endorsed by Yale
         and information contained on this website does not necessarily reflect the opinions or official positions of the
-        University
+        University. Furthermore, the content contained in this site is user generated and does not reflect the opinions
+        of the Yale Computer Society.
       </div>
     </div>
   );

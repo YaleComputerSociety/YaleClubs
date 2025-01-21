@@ -3,6 +3,55 @@ import Event from "../../../lib/models/Event";
 import { NextResponse } from "next/server";
 import { Tag, IEventInput } from "../../../lib/models/Event";
 import Club, { ClubLeader, IClub } from "@/lib/models/Club";
+import UpdateLog from "../../../lib/models/Updates";
+
+const generateChangeLog = (
+  original: {
+    name?: string;
+    description?: string;
+    location?: string;
+    clubs?: string[];
+    start?: Date;
+    end?: Date;
+  },
+  updates: {
+    name?: string;
+    description?: string;
+    location?: string;
+    clubs?: string[];
+    start?: Date;
+    end?: Date;
+  },
+): string => {
+  const changes: string[] = [];
+
+  if (original.name !== updates.name) {
+    changes.push(`Name changed from "${original.name}" to "${updates.name}"`);
+  }
+
+  if (original.description !== updates.description) {
+    changes.push(`Description updated`);
+  }
+
+  if (original.location !== updates.location) {
+    changes.push(`Location changed from "${original.location}" to "${updates.location}"`);
+  }
+
+  if (JSON.stringify(original.clubs) !== JSON.stringify(updates.clubs)) {
+    changes.push(`Clubs changed from [${original.clubs?.join(", ")}] to [${updates.clubs?.join(", ")}]`);
+  }
+
+  if (original.start?.toString() !== updates.start?.toString()) {
+    changes.push(`Start time updated from ${original.start} to ${updates.start}`);
+  }
+
+  if (original.end?.toString() !== updates.end?.toString()) {
+    changes.push(`End time updated from ${original.end} to ${updates.end}`);
+  }
+
+  return changes.join(", ");
+};
+
 export async function GET(): Promise<NextResponse> {
   try {
     await connectToDatabase();
@@ -159,61 +208,48 @@ export async function PUT(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Event is not associated with a valid club." }, { status: 404 });
     }
 
-    // const admin_emails = [
-    //   "lucas.huang@yale.edu",
-    //   "addison.goolsbee@yale.edu",
-    //   "francis.fan@yale.edu",
-    //   "grady.yu@yale.edu",
-    //   "lauren.lee.ll2243@yale.edu",
-    //   "ethan.mathieu@yale.edu",
-    // ];
-
-    const updateEmail = req.headers.get("X-Email");
-    console.log(updateEmail);
-    // if (
-    //   !updateEmail ||
-    //   (updateEmail &&
-    //     !clubs.flatMap((club: IClub) => club.leaders).some((leader: ClubLeader) => leader.email === updateEmail) &&
-    //     updateEmail !== "admin_a1b2c3e" &&
-    //     !admin_emails.includes(updateEmail))
-    // ) {
-    //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    // }
-
     // Perform the update
     const updatedEvent = await Event.findByIdAndUpdate(
       id,
       { $set: validUpdateData },
       { new: true, runValidators: true },
     );
+
+    const changeLog = generateChangeLog(
+      {
+        name: originalEvent.name,
+        description: originalEvent.description,
+        location: originalEvent.location,
+        clubs: originalEvent.clubs,
+        start: originalEvent.start,
+        end: originalEvent.end,
+      },
+      {
+        name: updatedEvent.name,
+        description: updatedEvent.description,
+        location: updatedEvent.location,
+        clubs: updatedEvent.clubs,
+        start: updatedEvent.start,
+        end: updatedEvent.end,
+      },
+    );
+
     if (!updatedEvent) {
       return NextResponse.json({ error: "Event not found after update." }, { status: 404 });
     }
 
-    // // Generate change log
-    // const changeLog = generateChangeLog(
-    //   {
-    //     name: originalClub.name,
-    //     email: originalClub.email,
-    //     leaders: originalClub.leaders,
-    //   },
-    //   {
-    //     name: updatedClub.name,
-    //     email: updatedClub.email,
-    //     leaders: updatedClub.leaders,
-    //   },
-    // );
+    const updateEmail = req.headers.get("X-Email");
 
-    // if (changeLog) {
-    //   console.log(changeLog);
+    if (changeLog) {
+      console.log(changeLog);
 
-    //   // Save the change log
-    //   await UpdateLog.create({
-    //     documentId: id,
-    //     updatedBy: updateEmail,
-    //     changes: changeLog,
-    //   });
-    // }
+      // Save the change log
+      await UpdateLog.create({
+        documentId: id,
+        updatedBy: updateEmail,
+        changes: changeLog,
+      });
+    }
 
     // Respond with the updated club
     return NextResponse.json(updatedEvent, { status: 200 });
