@@ -87,8 +87,8 @@ const CreateUpdateEventPage = () => {
           return "";
         case "registrationLink": {
           if (!value) return "";
-          const urlRegex = /^(https?:\/\/)?([a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+)(\/[^\s]*)?$/; // regex to ensure its a valid url.
-          if (typeof value === "string" && !urlRegex.test(value)) return "Invalid URL format.";
+          const urlRegex = /^https?:\/\/([a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+)(\/[^\s]*)?$/;
+          if (typeof value === "string" && !urlRegex.test(value)) return "URL must start with http:// or https://.";
           return "";
         }
         case "flyer":

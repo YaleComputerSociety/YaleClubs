@@ -82,7 +82,7 @@ const Header = () => {
                   </li>
 
                   <li>
-                    <Link href="/About" onClick={() => setIsMenuOpen(false)}>
+                    <Link href="/about" onClick={() => setIsMenuOpen(false)}>
                       About
                     </Link>
                   </li>
@@ -123,7 +123,7 @@ const Header = () => {
             <Link href="/">
               <div className="text-md">Catalog</div>
             </Link>
-            <Link href="/About">
+            <Link href="/about">
               <div className="text-md">About</div>
             </Link>
             <Link

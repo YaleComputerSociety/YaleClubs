@@ -148,7 +148,12 @@ const EventModal = ({ event, associatedClubLeaders, onClose }: EventModalProps) 
               link={generateGoogleCalendarLink(event)}
               isSm={true}
             />
-            <ModalRightLabel header="" content="Report Event" link={event.registrationLink} isSm={true} />
+            <ModalRightLabel
+              header=""
+              content="Report Event"
+              link={"https://forms.gle/egJPxvSANpsda8LE6"}
+              isSm={true}
+            />
           </div>
         </div>
       </div>
