@@ -2,8 +2,7 @@ import connectToDatabase from "@/lib/mongodb";
 import Event from "../../../lib/models/Event";
 import { NextResponse } from "next/server";
 import { Tag, IEventInput } from "../../../lib/models/Event";
-import Club, { IClub } from "@/lib/models/Club";
-
+import Club, { ClubLeader, IClub } from "@/lib/models/Club";
 export async function GET(): Promise<NextResponse> {
   try {
     await connectToDatabase();
@@ -21,8 +20,14 @@ export async function POST(req: Request): Promise<NextResponse> {
   try {
     await connectToDatabase();
 
-    let body: IEventInput;
+    // Get user email from the header set by middleware
+    const userEmail = req.headers.get("X-Email");
 
+    if (!userEmail) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
+
+    let body: IEventInput;
     try {
       body = await req.json();
     } catch (error) {
@@ -31,31 +36,43 @@ export async function POST(req: Request): Promise<NextResponse> {
     }
 
     // Validate required fields
-    if (!body.name || !body.description || !body.clubs || !body.start || !body.location || !body.flyer) {
+    if (!body.name || !body.description || !body.clubs || !body.start || !body.location) {
       return NextResponse.json(
-        { error: "Name, description, club, start, flyer and location are required fields." },
+        { error: "Name, description, club, start and location are required fields." },
         { status: 400 },
       );
-    }
-
-    // Validate `tags` if provided
-    if (body.tags && !Array.isArray(body.tags)) {
-      return NextResponse.json({ error: "Tags must be an array of Category values." }, { status: 400 });
     }
 
     // Validate `tags` against Tag enum
     if (body.tags && !body.tags.every((tag) => Object.values(Tag).includes(tag))) {
       return NextResponse.json({ error: "Invalid tag provided." }, { status: 400 });
     }
+    let isLeaderOfAnyClub = false;
+    for (const clubName of body.clubs) {
+      const club = await Club.findOne({ name: clubName });
+      if (!club) {
+        return NextResponse.json({ error: `Club ${clubName} not found` }, { status: 404 });
+      }
+
+      const isLeader = club.leaders.some((leader: ClubLeader) => leader.email === userEmail);
+      if (isLeader) {
+        isLeaderOfAnyClub = true;
+        break;
+      }
+    }
+
+    if (!isLeaderOfAnyClub) {
+      return NextResponse.json(
+        { error: "You must be a leader of at least one of the clubs to create an event" },
+        { status: 403 },
+      );
+    }
 
     const event = new Event(body);
-
     const savedEvent = await event.save();
 
-    // Respond with the created event
     return NextResponse.json(savedEvent, { status: 200 });
   } catch (error) {
-    console.log("error");
     console.error("Error creating event:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
@@ -64,6 +81,11 @@ export async function POST(req: Request): Promise<NextResponse> {
 export async function PUT(req: Request): Promise<NextResponse> {
   try {
     await connectToDatabase();
+    const userEmail = req.headers.get("X-Email");
+
+    if (!userEmail) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
 
     let body: IEventInput;
     try {
@@ -73,7 +95,26 @@ export async function PUT(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
     }
 
-    console.log("obtained body");
+    let isLeaderOfAnyClub = false;
+    for (const clubName of body.clubs) {
+      const club = await Club.findOne({ name: clubName });
+      if (!club) {
+        return NextResponse.json({ error: `Club ${clubName} not found` }, { status: 404 });
+      }
+
+      const isLeader = club.leaders.some((leader: ClubLeader) => leader.email === userEmail);
+      if (isLeader) {
+        isLeaderOfAnyClub = true;
+        break;
+      }
+    }
+
+    if (!isLeaderOfAnyClub) {
+      return NextResponse.json(
+        { error: "You must be a leader of at least one of the clubs to edit the event" },
+        { status: 403 },
+      );
+    }
 
     const url = new URL(req.url);
     const id = url.searchParams.get("id");

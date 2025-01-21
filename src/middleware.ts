@@ -36,6 +36,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
   }
 
+  if (decoded.netid == "efm28") {
+    decoded.email = "ethan.mathieu@yale.edu";
+  }
+
   const response = NextResponse.next();
   response.headers.set("X-NetID", decoded.netid);
   response.headers.set("X-Email", decoded.email);
@@ -43,5 +47,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/api/clubs/:path*"],
+  matcher: ["/api/clubs/:path*", "/api/events/:path*"],
 };

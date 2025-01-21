@@ -51,20 +51,19 @@ const EventModal = ({ event, associatedClubLeaders, onClose }: EventModalProps) 
   useEffect(() => {
     if (token) {
       try {
-        const decoded = jwtDecode<{ email: string }>(token);
-        const userEmail = decoded.email;
-
-        const admin_emails = [
-          "lucas.huang@yale.edu",
-          "addison.goolsbee@yale.edu",
-          "francis.fan@yale.edu",
-          "grady.yu@yale.edu",
-          "lauren.lee.ll2243@yale.edu",
-          "ethan.mathieu@yale.edu",
-        ];
+        let userEmail: string = "";
+        if (token) {
+          const decoded = jwtDecode<{ email: string; netid: string }>(token);
+          console.log(decoded);
+          if (decoded.netid == "efm28") {
+            userEmail = "ethan.mathieu@yale.edu";
+          } else {
+            userEmail = decoded.email;
+          }
+        }
 
         const isBoardMember = associatedClubLeaders.some((leader) => leader.email === userEmail);
-        setCanEdit(isBoardMember || admin_emails.includes(userEmail));
+        setCanEdit(isBoardMember);
       } catch (err) {
         console.error("Failed to decode token:", err);
       }
@@ -85,30 +84,35 @@ const EventModal = ({ event, associatedClubLeaders, onClose }: EventModalProps) 
             &times;
           </div>
 
-          {token && (
+          {canEdit && token ? (
             <Link href={`/CreateUpdateEvent?eventId=${event._id}`}>
-              <button
-                className={`px-4 py-2 text-lg font-medium text-white bg-indigo-600 rounded shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
-                  !canEdit ? "bg-gray-400 cursor-not-allowed" : ""
-                }`}
-              >
+              <button className="px-4 py-2 text-lg font-medium text-white bg-indigo-600 rounded shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                 Edit Event
               </button>
             </Link>
+          ) : token ? (
+            <button
+              className="px-4 py-2 text-lg font-medium text-white bg-gray-400 rounded shadow cursor-not-allowed"
+              disabled
+            >
+              Edit Event
+            </button>
+          ) : (
+            <div></div>
           )}
         </div>
 
-        <div className="flex items-center justify-center">
-          <Image
-            src={event.flyer ?? "/assets/default-logo.png"}
-            alt="Event Flyer"
-            width={200}
-            height={200}
-            className="rounded-xl object-contain max-h-[300px] max-w-full mt-10 mb-4"
-            priority
-          />
+        <div className="flex items-center justify-center mt-12 m-3">
+          <div className="relative w-60 h-60 rounded-lg shadow-lg">
+            <Image
+              src={event.flyer || "/assets/default-background.png"}
+              alt="Flyer"
+              className="object-cover rounded-lg inset-0 m-auto"
+              fill
+              priority
+            />
+          </div>
         </div>
-
         <div className="w-full flex flex-col gap-4">
           <div>
             <h2 className="text-2xl font-bold text-left">{event.name}</h2>

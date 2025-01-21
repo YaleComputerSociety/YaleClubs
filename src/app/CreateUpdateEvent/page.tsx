@@ -49,14 +49,14 @@ const CreateUpdateEventPage = () => {
 
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
-  const admin_emails = [
-    "lucas.huang@yale.edu",
-    "addison.goolsbee@yale.edu",
-    "francis.fan@yale.edu",
-    "grady.yu@yale.edu",
-    "lauren.lee.ll2243@yale.edu",
-    "ethan.mathieu@yale.edu",
-  ];
+  // const admin_emails = [
+  //   "lucas.huang@yale.edu",
+  //   "addison.goolsbee@yale.edu",
+  //   "francis.fan@yale.edu",
+  //   "grady.yu@yale.edu",
+  //   "lauren.lee.ll2243@yale.edu",
+  //   "ethan.mathieu@yale.edu",
+  // ];
 
   const validateInput = React.useCallback(
     (field: keyof IEventInput, value: string | Tag[] | Date | string[] | undefined): string => {
@@ -77,7 +77,7 @@ const CreateUpdateEventPage = () => {
             return `Description must be at most ${DESCRIPTION_MAX_LENGTH} characters.`;
           return "";
         case "clubs":
-          if (!value) return "Must provide a club";
+          if (value instanceof Array && value.length == 0) return "Must provide a club";
           return "";
         case "location":
           if (value instanceof Date) return "Location must be a string.";
@@ -150,9 +150,13 @@ const CreateUpdateEventPage = () => {
         const token = Cookies.get("token");
 
         if (token) {
-          const decoded = jwtDecode<{ email: string }>(token);
+          const decoded = jwtDecode<{ email: string; netid: string }>(token);
           console.log(decoded);
-          setUserEmail(decoded.email);
+          if (decoded.netid == "efm28") {
+            setUserEmail("ethan.mathieu@yale.edu");
+          } else {
+            setUserEmail(decoded.email);
+          }
         }
       }),
     );
@@ -286,8 +290,14 @@ const CreateUpdateEventPage = () => {
             </div>
             <div className="w-16"></div>
           </div>
+          <div className="flex items-center justify-center text-lg">Event Flyer</div>
+
           <div className="flex items-center justify-center m-4">
             <AddFlyerSection formData={formData} handleChange={handleChange} />
+          </div>
+
+          <div className="flex items-center justify-center m-3 text-gray-500">
+            Note: Events with a flyer have a higher chance of being featured!
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
@@ -308,15 +318,10 @@ const CreateUpdateEventPage = () => {
                 <Filter
                   selectedItems={selectedClubs}
                   setSelectedItems={setSelectedClubs}
-                  // allItems={clubs.map((club) => club.name)}
                   allItems={clubs
-                    .filter(
-                      (club) =>
-                        (userEmail && club.leaders.map((leader) => leader.email).includes(userEmail)) ||
-                        (userEmail && admin_emails.includes(userEmail)),
-                    )
+                    .filter((club) => userEmail && club.leaders.map((leader) => leader.email).includes(userEmail))
                     .map((club) => club.name)}
-                  label="Hosting Club(s)"
+                  label="Search clubs you are officer"
                   showInput={true}
                 />
                 {validationErrors.clubs && <p className="text-red-500">{validationErrors.clubs}</p>}
@@ -377,7 +382,7 @@ const CreateUpdateEventPage = () => {
           </div>
 
           <div className="mb-4 mt-2 flex items-center gap-2 justify-end">
-            {!updatingAlreadyMadeEvent && (
+            {!updatingAlreadyMadeEvent && selectedClubs.length != 0 && (
               <p>
                 Your club only has{" "}
                 <span

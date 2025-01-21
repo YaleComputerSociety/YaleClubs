@@ -42,7 +42,7 @@ const FeaturedEventCard = ({ event, onClick }: FeaturedEventCardProps) => {
           </div>
         </div>
         <div className="flex gap-2 mb-3 overflow-x-auto scrollbar-hide whitespace-nowrap">
-          {event.tags?.map((tag: Tag, index) => <TagBlock key={index} tag={tag} />)}
+          {event.tags?.slice(0, 3).map((tag: Tag, index) => <TagBlock key={index} tag={tag} />)}
         </div>
       </div>
     </div>

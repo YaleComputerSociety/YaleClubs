@@ -79,11 +79,10 @@ const AddFlyerSection: React.FC<EditableImageSectionProps> = ({ formData, handle
     <div className="relative">
       <div className="relative w-48 h-48 rounded-lg shadow-lg">
         <Image
-          src={formData.flyer || "/assets/default-logo.png"}
+          src={formData.flyer || "/assets/default-background.png"}
           alt="Flyer"
           className="object-cover rounded-lg"
-          width={240}
-          height={240}
+          fill
           priority
         />
         <button
