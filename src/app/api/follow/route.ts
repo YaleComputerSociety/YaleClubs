@@ -5,18 +5,23 @@ import connectToDatabase from "../../../lib/mongodb";
 import User from "../../../lib/models/Users";
 import Club from "../../../lib/models/Club";
 
+const getNetId = (req: Request): string | null => {
+  const authHeader = req.headers.get("authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) throw new Error("Authorization token missing or invalid");
+
+  // Decode the token
+  const token = authHeader.split(" ")[1];
+  const decoded = jwtDecode<{ netid: string }>(token);
+  const netid = decoded.netid; // Assuming the payload contains the netid field
+  if (!netid) throw new Error("Token is missing required 'netid' field");
+  return netid;
+};
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) throw new Error("Authorization token missing or invalid");
-
-    // Decode the token
-    const token = authHeader.split(" ")[1];
-    const decoded = jwtDecode<{ netid: string }>(token);
-    const netid = decoded.netid; // Assuming the payload contains the netid field
-    if (!netid) throw new Error("Token is missing required 'netid' field");
+    const netid = getNetId(req);
 
     const { clubId, isFollowing: shouldFollow } = body;
     if (!clubId || shouldFollow === undefined) {
@@ -41,9 +46,15 @@ export async function POST(req: Request) {
       if (shouldFollow == isAlreadyFollowing) {
         throw new Error("boolean does not match database");
       } else if (!shouldFollow && isAlreadyFollowing) {
-        // if following and match database, unfollow
-        await User.findOneAndUpdate({ netid }, { $pull: { followedClubs: clubId } }, { new: true, session });
+        // Unfollow
+        const updatedUser = await User.findOneAndUpdate(
+          // We only match if the user IS currently following the club
+          { netid, followedClubs: clubId },
+          { $pull: { followedClubs: clubId } },
+          { new: true, session },
+        );
 
+        if (!updatedUser) throw new Error(`Failed to update user with netid ${netid}`);
         // Ensure club has a followers field (e.g., set to 0 if missing)
         await Club.findOneAndUpdate(
           { _id: clubId },
@@ -58,9 +69,10 @@ export async function POST(req: Request) {
           { new: true, session },
         );
       } else if (shouldFollow && !isAlreadyFollowing) {
-        // if not following and matches db
+        // Follow club
         const updatedUser = await User.findOneAndUpdate(
-          { netid },
+          // The condition ensures we only match if the user is NOT already following.
+          { netid, followedClubs: { $ne: clubId } },
           { $addToSet: { followedClubs: clubId } },
           { new: true, session },
         );

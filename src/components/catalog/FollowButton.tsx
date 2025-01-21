@@ -9,12 +9,7 @@ type FollowButtonProps = {
   setFollowedClubs: Dispatch<SetStateAction<string[]>>;
 };
 
-const FollowButton: React.FC<FollowButtonProps> = ({
-  isFollowing,
-  clubId,
-  followedClubs,
-  setFollowedClubs,
-}) => {
+const FollowButton: React.FC<FollowButtonProps> = ({ isFollowing, clubId, followedClubs, setFollowedClubs }) => {
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {

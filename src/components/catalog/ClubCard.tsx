@@ -14,7 +14,6 @@ type ClubCardProps = {
 };
 
 const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollowing }: ClubCardProps) => {
-
   const isFollowing = followedClubs.includes(club._id);
 
   const adjustedFollowers = club.followers
