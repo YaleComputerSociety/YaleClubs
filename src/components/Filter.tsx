@@ -73,7 +73,7 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label }: FilterProp
     <div ref={dropdownRef} className="relative">
       {/* Filter Toggle */}
       <div
-        className="px-2 py-2 rounded cursor-pointer min-w-[5rem] max-w-[20rem] flex items-center justify-between h-10 md:h-11 hover:bg-gray-100 transition-colors duration-200"
+        className="px-2 py-2 rounded cursor-pointer min-w-[5rem] max-w-[20rem] flex items-center justify-between h-10 md:h-11 hover:bg-gray-200 transition-colors duration-200"
         onClick={() => setShowDropdown((prev) => !prev)}
       >
         <div className="flex items-center overflow-hidden min-w-0 space-x-2">
