@@ -59,14 +59,11 @@ const UpdatePage = () => {
     aliases: [],
   });
   const [isLoading, setIsLoading] = useState(true);
-
-  // create usestates for categories and affiliation
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedAffiliations, setSelectedAffiliations] = useState<string[]>([]);
 
   function isValidUrl(value: string): boolean {
     try {
-      // Will throw if `value` isn't a valid URL
       new URL(value);
       return true;
     } catch {
@@ -183,8 +180,6 @@ const UpdatePage = () => {
             };
             setClub(specificClub);
             setFormData(clubInput);
-
-            // set selected catagories to be the specific club categories
             setSelectedCategories(specificClub.categories || []);
             setSelectedAffiliations(specificClub.affiliations || []);
           }
@@ -363,11 +358,6 @@ const UpdatePage = () => {
                 {validationErrors.description && <p className="text-red-500">{validationErrors.description}</p>}
               </div>
               <div className="space-y-0">
-                {/* <CategoriesDropdown
-                  selectedCategories={formData.categories || []}
-                  additionalCategories={formData.categories || []}
-                  handleChange={handleChange}
-                /> */}
                 <Filter
                   selectedItems={selectedCategories}
                   setSelectedItems={setSelectedCategories}
@@ -376,7 +366,6 @@ const UpdatePage = () => {
                 />
               </div>
               <div className="space-y-0">
-                {/* <AffiliationsDropdown selectedAffiliations={formData.affiliations || []} handleChange={handleChange} /> */}
                 <Filter
                   selectedItems={selectedAffiliations}
                   setSelectedItems={setSelectedAffiliations}
