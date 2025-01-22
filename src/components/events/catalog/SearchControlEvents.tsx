@@ -24,13 +24,35 @@ const SearchControlEvent = ({
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
   const [trie, setTrie] = useState<Trie | null>(null);
   const [, setIsSearching] = useState(false);
-
+  const [aliasMap, setAliasMap] = useState<Record<string, string[]>>({});
   // Initialize Trie with event names once
   useEffect(() => {
     const newTrie = new Trie();
     events.forEach((event) => newTrie.insert(event.name, ""));
     setTrie(newTrie);
   }, [events]);
+
+  useEffect(() => {
+    const mapping: Record<string, string[]> = {};
+
+    clubsForFilter.forEach((club: IClub) => {
+      // Insert the club name
+      if (Array.isArray(club.aliases)) {
+        club.aliases.forEach((alias) => {
+          if (typeof alias === "string") {
+            const aliasLower = alias.toLowerCase().trim();
+            if (mapping[aliasLower]) {
+              mapping[aliasLower].push(club.name);
+            } else {
+              mapping[aliasLower] = [club.name];
+            }
+          }
+        });
+      }
+    });
+
+    setAliasMap(mapping);
+  }, [clubsForFilter]);
 
   // Filter events based on search query, tags, and clubs
   useEffect(() => {
@@ -90,7 +112,7 @@ const SearchControlEvent = ({
           setSelectedItems={setSelectedClubs}
           allItems={clubsForFilter.map((club) => club.name)}
           label="Clubs"
-          showInput={true}
+          aliasMapping={aliasMap}
         />
         <Filter
           selectedItems={selectedTags}

@@ -82,8 +82,12 @@ export default function EventsPage() {
           axios.get<IClub[]>("/api/clubs"),
         ]);
 
+        const yaleCollegeClubs = clubsResponse.data
+          .filter((club) => club.school === "Yale College")
+          .sort((a, b) => a.name.localeCompare(b.name));
+
         setEvents(eventsResponse.data);
-        setClubs(clubsResponse.data);
+        setClubs(yaleCollegeClubs);
 
         // Split and sort events
         const now = new Date();

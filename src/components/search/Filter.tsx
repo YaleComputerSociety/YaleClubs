@@ -5,26 +5,36 @@ interface FilterProps {
   setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>;
   allItems: string[];
   label: string;
-  showInput?: boolean;
+  aliasMapping?: Record<string, string[]>; // Optional alias mapping
 }
 
-const MAX_TOGGLE_WIDTH = 320; // Maximum width before showing "+x"
+const MAX_TOGGLE_WIDTH = 320;
 
-const Filter = ({ selectedItems, setSelectedItems, allItems, label, showInput = true }: FilterProps) => {
+const Filter = ({ selectedItems, setSelectedItems, allItems, label, aliasMapping = {} }: FilterProps) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const firstVisibleItemRef = useRef<HTMLDivElement | null>(null);
 
-  const availableItems = allItems.filter(
-    (item) => !selectedItems.includes(item) && item.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  const availableItems = allItems.filter((item) => {
+    if (selectedItems.includes(item)) return false;
+
+    const searchTermLower = searchTerm.toLowerCase().trim();
+
+    // Direct match with item name
+    if (item.toLowerCase().includes(searchTermLower)) return true;
+
+    // Check aliases
+    const matchingAlias = Object.entries(aliasMapping).some(
+      ([alias, names]) => alias.toLowerCase().includes(searchTermLower) && names.includes(item),
+    );
+
+    return matchingAlias;
+  });
 
   const handleAddItem = (item: string) => {
     setSelectedItems((prev) => [...prev, item]);
-    setSearchTerm(""); // Clear the search term
-    searchInputRef.current?.focus();
+    setSearchTerm("");
   };
 
   const handleRemoveItem = (item: string) => {
@@ -54,13 +64,6 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label, showInput = 
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showDropdown]);
-
-  // Scroll to first visible item when dropdown is updated
-  useEffect(() => {
-    if (firstVisibleItemRef.current) {
-      firstVisibleItemRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    }
-  }, [availableItems]);
 
   const getToggleSummary = () => {
     const visibleFilters: string[] = [];
@@ -111,7 +114,7 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label, showInput = 
       {/* Dropdown */}
       {showDropdown && (
         <div className="absolute mt-2 sm:w-full sm:left-0 lg:w-96 bg-white border rounded shadow-lg z-10">
-          {/* Selected Tags Section */}
+          {/* Tags Section (Conditional) */}
           {selectedItems.length > 0 && (
             <div className="p-2 border-b flex items-center">
               <div className="flex flex-wrap gap-1 flex-grow">
@@ -143,32 +146,34 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label, showInput = 
           )}
 
           {/* Search Input */}
-          {showInput && (
-            <div className="p-2">
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder={`Search ${label.toLowerCase()}...`}
-                className="w-full px-2 py-1 border rounded-lg leading-relaxed focus:outline-none focus:ring focus:border-blue-300 text-sm"
-                ref={searchInputRef}
-              />
-            </div>
-          )}
+          <div className="p-2">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder={`Search ${label.toLowerCase()}...`}
+              className="w-full px-2 py-1 border rounded-lg leading-relaxed focus:outline-none focus:ring focus:border-blue-300 text-sm"
+              ref={searchInputRef}
+            />
+          </div>
 
           {/* Available Items */}
           <div className="flex flex-col max-h-72 overflow-y-auto">
             {availableItems.length > 0 ? (
-              availableItems.map((item, index) => (
-                <div
-                  key={item}
-                  ref={index === 0 ? firstVisibleItemRef : null}
-                  className="cursor-pointer hover:bg-gray-100 px-4 py-2 rounded"
-                  onClick={() => handleAddItem(item)}
-                >
-                  {item}
-                </div>
-              ))
+              availableItems.map((item) => {
+                return (
+                  <div
+                    key={item}
+                    className="cursor-pointer hover:bg-gray-100 px-4 py-2 rounded"
+                    onClick={() => {
+                      handleAddItem(item);
+                      searchInputRef.current?.focus();
+                    }}
+                  >
+                    <div>{item}</div>
+                  </div>
+                );
+              })
             ) : (
               <div className="text-gray-600 px-4 py-2">No {label.toLowerCase()} found</div>
             )}

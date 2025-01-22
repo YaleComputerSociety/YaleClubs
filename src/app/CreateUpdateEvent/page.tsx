@@ -319,6 +319,7 @@ const CreateUpdateEventPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
             <div>
               <label className="block text-sm font-medium text-gray-700">
+                <div className="text-red-600 m-0">*</div>
                 <input
                   type="text"
                   value={formData.name ?? ""}
@@ -331,6 +332,7 @@ const CreateUpdateEventPage = () => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
+                <div className="text-red-600 m-0">*</div>
                 <Filter
                   selectedItems={selectedClubs}
                   setSelectedItems={setSelectedClubs}
@@ -340,12 +342,15 @@ const CreateUpdateEventPage = () => {
                 />
                 {validationErrors.clubs && <p className="text-red-500">{validationErrors.clubs}</p>}
               </div>
-              <Filter
-                selectedItems={selectedTags}
-                setSelectedItems={setSelectedTags}
-                allItems={Object.values(Tag).slice(1)}
-                label="Tags"
-              />
+              <div>
+                <div className="m-6"></div>
+                <Filter
+                  selectedItems={selectedTags}
+                  setSelectedItems={setSelectedTags}
+                  allItems={Object.values(Tag).slice(1)}
+                  label="Tags"
+                />
+              </div>
             </div>
             <div>
               <textarea
@@ -353,12 +358,35 @@ const CreateUpdateEventPage = () => {
                 onChange={(e) => handleChange("description", e.target.value)}
                 className="w-full border border-gray-300 rounded-lg p-2"
                 placeholder="Event Description"
-                rows={7}
+                rows={9}
               ></textarea>
               {validationErrors.description && <p className="text-red-500">{validationErrors.description}</p>}
             </div>
             <div className="flex flex-col gap-6">
               <div>
+                <div className="text-red-600">*</div>
+                <input
+                  className="w-full border border-gray-300 rounded-lg p-2 [&::-webkit-datetime-edit-day-field]:disabled:text-gray-300 [&::-webkit-datetime-edit-month-field]:disabled:text-gray-300 [&::-webkit-datetime-edit-year-field]:disabled:text-gray-300 [&::-webkit-datetime-edit-hour-field]:disabled:text-gray-300 [&::-webkit-datetime-edit-minute-field]:disabled:text-gray-300"
+                  aria-label="Date and time"
+                  type="datetime-local"
+                  min={dbDateToFrontendDate(new Date())}
+                  onChange={(e) => {
+                    const selectedDate = new Date(e.target.value);
+                    const now = new Date();
+                    if (selectedDate < now) {
+                      e.target.value = dbDateToFrontendDate(now);
+                      handleChange("start", now);
+                    } else {
+                      handleChange("start", e.target.value);
+                    }
+                  }}
+                  value={dbDateToFrontendDate(new Date(formData.start))}
+                />
+                {validationErrors.start && <p className="text-red-500">{validationErrors.start}</p>}
+              </div>
+              <div>
+                <div className="text-red-600 m-0">*</div>
+
                 <input
                   type="text"
                   value={formData.location ?? ""}
@@ -379,18 +407,6 @@ const CreateUpdateEventPage = () => {
                 {validationErrors.registrationLink && (
                   <p className="text-red-500">{validationErrors.registrationLink}</p>
                 )}
-              </div>
-              <div>
-                <input
-                  className="w-full border border-gray-300 rounded-lg p-2"
-                  aria-label="Date and time"
-                  type="datetime-local"
-                  min={dbDateToFrontendDate(new Date())}
-                  onChange={(e) => handleChange("start", e.target.value)}
-                  value={dbDateToFrontendDate(new Date(formData.start))}
-                />
-
-                {validationErrors.start && <p className="text-red-500">{validationErrors.start}</p>}
               </div>
             </div>
           </div>
