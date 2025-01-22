@@ -156,12 +156,12 @@ export default function EventsPage() {
           <div className="flex flex-col w-full px-5 md:px-20">
             <div className="mt-20 md:mt-24"></div>
 
-            <div className="flex items-center justify-between w-full">
-              <div className="flex-1">
+            <div className="flex flex-col md:flex-row items-center justify-between w-full gap-4 md:gap-0">
+              <div className="flex-1 text-center md:text-left w-full">
                 <h1 className="text-3xl font-bold text-black">Discover Events</h1>
-                <h2 className="text-xl mb-4 md:mb-8">Finding Upcoming Campus Events has Never Been Easier.</h2>
+                <h2 className="text-xl mb-0 md:mb-4">Finding Upcoming Campus Events has Never Been Easier.</h2>
               </div>
-              <div className="flex items-center">
+              <div className="flex items-center mb-4 md:mb-0">
                 <Link href="/CreateUpdateEvent">
                   <button className="flex items-center font-semibold justify-center gap-2 flex-row rounded-full text-xl drop-shadow-md transition hover:shadow-lg hover:bg-violet-500 bg-violet-600 text-white px-5 py-3">
                     <FaPlus /> Create Event
@@ -170,7 +170,7 @@ export default function EventsPage() {
               </div>
             </div>
 
-            <div className="flex flex-col md:flex-row lg:flex-row items-center justify-between mb-6">
+            <div className="flex flex-col md:flex-row lg:flex-row items-center justify-between mb-0 md:mb-6">
               <SearchControlEvent
                 clubsForFilter={clubs}
                 events={events}

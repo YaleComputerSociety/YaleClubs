@@ -88,7 +88,7 @@ const Catalog = ({
 
   return (
     <div className="w-full">
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8 m-6 md:m-0">
         {upcomingEvents.length > 0 ? (
           <>
             {showFeatured && (
