@@ -17,14 +17,15 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import EditableImageSection from "@/components/update/EditImage";
 import ClubLeadersSection from "@/components/update/EditLeaders";
-import CategoriesDropdown from "@/components/update/ClubCategories";
+// import CategoriesDropdown from "@/components/update/ClubCategories";
 // import IntensityDropdown from "@/components/update/IntensityDropdown";
 import SchoolDropdown from "@/components/update/SchoolDropdown";
 
 import { getCookie } from "cookies-next";
-import AffiliationsDropdown from "@/components/update/ClubAffiliation";
+// import AffiliationsDropdown from "@/components/update/ClubAffiliation";
 import RecruitmentStatusDropdown from "@/components/update/RecruitmentDropdown";
 import AliasesDropdown from "@/components/update/ClubAliases";
+import Filter from "@/components/Filter";
 
 const UpdatePage = () => {
   const searchParams = useSearchParams();
@@ -58,10 +59,11 @@ const UpdatePage = () => {
     aliases: [],
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedAffiliations, setSelectedAffiliations] = useState<string[]>([]);
 
   function isValidUrl(value: string): boolean {
     try {
-      // Will throw if `value` isn't a valid URL
       new URL(value);
       return true;
     } catch {
@@ -178,6 +180,8 @@ const UpdatePage = () => {
             };
             setClub(specificClub);
             setFormData(clubInput);
+            setSelectedCategories(specificClub.categories || []);
+            setSelectedAffiliations(specificClub.affiliations || []);
           }
         }
       } catch (error) {
@@ -221,9 +225,17 @@ const UpdatePage = () => {
       {} as Record<string, string>,
     );
 
+    formData.categories = selectedCategories as Category[];
+    formData.affiliations = selectedAffiliations as Affiliation[];
+
     if (Array.isArray(formData.categories)) {
       const validCategories = Object.values(Category) as string[]; // Convert enum to string array
       formData.categories = formData.categories.filter((cat) => validCategories.includes(cat as string));
+    }
+
+    if (Array.isArray(formData.affiliations)) {
+      const validAffiliations = Object.values(Affiliation) as string[]; // Convert enum to string array
+      formData.affiliations = formData.affiliations.filter((cat) => validAffiliations.includes(cat as string));
     }
 
     setValidationErrors(errors);
@@ -346,14 +358,20 @@ const UpdatePage = () => {
                 {validationErrors.description && <p className="text-red-500">{validationErrors.description}</p>}
               </div>
               <div className="space-y-0">
-                <CategoriesDropdown
-                  selectedCategories={formData.categories || []}
-                  additionalCategories={formData.categories || []}
-                  handleChange={handleChange}
+                <Filter
+                  selectedItems={selectedCategories}
+                  setSelectedItems={setSelectedCategories}
+                  allItems={Object.values(Category)}
+                  label="Categories"
                 />
               </div>
               <div className="space-y-0">
-                <AffiliationsDropdown selectedAffiliations={formData.affiliations || []} handleChange={handleChange} />
+                <Filter
+                  selectedItems={selectedAffiliations}
+                  setSelectedItems={setSelectedAffiliations}
+                  allItems={Object.values(Affiliation)}
+                  label="Affiliations"
+                />
               </div>
               <div className="space-y-0">
                 <SchoolDropdown selectedSchool={(formData.school as School) ?? ""} handleChange={handleChange} />
