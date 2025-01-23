@@ -11,9 +11,16 @@ interface SearchControlProps {
   setCurrentClubs: React.Dispatch<React.SetStateAction<IClub[]>>;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   followedClubs: string[];
+  setSelectedClub: React.Dispatch<React.SetStateAction<IClub | null>>;
 }
 
-const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: SearchControlProps) => {
+const SearchControl = ({
+  clubs,
+  setCurrentClubs,
+  setIsLoading,
+  followedClubs,
+  setSelectedClub,
+}: SearchControlProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSchools, setSelectedSchools] = useState<string[]>([School.COLLEGE]);
@@ -161,6 +168,18 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
           allItems={[...Object.values(Category), ...Object.values(Affiliation)].sort()}
           label="Categories"
         />
+        <button
+          className="text-blue-500 hover:text-blue-700 hidden md:inline-block"
+          onClick={() => {
+            const collegeClubs = clubs.filter((club) => club.school?.includes(School.COLLEGE));
+            if (collegeClubs.length > 0) {
+              const randomClub = collegeClubs[Math.floor(Math.random() * collegeClubs.length)];
+              setSelectedClub(randomClub); // Set the randomly selected club
+            }
+          }}
+        >
+          I&apos;m feeling lucky
+        </button>
         {isLoggedIn && <FollowFilter showFollowedOnly={showFollowedOnly} setShowFollowedOnly={setShowFollowedOnly} />}
       </div>
       {/* <ResetButton

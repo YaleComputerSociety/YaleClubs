@@ -21,6 +21,7 @@ export default function Home() {
   const [clubs, setClubs] = useState<IClub[]>([]);
   const [currentClubs, setCurrentClubs] = useState<IClub[]>([]);
   const [followedClubs, setFollowedClubs] = useState<string[]>([]);
+  const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
   const token = Cookies.get("token");
   let netid = "";
 
@@ -82,6 +83,7 @@ export default function Home() {
               setCurrentClubs={setCurrentClubs}
               setIsLoading={setIsLoading}
               followedClubs={followedClubs}
+              setSelectedClub={setSelectedClub}
             />
             {/* </SearchWrapper> */}
             <Catalog
@@ -89,6 +91,8 @@ export default function Home() {
               isLoading={isLoading}
               followedClubs={followedClubs}
               setFollowedClubs={setFollowedClubs}
+              selectedClub={selectedClub}
+              setSelectedClub={setSelectedClub}
             />
           </div>
         </div>
