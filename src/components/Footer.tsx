@@ -62,7 +62,7 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="https://yaleims.canny.io" className="hover:underline" target="_blank">
+                  <Link href="https://yaleclubs.canny.io" className="hover:underline" target="_blank">
                     Feedback
                   </Link>
                 </li>
@@ -74,7 +74,7 @@ export default function Footer() {
               <h3 className="text-lg font-bold text-black">About</h3>
               <ul className="mt-2 space-y-1">
                 <li>
-                  <Link href="/about-us" className="hover:underline">
+                  <Link href="/about" className="hover:underline">
                     Team
                   </Link>
                 </li>
@@ -84,7 +84,11 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <a href="https://github.com/YaleComputerSociety/yaleims" target="_blank" className="hover:underline">
+                  <a
+                    href="https://github.com/YaleComputerSociety/yaleclubs"
+                    target="_blank"
+                    className="hover:underline"
+                  >
                     GitHub
                   </a>
                 </li>

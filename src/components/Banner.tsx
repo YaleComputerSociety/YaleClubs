@@ -53,12 +53,7 @@ const Banner = ({ onHeightChange }: { onHeightChange: (height: number) => void }
       {isMobile ? (
         <div className="flex justify-center gap-5 px-5 py-0 text-l">
           <p>
-            <a
-              href="https://docs.google.com/forms/d/e/1FAIpQLSdBM9ccbynx2eQKVdCkpPDW-sIJArTWqUlMGGKuXz175iq0Og/viewform"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-            >
+            <a href="https://yaleclubs.canny.io" target="_blank" rel="noopener noreferrer" className="underline">
               We want your feedback! Take a quick survey to help us improve.
             </a>
           </p>

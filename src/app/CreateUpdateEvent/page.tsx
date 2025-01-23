@@ -338,7 +338,6 @@ const CreateUpdateEventPage = () => {
                   setSelectedItems={setSelectedClubs}
                   allItems={availeHostClubs}
                   label="Hosting club(s)"
-                  showInput={true}
                 />
                 {validationErrors.clubs && <p className="text-red-500">{validationErrors.clubs}</p>}
               </div>
