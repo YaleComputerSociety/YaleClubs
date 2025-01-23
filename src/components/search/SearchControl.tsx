@@ -168,6 +168,7 @@ const SearchControl = ({
           allItems={[...Object.values(Category), ...Object.values(Affiliation)].sort()}
           label="Categories"
         />
+        {isLoggedIn && <FollowFilter showFollowedOnly={showFollowedOnly} setShowFollowedOnly={setShowFollowedOnly} />}
         <button
           className="text-blue-500 hover:text-blue-700 hidden md:inline-block"
           onClick={() => {
@@ -180,7 +181,6 @@ const SearchControl = ({
         >
           I&apos;m feeling lucky
         </button>
-        {isLoggedIn && <FollowFilter showFollowedOnly={showFollowedOnly} setShowFollowedOnly={setShowFollowedOnly} />}
       </div>
       {/* <ResetButton
         onReset={() => {
