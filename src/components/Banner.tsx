@@ -22,7 +22,7 @@ const Banner = ({ onHeightChange }: { onHeightChange: (height: number) => void }
   }, []);
 
   useEffect(() => {
-    localStorage.clear(); // MAKE SURE TO COMMENT THIS OUT WHEN COMMITTING
+    // localStorage.clear(); // MAKE SURE TO COMMENT THIS OUT WHEN COMMITTING
     const isClosed = localStorage.getItem("bannerClosed");
     if (!isClosed) {
       const timer = setTimeout(() => {
