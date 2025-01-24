@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import FollowFilter from "./FollowFilter";
 import Cookies from "js-cookie";
 import SearchBar from "./SearchBar";
-import FilterButton from "./Filter";
+import FilterButton from "../Filter";
 import { Affiliation, Category, IClub, School } from "@/lib/models/Club";
 import Trie from "./Trie";
 

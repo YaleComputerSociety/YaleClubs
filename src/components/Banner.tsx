@@ -46,7 +46,7 @@ const Banner = ({ onHeightChange }: { onHeightChange: (height: number) => void }
   return (
     <div
       ref={bannerRef}
-      className={`fixed ${isMobile ? "py-4" : "py-5"} top-0 left-0 right-0 z-50 bg-clubPurple text-white transition-transform duration-1000 ${
+      className={`fixed p-2 sm:p-0 top-0 left-0 right-0 z-50 bg-clubPurple text-white transition-transform duration-1000 ${
         isVisible ? "translate-y-0" : "-translate-y-full"
       }`}
     >
@@ -81,10 +81,16 @@ const Banner = ({ onHeightChange }: { onHeightChange: (height: number) => void }
             onClick={handleClose}
             className="text-white hover:text-gray-300 focus:outline-none px-2 text-4xl mr-4"
           >
-            &times;
-          </button>
-        </div>
-      )}
+            We want your feedback! Take a quick <span className="underline">survey</span> to help us improve.
+          </a>
+        </p>
+        <button
+          onClick={handleClose}
+          className="text-white hover:text-gray-300 focus:outline-none text-4xl px-2 sm:mr-4"
+        >
+          &times;
+        </button>
+      </div>
     </div>
   );
 };
