@@ -78,7 +78,9 @@ const CreateUpdateEventPage = () => {
             return `Description must be at most ${DESCRIPTION_MAX_LENGTH} characters.`;
           return "";
         case "clubs":
+          if (value === undefined) return "Must provide a club";
           if (value instanceof Array && value.length == 0) return "Must provide a club";
+          console.log(value);
           return "";
         case "location":
           if (value instanceof Date) return "Location must be a string.";
@@ -222,6 +224,7 @@ const CreateUpdateEventPage = () => {
 
     if (Object.keys(errors).length > 0) {
       console.error("Form has validation errors:", errors);
+      alert("Please fill out all required fields and adhere to all form field length requirements.");
       return;
     }
 
@@ -250,12 +253,12 @@ const CreateUpdateEventPage = () => {
           if (response.status === 200) {
             window.location.href = "/Events";
           } else {
-            alert("Failed to update event");
+            alert("Failed to create/update event - check form for errors");
           }
         })
         .catch((error) => {
           console.error("Error updating event:", error);
-          alert("Failed to update event");
+          alert("Failed to create/update event - check form for errors");
         });
     } else {
       alert("Out of events for that club");

@@ -117,8 +117,15 @@ export async function POST(req: Request): Promise<NextResponse> {
       );
     }
 
-    const event = new Event(body);
+    const event = new Event({ ...body, createdBy: userEmail });
     const savedEvent = await event.save();
+
+    // Log the creation in UpdateLog
+    await UpdateLog.create({
+      documentId: savedEvent._id,
+      updatedBy: userEmail,
+      changes: "Event created",
+    });
 
     return NextResponse.json(savedEvent, { status: 200 });
   } catch (error) {

@@ -97,8 +97,8 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 text-right text-blue-700 dark:text-white">
-          <p className="text-md">YaleIMs © 2025</p>
+        <div className="mt-8 text-right text-black">
+          <p className="text-md">YaleClubs © {new Date().getFullYear()}</p>
         </div>
       </div>
       <br></br>

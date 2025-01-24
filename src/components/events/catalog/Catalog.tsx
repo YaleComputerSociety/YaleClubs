@@ -111,7 +111,7 @@ const Catalog = ({
             <a href="/CreateUpdateEvent">
               <span className="text-purple-400">Create Event</span>
             </a>{" "}
-            button
+            button!
           </div>
         )}
 
@@ -128,7 +128,7 @@ const Catalog = ({
           <div>
             <h1 className="text-2xl font-bold mb-4">Past Events</h1>
 
-            <div>No past events found</div>
+            <div>No past events found.</div>
           </div>
         )}
 

@@ -127,9 +127,9 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
               </div>
             </div>
 
-            <div className="flex flex-row sm:flex-col gap-4 sm:gap-4 flex-wrap">
+            <div className="sm:flex-col gap-4 sm:gap-4 overflow-x-auto sm:overflow-x-visible flex">
               {associatedClubs.map((club, index) => (
-                <div key={index} className="flex items-start gap-2">
+                <div key={index} className="flex items-start gap-2 flex-shrink-0">
                   {club.logo ? (
                     <Image src={club.logo} className="rounded-lg" alt="Club Logo" width={36} height={36} />
                   ) : (

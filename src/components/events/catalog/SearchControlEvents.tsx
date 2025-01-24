@@ -28,12 +28,22 @@ const SearchControlEvent = ({
   // Initialize Trie with event names once
   useEffect(() => {
     const newTrie = new Trie();
-    events.forEach((event) => newTrie.insert(event.name, ""));
+
+    events.forEach((event) => newTrie.insert(event.name, event.name));
+
+    clubsForFilter.forEach((club) => {
+      if (typeof club.name === "string") {
+        const clubNameLower = club.name.toLowerCase().trim();
+
+        newTrie.insert(clubNameLower, clubNameLower);
+      }
+    });
+
     setTrie(newTrie);
-  }, [events]);
+  }, [events, clubsForFilter]);
 
   useEffect(() => {
-    const mapping: Record<string, string[]> = {};
+    const mapping: Record<string, string[]> = aliasMap;
 
     clubsForFilter.forEach((club: IClub) => {
       // Insert the club name
@@ -52,7 +62,7 @@ const SearchControlEvent = ({
     });
 
     setAliasMap(mapping);
-  }, [clubsForFilter]);
+  }, [clubsForFilter, aliasMap]);
 
   // Filter events based on search query, tags, and clubs
   useEffect(() => {
@@ -60,7 +70,6 @@ const SearchControlEvent = ({
 
     setIsSearching(true);
     const now = new Date();
-
     // Filter by search query
     let filteredBySearch = events;
     if (searchQuery.trim() !== "") {
@@ -69,15 +78,20 @@ const SearchControlEvent = ({
         .split(" ")
         .filter((word) => word.trim() !== "");
 
-      let matchingNames = trie.getWordsWithPrefixes(
-        queryWords,
-        events.map((event) => event.name),
-      );
+      let matchingNames = trie.getWordsWithPrefixes(queryWords, [
+        ...events.map((event) => event.name),
+        ...clubsForFilter.map((club) => club.name),
+      ]);
+
       matchingNames = matchingNames
         .filter((name) => name !== undefined && name !== null)
         .map((name) => name.toLowerCase());
 
-      filteredBySearch = events.filter((event) => matchingNames.includes(event.name.toLowerCase().trim()));
+      filteredBySearch = events.filter((event) => {
+        const eventNameMatch = matchingNames.includes(event.name.toLowerCase().trim());
+        const clubNameMatch = event.clubs?.some((clubName) => matchingNames.includes(clubName.toLowerCase().trim()));
+        return eventNameMatch || clubNameMatch;
+      });
     }
 
     // Filter by clubs and tags
