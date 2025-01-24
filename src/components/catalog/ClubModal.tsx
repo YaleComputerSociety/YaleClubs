@@ -84,11 +84,32 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
     }
   }, [club.leaders, token]);
 
+  const LabelList = () => {
+    return (
+      <>
+        {((club.affiliations && club.affiliations.length > 0) || (club.categories && club.categories.length > 0)) && (
+          <div className="flex gap-2 whitespace-nowrap w-full flex-wrap mt-4">
+            {club.categories?.map((tag, index) => (
+              <span key={index} className="bg-[#eee] rounded px-2 py-1 text-sm">
+                {tag}
+              </span>
+            ))}
+            {club.affiliations?.map((tag, index) => (
+              <span key={index} className="bg-[#feb] rounded px-2 py-1 text-sm">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </>
+    );
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div
         ref={modalRef}
-        className="relative bg-white rounded-2xl max-w-4xl w-full lg:px-28 mx-4 lg:mx-auto h-5/6 max-h-[1000px] overflow-hidden flex flex-col"
+        className="relative bg-white rounded-2xl max-w-4xl w-full lg:px-24 mx-4 lg:mx-auto h-5/6 max-h-[1000px] overflow-hidden flex flex-col"
       >
         <Image
           onClick={onClose}
@@ -100,7 +121,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
           className="absolute top-2 left-2 cursor-pointer z-50"
         />
 
-        <div className="flex flex-col items-center mt-8 overflow-y-auto w-full">
+        <div className="flex flex-col items-center mt-8 overflow-y-auto w-full min-h-full">
           <div className="w-full h-[36%] bg-red-300 relative">
             <Image
               src={club.backgroundImage || "/assets/default-background.png"}
@@ -121,7 +142,21 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
             />
           </div>
 
-          {!isSm ? (
+          <div className="flex flex-row w-full gap-10 mt-4">
+            <div className="flex flex-col w-full gap-2 flex-[3]">
+              <h1 className="text-3xl font-bold uppercase">{club.name}</h1>
+              <p className="text-lg font-semibold">
+                {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}
+              </p>
+              <p className="text-gray-700 mt-2">{club.description}</p>
+              <LabelList />
+            </div>
+            <div className="flex flex-col w-full gap-4 flex-1">
+              <p className="text-gray-700">website</p>
+            </div>
+          </div>
+
+          {/* {!isSm ? (
             <>
               {token ? (
                 canEdit ? (
@@ -261,7 +296,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
               </div>
             </div>
             <Board leaders={club.leaders} />
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
