@@ -3,13 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import Banner from "./Banner";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [bannerHeight, setBannerHeight] = useState(0);
+  // const [bannerHeight, setBannerHeight] = useState(0);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 767px)");
@@ -52,10 +51,10 @@ const Header = () => {
 
   return (
     <div
-      style={{ marginTop: `${bannerHeight}px` }}
+      // style={{ marginTop: `${bannerHeight}px` }}
       className="w-full flex flex-col fixed z-50 transition-[margin-top] duration-1000"
     >
-      <Banner onHeightChange={(height) => setBannerHeight(height)} />
+      {/* <Banner onHeightChange={(height) => setBannerHeight(height)} /> */}
       <div className="flex flex-row w-full justify-between p-5 md:px-20 bg-background">
         <Link href="/" className="flex flex-row items-center">
           <Image src="/assets/logo.svg" alt="Logo" width={35} height={35} unoptimized />
@@ -70,6 +69,17 @@ const Header = () => {
             {isMenuOpen && (
               <div className="absolute right-0 top-full bg-white shadow-lg rounded-md p-10">
                 <ul className="flex flex-col items-start gap-4">
+                  <li>
+                    <Link href="/Events" onClick={() => setIsMenuOpen(false)}>
+                      Events
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/" onClick={() => setIsMenuOpen(false)}>
+                      Club Catalog
+                    </Link>
+                  </li>
+
                   <li>
                     <Link href="/about" onClick={() => setIsMenuOpen(false)}>
                       About
@@ -106,6 +116,12 @@ const Header = () => {
           </div>
         ) : (
           <div className="hidden sm:flex flex-row items-center gap-x-11">
+            <Link href="/Events">
+              <div className="text-md">Events</div>
+            </Link>
+            <Link href="/">
+              <div className="text-md">Club Catalog</div>
+            </Link>
             <Link href="/about">
               <div className="text-md">About</div>
             </Link>

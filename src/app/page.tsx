@@ -19,6 +19,7 @@ import { jwtDecode } from "jwt-decode";
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [clubs, setClubs] = useState<IClub[]>([]);
+
   const [currentClubs, setCurrentClubs] = useState<IClub[]>([]);
   const [followedClubs, setFollowedClubs] = useState<string[]>([]);
   const token = Cookies.get("token");
@@ -35,11 +36,11 @@ export default function Home() {
   useEffect(() => {
     const fetchApiMessage = async () => {
       try {
-        setIsLoading(true);
-        const response = await axios.get<IClub[]>("/api/clubs");
-        setClubs(response.data);
+        const clubsResponse = await axios.get<IClub[]>("/api/clubs");
+
+        setClubs(clubsResponse.data);
       } catch (error) {
-        console.error("Error fetching API message:", error);
+        console.error("Error fetching API data:", error);
       } finally {
         setTimeout(() => setIsLoading(false), 2); // delay because setClubs is async
       }

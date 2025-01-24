@@ -5,23 +5,36 @@ interface FilterProps {
   setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>;
   allItems: string[];
   label: string;
+  aliasMapping?: Record<string, string[]>; // Optional alias mapping
 }
 
-const MAX_TOGGLE_WIDTH = 320; // Maximum width of the filter toggle before showing "+x" -- just make sure it can fit the longest possible filter + some buffer
+const MAX_TOGGLE_WIDTH = 320;
 
-const Filter = ({ selectedItems, setSelectedItems, allItems, label }: FilterProps) => {
+const Filter = ({ selectedItems, setSelectedItems, allItems, label, aliasMapping = {} }: FilterProps) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const availableItems = allItems.filter(
-    (item) => !selectedItems.includes(item) && item.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  const availableItems = allItems.filter((item) => {
+    if (selectedItems.includes(item)) return false;
+
+    const searchTermLower = searchTerm.toLowerCase().trim();
+
+    // Direct match with item name
+    if (item.toLowerCase().includes(searchTermLower)) return true;
+
+    // Check aliases
+    const matchingAlias = Object.entries(aliasMapping).some(
+      ([alias, names]) => alias.toLowerCase().includes(searchTermLower) && names.includes(item),
+    );
+
+    return matchingAlias;
+  });
 
   const handleAddItem = (item: string) => {
     setSelectedItems((prev) => [...prev, item]);
-    setSearchTerm(""); // Clear the search term
+    setSearchTerm("");
   };
 
   const handleRemoveItem = (item: string) => {
@@ -94,7 +107,7 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label }: FilterProp
             &#x2715;
           </button>
         ) : (
-          <span className="ml-2">&#x25BC;</span>
+          <span className="ml-2 text-xs">&#x25BC;</span>
         )}
       </div>
 
@@ -147,18 +160,20 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label }: FilterProp
           {/* Available Items */}
           <div className="flex flex-col max-h-72 overflow-y-auto">
             {availableItems.length > 0 ? (
-              availableItems.map((item) => (
-                <div
-                  key={item}
-                  className="cursor-pointer hover:bg-gray-100 px-4 py-2 rounded"
-                  onClick={() => {
-                    handleAddItem(item);
-                    searchInputRef.current?.focus(); // make sure input remains focused
-                  }}
-                >
-                  {item}
-                </div>
-              ))
+              availableItems.map((item) => {
+                return (
+                  <div
+                    key={item}
+                    className="cursor-pointer hover:bg-gray-100 px-4 py-2 rounded"
+                    onClick={() => {
+                      handleAddItem(item);
+                      searchInputRef.current?.focus();
+                    }}
+                  >
+                    <div>{item}</div>
+                  </div>
+                );
+              })
             ) : (
               <div className="text-gray-600 px-4 py-2">No {label.toLowerCase()} found</div>
             )}
