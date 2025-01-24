@@ -34,7 +34,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
       ? "1"
       : "0";
 
-  // console.table(club);
+  console.table(club);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -88,14 +88,18 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div
         ref={modalRef}
-        className="relative bg-white rounded-lg max-w-3xl w-full mx-4 md:mx-auto h-5/6 max-h-[1000px] overflow-hidden flex flex-col"
+        className="relative bg-white rounded-lg max-w-4xl w-full mx-4 lg:mx-auto h-5/6 max-h-[1000px] overflow-hidden flex flex-col"
       >
-        <div
+        <Image
           onClick={onClose}
-          className="absolute cursor-pointer top-2 left-2 p-[0.3rem] px-[0.5rem] pt-[0.2rem] font-bold text-2xl rounded-full text-white bg-black bg-opacity-60 leading-none"
-        >
-          &times;
-        </div>
+          src="/assets/icons/cancel.svg"
+          alt="cancel"
+          width={35}
+          height={35}
+          unoptimized
+          className="absolute top-2 left-2 cursor-pointer z-50"
+        />
+
         <Image
           src={club.backgroundImage || "/assets/default-background.png"}
           alt="bg"
