@@ -1,4 +1,4 @@
-export const NAME_MAX_LENGTH = 20;
+export const NAME_MAX_LENGTH = 30;
 export const NAME_MIN_LENGTH = 7;
 export const DESCRIPTION_MAX_LENGTH = 500;
 export const DESCRIPTION_MIN_LENGTH = 25;

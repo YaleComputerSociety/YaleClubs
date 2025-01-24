@@ -125,6 +125,7 @@ const CreateUpdateEventPage = () => {
               registrationLink: specificEvent.registrationLink || "",
               flyer: specificEvent.flyer || "",
               tags: specificEvent.tags || [],
+              createdBy: specificEvent.createdBy || "",
             };
             setEvent(specificEvent);
             setFormData(eventInput);

@@ -28,6 +28,7 @@ export interface IEventInput {
   registrationLink?: string;
   flyer?: string;
   tags?: Tag[];
+  createdBy?: string;
 }
 
 export interface IEvent extends Document {
@@ -56,6 +57,7 @@ const eventSchema = new Schema<IEvent>(
     registrationLink: { type: String, required: false },
     flyer: { type: String, required: false },
     tags: { type: [String], enum: Object.values(Tag), default: [] },
+    createdBy: { type: String, required: true },
   },
   { timestamps: true },
 );

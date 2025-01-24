@@ -117,6 +117,8 @@ export async function POST(req: Request): Promise<NextResponse> {
       );
     }
 
+    body.createdBy = userEmail;
+
     const event = new Event({ ...body, createdBy: userEmail });
     const savedEvent = await event.save();
 
@@ -271,6 +273,7 @@ export async function DELETE(req: Request): Promise<NextResponse> {
     await connectToDatabase();
 
     const netid = req.headers.get("X-NetID");
+    // const userEmail = req.headers.get("X-Email");
     if (netid !== "admin_a1b2c3e") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
