@@ -133,13 +133,6 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
                 e.currentTarget.src = "/assets/default-background.png";
               }}
             />
-            <Image
-              src={club.logo ?? "/assets/default-logo.png"}
-              alt="Club Logo"
-              width={150}
-              height={150}
-              className={`${club.logo ? "rounded-2xl" : ""} flex-shrink-0 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 shadow-xl`}
-            />
           </div>
 
           <div className="flex flex-row w-full gap-10 mt-4">
@@ -151,7 +144,21 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
               <p className="text-gray-700 mt-2">{club.description}</p>
               <LabelList />
             </div>
-            <div className="flex flex-col w-full gap-4 flex-1">
+            <div className="flex flex-col w-full gap-2 flex-1">
+              <Image
+                src={club.logo ?? "/assets/default-logo.png"}
+                alt="Club Logo"
+                width={100}
+                height={100}
+                className={`${club.logo ? "rounded-2xl" : ""} flex-shrink-0 self-center`}
+              />
+              <FollowButton
+                isFollowing={isFollowing}
+                clubId={club._id}
+                followedClubs={followedClubs}
+                setFollowedClubs={setFollowedClubs}
+                className="mb-2 w-[100px] self-center"
+              />
               <p className="text-gray-700">website</p>
             </div>
           </div>
