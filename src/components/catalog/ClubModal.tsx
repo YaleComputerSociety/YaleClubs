@@ -109,7 +109,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div
         ref={modalRef}
-        className="relative bg-white rounded-2xl max-w-4xl w-full lg:px-24 mx-4 lg:mx-auto h-5/6 max-h-[1000px] overflow-hidden flex flex-col"
+        className="relative bg-white rounded-2xl max-w-4xl w-full lg:px-24 mx-4 lg:mx-auto h-5/6 max-h-[1000px] overflow-y-auto flex flex-col"
       >
         <Image
           onClick={onClose}
@@ -121,7 +121,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
           className="absolute top-2 left-2 cursor-pointer z-50"
         />
 
-        <div className="flex flex-col items-center mt-8 overflow-y-auto w-full min-h-full">
+        <div className="flex flex-col items-center my-8 w-full min-h-full">
           <div className="w-full h-[36%] bg-red-300 relative">
             <Image
               src={club.backgroundImage || "/assets/default-background.png"}
@@ -159,7 +159,35 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
                 setFollowedClubs={setFollowedClubs}
                 className="mb-2 w-[100px] self-center"
               />
-              <p className="text-gray-700">website</p>
+              <div className="flex flex-col w-full sm:w-3/4 md:w-full">
+                <ClubModalRightLabel header="Website" content={getAdjustedWebsite(club.website)} link={club.website} />
+                <ClubModalRightLabel header="Email" content={club.email} link={"mailto:" + club.email} />
+                <ClubModalRightLabel
+                  header="Membership"
+                  content={club.numMembers ? getAdjustedNumMembers(club.numMembers) + " members" : undefined}
+                />
+                <ClubModalRightLabel
+                  header="Instagram"
+                  content={getModifiedInstagram(club.instagram)}
+                  link={getInstagramLink(club.instagram)}
+                />
+                <ClubModalRightLabel
+                  header="Application Form"
+                  content={club.applyForm ? "Application Form" : undefined}
+                  link={club.applyForm}
+                />
+                <ClubModalRightLabel
+                  header="Mailing List"
+                  content={club.mailingListForm ? "Mailing List" : undefined}
+                  link={club.mailingListForm}
+                />
+                <ClubModalRightLabel
+                  header="Calendar"
+                  content={club.calendarLink ? "Calendar Link" : undefined}
+                  link={club.calendarLink}
+                />
+                <ClubModalRightLabel header="Meeting" content={club.meeting} />
+              </div>
             </div>
           </div>
 
