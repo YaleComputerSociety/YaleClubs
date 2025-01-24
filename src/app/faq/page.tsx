@@ -29,8 +29,7 @@ export default function FAQ() {
         },
         {
           question: "What is the problem with club finding currently / Why YaleClubs?",
-          answer:
-            "YaleConnect and other resources provided by the university are difficult to traverse and lack updated information for unoffical clubs at Yale",
+          answer: "Other resources are difficult to traverse and lack updated information for unoffical clubs at Yale",
         },
       ],
     },
