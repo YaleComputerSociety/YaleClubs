@@ -63,7 +63,9 @@ const SearchControlEvent = ({
     });
 
     setAliasMap(mapping);
-  }, [clubsForFilter, aliasMap]);
+
+  }, [clubsForFilter, aliasMap, trie]);
+
 
   // Filter events based on search query, tags, and clubs
   useEffect(() => {
@@ -126,7 +128,17 @@ const SearchControlEvent = ({
     setCurrentUpcomingEvents(upcoming);
     setCurrentPastEvents(past);
     setIsSearching(false);
-  }, [searchQuery, selectedTags, selectedClubs, trie, setCurrentUpcomingEvents, setCurrentPastEvents, events]);
+  }, [
+    searchQuery,
+    selectedTags,
+    selectedClubs,
+    trie,
+    setCurrentUpcomingEvents,
+    setCurrentPastEvents,
+    events,
+    clubsForFilter,
+  ]);
+
 
   return (
     <div className="search-control w-full flex flex-col sm:flex-row flex-wrap gap-2 items-center pb-4">
