@@ -76,7 +76,7 @@ const Header = () => {
                   </li>
                   <li>
                     <Link href="/" onClick={() => setIsMenuOpen(false)}>
-                      Catalog
+                      Club Catalog
                     </Link>
                   </li>
 
@@ -120,7 +120,7 @@ const Header = () => {
               <div className="text-md">Events</div>
             </Link>
             <Link href="/">
-              <div className="text-md">Catalog</div>
+              <div className="text-md">Club Catalog</div>
             </Link>
             <Link href="/about">
               <div className="text-md">About</div>

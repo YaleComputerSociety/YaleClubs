@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useEffect, useRef, useState } from "react";
 import { Tag } from "@/lib/models/Event";
 import { ClubLeader } from "@/lib/models/Club";
@@ -55,14 +53,12 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
         let userEmail: string = "";
         if (token) {
           const decoded = jwtDecode<{ email: string; netid: string }>(token);
-          console.log(decoded);
           if (decoded.netid == "efm28") {
             userEmail = "ethan.mathieu@yale.edu";
           } else {
             userEmail = decoded.email;
           }
         }
-
         const isBoardMember = associatedClubLeaders.some((leader) => leader.email === userEmail);
         setCanEdit(isBoardMember);
       } catch (err) {
@@ -73,7 +69,7 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-10">
-      <div ref={modalRef} className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto p-4">
+      <div ref={modalRef} className="bg-white rounded-lg w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto p-4">
         <div className="flex justify-between items-center">
           <button
             onClick={onClose}
@@ -100,7 +96,7 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
         </div>
 
         <div className="flex justify-center py-8">
-          <div className="relative w-[426px] h-[426px] rounded-lg shadow-lg">
+          <div className="relative w-full max-w-md aspect-square rounded-lg shadow-lg">
             <Image
               src={event.flyer || "/assets/default-background.png"}
               alt="Flyer"
@@ -111,15 +107,15 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
           </div>
         </div>
 
-        <div className="w-[426px] mx-auto ">
-          <div className="flex justify-between items-start gap-8">
-            <div className="flex-1 mr-2">
-              <h2 className="text-[36px] font-bold leading-tight break-words">{event.name}</h2>
+        <div className="max-w-lg mx-auto px-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+            <div className="flex-1 w-full">
+              <h2 className="text-2xl sm:text-3xl font-bold leading-tight break-words">{event.name}</h2>
               <div>{new Date(event.start).toLocaleString(undefined, { dateStyle: "medium" })}</div>
               <div>
                 {event.location} | {new Date(event.start).toLocaleString(undefined, { timeStyle: "short" })}
               </div>
-              <div className="flex gap-2 text-xs mt-2">
+              <div className="flex flex-wrap gap-2 text-xs mt-2">
                 {event.registrationLink && (
                   <Link href={event.registrationLink}>
                     <button className="bg-blue-500 p-2 rounded-lg text-white font-bold">Register for Event</button>
@@ -131,29 +127,29 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
               </div>
             </div>
 
-            <div className="space-y-4 ml-4">
+            <div className="flex flex-row sm:flex-col gap-4 sm:gap-4 flex-wrap">
               {associatedClubs.map((club, index) => (
-                <div key={index} className="space-y-2">
+                <div key={index} className="flex items-start gap-2">
                   {club.logo ? (
-                    <Image src={club.logo} className="rounded-lg" alt="Club Logo" width={32} height={32} />
+                    <Image src={club.logo} className="rounded-lg" alt="Club Logo" width={36} height={36} />
                   ) : (
                     <Image
                       src={"/assets/default-logo.png"}
                       className="rounded-lg"
                       alt="Club Logo"
-                      width={32}
-                      height={32}
+                      width={36}
+                      height={36}
                     />
                   )}
-                  <div className="text-[16px] text-gray-600 font-bold max-w-[101px]">{club.name}</div>
+                  <div className="text-sm sm:text-base text-gray-600 font-bold max-w-[125px]">{club.name}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="text-gray-500 text-sm sm:text-base mt-3 break-words max-w-[325px]">{event.description}</div>
+          <div className="text-gray-500 text-sm sm:text-base mt-3 break-words">{event.description}</div>
 
-          <div className="flex flex-wrap gap-2 mt-3 ">
+          <div className="flex flex-wrap gap-2 mt-3">
             {event.tags?.map((tag: Tag, index) => <TagBlock key={index} tag={tag} />)}
           </div>
         </div>
