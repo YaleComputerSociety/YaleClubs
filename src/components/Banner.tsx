@@ -2,11 +2,15 @@
 
 import { useState, useEffect, useRef } from "react";
 
-const Banner = ({ onHeightChange }: { onHeightChange: (height: number) => void }) => {
+interface BannerProps {
+  onHeightChange: (height: number) => void;
+}
+
+const Banner: React.FC<BannerProps> = ({ onHeightChange }) => {
   const BANNER_DELAY = 5000;
   const [isVisible, setIsVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const bannerRef = useRef<HTMLDivElement>(null);
+  const bannerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 767px)");
@@ -18,11 +22,13 @@ const Banner = ({ onHeightChange }: { onHeightChange: (height: number) => void }
     // Add event listener for changes
     mediaQuery.addEventListener("change", updateIsMobile);
 
-    return () => mediaQuery.removeEventListener("change", updateIsMobile);
+    return () => {
+      // Cleanup event listener
+      mediaQuery.removeEventListener("change", updateIsMobile);
+    };
   }, []);
 
   useEffect(() => {
-    // localStorage.clear(); // MAKE SURE TO COMMENT THIS OUT WHEN COMMITTING
     const isClosed = localStorage.getItem("bannerClosed");
     if (!isClosed) {
       const timer = setTimeout(() => {
@@ -34,7 +40,6 @@ const Banner = ({ onHeightChange }: { onHeightChange: (height: number) => void }
 
       return () => clearTimeout(timer);
     }
-    return;
   }, [onHeightChange]);
 
   const handleClose = () => {
@@ -63,34 +68,26 @@ const Banner = ({ onHeightChange }: { onHeightChange: (height: number) => void }
         </div>
       ) : (
         <div className="flex items-center justify-between px-0 py-2">
-          {/* Centered message */}
           <div className="text-center flex-grow text-xl">
             <p>
               <a
                 href="https://docs.google.com/forms/d/e/1FAIpQLSdBM9ccbynx2eQKVdCkpPDW-sIJArTWqUlMGGKuXz175iq0Og/viewform"
                 target="_blank"
                 rel="noopener noreferrer"
+                className="underline"
               >
                 We want your feedback! Take a quick <span className="underline">survey</span> to help us improve.
               </a>
             </p>
           </div>
-
-          {/* Close button */}
           <button
             onClick={handleClose}
-            className="text-white hover:text-gray-300 focus:outline-none px-2 text-4xl mr-4"
+            className="text-white hover:text-gray-300 focus:outline-none text-4xl px-2 sm:mr-4"
           >
-            We want your feedback! Take a quick <span className="underline">survey</span> to help us improve.
-          </a>
-        </p>
-        <button
-          onClick={handleClose}
-          className="text-white hover:text-gray-300 focus:outline-none text-4xl px-2 sm:mr-4"
-        >
-          &times;
-        </button>
-      </div>
+            &times;
+          </button>
+        </div>
+      )}
     </div>
   );
 };

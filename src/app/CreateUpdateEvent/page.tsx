@@ -10,7 +10,7 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import Footer from "@/components/Footer";
-import Filter from "@/components/search/Filter";
+import Filter from "@/components/Filter";
 import { getCookie } from "cookies-next";
 import { useSearchParams } from "next/navigation";
 import {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SearchBar from "@/components/search/SearchBar";
-import Filter from "@/components/search/Filter";
+import Filter from "@/components/Filter";
 import { IClub } from "@/lib/models/Club";
 import { IEvent } from "@/lib/models/Event";
 import Trie from "@/components/search/Trie";
