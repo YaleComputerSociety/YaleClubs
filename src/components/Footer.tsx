@@ -102,12 +102,13 @@ export default function Footer() {
         </div>
       </div>
       <br></br>
-      <div className="text-center text-xs w-4/5 mx-auto text-gray-400 ">
+      <div className="text-center text-xs w-4/5 mx-auto text-gray-300 ">
         Yale is a registered trademark of Yale University. This website is student run and is maintained, hosted, and
         operated independently of Yale University. The activities on this website are not supervised or endorsed by Yale
         and information contained on this website does not necessarily reflect the opinions or official positions of the
         University. Furthermore, the information in this website is not guaranteed to be correct, complete, or
-        up-to-date and is user-generated and thus not necessarily the opinion of the Yale Computer Society
+        up-to-date and is user-generated and thus not necessarily the opinion of the Yale Computer Society. YaleClubs
+        retains full editorial control over the content on its platform.
       </div>
     </footer>
   );
