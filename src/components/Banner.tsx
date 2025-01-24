@@ -40,7 +40,9 @@ const Banner: React.FC<BannerProps> = ({ onHeightChange }) => {
 
       return () => clearTimeout(timer);
     }
+
     return () => {}; // Return empty cleanup function for closed banner case
+
   }, [onHeightChange]);
 
   const handleClose = () => {

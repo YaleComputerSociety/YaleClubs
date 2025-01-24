@@ -63,7 +63,9 @@ const SearchControlEvent = ({
     });
 
     setAliasMap(mapping);
+
   }, [clubsForFilter, aliasMap, trie]);
+
 
   // Filter events based on search query, tags, and clubs
   useEffect(() => {
@@ -136,6 +138,7 @@ const SearchControlEvent = ({
     events,
     clubsForFilter,
   ]);
+
 
   return (
     <div className="search-control w-full flex flex-col sm:flex-row flex-wrap gap-2 items-center pb-4">
