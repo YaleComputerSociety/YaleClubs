@@ -107,8 +107,7 @@ export default function Footer() {
         operated independently of Yale University. The activities on this website are not supervised or endorsed by Yale
         and information contained on this website does not necessarily reflect the opinions or official positions of the
         University. Furthermore, the information in this website is not guaranteed to be correct, complete, or
-        up-to-date and is user-generated and thus not necessarily the opinion of the Yale Computer Society. YaleClubs
-        retains full editorial control over the content on its platform.
+        up-to-date and is user-generated and thus not necessarily the opinion of the Yale Computer Society.
       </div>
     </footer>
   );
