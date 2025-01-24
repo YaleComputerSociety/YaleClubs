@@ -1,6 +1,6 @@
 "use client";
 
-import Dropdown from "@/components/faq/DropDown";
+import Dropdown from "@/components/faq/Dropdown";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -76,7 +76,7 @@ export default function FAQ() {
     <>
       <Header />
       <div className="min-h-screen py-8 px-4 sm:px-10">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto mt-10">
           <h1 className="text-lg sm:text-3xl font-bold text-center mb-2 sm:mb-6">Frequently Asked Questions</h1>
           <p className="text-center mb-3">
             Have another question?{" "}

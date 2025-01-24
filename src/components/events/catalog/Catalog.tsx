@@ -139,6 +139,7 @@ const Catalog = ({
               .flatMap((club) => club.leaders)}
             event={selectedEvent}
             onClose={handleCloseModal}
+            associatedClubs={clubs.filter((club) => selectedEvent.clubs?.includes(club.name))}
           />
         )}
       </div>

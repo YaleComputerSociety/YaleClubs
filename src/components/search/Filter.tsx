@@ -107,7 +107,7 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label, aliasMapping
             &#x2715;
           </button>
         ) : (
-          <span className="ml-2">&#x25BC;</span>
+          <span className="ml-2 text-xs">&#x25BC;</span>
         )}
       </div>
 
