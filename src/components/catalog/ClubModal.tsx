@@ -144,7 +144,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
 
           <div className="flex flex-row w-full gap-10 mt-4">
             <div className="flex flex-col w-full gap-2 flex-[3]">
-              <h1 className="text-3xl font-bold uppercase">{club.name}</h1>
+              <h1 className="text-3xl uppercase font-bold tracking-tight">{club.name}</h1>
               <p className="text-lg font-semibold">
                 {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}
               </p>

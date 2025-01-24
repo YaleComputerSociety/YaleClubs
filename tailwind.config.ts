@@ -15,6 +15,9 @@ const config: Config = {
         clubPurple: "#9368FB",
         clubBlurple: "#684EFE",
       },
+      fontFamily: {
+        "fira-sans": ["Fira Sans", "sans-serif"],
+      },
     },
   },
   plugins: [],
