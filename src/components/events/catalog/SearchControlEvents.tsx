@@ -49,6 +49,7 @@ const SearchControlEvent = ({
       // Insert the club name
       if (Array.isArray(club.aliases)) {
         club.aliases.forEach((alias) => {
+          trie?.insert(alias, alias);
           if (typeof alias === "string") {
             const aliasLower = alias.toLowerCase().trim();
             if (mapping[aliasLower]) {
@@ -79,8 +80,11 @@ const SearchControlEvent = ({
         .filter((word) => word.trim() !== "");
 
       let matchingNames = trie.getWordsWithPrefixes(queryWords, [
-        ...events.map((event) => event.name),
-        ...clubsForFilter.map((club) => club.name),
+        ...events.map((event) => event.name).filter((name): name is string => name !== undefined),
+        ...clubsForFilter.map((club) => club.name).filter((name): name is string => name !== undefined),
+        ...clubsForFilter
+          .flatMap((club) => club?.aliases ?? [])
+          .filter((alias): alias is string => alias !== undefined),
       ]);
 
       matchingNames = matchingNames
@@ -89,7 +93,14 @@ const SearchControlEvent = ({
 
       filteredBySearch = events.filter((event) => {
         const eventNameMatch = matchingNames.includes(event.name.toLowerCase().trim());
-        const clubNameMatch = event.clubs?.some((clubName) => matchingNames.includes(clubName.toLowerCase().trim()));
+        const clubNameMatch = event.clubs?.some((clubName) => {
+          // Check direct club name match
+          if (matchingNames.includes(clubName.toLowerCase().trim())) return true;
+
+          // Check aliases for each club
+          const club = clubsForFilter.find((c) => c.name === clubName);
+          return club?.aliases?.some((alias) => matchingNames.includes(alias.toLowerCase().trim())) || false;
+        });
         return eventNameMatch || clubNameMatch;
       });
     }
