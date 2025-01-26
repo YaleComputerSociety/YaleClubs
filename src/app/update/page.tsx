@@ -127,7 +127,7 @@ const UpdatePage = () => {
         return "";
       case "backgroundImage":
       case "logo":
-        if (value && value.length > 600) return `${field} URL must not exceed 600 characters.`;
+        // if (value && value.length > 600) return `${field} URL must not exceed 600 characters.`;
         if (value && !isValidUrl(value)) return "Invalid URL.";
         return "";
       // case "recruitmentStartDate":

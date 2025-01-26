@@ -1,6 +1,8 @@
 import { ClubLeader, IClubInput } from "@/lib/models/Club";
 import React, { useState } from "react";
+import Cropper from "react-easy-crop";
 import Image from "next/image";
+// import { MAX_IMAGE_HEIGHT, MAX_IMAGE_WIDTH } from "../events/constants";
 
 interface EditableImageSectionProps {
   formData: IClubInput;
@@ -13,6 +15,14 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
   const [currentField, setCurrentField] = useState<"backgroundImage" | "logo">("backgroundImage");
   const [inputValue, setInputValue] = useState("");
   const [modalError, setModalError] = useState("");
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<{
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
 
   // Simple URL validator
   const isValidUrl = (value: string) => {
@@ -38,12 +48,12 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
     setModalError("");
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // 1) Check length
-    if (inputValue && inputValue.length > 600) {
-      setModalError("URL must not exceed 600 characters.");
-      return;
-    }
+    // if (inputValue && inputValue.length > 600) {
+    //   setModalError("URL must not exceed 600 characters.");
+    //   return;
+    // }
     // 2) Check format
     if (inputValue && !isValidUrl(inputValue)) {
       setModalError("Invalid URL format.");
@@ -51,8 +61,55 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
     }
 
     // If no errors, save and close
-    handleChange(currentField, inputValue);
-    closeModal();
+    // const handleSave = async () => {
+    //   try {
+    //     const croppedImage = await cropImage();
+    //     handleChange("flyer", croppedImage);
+    //     closeModal();
+    //   } catch (error) {
+    //     console.error("Error cropping image:", error);
+    //   }
+    // };
+    try {
+      const croppedImage = await cropImage();
+      handleChange(currentField, croppedImage);
+      closeModal();
+    } catch (error) {
+      console.error("Error cropping image:", error);
+    }
+  };
+
+  const onCropComplete = (_: any, croppedAreaPixels: { x: number; y: number; width: number; height: number }) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
+
+  const cropImage = async (): Promise<string> => {
+    const image = await createImage(inputValue);
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    if (!ctx) throw new Error("Failed to create canvas context");
+
+    const { width, height }: any = croppedAreaPixels;
+    canvas.width = width;
+    canvas.height = height;
+
+    if (croppedAreaPixels) {
+      const { x, y, width, height } = croppedAreaPixels;
+      ctx.drawImage(image, x, y, width, height, 0, 0, width, height);
+    }
+
+    return canvas.toDataURL("image/jpeg");
+  };
+
+  const createImage = (url: string): Promise<HTMLImageElement> => {
+    return new Promise((resolve, reject) => {
+      const img = new window.Image();
+      img.src = url;
+      img.crossOrigin = "anonymous";
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+    });
   };
 
   return (
@@ -120,6 +177,37 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
 
             {/* Display any modal-specific error */}
             {modalError && <p className="text-red-500 mb-2">{modalError}</p>}
+            {inputValue && (
+              <div>
+                <div className="relative w-full h-[300px] overflow-hidden">
+                  <Cropper
+                    image={inputValue}
+                    crop={crop}
+                    zoom={zoom}
+                    // aspect={MAX_IMAGE_WIDTH / MAX_IMAGE_HEIGHT}
+                    aspect={30 / 30}
+                    onCropChange={setCrop}
+                    onZoomChange={setZoom}
+                    onCropComplete={onCropComplete}
+                  />
+                </div>
+                <div className="flex items-center mt-4">
+                  <label htmlFor="zoom-slider" className="mr-4 text-sm font-medium text-gray-700">
+                    Zoom:
+                  </label>
+                  <input
+                    id="zoom-slider"
+                    type="range"
+                    min={1}
+                    max={3}
+                    step={0.1}
+                    value={zoom}
+                    onChange={(e) => setZoom(Number(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="flex justify-end space-x-4 mt-4">
               <button onClick={closeModal} className="py-2 px-4 bg-gray-300 rounded-lg hover:bg-gray-400">
