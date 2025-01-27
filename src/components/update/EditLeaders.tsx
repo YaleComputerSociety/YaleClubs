@@ -3,6 +3,7 @@ import { IClubInput } from "@/lib/models/Club";
 import Image from "next/image";
 
 interface ClubLeader {
+  shown: any;
   email: string;
   name: string;
   year?: number;
@@ -26,6 +27,7 @@ const ClubLeadersSection: React.FC<{
     role: "",
     netId: "",
     profilePicture: "",
+    shown: true,
   });
 
   const openModal = (leader?: ClubLeader, index?: number) => {
@@ -41,6 +43,7 @@ const ClubLeadersSection: React.FC<{
         role: "",
         netId: "",
         profilePicture: "",
+        shown: true,
       });
       setIsEditing(false);
     }
@@ -56,6 +59,7 @@ const ClubLeadersSection: React.FC<{
       role: "",
       netId: "",
       profilePicture: "",
+      shown: true,
     });
     setSelectedIndex(null);
     setIsEditing(false);
@@ -86,6 +90,10 @@ const ClubLeadersSection: React.FC<{
     const updatedLeaders = leaders.filter((_, i) => i !== index);
     handleChange("leaders", updatedLeaders);
   };
+  const handleHide = (index: number) => {
+    const updatedLeaders = leaders.map((leader, i) => (i === index ? { ...leader, shown: !leader.shown } : leader));
+    handleChange("leaders", updatedLeaders); // Trigger re-render with updated leaders
+  };
 
   const moveLeader = (fromIndex: number, toIndex: number) => {
     if (toIndex < 0 || toIndex >= leaders.length) return;
@@ -94,6 +102,8 @@ const ClubLeadersSection: React.FC<{
     updatedLeaders.splice(toIndex, 0, movedLeader);
     handleChange("leaders", updatedLeaders);
   };
+
+  // const show_status(from )
 
   return (
     <div>
@@ -135,6 +145,20 @@ const ClubLeadersSection: React.FC<{
                   />
                 </button>
               )}
+              <button
+                onClick={() => handleHide(index)}
+                className="bg-gray-300 text-white py-1 px-3 rounded-lg hover:bg-gray-400"
+              >
+                <div className="w-6 h-7">
+                  <Image
+                    src={leader.shown ? "/assets/unhide.png" : "/assets/hide.webp"}
+                    alt={currentLeader.shown ? "Unhide Icon" : "Hide Icon"}
+                    width={24}
+                    height={24}
+                    className="w-full h-full"
+                  />
+                </div>
+              </button>
               <button
                 onClick={() => openModal(leader, index)}
                 className="bg-gray-300 text-white py-1 px-3 rounded-lg hover:bg-gray-400"

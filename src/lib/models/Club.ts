@@ -85,6 +85,7 @@ export interface ClubLeader {
   role?: string;
   netId?: string;
   profilePicture?: string;
+  shown: boolean;
 }
 
 const ClubLeaderSchema = new Schema({
@@ -94,6 +95,7 @@ const ClubLeaderSchema = new Schema({
   role: { type: String },
   netId: { type: String },
   profilePicture: { type: String },
+  shown: { type: Boolean, default: true },
 });
 
 // Use this when creating/updating a club
