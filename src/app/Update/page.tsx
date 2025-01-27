@@ -25,6 +25,7 @@ import { getCookie } from "cookies-next";
 import AffiliationsDropdown from "@/components/update/ClubAffiliation";
 import RecruitmentStatusDropdown from "@/components/update/RecruitmentDropdown";
 import AliasesDropdown from "@/components/update/ClubAliases";
+import { useRouter } from "next/navigation";
 
 const UpdatePage = () => {
   const searchParams = useSearchParams();
@@ -532,6 +533,32 @@ const UpdatePage = () => {
 };
 
 function UpdatePageWrapper() {
+  const router = useRouter();
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  useEffect(() => {
+    const token = getCookie("token");
+    if (token) {
+      setIsAuthorized(true);
+    } else {
+      router.push("/");
+    }
+  }, [router]);
+
+  if (!isAuthorized) {
+    return (
+      <div className="flex flex-col min-h-screen h-screen">
+        <Header />
+        <main className="flex-grow bg-gray-100 flex items-center justify-center">
+          <div className="bg-white rounded-lg shadow-md p-6 text-center">
+            <p className="text-xl font-semibold text-gray-700">Redirecting...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <UpdatePage />
