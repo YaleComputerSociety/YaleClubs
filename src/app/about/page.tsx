@@ -136,7 +136,7 @@ const teamMembers = [
     name: "Alec Aceves-Acosta",
     role: "Keeper of Secrets",
     headshot: "/assets/people/alec.jpg",
-    linkedin: "https://linkedin.com/in/michael-chu-a28034203/",
+    linkedin: "https://www.linkedin.com/in/alec-aceves-acosta-8324a8260",
   },
 
   {

@@ -1,8 +1,7 @@
 import { ClubLeader, IClubInput } from "@/lib/models/Club";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Cropper from "react-easy-crop";
 import Image from "next/image";
-// import { MAX_IMAGE_HEIGHT, MAX_IMAGE_WIDTH } from "../events/constants";
 
 interface EditableImageSectionProps {
   formData: IClubInput;
@@ -10,11 +9,17 @@ interface EditableImageSectionProps {
   validationErrors: Record<keyof IClubInput, string>;
 }
 
+const IMGUR_CLIENT_ID = "74992260c0d0fe3";
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
 const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, handleChange, validationErrors }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentField, setCurrentField] = useState<"backgroundImage" | "logo">("backgroundImage");
   const [inputValue, setInputValue] = useState("");
   const [modalError, setModalError] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [useLocalFile, setUseLocalFile] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<{
     x: number;
     y: number;
@@ -24,7 +29,6 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
 
-  // Simple URL validator
   const isValidUrl = (value: string) => {
     try {
       new URL(value);
@@ -34,48 +38,112 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
     }
   };
 
+  const uploadToImgur = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const response = await fetch("https://api.imgur.com/3/image", {
+        method: "POST",
+        headers: {
+          Authorization: `Client-ID ${IMGUR_CLIENT_ID}`,
+        },
+        body: formData,
+      });
+
+      console.log("Imgur Response Headers:", response.headers);
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      const data = await response.json();
+      return data.data.link;
+    } catch (error) {
+      console.error("Error uploading to Imgur:", error);
+      throw new Error("Failed to upload to Imgur. Using local file instead.");
+    }
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      setModalError(`File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`);
+      return;
+    }
+
+    // Check file type
+    if (!file.type.startsWith("image/")) {
+      setModalError("Please upload an image file");
+      return;
+    }
+
+    setIsUploading(true);
+    setModalError("");
+
+    try {
+      // First, create a local data URL
+      const localUrl = await readFileAsDataURL(file);
+      setInputValue(localUrl);
+      setUseLocalFile(true);
+
+      // Attempt to upload to Imgur in the background
+      try {
+        const imgurUrl = await uploadToImgur(file);
+        setInputValue(imgurUrl);
+        setUseLocalFile(false);
+      } catch (imgurError) {
+        console.warn("Imgur upload failed, using local file:", imgurError);
+        // We'll continue with the local file
+      }
+    } catch (error) {
+      setModalError((error as Error).message);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const readFileAsDataURL = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error("Failed to read file"));
+      reader.readAsDataURL(file);
+    });
+  };
+
   const openModal = (field: "backgroundImage" | "logo") => {
     setCurrentField(field);
-    // Load current value into the text field
     setInputValue(formData[field] as string);
-    // Clear any previous error
     setModalError("");
     setIsModalOpen(true);
+    setUseLocalFile(false);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setModalError("");
+    setInputValue("");
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setUseLocalFile(false);
   };
 
   const handleSave = async () => {
-    // 1) Check length
-    // if (inputValue && inputValue.length > 600) {
-    //   setModalError("URL must not exceed 600 characters.");
-    //   return;
-    // }
-    // 2) Check format
-    if (inputValue && !isValidUrl(inputValue)) {
+    if (inputValue && !useLocalFile && !isValidUrl(inputValue)) {
       setModalError("Invalid URL format.");
       return;
     }
 
-    // If no errors, save and close
-    // const handleSave = async () => {
-    //   try {
-    //     const croppedImage = await cropImage();
-    //     handleChange("flyer", croppedImage);
-    //     closeModal();
-    //   } catch (error) {
-    //     console.error("Error cropping image:", error);
-    //   }
-    // };
     try {
       const croppedImage = await cropImage();
       handleChange(currentField, croppedImage);
       closeModal();
     } catch (error) {
       console.error("Error cropping image:", error);
+      setModalError("Failed to process image.");
     }
   };
 
@@ -106,7 +174,9 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
     return new Promise((resolve, reject) => {
       const img = new window.Image();
       img.src = url;
-      img.crossOrigin = "anonymous";
+      if (!url.startsWith("data:")) {
+        img.crossOrigin = "anonymous";
+      }
       img.onload = () => resolve(img);
       img.onerror = reject;
     });
@@ -162,21 +232,39 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
             <h2 className="text-lg font-semibold mb-4">
               Edit {currentField === "backgroundImage" ? "Background Image" : "Logo"}
             </h2>
-            <p>Please input a publicly-accessible URL.</p>
-            <p className="mb-4 text-sm text-gray-500">Try uploading your image to imgur.com or postimages.org.</p>
+
+            {/* File Upload Section */}
+            <div className="mb-4">
+              <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" className="hidden" />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mb-2"
+                disabled={isUploading}
+              >
+                {isUploading ? "Processing..." : "Upload Image"}
+              </button>
+              <div className="text-sm text-gray-500">or</div>
+            </div>
+
+            {/* URL Input Section */}
             <input
               type="text"
               value={inputValue}
               onChange={(e) => {
                 setInputValue(e.target.value);
-                setModalError(""); // Clear error while typing
+                setModalError("");
+                setUseLocalFile(false);
               }}
               className="w-full border border-gray-300 rounded-lg p-2 mb-2"
               placeholder="Enter image URL"
             />
 
-            {/* Display any modal-specific error */}
             {modalError && <p className="text-red-500 mb-2">{modalError}</p>}
+            {useLocalFile && (
+              <p className="text-yellow-600 text-sm mb-2">Using local file. The image will be stored as base64 data.</p>
+            )}
+
+            {/* Image Cropper */}
             {inputValue && (
               <div>
                 <div className="relative w-full h-[300px] overflow-hidden">
@@ -184,7 +272,6 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
                     image={inputValue}
                     crop={crop}
                     zoom={zoom}
-                    // aspect={MAX_IMAGE_WIDTH / MAX_IMAGE_HEIGHT}
                     aspect={30 / 30}
                     onCropChange={setCrop}
                     onZoomChange={setZoom}
@@ -209,11 +296,16 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
               </div>
             )}
 
+            {/* Action Buttons */}
             <div className="flex justify-end space-x-4 mt-4">
               <button onClick={closeModal} className="py-2 px-4 bg-gray-300 rounded-lg hover:bg-gray-400">
                 Cancel
               </button>
-              <button onClick={handleSave} className="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+              <button
+                onClick={handleSave}
+                className="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                disabled={!inputValue || isUploading}
+              >
                 Save
               </button>
             </div>
