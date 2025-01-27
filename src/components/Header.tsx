@@ -38,6 +38,7 @@ const Header = () => {
       if (response.ok) {
         setIsLoggedIn(false);
         window.location.reload();
+        window.location.href = "/";
       } else {
         console.error("Logout failed:", response.statusText);
       }

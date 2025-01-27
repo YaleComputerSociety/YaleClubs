@@ -9,7 +9,6 @@ interface EditableImageSectionProps {
   validationErrors: Record<keyof IClubInput, string>;
 }
 
-const IMGUR_CLIENT_ID = "74992260c0d0fe3";
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, handleChange, validationErrors }) => {
@@ -18,7 +17,6 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
   const [inputValue, setInputValue] = useState("");
   const [modalError, setModalError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-  const [useLocalFile, setUseLocalFile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<{
     x: number;
@@ -38,43 +36,15 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
     }
   };
 
-  const uploadToImgur = async (file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append("image", file);
-
-    try {
-      const response = await fetch("https://api.imgur.com/3/image", {
-        method: "POST",
-        headers: {
-          Authorization: `Client-ID ${IMGUR_CLIENT_ID}`,
-        },
-        body: formData,
-      });
-
-      console.log("Imgur Response Headers:", response.headers);
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
-      const data = await response.json();
-      return data.data.link;
-    } catch (error) {
-      console.error("Error uploading to Imgur:", error);
-      throw new Error("Failed to upload to Imgur. Using local file instead.");
-    }
-  };
-
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Check file size
     if (file.size > MAX_FILE_SIZE) {
       setModalError(`File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`);
       return;
     }
 
-    // Check file type
     if (!file.type.startsWith("image/")) {
       setModalError("Please upload an image file");
       return;
@@ -84,20 +54,8 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
     setModalError("");
 
     try {
-      // First, create a local data URL
       const localUrl = await readFileAsDataURL(file);
       setInputValue(localUrl);
-      setUseLocalFile(true);
-
-      // Attempt to upload to Imgur in the background
-      try {
-        const imgurUrl = await uploadToImgur(file);
-        setInputValue(imgurUrl);
-        setUseLocalFile(false);
-      } catch (imgurError) {
-        console.warn("Imgur upload failed, using local file:", imgurError);
-        // We'll continue with the local file
-      }
     } catch (error) {
       setModalError((error as Error).message);
     } finally {
@@ -119,7 +77,6 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
     setInputValue(formData[field] as string);
     setModalError("");
     setIsModalOpen(true);
-    setUseLocalFile(false);
   };
 
   const closeModal = () => {
@@ -128,11 +85,10 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
     setInputValue("");
     setCrop({ x: 0, y: 0 });
     setZoom(1);
-    setUseLocalFile(false);
   };
 
   const handleSave = async () => {
-    if (inputValue && !useLocalFile && !isValidUrl(inputValue)) {
+    if (inputValue && !inputValue.startsWith("data:") && !isValidUrl(inputValue)) {
       setModalError("Invalid URL format.");
       return;
     }
@@ -184,7 +140,6 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
 
   return (
     <div className="relative">
-      {/* Background Image */}
       <div className="relative h-64 w-full rounded-lg overflow-hidden flex items-center flex-col">
         <div className="w-[920px] h-[252px] relative flex items-center">
           <Image
@@ -204,7 +159,6 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
       </div>
       {validationErrors?.backgroundImage && <p className="text-red-500 mt-2">{validationErrors.backgroundImage}</p>}
 
-      {/* Logo */}
       <div className="absolute -bottom-6 right-16">
         <div className="relative w-48 h-48 rounded-lg shadow-lg bg-white flex items-center justify-center">
           <Image
@@ -225,7 +179,6 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
       </div>
       {validationErrors?.logo && <p className="text-red-500 mt-2 text-right pr-16">{validationErrors.logo}</p>}
 
-      {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
@@ -233,7 +186,6 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
               Edit {currentField === "backgroundImage" ? "Background Image" : "Logo"}
             </h2>
 
-            {/* File Upload Section */}
             <div className="mb-4">
               <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" className="hidden" />
               <button
@@ -246,25 +198,19 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
               <div className="text-sm text-gray-500">or</div>
             </div>
 
-            {/* URL Input Section */}
             <input
               type="text"
               value={inputValue}
               onChange={(e) => {
                 setInputValue(e.target.value);
                 setModalError("");
-                setUseLocalFile(false);
               }}
               className="w-full border border-gray-300 rounded-lg p-2 mb-2"
               placeholder="Enter image URL"
             />
 
             {modalError && <p className="text-red-500 mb-2">{modalError}</p>}
-            {useLocalFile && (
-              <p className="text-yellow-600 text-sm mb-2">Using local file. The image will be stored as base64 data.</p>
-            )}
 
-            {/* Image Cropper */}
             {inputValue && (
               <div>
                 <div className="relative w-full h-[300px] overflow-hidden">
@@ -296,7 +242,6 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
               </div>
             )}
 
-            {/* Action Buttons */}
             <div className="flex justify-end space-x-4 mt-4">
               <button onClick={closeModal} className="py-2 px-4 bg-gray-300 rounded-lg hover:bg-gray-400">
                 Cancel
