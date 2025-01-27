@@ -9,6 +9,7 @@ import Link from "next/link";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import FollowButton from "./FollowButton";
+import { FiCopy } from "react-icons/fi";
 
 type ClubModalProps = {
   club: IClub;
@@ -105,6 +106,101 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
     );
   };
 
+  type RightLinkProps = {
+    content: string;
+    link: string | undefined;
+    isEmail?: boolean;
+  };
+
+  const RightLink = ({ content, link, isEmail }: RightLinkProps) => {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = () => {
+      if (!link) return;
+      navigator.clipboard.writeText(link).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000); // Reset "copied" state after 2 seconds
+      });
+    };
+
+    if (!link) return <div className="text-gray-500">No {content.toLowerCase()}</div>;
+
+    return (
+      <div className="flex items-center space-x-2">
+        <a
+          href={isEmail ? "mailto:" + link : link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 hover:text-blue-700"
+        >
+          {content}
+        </a>
+        <button
+          onClick={handleCopy}
+          className="text-blue-500 hover:text-blue-700 focus:outline-none"
+          aria-label="Copy link"
+        >
+          <FiCopy />
+        </button>
+        {copied && <span className="text-green-500 text-sm">Copied!</span>}
+      </div>
+    );
+  };
+
+  type RightLabelProps = {
+    content: string;
+  };
+
+  const RightLabel = ({ content }: RightLabelProps) => {
+    return <div className="text-gray-500">{content}</div>;
+  };
+
+  const EditButton = ({ href, text, onClick, disabled, className }: any) =>
+    href ? (
+      <Link href={href}>
+        <button className={className}>{text}</button>
+      </Link>
+    ) : (
+      <button onClick={onClick} disabled={disabled} className={className}>
+        {text}
+      </button>
+    );
+
+  const getButtonProps = () => {
+    if (!isSm) {
+      if (token) {
+        if (canEdit) {
+          return {
+            href: `/update?clubId=${club._id}`,
+            text: "Edit Club",
+            className:
+              "px-4 py-2 text-lg font-medium text-white bg-indigo-600 rounded shadow hover:bg-indigo-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2",
+          };
+        }
+        return {
+          onClick: () => setErrorMessage("You do not have permission to edit this club."),
+          text: "Edit Club",
+          className: "px-4 py-2 text-lg font-medium text-gray-500 bg-gray-300 rounded shadow cursor-not-allowed",
+          disabled: true,
+        };
+      }
+      return {
+        onClick: () => setErrorMessage("You need to log in to edit this club."),
+        text: "Log in to Edit",
+        className: "px-4 py-2 text-lg font-medium text-gray-500 bg-gray-300 rounded shadow cursor-pointer",
+      };
+    }
+    return {
+      onClick: () => setErrorMessage("You must be logged in on a computer to edit a club."),
+      text: "Edit Club",
+      className: "px-2 py-1 text-sm font-medium text-gray-500 bg-gray-300 rounded shadow cursor-not-allowed",
+      disabled: true,
+    };
+  };
+
+  const buttonProps = getButtonProps();
+
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div
@@ -121,7 +217,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
           className="absolute top-2 left-2 cursor-pointer z-50"
         />
 
-        <div className="flex flex-col items-center my-8 w-full min-h-full">
+        <div className="flex flex-col items-center py-8 w-full min-h-full">
           <div className="w-full h-[36%] bg-red-300 relative">
             <Image
               src={club.backgroundImage || "/assets/default-background.png"}
@@ -157,75 +253,24 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
                 clubId={club._id}
                 followedClubs={followedClubs}
                 setFollowedClubs={setFollowedClubs}
-                className="mb-2 w-[100px] self-center"
+                className="w-[100px] self-center"
               />
-              <div className="flex flex-col w-full sm:w-3/4 md:w-full">
-                <ClubModalRightLabel header="Website" content={getAdjustedWebsite(club.website)} link={club.website} />
-                <ClubModalRightLabel header="Email" content={club.email} link={"mailto:" + club.email} />
-                <ClubModalRightLabel
-                  header="Membership"
-                  content={club.numMembers ? getAdjustedNumMembers(club.numMembers) + " members" : undefined}
-                />
-                <ClubModalRightLabel
-                  header="Instagram"
-                  content={getModifiedInstagram(club.instagram)}
-                  link={getInstagramLink(club.instagram)}
-                />
-                <ClubModalRightLabel
-                  header="Application Form"
-                  content={club.applyForm ? "Application Form" : undefined}
-                  link={club.applyForm}
-                />
-                <ClubModalRightLabel
-                  header="Mailing List"
-                  content={club.mailingListForm ? "Mailing List" : undefined}
-                  link={club.mailingListForm}
-                />
-                <ClubModalRightLabel
-                  header="Calendar"
-                  content={club.calendarLink ? "Calendar Link" : undefined}
-                  link={club.calendarLink}
-                />
+              <div className="flex flex-col mt-4 gap-2">
+                <RightLink content="Website" link={club.website} />
+                <RightLink content="Email" link={club.email} isEmail />
+                {club.instagram && <RightLink content="Instagram" link={club.instagram} />}
+                {club.calendarLink && <RightLink content="Calendar" link={club.calendarLink} />}
+                {club.mailingListForm && <RightLink content="Mailing List" link={club.mailingListForm} />}
+                {club.applyForm && <RightLink content="Application Form" link={club.applyForm} />}
+                {club.numMembers && <RightLabel content={getAdjustedNumMembers(club.numMembers) + " members"} />}
+                {club.meeting && <RightLabel content={club.meeting} />}
                 <ClubModalRightLabel header="Meeting" content={club.meeting} />
               </div>
+              <EditButton {...buttonProps} />
             </div>
           </div>
 
-          {/* {!isSm ? (
-            <>
-              {token ? (
-                canEdit ? (
-                  <Link href={`/update?clubId=${club._id}`}>
-                    <button className="absolute top-4 right-4 px-4 py-2 text-lg font-medium text-white bg-indigo-600 rounded shadow hover:bg-indigo-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                      Edit Club
-                    </button>
-                  </Link>
-                ) : (
-                  <button
-                    onClick={() => setErrorMessage("You do not have permission to edit this club.")}
-                    className="absolute top-4 right-4 px-4 py-2 text-lg font-medium text-gray-500 bg-gray-300 rounded shadow cursor-not-allowed"
-                  >
-                    Edit Club
-                  </button>
-                )
-              ) : (
-                <button
-                  onClick={() => setErrorMessage("You need to log in to edit this club.")}
-                  className="absolute top-4 right-4 px-4 py-2 text-lg font-medium text-gray-500 bg-gray-300 rounded shadow cursor-pointer"
-                >
-                  Log in to Edit
-                </button>
-              )}
-            </>
-          ) : (
-            <button
-              onClick={() => setErrorMessage("You must be logged in on a computer to edit a club.")}
-              className="absolute top-3 right-3 px-2 py-1 text-sm font-medium text-gray-500 bg-gray-300 rounded shadow cursor-not-allowed"
-            >
-              Edit Club
-            </button>
-          )}
-
+          {/*
           {errorMessage && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white rounded-lg p-6 max-w-md mx-auto shadow-lg">
