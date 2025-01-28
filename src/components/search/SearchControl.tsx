@@ -1,19 +1,28 @@
 import React, { useEffect, useState } from "react";
+import FollowFilter from "./FollowFilter";
 import Cookies from "js-cookie";
 import SearchBar from "./SearchBar";
 import FilterButton from "../Filter";
 import { Affiliation, Category, IClub, School } from "@/lib/models/Club";
 import Trie from "./Trie";
-import FollowFilter from "./FollowFilter";
 
 interface SearchControlProps {
   clubs: IClub[];
+
   setCurrentClubs: React.Dispatch<React.SetStateAction<IClub[]>>;
+
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   followedClubs: string[];
+  setSelectedClub: React.Dispatch<React.SetStateAction<IClub | null>>;
 }
 
-const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: SearchControlProps) => {
+const SearchControl = ({
+  clubs,
+  setCurrentClubs,
+  setIsLoading,
+  followedClubs,
+  setSelectedClub,
+}: SearchControlProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSchools] = useState<string[]>([School.COLLEGE]);
@@ -163,6 +172,18 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
           label="Categories"
         />
         {isLoggedIn && <FollowFilter showFollowedOnly={showFollowedOnly} setShowFollowedOnly={setShowFollowedOnly} />}
+        <button
+          className="text-blue-500 hover:text-blue-700 hidden md:inline-block"
+          onClick={() => {
+            const collegeClubs = clubs.filter((club) => club.school?.includes(School.COLLEGE));
+            if (collegeClubs.length > 0) {
+              const randomClub = collegeClubs[Math.floor(Math.random() * collegeClubs.length)];
+              setSelectedClub(randomClub); // Set the randomly selected club
+            }
+          }}
+        >
+          I&apos;m feeling lucky
+        </button>
       </div>
     </div>
   );

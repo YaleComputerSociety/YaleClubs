@@ -15,8 +15,10 @@ import { jwtDecode } from "jwt-decode";
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [clubs, setClubs] = useState<IClub[]>([]);
+
   const [currentClubs, setCurrentClubs] = useState<IClub[]>([]);
   const [followedClubs, setFollowedClubs] = useState<string[]>([]);
+  const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
   const token = Cookies.get("token");
   let netid = "";
 
@@ -31,11 +33,11 @@ export default function Home() {
   useEffect(() => {
     const fetchApiMessage = async () => {
       try {
-        setIsLoading(true);
-        const response = await axios.get<IClub[]>("/api/clubs");
-        setClubs(response.data);
+        const clubsResponse = await axios.get<IClub[]>("/api/clubs");
+
+        setClubs(clubsResponse.data);
       } catch (error) {
-        console.error("Error fetching API message:", error);
+        console.error("Error fetching API data:", error);
       } finally {
         setTimeout(() => setIsLoading(false), 2); // delay because setClubs is async
       }
@@ -78,6 +80,7 @@ export default function Home() {
             setCurrentClubs={setCurrentClubs}
             setIsLoading={setIsLoading}
             followedClubs={followedClubs}
+            setSelectedClub={setSelectedClub}
           />
           <div className="flex flex-col w-full px-5 md:px-20">
             <Catalog
@@ -85,6 +88,8 @@ export default function Home() {
               isLoading={isLoading}
               followedClubs={followedClubs}
               setFollowedClubs={setFollowedClubs}
+              selectedClub={selectedClub}
+              setSelectedClub={setSelectedClub}
             />
           </div>
         </div>
