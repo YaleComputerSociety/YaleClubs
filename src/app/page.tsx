@@ -9,10 +9,6 @@ import Footer from "../components/Footer";
 import Catalog from "../components/catalog/Catalog";
 import { IClub } from "@/lib/models/Club";
 import SearchControl from "@/components/search/SearchControl";
-
-// import SearchWrapper from "@/components/search/SearchWrapper";
-
-// import axios from "axios";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 
@@ -76,14 +72,14 @@ export default function Home() {
             <div className="mt-20 md:mt-24"></div>
             <h1 className="text-3xl font-bold text-black">Browse Clubs</h1>
             <h2 className="text-xl mb-4 md:mb-8">Finding Clubs has Never Been Easier.</h2>
-            {/* <SearchWrapper> */}
-            <SearchControl
-              clubs={clubs}
-              setCurrentClubs={setCurrentClubs}
-              setIsLoading={setIsLoading}
-              followedClubs={followedClubs}
-            />
-            {/* </SearchWrapper> */}
+          </div>
+          <SearchControl
+            clubs={clubs}
+            setCurrentClubs={setCurrentClubs}
+            setIsLoading={setIsLoading}
+            followedClubs={followedClubs}
+          />
+          <div className="flex flex-col w-full px-5 md:px-20">
             <Catalog
               clubs={currentClubs}
               isLoading={isLoading}

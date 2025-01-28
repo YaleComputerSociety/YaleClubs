@@ -56,7 +56,7 @@ const Header = () => {
       className="w-full flex flex-col fixed z-50 transition-[margin-top] duration-1000"
     >
       <Banner onHeightChange={(height) => setBannerHeight(height)} />
-      <div className="flex flex-row w-full justify-between p-5 md:px-20 bg-background">
+      <div className="flex flex-row w-full justify-between p-[22px] md:px-20 bg-background">
         <Link href="/" className="flex flex-row items-center">
           <Image src="/assets/logo.svg" alt="Logo" width={35} height={35} unoptimized />
           <div className="ml-5 font-semibold text-xl">YaleClubs</div>
