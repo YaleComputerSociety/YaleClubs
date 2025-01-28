@@ -7,15 +7,16 @@ type FollowFilterProps = {
 
 const FollowFilter: React.FC<FollowFilterProps> = ({ showFollowedOnly, setShowFollowedOnly }) => {
   return (
-    <label className="flex items-center text-gray-600 space-x-2 cursor-pointer px-2">
-      <span>Followed</span>
-      <input
-        type="checkbox"
-        checked={showFollowedOnly}
-        onChange={(e) => setShowFollowedOnly(e.target.checked)}
-        className="w-6 h-6  focus:from-indigo-500 to-blue-500 border-gray-300 rounded cursor-pointer"
-      />
-    </label>
+    <button
+      onClick={() => setShowFollowedOnly((prev) => !prev)}
+      className={`p-2 rounded ${
+        showFollowedOnly
+          ? "bg-blue-100 text-blue-500 hover:text-gray-500 hover:bg-gray-200"
+          : "bg-gray-200 text-gray-600 hover:text-blue-400 hover:bg-blue-100"
+      } transition-colors duration-200`}
+    >
+      Following
+    </button>
   );
 };
 
