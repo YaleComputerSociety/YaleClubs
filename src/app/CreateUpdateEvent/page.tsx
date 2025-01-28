@@ -356,6 +356,7 @@ const CreateUpdateEventPage = () => {
               </div>
             </div>
             <div>
+              <div className="text-red-600 m-0">*</div>
               <textarea
                 value={formData.description ?? ""}
                 onChange={(e) => handleChange("description", e.target.value)}
@@ -380,7 +381,9 @@ const CreateUpdateEventPage = () => {
                       e.target.value = dbDateToFrontendDate(now);
                       handleChange("start", now);
                     } else {
-                      handleChange("start", e.target.value);
+                      console.log(e.target.value);
+                      const utcDate = new Date(selectedDate.getTime());
+                      handleChange("start", utcDate);
                     }
                   }}
                   value={dbDateToFrontendDate(new Date(formData.start))}
