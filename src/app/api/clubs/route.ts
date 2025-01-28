@@ -3,6 +3,7 @@ import Club, { ClubLeader } from "../../../lib/models/Club";
 import UpdateLog from "../../../lib/models/Updates";
 import { NextResponse } from "next/server";
 import { Category, IClubInput } from "../../../lib/models/Club";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -141,6 +142,26 @@ export async function PUT(req: Request): Promise<NextResponse> {
     // Connect to the database
     await connectToDatabase();
 
+    const DO_SPACES_KEY = process.env.DO_SPACES_KEY as string;
+    if (!DO_SPACES_KEY) {
+      throw new Error("Please define the DO_SPACES_KEY environment variable");
+    }
+
+    const DO_SPACES_SECRET = process.env.DO_SPACES_SECRET as string;
+    if (!DO_SPACES_SECRET) {
+      throw new Error("Please define the DO_SPACES_SECRET environment variable");
+    }
+
+    const DO_SPACES_BUCKET = process.env.DO_SPACES_BUCKET as string;
+    if (!DO_SPACES_BUCKET) {
+      throw new Error("Please define the DO_SPACES_BUCKET environment variable");
+    }
+
+    const DO_SPACES_ENDPOINT = process.env.DO_SPACES_ENDPOINT as string;
+    if (!DO_SPACES_ENDPOINT) {
+      throw new Error("Please define the DO_SPACES_ENDPOINT environment variable");
+    }
+
     let body: IClubInput;
     try {
       body = await req.json();
@@ -193,6 +214,55 @@ export async function PUT(req: Request): Promise<NextResponse> {
         !admin_emails.includes(updateEmail))
     ) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // check background image
+    if (validUpdateData.backgroundImage) {
+      if (!validUpdateData.backgroundImage.startsWith("data:image/")) {
+        delete validUpdateData.backgroundImage;
+      }
+
+      const fileTypeMatch = validUpdateData.backgroundImage.match(/^data:(.*?);base64,/);
+      if (!fileTypeMatch) {
+        return NextResponse.json({ error: "Invalid image data" }, { status: 400 });
+      }
+
+      const fileType = fileTypeMatch[1];
+      const base64Data = Buffer.from(validUpdateData.backgroundImage.replace(/^data:.*?;base64,/, ""), "base64");
+
+      const s3 = new S3Client([
+        {
+          region: "us-east-1",
+          endpoint: `https://${process.env.DO_SPACES_ENDPOINT}`,
+          credentials: {
+            accessKeyId: process.env.DO_SPACES_KEY,
+            secretAccessKey: process.env.DO_SPACES_SECRET,
+          },
+        },
+      ]);
+
+      const fileName = `${id}-bg.jpg`;
+
+      const params = {
+        Bucket: process.env.DO_SPACES_BUCKET,
+        Key: fileName,
+        Body: base64Data,
+        ContentType: fileType,
+        ACL: "public-read" as const,
+      };
+
+      try {
+        const command = new PutObjectCommand(params);
+        const response = await s3.send(command);
+        console.log(response);
+        console.log("hello");
+      } catch (error) {
+        console.log("Error uploading to CDN");
+        console.error(error);
+        return NextResponse.json({ error: "Failed to upload image to CDN." }, { status: 500 });
+      }
+    } else {
+      console.log("no bg image");
     }
 
     // Perform the update
