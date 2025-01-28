@@ -175,6 +175,15 @@ export async function PUT(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Club not found." }, { status: 404 });
     }
 
+    const admin_emails = [
+      "lucas.huang@yale.edu",
+      "addison.goolsbee@yale.edu",
+      "francis.fan@yale.edu",
+      "grady.yu@yale.edu",
+      "lauren.lee.ll2243@yale.edu",
+      "ethan.mathieu@yale.edu",
+    ];
+
     const updateEmail = req.headers.get("X-Email");
     if (
       !updateEmail ||

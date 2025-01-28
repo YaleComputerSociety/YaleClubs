@@ -15,6 +15,9 @@ const config: Config = {
         clubPurple: "#9368FB",
         clubBlurple: "#684EFE",
       },
+      text: {
+        xxs: "0.625rem",
+      },
     },
   },
   plugins: [],
