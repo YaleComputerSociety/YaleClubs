@@ -79,7 +79,6 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label, aliasMapping
     }
 
     const remaining = selectedItems.length - visibleFilters.length;
-    console.log(selectedItems.length, visibleFilters.length, remaining);
     return visibleFilters.join(", ") + (remaining > 0 ? ` +${remaining}` : "");
   };
 
