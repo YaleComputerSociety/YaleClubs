@@ -22,14 +22,19 @@ export const getAdjustedWebsite = (website: string | undefined): string => {
 };
 
 export const dbDateToFrontendDate = (date: Date) => {
-  const year = date.getUTCFullYear();
-  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-  const day = String(date.getUTCDate()).padStart(2, "0");
-  const hours = String(date.getUTCHours()).padStart(2, "0");
-  const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+  const localDate = new Date(date);
 
+  // Get the local time components
+  const year = localDate.getFullYear();
+  const month = (localDate.getMonth() + 1).toString().padStart(2, "0"); // Month is 0-indexed
+  const day = localDate.getDate().toString().padStart(2, "0");
+  const hours = localDate.getHours().toString().padStart(2, "0");
+  const minutes = localDate.getMinutes().toString().padStart(2, "0");
+
+  // Format in the 'YYYY-MM-DDTHH:mm' format
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
+
 export const getInstagramLink = (username: string | undefined): string => {
   if (!username) {
     return "";
