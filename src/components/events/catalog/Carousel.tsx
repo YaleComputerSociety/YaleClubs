@@ -45,7 +45,6 @@ const Carousel = <T extends IEvent>({ items, ItemComponent, onItemClick }: Carou
         </div>
       </div>
 
-      {/* Arrows in margins */}
       <button
         onClick={handlePrevious}
         className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 
