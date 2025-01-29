@@ -13,12 +13,19 @@ interface SearchControlProps {
 
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   followedClubs: string[];
+  setSelectedClub: React.Dispatch<React.SetStateAction<IClub | null>>;
 }
 
-const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: SearchControlProps) => {
+const SearchControl = ({
+  clubs,
+  setCurrentClubs,
+  setIsLoading,
+  followedClubs,
+  setSelectedClub,
+}: SearchControlProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedSchools, setSelectedSchools] = useState<string[]>([School.COLLEGE]);
+  const [selectedSchools] = useState<string[]>([School.COLLEGE]);
   const [trie, setTrie] = useState<Trie | null>(null);
   const [showFollowedOnly, setShowFollowedOnly] = useState(false);
   const [searchKeyToClubName, setSearchKeyToClubName] = useState<Record<string, string[]>>({});
@@ -148,15 +155,16 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
   ]);
 
   return (
-    <div className="search-control flex flex-wrap gap-2 max-w-[1400px] items-center pb-4">
+    <div
+      className="search-control flex flex-wrap sm:gap-2 items-center pb-4 pt-2 bg-gray-100 w-full px-5 md:px-20"
+      style={{
+        position: "sticky",
+        top: `80px`, // Adjust "80px" based on Header's height
+        zIndex: 20,
+      }}
+    >
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      <div className="flex flex-wrap gap-2 sm:flex-row sm:gap-4">
-        <FilterButton
-          selectedItems={selectedSchools}
-          setSelectedItems={setSelectedSchools}
-          allItems={Object.values(School)}
-          label="Schools"
-        />
+      <div className="flex gap-2 pt-4 sm:pt-0 sm:flex-wrap sm:flex-row sm:gap-4">
         <FilterButton
           selectedItems={selectedCategories}
           setSelectedItems={setSelectedCategories}
@@ -164,15 +172,19 @@ const SearchControl = ({ clubs, setCurrentClubs, setIsLoading, followedClubs }: 
           label="Categories"
         />
         {isLoggedIn && <FollowFilter showFollowedOnly={showFollowedOnly} setShowFollowedOnly={setShowFollowedOnly} />}
+        <button
+          className="text-blue-500 hover:text-blue-700 hidden md:inline-block"
+          onClick={() => {
+            const collegeClubs = clubs.filter((club) => club.school?.includes(School.COLLEGE));
+            if (collegeClubs.length > 0) {
+              const randomClub = collegeClubs[Math.floor(Math.random() * collegeClubs.length)];
+              setSelectedClub(randomClub); // Set the randomly selected club
+            }
+          }}
+        >
+          I&apos;m feeling lucky
+        </button>
       </div>
-      {/* <ResetButton
-        onReset={() => {
-          setSearchQuery("");
-          setSelectedCategories([]);
-          setSelectedSchools([]);
-          setShowFollowedOnly(false);
-        }}
-      /> */}
     </div>
   );
 };
