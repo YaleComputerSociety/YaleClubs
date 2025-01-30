@@ -24,14 +24,12 @@ export const getAdjustedWebsite = (website: string | undefined): string => {
 export const dbDateToFrontendDate = (date: Date) => {
   const localDate = new Date(date);
 
-  // Get the local time components
   const year = localDate.getFullYear();
-  const month = (localDate.getMonth() + 1).toString().padStart(2, "0"); // Month is 0-indexed
+  const month = (localDate.getMonth() + 1).toString().padStart(2, "0");
   const day = localDate.getDate().toString().padStart(2, "0");
   const hours = localDate.getHours().toString().padStart(2, "0");
   const minutes = localDate.getMinutes().toString().padStart(2, "0");
 
-  // Format in the 'YYYY-MM-DDTHH:mm' format
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 

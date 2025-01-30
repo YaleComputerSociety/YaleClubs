@@ -22,13 +22,15 @@ const FeaturedEventCard = ({ event, onClick }: FeaturedEventCardProps) => {
       />
 
       <>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-transparent md:via-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent md:via-transparent" />
+        <div className="absolute inset-0 bg-black/20 hidden md:block" />
+        <div className="absolute inset-0 bg-black/50 md:hidden" />
       </>
-      <div className="absolute inset-0 p-6 flex flex-col justify-end">
-        <div className="text-3xl font-bold text-white  line-clamp-2">{event.name}</div>
+      <div className="absolute inset-0 p-6 flex flex-col justify-end shadow-xl">
+        <div className="text-3xl font-bold text-white line-clamp-2">{event.name}</div>
 
-        <div className="text-lg font-semibold text-gray-200 mline-clamp-1 mb-2">
+        <div className="text-lg font-semibold text-gray-200 line-clamp-1 mb-2 ">
           {event.clubs?.length ? event.clubs.join(" x ") : "No clubs listed"}
         </div>
 
