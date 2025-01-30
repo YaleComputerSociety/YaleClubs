@@ -250,7 +250,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
               </div>
             </div>
           </div>
-          <Board leaders={club.leaders} />
+          <Board isLoggedIn={token !== undefined} leaders={club.leaders} />
         </div>
       </div>
     </div>
