@@ -63,9 +63,24 @@ export default function EventsPage() {
   const [currentPastEvents, setCurrentPastEvents] = useState<IEvent[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [featuredEvents, setFeaturedEvents] = useState<IEvent[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
 
   const pathname = usePathname();
   const skeletonCount = useSkeletonCount();
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 767px)");``
+    const updateIsMobile = () => setIsMobile(mediaQuery.matches);
+
+    // Set the initial value
+    updateIsMobile();
+
+    // Add event listener for changes
+    mediaQuery.addEventListener("change", updateIsMobile);
+
+    return () => mediaQuery.removeEventListener("change", updateIsMobile);
+  }, []);
+
 
   useEffect(() => {
     setIsLoggedIn(document.cookie.includes("token="));
@@ -190,6 +205,7 @@ export default function EventsPage() {
                 isLoading={isInitialLoading}
                 showFeatured={currentUpcomingEvents.length + currentPastEvents.length === events.length}
                 skeletonCount={skeletonCount}
+                isMobile = {isMobile}
               />
             </div>
           </div>

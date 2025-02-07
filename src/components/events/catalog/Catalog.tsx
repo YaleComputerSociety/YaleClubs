@@ -14,6 +14,7 @@ interface EventCatalogProps {
   isLoading: boolean;
   showFeatured: boolean;
   skeletonCount: number;
+  isMobile: boolean;
 }
 
 const SkeletonCard = () => (
@@ -48,6 +49,7 @@ const Catalog = ({
   isLoading,
   showFeatured,
   skeletonCount,
+  isMobile,
 }: EventCatalogProps) => {
   const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
 
@@ -91,7 +93,7 @@ const Catalog = ({
       <div className="flex flex-col gap-8 m-6 md:m-0">
         {upcomingEvents.length > 0 ? (
           <>
-            {showFeatured && (
+            {showFeatured && !isMobile && (
               <Carousel items={featuredEvents} ItemComponent={FeaturedEventCard} onItemClick={handleClickEvent} />
             )}
 
