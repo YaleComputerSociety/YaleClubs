@@ -69,7 +69,7 @@ export default function EventsPage() {
   const skeletonCount = useSkeletonCount();
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 767px)");``
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
     const updateIsMobile = () => setIsMobile(mediaQuery.matches);
 
     // Set the initial value

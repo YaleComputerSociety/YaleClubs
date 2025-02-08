@@ -36,6 +36,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
 
     switch (club.recruitmentStatus) {
       case RecruitmentStatus.APPCLOSED:
+        // compare recruitment status to the date
         return "Applications Closed";
       case RecruitmentStatus.APPENDS:
         if (club.recruitmentEndDate) {
@@ -48,6 +49,10 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
             month: "short",
             day: "numeric",
           });
+
+          if (localDate.getTime() + 3 * 24 * 60 * 60 * 1000 < now.getTime()) {
+            return null;
+        }
 
           if (localDate.getTime() + 24 * 60 * 60 * 1000 < now.getTime()) {
             return "Applications Closed";
