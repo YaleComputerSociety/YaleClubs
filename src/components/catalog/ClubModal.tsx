@@ -233,45 +233,47 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
             />
           </div>
 
-          <div className="flex flex-row w-full gap-10 p-6">
-            <div className="flex flex-col w-full gap-2 flex-[3]">
-              <h1 className="text-3xl font-bold tracking-tight">{club.name}</h1>
-              <p className="text-lg font-semibold">
-                {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}
-              </p>
-              <p className="text-gray-700 mt-2">{club.description}</p>
-              <LabelList />
-            </div>
-            <div className="flex flex-col w-full gap-2 flex-1">
-              <Image
-                src={club.logo ?? "/assets/default-logo.png"}
-                alt="Club Logo"
-                width={90}
-                height={90}
-                className={`${club.logo ? "rounded-xl" : ""} flex-shrink-0`}
-              />
-              <FollowButton
-                isFollowing={isFollowing}
-                clubId={club._id}
-                followedClubs={followedClubs}
-                setFollowedClubs={setFollowedClubs}
-                className="w-[90px] px-0"
-              />
-              <div className="flex flex-col mt-4 gap-2">
-                {club.applyForm &&
-                  (club.recruitmentEndDate === undefined ||
-                    new Date(club.recruitmentEndDate).getTime() >= new Date().setHours(-24, 0, 0, 0)) && (
-                    <RightLink content="Application Form" link={club.applyForm} />
-                  )}
-                <RightLink content="Website" link={club.website} />
-                <RightLink content="Email" link={club.email} isEmail />
-                {club.instagram && <RightLink content="Instagram" link={club.instagram} />}
-                {club.calendarLink && <RightLink content="Calendar" link={club.calendarLink} />}
-                {club.mailingListForm && <RightLink content="Mailing List" link={club.mailingListForm} />}
-                {club.numMembers && <RightLabel content={getAdjustedNumMembers(club.numMembers) + " members"} />}
+          <div className="flex flex-col w-full overflow-y-auto overflow-x-hidden p-6">
+            <div className="flex flex-row w-full gap-6">
+              <div className="flex flex-col w-full gap-2 flex-[3]">
+                <h1 className="text-3xl font-bold tracking-tight">{club.name}</h1>
+                <p className="text-lg font-semibold">
+                  {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}
+                </p>
+                <p className="text-gray-700 mt-2">{club.description}</p>
+                <LabelList />
               </div>
-              <Board isLoggedIn={token !== undefined} leaders={club.leaders} />
+              <div className="flex flex-col w-full gap-2 flex-1">
+                <Image
+                  src={club.logo ?? "/assets/default-logo.png"}
+                  alt="Club Logo"
+                  width={90}
+                  height={90}
+                  className={`${club.logo ? "rounded-xl" : ""} flex-shrink-0`}
+                />
+                <FollowButton
+                  isFollowing={isFollowing}
+                  clubId={club._id}
+                  followedClubs={followedClubs}
+                  setFollowedClubs={setFollowedClubs}
+                  className="w-[90px] px-0"
+                />
+                <div className="flex flex-col mt-4 gap-2">
+                  {club.applyForm &&
+                    (club.recruitmentEndDate === undefined ||
+                      new Date(club.recruitmentEndDate).getTime() >= new Date().setHours(-24, 0, 0, 0)) && (
+                      <RightLink content="Application Form" link={club.applyForm} />
+                    )}
+                  <RightLink content="Website" link={club.website} />
+                  <RightLink content="Email" link={club.email} isEmail />
+                  {club.instagram && <RightLink content="Instagram" link={club.instagram} />}
+                  {club.calendarLink && <RightLink content="Calendar" link={club.calendarLink} />}
+                  {club.mailingListForm && <RightLink content="Mailing List" link={club.mailingListForm} />}
+                  {club.numMembers && <RightLabel content={getAdjustedNumMembers(club.numMembers) + " members"} />}
+                </div>
+              </div>
             </div>
+            <Board isLoggedIn={token !== undefined} leaders={club.leaders} />
           </div>
 
           {errorMessage && (
