@@ -89,8 +89,11 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
   const LabelList = () => {
     return (
       <>
-        {((club.affiliations && club.affiliations.length > 0) || (club.categories && club.categories.length > 0)) && (
+        {(club.school ||
+          (club.affiliations && club.affiliations.length > 0) ||
+          (club.categories && club.categories.length > 0)) && (
           <div className="flex gap-2 whitespace-nowrap w-full flex-wrap mt-4">
+            {club.school && <span className="bg-[#acf] rounded px-2 py-1 text-sm">{club.school}</span>}
             {club.categories?.map((tag, index) => (
               <span key={index} className="bg-[#eee] rounded px-2 py-1 text-sm">
                 {tag}
