@@ -210,6 +210,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
         ref={modalRef}
         className="relative bg-white rounded-2xl max-w-3xl w-full lg:mx-auto h-5/6 max-h-[1000px] overflow-y-auto flex flex-col"
       >
+        <div className="bg-white z-50 absolute top-4 left-4 h-5 w-5 rounded-full"></div>
         <Image
           onClick={onClose}
           src="/assets/icons/cancel.svg"
@@ -217,7 +218,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
           width={35}
           height={35}
           unoptimized
-          className="absolute top-2 left-2 cursor-pointer z-50"
+          className="cursor-pointer z-50 absolute top-2 left-2"
         />
 
         <div className="flex flex-col items-center w-full min-h-full">
