@@ -169,6 +169,8 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
       </button>
     );
 
+  const editButtonStyle = "px-4 py-2 text-lg font-medium rounded shadow";
+
   const getButtonProps = () => {
     if (!isSm) {
       if (token) {
@@ -176,8 +178,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
           return {
             href: `/update?clubId=${club._id}`,
             text: "Edit Club",
-            className:
-              "px-4 py-2 text-lg font-medium text-white bg-indigo-600 rounded shadow hover:bg-indigo-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2",
+            className: `${editButtonStyle} bg-clubPurple text-white hover:bg-clubBlurple transform-[bg] transition-300`,
           };
         }
         return {
@@ -203,13 +204,11 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
 
   const buttonProps = getButtonProps();
 
-  console.log(new Date(club.recruitmentEndDate!).getTime(), new Date().setHours(-24, 0, 0, 0));
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div
         ref={modalRef}
-        className="relative bg-white rounded-2xl max-w-4xl w-full lg:px-24 mx-4 lg:mx-auto h-5/6 max-h-[1000px] overflow-y-auto flex flex-col"
+        className="relative bg-white rounded-2xl max-w-3xl w-full lg:mx-auto h-5/6 max-h-[1000px] overflow-y-auto flex flex-col"
       >
         <Image
           onClick={onClose}
@@ -221,7 +220,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
           className="absolute top-2 left-2 cursor-pointer z-50"
         />
 
-        <div className="flex flex-col items-center py-8 w-full min-h-full">
+        <div className="flex flex-col items-center w-full min-h-full">
           <div className="w-full h-[36%] bg-red-300 relative">
             <Image
               src={club.backgroundImage || "/assets/default-background.png"}
@@ -235,7 +234,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
             />
           </div>
 
-          <div className="flex flex-row w-full gap-10 mt-4">
+          <div className="flex flex-row w-full gap-10 p-6">
             <div className="flex flex-col w-full gap-2 flex-[3]">
               <h1 className="text-3xl uppercase font-bold tracking-tight">{club.name}</h1>
               <p className="text-lg font-semibold">
@@ -278,7 +277,6 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
             </div>
           </div>
 
-          {/*
           {errorMessage && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white rounded-lg p-6 max-w-md mx-auto shadow-lg">
@@ -293,6 +291,8 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
               </div>
             </div>
           )}
+
+          {/*
 
           <div className="flex flex-col overflow-y-auto overflow-x-hidden px-4 md:px-6 pb-4 md:pb-6 -mt-[50px] md:mt-4">
             <div className="flex flex-col md:flex-row gap-4">
