@@ -69,7 +69,7 @@ export default function EventsPage() {
   const skeletonCount = useSkeletonCount();
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 767px)");``
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
     const updateIsMobile = () => setIsMobile(mediaQuery.matches);
 
     // Set the initial value
@@ -80,7 +80,6 @@ export default function EventsPage() {
 
     return () => mediaQuery.removeEventListener("change", updateIsMobile);
   }, []);
-
 
   useEffect(() => {
     setIsLoggedIn(document.cookie.includes("token="));
@@ -205,7 +204,7 @@ export default function EventsPage() {
                 isLoading={isInitialLoading}
                 showFeatured={currentUpcomingEvents.length + currentPastEvents.length === events.length}
                 skeletonCount={skeletonCount}
-                isMobile = {isMobile}
+                isMobile={isMobile}
               />
             </div>
           </div>

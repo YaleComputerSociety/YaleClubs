@@ -159,6 +159,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
                 clubId={club._id}
                 followedClubs={followedClubs}
                 setFollowedClubs={setFollowedClubs}
+                className="px-3"
               />
               <div className="text-sm text-gray-500">
                 {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}

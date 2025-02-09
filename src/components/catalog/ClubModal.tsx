@@ -1,8 +1,8 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { IClub } from "@/lib/models/Club";
-import Board from "./Board";
+// import Board from "./Board";
 import Image from "next/image";
-import { getAdjustedNumMembers, getAdjustedWebsite, getInstagramLink, getModifiedInstagram } from "@/lib/utils";
+import { getAdjustedNumMembers } from "@/lib/utils";
 import { useMediaQuery } from "react-responsive";
 import ClubModalRightLabel from "./ClubModalRightLabel";
 import Link from "next/link";
@@ -22,9 +22,10 @@ type ClubModalProps = {
 const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFollowing }: ClubModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const isSm = useMediaQuery({ maxWidth: 640 });
-  const isMd = useMediaQuery({ maxWidth: 768 });
+  // const isMd = useMediaQuery({ maxWidth: 768 });
   const [canEdit, setCanEdit] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  console.log(errorMessage);
 
   const token = Cookies.get("token");
   const isFollowing = followedClubs.includes(club._id);
@@ -200,7 +201,6 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
 
   const buttonProps = getButtonProps();
 
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div
@@ -244,16 +244,16 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
               <Image
                 src={club.logo ?? "/assets/default-logo.png"}
                 alt="Club Logo"
-                width={100}
-                height={100}
-                className={`${club.logo ? "rounded-2xl" : ""} flex-shrink-0 self-center`}
+                width={90}
+                height={90}
+                className={`${club.logo ? "rounded-xl" : ""} flex-shrink-0`}
               />
               <FollowButton
                 isFollowing={isFollowing}
                 clubId={club._id}
                 followedClubs={followedClubs}
                 setFollowedClubs={setFollowedClubs}
-                className="w-[100px] self-center"
+                className="w-[90px] px-0"
               />
               <div className="flex flex-col mt-4 gap-2">
                 <RightLink content="Website" link={club.website} />
