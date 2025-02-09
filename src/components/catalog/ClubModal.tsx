@@ -201,6 +201,8 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
 
   const buttonProps = getButtonProps();
 
+  console.log(new Date(club.recruitmentEndDate!).getTime(), new Date().setHours(-24, 0, 0, 0));
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div
@@ -256,15 +258,17 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
                 className="w-[90px] px-0"
               />
               <div className="flex flex-col mt-4 gap-2">
+                {club.applyForm &&
+                  (club.recruitmentEndDate === undefined ||
+                    new Date(club.recruitmentEndDate).getTime() >= new Date().setHours(-24, 0, 0, 0)) && (
+                    <RightLink content="Application Form" link={club.applyForm} />
+                  )}
                 <RightLink content="Website" link={club.website} />
                 <RightLink content="Email" link={club.email} isEmail />
                 {club.instagram && <RightLink content="Instagram" link={club.instagram} />}
                 {club.calendarLink && <RightLink content="Calendar" link={club.calendarLink} />}
                 {club.mailingListForm && <RightLink content="Mailing List" link={club.mailingListForm} />}
-                {club.applyForm && <RightLink content="Application Form" link={club.applyForm} />}
                 {club.numMembers && <RightLabel content={getAdjustedNumMembers(club.numMembers) + " members"} />}
-                {club.meeting && <RightLabel content={club.meeting} />}
-                <ClubModalRightLabel header="Meeting" content={club.meeting} />
               </div>
               <EditButton {...buttonProps} />
             </div>
