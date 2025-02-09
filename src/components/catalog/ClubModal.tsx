@@ -35,7 +35,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
       ? "1"
       : "0";
 
-  console.table(club);
+  // console.table(club);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -91,15 +91,15 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
         {(club.school ||
           (club.affiliations && club.affiliations.length > 0) ||
           (club.categories && club.categories.length > 0)) && (
-          <div className="flex gap-2 whitespace-nowrap w-full flex-wrap mt-4">
-            {club.school && <span className="bg-[#acf] rounded px-2 py-1 text-sm">{club.school}</span>}
+          <div className="flex gap-2 whitespace-nowrap w-full flex-wrap mt-4 text-xs sm:text-sm">
+            {club.school && <span className="bg-[#acf] rounded px-2 py-1">{club.school}</span>}
             {club.categories?.map((tag, index) => (
-              <span key={index} className="bg-[#eee] rounded px-2 py-1 text-sm">
+              <span key={index} className="bg-[#eee] rounded px-2 py-1">
                 {tag}
               </span>
             ))}
             {club.affiliations?.map((tag, index) => (
-              <span key={index} className="bg-[#feb] rounded px-2 py-1 text-sm">
+              <span key={index} className="bg-[#feb] rounded px-2 py-1">
                 {tag}
               </span>
             ))}
@@ -129,7 +129,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
     if (!link) return <div className="text-gray-500">No {content.toLowerCase()}</div>;
 
     return (
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2 text-sm sm:text-base">
         <a
           href={isEmail ? "mailto:" + link : link}
           target="_blank"
@@ -206,7 +206,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div
         ref={modalRef}
-        className="relative bg-white rounded-2xl max-w-3xl w-full lg:mx-auto h-5/6 max-h-[1000px] overflow-y-auto flex flex-col"
+        className="relative bg-white rounded-2xl max-w-3xl w-full lg:mx-auto h-5/6 max-h-[1000px] overflow-y-auto flex flex-col m-2 sm:m-0"
       >
         <div className="bg-white z-50 absolute top-4 left-4 h-5 w-5 rounded-full"></div>
         <Image
@@ -233,14 +233,14 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
             />
           </div>
 
-          <div className="flex flex-col w-full overflow-y-auto overflow-x-hidden p-6">
+          <div className="flex flex-col w-full overflow-y-auto overflow-x-hidden p-4 sm:p-6">
             <div className="flex flex-row w-full gap-6">
               <div className="flex flex-col w-full gap-2 flex-[3]">
-                <h1 className="text-3xl font-bold tracking-tight">{club.name}</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{club.name}</h1>
                 <p className="text-lg font-semibold">
                   {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}
                 </p>
-                <p className="text-gray-700 mt-2">{club.description}</p>
+                <p className="text-gray-700 mt-2 text-sm sm:text-base">{club.description}</p>
                 <LabelList />
               </div>
               <div className="flex flex-col w-full gap-2 flex-1">
