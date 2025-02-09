@@ -1,15 +1,14 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { IClub } from "@/lib/models/Club";
-// import Board from "./Board";
 import Image from "next/image";
 import { getAdjustedNumMembers } from "@/lib/utils";
 import { useMediaQuery } from "react-responsive";
-import ClubModalRightLabel from "./ClubModalRightLabel";
 import Link from "next/link";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import FollowButton from "./FollowButton";
 import { FiCopy } from "react-icons/fi";
+import Board from "./Board";
 
 type ClubModalProps = {
   club: IClub;
@@ -244,6 +243,8 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
               </p>
               <p className="text-gray-700 mt-2">{club.description}</p>
               <LabelList />
+              <div className="mt-8"></div>
+              <EditButton {...buttonProps} />
             </div>
             <div className="flex flex-col w-full gap-2 flex-1">
               <Image
@@ -273,7 +274,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
                 {club.mailingListForm && <RightLink content="Mailing List" link={club.mailingListForm} />}
                 {club.numMembers && <RightLabel content={getAdjustedNumMembers(club.numMembers) + " members"} />}
               </div>
-              <EditButton {...buttonProps} />
+              <Board isLoggedIn={token !== undefined} leaders={club.leaders} />
             </div>
           </div>
 
