@@ -158,18 +158,18 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
     return <div className="text-gray-500">{content}</div>;
   };
 
-  const EditButton = ({ href, text, onClick, disabled, className }: any) =>
+  const EditButton = ({ href, text, onClick, className }: any) =>
     href ? (
       <Link href={href}>
         <button className={className}>{text}</button>
       </Link>
     ) : (
-      <button onClick={onClick} disabled={disabled} className={className}>
+      <button onClick={onClick} className={className}>
         {text}
       </button>
     );
 
-  const editButtonStyle = "px-4 py-2 text-lg font-medium rounded shadow";
+  const editButtonStyle = "px-4 py-1 text-lg font-medium rounded-xl shadow absolute top-3 right-3 z-50";
 
   const getButtonProps = () => {
     if (!isSm) {
@@ -178,27 +178,25 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
           return {
             href: `/update?clubId=${club._id}`,
             text: "Edit Club",
-            className: `${editButtonStyle} bg-clubPurple text-white hover:bg-clubBlurple transform-[bg] transition-300`,
+            className: `${editButtonStyle} bg-clubPurple text-white hover:bg-clubBlurple transition-all duration-300 hover:scale-105`,
           };
         }
         return {
           onClick: () => setErrorMessage("You do not have permission to edit this club."),
           text: "Edit Club",
-          className: "px-4 py-2 text-lg font-medium text-gray-500 bg-gray-300 rounded shadow cursor-not-allowed",
-          disabled: true,
+          className: `${editButtonStyle} text-gray-500 bg-gray-300 cursor-not-allowed`,
         };
       }
       return {
         onClick: () => setErrorMessage("You need to log in to edit this club."),
         text: "Log in to Edit",
-        className: "px-4 py-2 text-lg font-medium text-gray-500 bg-gray-300 rounded shadow cursor-pointer",
+        className: `${editButtonStyle} text-gray-500 bg-gray-300 cursor-not-allowed`,
       };
     }
     return {
       onClick: () => setErrorMessage("You must be logged in on a computer to edit a club."),
       text: "Edit Club",
-      className: "px-2 py-1 text-sm font-medium text-gray-500 bg-gray-300 rounded shadow cursor-not-allowed",
-      disabled: true,
+      className: `${editButtonStyle} text-gray-500 bg-gray-300 cursor-not-allowed`,
     };
   };
 
@@ -220,9 +218,9 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
           unoptimized
           className="cursor-pointer z-50 absolute top-2 left-2"
         />
-
+        <EditButton {...buttonProps} />
         <div className="flex flex-col items-center w-full min-h-full">
-          <div className="w-full h-[36%] bg-red-300 relative">
+          <div className="w-full h-[30%] bg-red-300 relative">
             <Image
               src={club.backgroundImage || "/assets/default-background.png"}
               alt="bg"
@@ -237,14 +235,12 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
 
           <div className="flex flex-row w-full gap-10 p-6">
             <div className="flex flex-col w-full gap-2 flex-[3]">
-              <h1 className="text-3xl uppercase font-bold tracking-tight">{club.name}</h1>
+              <h1 className="text-3xl font-bold tracking-tight">{club.name}</h1>
               <p className="text-lg font-semibold">
                 {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}
               </p>
               <p className="text-gray-700 mt-2">{club.description}</p>
               <LabelList />
-              <div className="mt-8"></div>
-              <EditButton {...buttonProps} />
             </div>
             <div className="flex flex-col w-full gap-2 flex-1">
               <Image
