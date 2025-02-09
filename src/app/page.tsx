@@ -9,18 +9,16 @@ import Footer from "../components/Footer";
 import Catalog from "../components/catalog/Catalog";
 import { IClub } from "@/lib/models/Club";
 import SearchControl from "@/components/search/SearchControl";
-
-// import SearchWrapper from "@/components/search/SearchWrapper";
-
-// import axios from "axios";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [clubs, setClubs] = useState<IClub[]>([]);
+
   const [currentClubs, setCurrentClubs] = useState<IClub[]>([]);
   const [followedClubs, setFollowedClubs] = useState<string[]>([]);
+  const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
   const token = Cookies.get("token");
   let netid = "";
 
@@ -35,11 +33,11 @@ export default function Home() {
   useEffect(() => {
     const fetchApiMessage = async () => {
       try {
-        setIsLoading(true);
-        const response = await axios.get<IClub[]>("/api/clubs");
-        setClubs(response.data);
+        const clubsResponse = await axios.get<IClub[]>("/api/clubs");
+
+        setClubs(clubsResponse.data);
       } catch (error) {
-        console.error("Error fetching API message:", error);
+        console.error("Error fetching API data:", error);
       } finally {
         setTimeout(() => setIsLoading(false), 2); // delay because setClubs is async
       }
@@ -76,19 +74,22 @@ export default function Home() {
             <div className="mt-20 md:mt-24"></div>
             <h1 className="text-3xl font-bold text-black">Browse Clubs</h1>
             <h2 className="text-xl mb-4 md:mb-8">Finding Clubs has Never Been Easier.</h2>
-            {/* <SearchWrapper> */}
-            <SearchControl
-              clubs={clubs}
-              setCurrentClubs={setCurrentClubs}
-              setIsLoading={setIsLoading}
-              followedClubs={followedClubs}
-            />
-            {/* </SearchWrapper> */}
+          </div>
+          <SearchControl
+            clubs={clubs}
+            setCurrentClubs={setCurrentClubs}
+            setIsLoading={setIsLoading}
+            followedClubs={followedClubs}
+            setSelectedClub={setSelectedClub}
+          />
+          <div className="flex flex-col w-full px-5 md:px-20">
             <Catalog
               clubs={currentClubs}
               isLoading={isLoading}
               followedClubs={followedClubs}
               setFollowedClubs={setFollowedClubs}
+              selectedClub={selectedClub}
+              setSelectedClub={setSelectedClub}
             />
           </div>
         </div>

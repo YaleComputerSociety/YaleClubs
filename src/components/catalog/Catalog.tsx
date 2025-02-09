@@ -8,10 +8,18 @@ interface CatalogProps {
   isLoading: boolean;
   followedClubs: string[] | [];
   setFollowedClubs: React.Dispatch<React.SetStateAction<string[] | []>>;
+  selectedClub: IClub | null;
+  setSelectedClub: React.Dispatch<React.SetStateAction<IClub | null>>;
 }
 
-const Catalog = ({ clubs, isLoading, followedClubs, setFollowedClubs }: CatalogProps) => {
-  const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
+const Catalog = ({
+  clubs,
+  isLoading,
+  followedClubs,
+  setFollowedClubs,
+  selectedClub,
+  setSelectedClub,
+}: CatalogProps) => {
   const [visibleClubs, setVisibleClubs] = useState(50); // Initial number of clubs to show
   const firstRef = useRef(true);
 

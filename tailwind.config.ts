@@ -18,6 +18,9 @@ const config: Config = {
       fontFamily: {
         "fira-sans": ["Fira Sans", "sans-serif"],
       },
+      text: {
+        xxs: "0.625rem",
+      },
     },
   },
   plugins: [],

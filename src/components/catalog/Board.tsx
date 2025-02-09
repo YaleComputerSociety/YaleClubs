@@ -1,7 +1,7 @@
 import { ClubLeader } from "@/lib/models/Club";
 import React, { useEffect, useRef, useState } from "react";
 
-export default function ScrollableLeaders({ leaders }: { leaders: ClubLeader[] }) {
+export default function ScrollableLeaders({ leaders, isLoggedIn }: { leaders: ClubLeader[]; isLoggedIn: boolean }) {
   const [isScrolledToStart, setIsScrolledToStart] = useState(true);
   const [isScrolledToEnd, setIsScrolledToEnd] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -41,9 +41,9 @@ export default function ScrollableLeaders({ leaders }: { leaders: ClubLeader[] }
                   <div className="flex flex-col items-start">
                     <div className="flex flex-row justify-between w-full">
                       <div className="text-md font-semibold">{leader.name}</div>
-                      {(leader.year?.valueOf() || 0) > 0 && <div>{"'" + (leader.year ? leader.year % 100 : "")} </div>}
+                      {(leader.year?.valueOf() || 0) > 0 && <div>{" '" + (leader.year ? leader.year % 100 : "")} </div>}
                     </div>
-                    <div>{leader.email}</div>
+                    {isLoggedIn && <div>{leader.email}</div>}
                     <div>{leader.role}</div>
                   </div>
                 </div>
