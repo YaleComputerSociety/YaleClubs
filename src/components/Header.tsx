@@ -58,7 +58,7 @@ const Header = () => {
       <div className="flex flex-row w-full justify-between p-[22px] md:px-20 bg-background">
         <Link href="/" className="flex flex-row items-center">
           <Image src="/assets/logo.svg" alt="Logo" width={35} height={35} unoptimized />
-          <div className="ml-5 font-semibold text-xl">YaleClubs</div>
+          <div className="ml-2 font-semibold text-xl">YaleClubs</div>
         </Link>
 
         {isMobile ? (
@@ -70,16 +70,15 @@ const Header = () => {
               <div className="absolute right-0 top-full bg-white shadow-lg rounded-md p-10">
                 <ul className="flex flex-col items-start gap-4">
                   <li>
+                    <Link href="/" onClick={() => setIsMenuOpen(false)}>
+                      Clubs
+                    </Link>
+                  </li>
+                  <li>
                     <Link href="/Events" onClick={() => setIsMenuOpen(false)}>
                       Events
                     </Link>
                   </li>
-                  <li>
-                    <Link href="/" onClick={() => setIsMenuOpen(false)}>
-                      Club Catalog
-                    </Link>
-                  </li>
-
                   <li>
                     <Link href="/about" onClick={() => setIsMenuOpen(false)}>
                       About
@@ -115,12 +114,12 @@ const Header = () => {
             )}
           </div>
         ) : (
-          <div className="hidden sm:flex flex-row items-center gap-x-11">
+          <div className="hidden sm:flex flex-row items-center gap-x-10">
+            <Link href="/">
+              <div className="text-md">Clubs</div>
+            </Link>
             <Link href="/Events">
               <div className="text-md">Events</div>
-            </Link>
-            <Link href="/">
-              <div className="text-md">Club Catalog</div>
             </Link>
             <Link href="/about">
               <div className="text-md">About</div>
