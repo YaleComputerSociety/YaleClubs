@@ -116,7 +116,7 @@ const teamMembers = [
   },
   {
     name: "Michelle Zheng",
-    role: "CMO",
+    role: "Marketing",
     headshot: "/assets/people/michy.jpg",
     linkedin: "https://www.linkedin.com/in/mzheng8/",
   },
@@ -126,26 +126,6 @@ const teamMembers = [
     headshot: "/assets/people/amanda.jpg",
     linkedin: "https://linkedin.com/in/amandaminhuang/",
   },
-  {
-    name: "Matteo Balbarin",
-    role: "Director of Marketing Ops",
-    headshot: "/assets/people/matteo.jpg",
-    linkedin: "https://linkedin.com/in/mateo-balbarin-849395237/",
-    github: "https://github.com/mateo1442/",
-  },
-  {
-    name: "Michael Chu",
-    role: "Ideas Man",
-    headshot: "/assets/people/michael.jpg",
-    linkedin: "https://linkedin.com/in/michael-chu-a28034203/",
-  },
-  {
-    name: "Alec Aceves-Acosta",
-    role: "Keeper of Secrets",
-    headshot: "/assets/people/alec.jpg",
-    linkedin: "https://linkedin.com/in/michael-chu-a28034203/",
-  },
-
   {
     name: "Lily Lin",
     role: "UX Designer",
@@ -157,6 +137,25 @@ const teamMembers = [
     role: "UX Designer",
     headshot: "/assets/people/aditya.jpg",
     linkedin: "https://linkedin.com/in/aditya-das-me/",
+  },
+  {
+    name: "Kris Aziabor",
+    role: "UX Designer",
+    headshot: "/assets/people/kris.jpg",
+    linkedin: "https://linkedin.com/in/krisaziabor/",
+  },
+  {
+    name: "Matteo Balbarin",
+    role: "Marketing Ops",
+    headshot: "/assets/people/matteo.jpg",
+    linkedin: "https://linkedin.com/in/mateo-balbarin-849395237/",
+    github: "https://github.com/mateo1442/",
+  },
+  {
+    name: "Michael Chu",
+    role: "Ideas Man",
+    headshot: "/assets/people/michael.jpg",
+    linkedin: "https://linkedin.com/in/michael-chu-a28034203/",
   },
 ];
 

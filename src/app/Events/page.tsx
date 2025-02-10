@@ -118,7 +118,7 @@ export default function EventsPage() {
         setFeaturedEvents(getRandomThree(upcoming));
       } catch (error) {
         console.error("Error fetching data:", error);
-        setError("Failed to load events. Please try again later.");
+        setError("Failed to load events. Please try reloading the page.");
       } finally {
         setIsInitialLoading(false);
       }
