@@ -91,17 +91,14 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
           (club.affiliations && club.affiliations.length > 0) ||
           (club.categories && club.categories.length > 0)) && (
           <div className="flex gap-2 whitespace-nowrap w-full flex-wrap mt-4 text-xs sm:text-sm">
-            {club.school && <span className="bg-[#acf] rounded px-2 py-1">{club.school}</span>}
-            {club.categories?.map((tag, index) => (
-              <span key={index} className="bg-[#eee] rounded px-2 py-1">
-                {tag}
-              </span>
-            ))}
-            {club.affiliations?.map((tag, index) => (
-              <span key={index} className="bg-[#feb] rounded px-2 py-1">
-                {tag}
-              </span>
-            ))}
+            {club.school && <span className="bg-[#eee] rounded px-2 py-1">{club.school}</span>}
+            {[...(club.categories || []), ...(club.affiliations || [])]
+              .sort((a, b) => a.localeCompare(b))
+              .map((tag, index) => (
+                <span key={index} className="bg-[#eee] rounded px-2 py-1">
+                  {tag}
+                </span>
+              ))}
           </div>
         )}
       </>
@@ -133,13 +130,13 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
           href={isEmail ? "mailto:" + link : link}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-500 hover:text-blue-700"
+          className="text-clubPurple hover:text-clubBlurple"
         >
           {content}
         </a>
         <button
           onClick={handleCopy}
-          className="text-blue-500 hover:text-blue-700 focus:outline-none"
+          className="text-clubPurple hover:text-clubBlurple focus:outline-none"
           aria-label="Copy link"
         >
           <FiCopy />
