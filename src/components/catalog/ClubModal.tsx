@@ -24,7 +24,6 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
   const isSm = useMediaQuery({ maxWidth: 640 });
   const [canEdit, setCanEdit] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  console.log(errorMessage);
 
   const token = Cookies.get("token");
   const isFollowing = followedClubs.includes(club._id);
