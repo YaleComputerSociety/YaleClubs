@@ -21,7 +21,7 @@ type ClubModalProps = {
 
 const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFollowing }: ClubModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
-  const isSm = useMediaQuery({ maxWidth: 640 });
+  const isSm = useMediaQuery({ maxWidth: 639 });
   const [canEdit, setCanEdit] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
