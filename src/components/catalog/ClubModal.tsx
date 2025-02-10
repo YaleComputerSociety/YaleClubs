@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { IClub } from "@/lib/models/Club";
 import Image from "next/image";
-import { getAdjustedNumMembers } from "@/lib/utils";
+import { getAdjustedNumMembers, getInstagramLink } from "@/lib/utils";
 import { useMediaQuery } from "react-responsive";
 import Link from "next/link";
 import { jwtDecode } from "jwt-decode";
@@ -266,7 +266,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
                     )}
                   <RightLink content="Website" link={club.website} />
                   <RightLink content="Email" link={club.email} isEmail />
-                  {club.instagram && <RightLink content="Instagram" link={club.instagram} />}
+                  {club.instagram && <RightLink content="Instagram" link={getInstagramLink(club.instagram)} />}
                   {club.calendarLink && <RightLink content="Calendar" link={club.calendarLink} />}
                   {club.mailingListForm && <RightLink content="Mailing List" link={club.mailingListForm} />}
                   {club.numMembers && <RightLabel content={getAdjustedNumMembers(club.numMembers) + " members"} />}
