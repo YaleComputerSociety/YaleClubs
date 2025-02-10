@@ -17,3 +17,17 @@ body {
 :root {
   --background: #f5f5f9;
 }
+
+@font-face {
+  font-family: 'Fira Sans';
+  src: url('/fonts/FiraSansCondensed-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Fira Sans';
+  src: url('/fonts/FiraSansCondensed-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
