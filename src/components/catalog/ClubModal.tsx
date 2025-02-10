@@ -256,7 +256,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
                   clubId={club._id}
                   followedClubs={followedClubs}
                   setFollowedClubs={setFollowedClubs}
-                  className="w-[90px] px-0"
+                  className="w-[90px] min-w-[90px] max-w-[90px] px-0"
                 />
                 <div className="flex flex-col mt-4 gap-2">
                   {club.applyForm &&
