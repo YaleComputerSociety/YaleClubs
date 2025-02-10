@@ -102,6 +102,13 @@ const teamMembers = [
     github: "https://github.com/emath12",
   },
   {
+    name: "Alyssa Quarles",
+    role: "Developer",
+    headshot: "/assets/people/alyssa.png",
+    linkedin: "https://www.linkedin.com/in/alyssa-quarles-65735b316/",
+    github: "https://github.com/AlyssaQuarles1",
+  },
+  {
     name: "Marie Bong",
     role: "Marketing Lead",
     headshot: "/assets/people/marie.jpg",
