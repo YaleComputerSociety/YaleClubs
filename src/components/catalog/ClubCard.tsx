@@ -101,6 +101,27 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
   const applicationStatus = getApplicationStatus();
   const hasApplicationStatus = applicationStatus !== null;
 
+  const LabelList = ({ className }: { className?: string }) => {
+    return (
+      <>
+        {(club.school ||
+          (club.affiliations && club.affiliations.length > 0) ||
+          (club.categories && club.categories.length > 0)) && (
+          <div className={`${className} flex gap-2 whitespace-nowrap text-xs`}>
+            {club.school && <span className="bg-[#eee] rounded px-2 py-1">{club.school}</span>}
+            {[...(club.categories || []), ...(club.affiliations || [])]
+              .sort((a, b) => a.localeCompare(b))
+              .map((tag, index) => (
+                <span key={index} className="bg-[#eee] rounded px-2 py-1">
+                  {tag}
+                </span>
+              ))}
+          </div>
+        )}
+      </>
+    );
+  };
+
   return (
     <div className="relative w-full max-w-2xl">
       <div
@@ -128,19 +149,8 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
                 <div className="md:text-xl font-semibold line-clamp-1 md:line-clamp-2 overflow-hidden">{club.name}</div>
               </div>
             </div>
-            <div className="mt-2 flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
-              {club.school && <span className="bg-[#acf] rounded px-2 py-1 text-xs">{club.school}</span>}
-              {club.categories?.map((tag, index) => (
-                <span key={index} className="bg-[#eee] rounded px-2 py-1 text-xs">
-                  {tag}
-                </span>
-              ))}
-              {club.affiliations?.map((tag, index) => (
-                <span key={index} className="bg-[#feb] rounded px-2 py-1 text-xs">
-                  {tag}
-                </span>
-              ))}
-            </div>
+            <LabelList className="mt-2 scrollbar-hide overflow-x-auto" />
+            
             <div className="text-sm md:text:lg text-gray-800 line-clamp-3 mt-2">
               {club.description ?? "No description"}
             </div>
