@@ -234,8 +234,8 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
           </div>
 
           <div className="flex flex-col w-full overflow-y-auto overflow-x-hidden p-4 sm:p-6">
-            <div className="flex flex-row w-full gap-6">
-              <div className="flex flex-col w-full gap-2 flex-[3]">
+            <div className="flex flex-row w-full gap-4 sm:gap-10">
+              <div className="flex flex-col w-full gap-2 flex-[3.5]">
                 <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{club.name}</h1>
                 <p className="text-lg font-semibold">
                   {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}
@@ -262,7 +262,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
                   {club.applyForm &&
                     (club.recruitmentEndDate === undefined ||
                       new Date(club.recruitmentEndDate).getTime() >= new Date().setHours(-24, 0, 0, 0)) && (
-                      <RightLink content="Application Form" link={club.applyForm} />
+                      <RightLink content="Application" link={club.applyForm} />
                     )}
                   <RightLink content="Website" link={club.website} />
                   <RightLink content="Email" link={club.email} isEmail />
