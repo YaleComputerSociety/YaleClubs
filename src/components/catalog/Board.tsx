@@ -10,8 +10,10 @@ export default function ScrollableLeaders({ leaders, isLoggedIn }: { leaders: Cl
     if (!scrollContainerRef.current) return;
 
     const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+    const buffer = 1; // Small buffer to handle rounding inconsistencies
+
     setIsScrolledToStart(scrollLeft === 0);
-    setIsScrolledToEnd(scrollLeft + clientWidth >= scrollWidth);
+    setIsScrolledToEnd(scrollLeft + clientWidth >= scrollWidth - buffer);
   };
 
   useEffect(() => {
@@ -25,7 +27,7 @@ export default function ScrollableLeaders({ leaders, isLoggedIn }: { leaders: Cl
           <div className="text-lg font-bold">Board Members</div>
           <div className="relative">
             <div
-              className="flex flex-row gap-4 mt-2 overflow-x-auto whitespace-nowrap scrollbar-hide"
+              className="flex flex-row gap-2 sm:gap-3 mt-2 overflow-x-auto whitespace-nowrap scrollbar-hide"
               ref={scrollContainerRef}
               onScroll={handleScroll}
             >
@@ -37,7 +39,10 @@ export default function ScrollableLeaders({ leaders, isLoggedIn }: { leaders: Cl
               )}
 
               {leaders.map((leader, index) => (
-                <div key={index} className="flex items-center rounded-lg border-gray-200 border-2 text-xs p-1">
+                <div
+                  key={index}
+                  className="flex items-center rounded-lg border-gray-200 border-2 text-xs sm:text-sm px-2 py-1"
+                >
                   <div className="flex flex-col items-start">
                     <div className="flex flex-row justify-between w-full text-gray-800">
                       <div className="text-md font-semibold max-w-[160px] truncate pr-2 ">{leader.name}</div>
