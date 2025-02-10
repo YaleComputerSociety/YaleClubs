@@ -196,7 +196,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
         />
         <EditButton {...buttonProps} />
         <div className="flex flex-col items-center w-full min-h-full">
-          <div className="w-full h-[140px] sm:h-[30%] bg-red-300 relative">
+          <div className="w-full h-[140px] sm:h-[30%] relative">
             <Image
               src={club.backgroundImage || "/assets/default-background.png"}
               alt="bg"
@@ -272,100 +272,6 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
               </div>
             </div>
           )}
-
-          {/*
-
-          <div className="flex flex-col overflow-y-auto overflow-x-hidden px-4 md:px-6 pb-4 md:pb-6 -mt-[50px] md:mt-4">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex flex-col md:w-3/5">
-                <div
-                  className={`text-center md:text-left ${club.name.length > 100 ? "text-xl md:text-2xl" : "text-2xl md:text-2xl"} font-bold`}
-                >
-                  {club.name}
-                  <div className="flex flex-row items-center text-base gap-2 mt-1">
-                    <div className="text-gray-500">
-                      {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}
-                    </div>
-                    •
-                    <FollowButton
-                      isFollowing={isFollowing}
-                      clubId={club._id}
-                      followedClubs={followedClubs}
-                      setFollowedClubs={setFollowedClubs}
-                    />
-                  </div>
-                </div>
-                {club.school && (
-                  <div className="flex gap-2 whitespace-nowrap w-full flex-wrap mt-4">
-                    <span className="bg-[#acf] rounded px-2 py-1 text-sm">{club.school}</span>
-                  </div>
-                )}
-                {((club.affiliations && club.affiliations.length > 0) ||
-                  (club.categories && club.categories.length > 0)) && (
-                  <div className="flex gap-2 whitespace-nowrap w-full flex-wrap mt-4">
-                    {club.categories?.map((tag, index) => (
-                      <span key={index} className="bg-[#eee] rounded px-2 py-1 text-sm">
-                        {tag}
-                      </span>
-                    ))}
-                    {club.affiliations?.map((tag, index) => (
-                      <span key={index} className="bg-[#feb] rounded px-2 py-1 text-sm">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-                <div className="text-gray-700 mt-4 text-sm sm:text-base">{club.description || "No description"}</div>
-              </div>
-              <div className="flex flex-col md:w-2/5 items-center">
-                {!isMd && (
-                  <div className="flex flex-col items-center gap-4">
-                    <Image
-                      src={club.logo ? club.logo : "/assets/default-logo.png"}
-                      alt="Club Logo"
-                      width={100}
-                      height={100}
-                      className={`${club.logo ? "rounded-2xl" : ""} flex-shrink-0`}
-                    />
-                  </div>
-                )}
-                <div className="flex flex-col w-full sm:w-3/4 md:w-full">
-                  <ClubModalRightLabel
-                    header="Website"
-                    content={getAdjustedWebsite(club.website)}
-                    link={club.website}
-                  />
-                  <ClubModalRightLabel header="Email" content={club.email} link={"mailto:" + club.email} />
-                  <ClubModalRightLabel
-                    header="Membership"
-                    content={club.numMembers ? getAdjustedNumMembers(club.numMembers) + " members" : undefined}
-                  />
-                  <ClubModalRightLabel
-                    header="Instagram"
-                    content={getModifiedInstagram(club.instagram)}
-                    link={getInstagramLink(club.instagram)}
-                  />
-                  <ClubModalRightLabel
-                    header="Application Form"
-                    content={club.applyForm ? "Application Form" : undefined}
-                    link={club.applyForm}
-                  />
-                  <ClubModalRightLabel
-                    header="Mailing List"
-                    content={club.mailingListForm ? "Mailing List" : undefined}
-                    link={club.mailingListForm}
-                  />
-                  <ClubModalRightLabel
-                    header="Calendar"
-                    content={club.calendarLink ? "Calendar Link" : undefined}
-                    link={club.calendarLink}
-                  />
-                  <ClubModalRightLabel header="Meeting" content={club.meeting} />
-                </div>
-              </div>
-            </div>
-            <Board isLoggedIn={token !== undefined} leaders={club.leaders} />
-          </div> */}
         </div>
       </div>
     </div>

@@ -140,7 +140,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
               alt="Club Logo"
               width={100}
               height={100}
-              className="rounded-xl flex-shrink-0 w-16 md:w-[80px] h-16 md:h-[80px]"
+              className="rounded-xl flex-shrink-0 w-[80px] h-[80px]"
             />
             <div className="flex flex-col items-center">
               <FollowButton
@@ -148,7 +148,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
                 clubId={club._id}
                 followedClubs={followedClubs}
                 setFollowedClubs={setFollowedClubs}
-                className="w-[80px] my-2"
+                className="w-[80.1px] my-2"
               />
               <div className="text-sm text-gray-500">
                 {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}
