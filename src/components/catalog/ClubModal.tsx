@@ -21,7 +21,6 @@ type ClubModalProps = {
 const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFollowing }: ClubModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const isSm = useMediaQuery({ maxWidth: 640 });
-  // const isMd = useMediaQuery({ maxWidth: 768 });
   const [canEdit, setCanEdit] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   console.log(errorMessage);
@@ -155,7 +154,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
   };
 
   const RightLabel = ({ content }: RightLabelProps) => {
-    return <div className="text-gray-500">{content}</div>;
+    return <div className="text-gray-500 text-sm sm:text-base">{content}</div>;
   };
 
   const EditButton = ({ href, text, onClick, className }: any) =>
@@ -220,7 +219,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
         />
         <EditButton {...buttonProps} />
         <div className="flex flex-col items-center w-full min-h-full">
-          <div className="w-full h-[30%] bg-red-300 relative">
+          <div className="w-full h-[140px] sm:h-[30%] bg-red-300 relative">
             <Image
               src={club.backgroundImage || "/assets/default-background.png"}
               alt="bg"
@@ -234,14 +233,19 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
           </div>
 
           <div className="flex flex-col w-full overflow-y-auto overflow-x-hidden p-4 sm:p-6">
-            <div className="flex flex-row w-full gap-4 sm:gap-10">
+            <div className="flex flex-row w-full gap-4 sm:gap-20">
               <div className="flex flex-col w-full gap-2 flex-[3.5]">
-                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{club.name}</h1>
-                <p className="text-lg font-semibold">
+                <div
+                  className="text-2xl sm:text-3xl font-bold tracking-tight sm:relative sm:-top-1"
+                  style={{ lineHeight: "1" }}
+                >
+                  {club.name}
+                </div>
+                <p className="text-lg sm:text-xl font-semibold text-gray-700 -mt-2">
                   {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}
                 </p>
                 <p className="text-gray-700 mt-2 text-sm sm:text-base">{club.description}</p>
-                <LabelList />
+                {!isSm && <LabelList />}
               </div>
               <div className="flex flex-col w-full gap-2 flex-1">
                 <Image
@@ -273,6 +277,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
                 </div>
               </div>
             </div>
+            {isSm && <LabelList />}
             <Board isLoggedIn={token !== undefined} leaders={club.leaders} />
           </div>
 
