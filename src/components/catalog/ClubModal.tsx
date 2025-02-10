@@ -9,6 +9,7 @@ import Cookies from "js-cookie";
 import FollowButton from "./FollowButton";
 import { FiCopy } from "react-icons/fi";
 import Board from "./Board";
+import { LabelList } from "./LabelList";
 
 type ClubModalProps = {
   club: IClub;
@@ -84,27 +85,6 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
     }
   }, [club.leaders, token]);
 
-  const LabelList = () => {
-    return (
-      <>
-        {(club.school ||
-          (club.affiliations && club.affiliations.length > 0) ||
-          (club.categories && club.categories.length > 0)) && (
-          <div className="flex gap-2 whitespace-nowrap w-full flex-wrap mt-4 text-xs sm:text-sm">
-            {club.school && <span className="bg-[#eee] rounded px-2 py-1">{club.school}</span>}
-            {[...(club.categories || []), ...(club.affiliations || [])]
-              .sort((a, b) => a.localeCompare(b))
-              .map((tag, index) => (
-                <span key={index} className="bg-[#eee] rounded px-2 py-1">
-                  {tag}
-                </span>
-              ))}
-          </div>
-        )}
-      </>
-    );
-  };
-
   type RightLinkProps = {
     content: string;
     link: string | undefined;
@@ -165,7 +145,8 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
       </button>
     );
 
-  const editButtonStyle = "px-4 py-1 text-lg font-medium rounded-xl shadow absolute top-3 right-3 z-50";
+  const editButtonStyle =
+    "px-3 sm:px-4 py-1 text-base sm:text-lg font-medium rounded-xl shadow absolute top-3 right-3 z-50";
 
   const getButtonProps = () => {
     if (!isSm) {
@@ -191,7 +172,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
     }
     return {
       onClick: () => setErrorMessage("You must be logged in on a computer to edit a club."),
-      text: "Edit Club",
+      text: "Edit",
       className: `${editButtonStyle} text-gray-500 bg-gray-300 cursor-not-allowed`,
     };
   };
@@ -242,7 +223,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
                   {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}
                 </p>
                 <p className="text-gray-700 mt-2 text-sm sm:text-base">{club.description}</p>
-                {!isSm && <LabelList />}
+                {!isSm && <LabelList club={club} className="whitespace-nowrap flex-wrap sm:text-sm mt-4" />}
               </div>
               <div className="flex flex-col w-full gap-2 flex-1">
                 <Image
@@ -274,7 +255,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
                 </div>
               </div>
             </div>
-            {isSm && <LabelList />}
+            {isSm && <LabelList club={club} className="whitespace-nowrap flex-wrap mt-4" />}
             <Board isLoggedIn={token !== undefined} leaders={club.leaders} />
           </div>
 
