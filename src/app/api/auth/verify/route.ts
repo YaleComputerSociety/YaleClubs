@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
+import { Role } from "@/lib/models/Users";
 
 interface DecodedToken {
   netid: string;
   email: string;
+  role: Role;
   iat: number;
   exp: number;
 }
@@ -15,7 +17,8 @@ function isValidDecodedToken(decoded: any): decoded is DecodedToken {
     typeof decoded.netid === "string" &&
     typeof decoded.email === "string" &&
     typeof decoded.iat === "number" &&
-    typeof decoded.exp === "number"
+    typeof decoded.exp === "number" &&
+    decoded.role in Role
   );
 }
 
@@ -53,6 +56,7 @@ export async function GET(): Promise<NextResponse> {
       user: {
         netid: decoded.netid,
         email: decoded.email,
+        role: decoded.role,
       },
     });
   } catch (error) {
