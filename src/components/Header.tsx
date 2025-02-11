@@ -110,7 +110,7 @@ const Header = () => {
             {links.map(({ href, label }) => (
               <Link key={href} href={href} className="relative">
                 <div
-                  className={`${pathname === href ? "underline underline-offset-4" : ""} hover:text-clubPurple duration-300 transition-colors`}
+                  className={`${pathname === href ? "underline underline-offset-4 text-clubPurple" : ""} hover:text-clubPurple duration-300 transition-colors`}
                 >
                   {label}
                 </div>
