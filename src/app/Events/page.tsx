@@ -178,7 +178,7 @@ export default function EventsPage() {
               </div>
               <div className="flex items-center mb-4 md:mb-0">
                 <Link href="/CreateUpdateEvent">
-                  <button className="flex items-center font-semibold justify-center gap-2 flex-row rounded-full text-xl drop-shadow-md transition hover:shadow-lg hover:bg-violet-500 bg-violet-600 text-white px-5 py-3">
+                  <button className="flex items-center font-semibold justify-center gap-2 flex-row rounded-full text-xl drop-shadow-md transition duration-300 hover:shadow-lg bg-clubPurple hover:bg-clubBlurple text-white px-5 py-3">
                     <FaPlus /> Create Event
                   </button>
                 </Link>
