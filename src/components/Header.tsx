@@ -18,7 +18,7 @@ const Header = () => {
   ];
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 1000px)");
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
     const updateIsMobile = () => setIsMobile(mediaQuery.matches);
 
     // Set the initial value
@@ -57,11 +57,7 @@ const Header = () => {
     "px-6 py-2 text-white bg-clubPurple rounded-full shadow-md hover:bg-clubBlurple focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap";
 
   return (
-    <div
-      // style={{ marginTop: `${bannerHeight}px` }}
-      className="w-full flex flex-col fixed z-50 transition-[margin-top] duration-1000"
-    >
-      {/* <Banner onHeightChange={(height) => setBannerHeight(height)} /> */}
+    <div className="w-full flex flex-col fixed z-50 transition-[margin-top] duration-1000">
       <div className="flex flex-row w-full justify-between p-[22px] md:px-20 bg-background">
         <Link href="/" className="flex flex-row items-center">
           <Image src="/assets/logo.svg" alt="Logo" width={35} height={35} unoptimized />
@@ -74,8 +70,8 @@ const Header = () => {
               ☰
             </button>
             {isMenuOpen && (
-              <div className="absolute right-0 top-full bg-white shadow-lg rounded-md p-10">
-                <ul className="flex flex-col items-start gap-4">
+              <div className="absolute right-0 top-full bg-white shadow-lg rounded-md p-4 mt-2">
+                <ul className="flex flex-col items-center gap-4 font-semibold text-lg">
                   <li>
                     <Link href="/" onClick={() => setIsMenuOpen(false)}>
                       Clubs
