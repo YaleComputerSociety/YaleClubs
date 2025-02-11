@@ -12,30 +12,6 @@ interface CatalogProps {
   setSelectedClub: React.Dispatch<React.SetStateAction<IClub | null>>;
 }
 
-const SkeletonClubCard = () => (
-  <div className="relative w-full max-w-2xl rounded-xl shadow-md animate-pulse flex flex-col justify-between border border-gray-300/30">
-    <div className="flex flex-row gap-4 px-3 py-2 md:px-4 md:py-3">
-      <div className="flex-1 min-w-0">
-        <div className="h-5 bg-gray-300/40 rounded w-3/5 mb-2"></div>
-        <div className="h-4 bg-gray-300/30 rounded w-1/2 mb-2"></div>
-        <div className="space-y-2">
-          <div className="h-4 bg-gray-300/30 rounded w-full"></div>
-          <div className="h-4 bg-gray-300/30 rounded w-4/5"></div>
-          <div className="h-4 bg-gray-300/30 rounded w-3/5"></div>
-        </div>
-      </div>
-      <div className="flex flex-col items-center">
-        <div className="w-[80px] h-[80px] bg-gray-300/40 rounded-xl mb-2"></div>
-        <div className="w-[80.1px] h-6 bg-gray-300/40 rounded"></div>
-        <div className="h-4 bg-gray-300/30 rounded w-[50px] mt-2"></div>
-      </div>
-    </div>
-    <div className="w-full py-2 px-3 md:px-4 bg-gray-200/30 rounded-b-xl">
-      <div className="h-4 bg-gray-300/50 rounded w-3/5 mx-auto"></div>
-    </div>
-  </div>
-);
-
 const Catalog = ({
   clubs,
   isLoading,
@@ -46,10 +22,10 @@ const Catalog = ({
 }: CatalogProps) => {
   const [visibleClubs, setVisibleClubs] = useState(50);
   const firstRef = useRef(true);
+  const initialFollowedClubsRef = useRef<string[]>([]);
+  const hasLoadedDataRef = useRef(false);
 
   const handleCloseModal = () => setSelectedClub(null);
-
-  const initialFollowedClubsRef = useRef<string[]>([]);
 
   useEffect(() => {
     if (followedClubs.length > 0 && firstRef.current) {
@@ -57,6 +33,12 @@ const Catalog = ({
       firstRef.current = false;
     }
   }, [followedClubs]);
+
+  useEffect(() => {
+    if (!isLoading && clubs.length > 0) {
+      hasLoadedDataRef.current = true;
+    }
+  }, [isLoading, clubs.length]);
 
   const initialFollowedClubs = initialFollowedClubsRef.current;
 
@@ -84,12 +66,22 @@ const Catalog = ({
     };
   }, [clubs.length]);
 
-  if (isLoading || clubs.length === 0) {
+  const renderSkeletons = () => (
+    <div className="grid gap-5 md:gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center py-5">
+      {[...Array(6)].map((_, i) => (
+        <SkeletonClubCard key={i} />
+      ))}
+    </div>
+  );
+
+  if (isLoading || !hasLoadedDataRef.current) {
+    return renderSkeletons();
+  }
+
+  if (clubs.length === 0) {
     return (
-      <div className="grid gap-5 md:gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center py-5">
-        {[...Array(6)].map((_, i) => (
-          <SkeletonClubCard key={i} />
-        ))}
+      <div className="flex justify-center items-center py-10">
+        <p className="text-gray-500 text-lg">No results found.</p>
       </div>
     );
   }
@@ -118,5 +110,29 @@ const Catalog = ({
     </div>
   );
 };
+
+const SkeletonClubCard = () => (
+  <div className="relative w-full max-w-2xl rounded-xl shadow-md animate-pulse flex flex-col justify-between border border-gray-300/30">
+    <div className="flex flex-row gap-4 px-3 py-2 md:px-4 md:py-3">
+      <div className="flex-1 min-w-0">
+        <div className="h-5 bg-gray-300/40 rounded w-3/5 mb-2"></div>
+        <div className="h-4 bg-gray-300/30 rounded w-1/2 mb-2"></div>
+        <div className="space-y-2">
+          <div className="h-4 bg-gray-300/30 rounded w-full"></div>
+          <div className="h-4 bg-gray-300/30 rounded w-4/5"></div>
+          <div className="h-4 bg-gray-300/30 rounded w-3/5"></div>
+        </div>
+      </div>
+      <div className="flex flex-col items-center">
+        <div className="w-[80px] h-[80px] bg-gray-300/40 rounded-xl mb-2"></div>
+        <div className="w-[80.1px] h-6 bg-gray-300/40 rounded"></div>
+        <div className="h-4 bg-gray-300/30 rounded w-[50px] mt-2"></div>
+      </div>
+    </div>
+    <div className="w-full py-2 px-3 md:px-4 bg-gray-200/30 rounded-b-xl">
+      <div className="h-4 bg-gray-300/50 rounded w-3/5 mx-auto"></div>
+    </div>
+  </div>
+);
 
 export default Catalog;
