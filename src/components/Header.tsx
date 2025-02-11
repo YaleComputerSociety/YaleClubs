@@ -47,7 +47,7 @@ const Header = () => {
   };
 
   const authButton =
-    "px-6 py-2 text-sm font-medium text-white bg-clubPurple rounded-full shadow-md hover:bg-clubBlurple focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap";
+    "px-6 py-2 text-white bg-clubPurple rounded-full shadow-md hover:bg-clubBlurple focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap";
 
   return (
     <div
@@ -85,14 +85,6 @@ const Header = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      href="https://docs.google.com/forms/d/e/1FAIpQLSdBM9ccbynx2eQKVdCkpPDW-sIJArTWqUlMGGKuXz175iq0Og/viewform?usp=sf_link"
-                      target="_blank"
-                    >
-                      Feedback
-                    </Link>
-                  </li>
-                  <li>
                     {isLoggedIn ? (
                       <button
                         onClick={() => {
@@ -114,21 +106,15 @@ const Header = () => {
             )}
           </div>
         ) : (
-          <div className="hidden sm:flex flex-row items-center gap-x-10">
+          <div className="hidden sm:flex flex-row items-center gap-x-12 text-xl font-semibold">
             <Link href="/">
-              <div className="text-md">Clubs</div>
+              <div>Clubs</div>
             </Link>
             <Link href="/Events">
-              <div className="text-md">Events</div>
+              <div>Events</div>
             </Link>
             <Link href="/about">
-              <div className="text-md">About</div>
-            </Link>
-            <Link
-              href="https://docs.google.com/forms/d/e/1FAIpQLSdBM9ccbynx2eQKVdCkpPDW-sIJArTWqUlMGGKuXz175iq0Og/viewform?usp=sf_link"
-              target="_blank"
-            >
-              Feedback
+              <div>About</div>
             </Link>
             {isLoggedIn ? (
               <button onClick={handleLogout} className={authButton}>
