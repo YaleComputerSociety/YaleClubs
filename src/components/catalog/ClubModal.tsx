@@ -6,9 +6,8 @@ import { getAdjustedNumMembers, getAdjustedWebsite, getInstagramLink, getModifie
 import { useMediaQuery } from "react-responsive";
 import ClubModalRightLabel from "./ClubModalRightLabel";
 import Link from "next/link";
-import { jwtDecode } from "jwt-decode";
-import Cookies from "js-cookie";
 import FollowButton from "./FollowButton";
+import { useAuth } from "@/contexts/AuthContext";
 
 type ClubModalProps = {
   club: IClub;
@@ -25,8 +24,8 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
   const [canEdit, setCanEdit] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const token = Cookies.get("token");
   const isFollowing = followedClubs.includes(club._id);
+  const { isLoggedIn, user } = useAuth();
 
   const adjustedFollowers = club.followers
     ? String(club.followers + (isFollowing === initialFollowing ? 0 : isFollowing ? 1 : -1))
@@ -62,27 +61,15 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
   }, []);
 
   useEffect(() => {
-    if (token) {
+    if (isLoggedIn) {
       try {
-        const decoded = jwtDecode<{ email: string }>(token);
-        const userEmail = decoded.email;
-
-        const admin_emails = [
-          "lucas.huang@yale.edu",
-          "addison.goolsbee@yale.edu",
-          "francis.fan@yale.edu",
-          "grady.yu@yale.edu",
-          "lauren.lee.ll2243@yale.edu",
-          "koray.akduman@yale.edu",
-        ];
-
-        const isBoardMember = club.leaders.some((leader) => leader.email === userEmail);
-        setCanEdit(isBoardMember || admin_emails.includes(userEmail));
+        const isBoardMember = club.leaders.some((leader) => leader.email === user?.email);
+        setCanEdit(isBoardMember);
       } catch (err) {
-        console.error("Failed to decode token:", err);
+        console.error("You are not logged in", err);
       }
     }
-  }, [club.leaders, token]);
+  }, [club.leaders, isLoggedIn]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -117,7 +104,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
         )}
         {!isSm ? (
           <>
-            {token ? (
+            {isLoggedIn ? (
               canEdit ? (
                 <Link href={`/update?clubId=${club._id}`}>
                   <button className="absolute top-4 right-4 px-4 py-2 text-lg font-medium text-white bg-indigo-600 rounded shadow hover:bg-indigo-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
@@ -250,7 +237,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
               </div>
             </div>
           </div>
-          <Board isLoggedIn={token !== undefined} leaders={club.leaders} />
+          <Board isLoggedIn={isLoggedIn} leaders={club.leaders} />
         </div>
       </div>
     </div>

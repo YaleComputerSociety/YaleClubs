@@ -3,12 +3,11 @@ import { Tag } from "@/lib/models/Event";
 import { ClubLeader } from "@/lib/models/Club";
 import Image from "next/image";
 import Link from "next/link";
-import { jwtDecode } from "jwt-decode";
-import Cookies from "js-cookie";
 import { IEvent } from "@/lib/models/Event";
 import { TagBlock } from "./TagBlock";
 import { generateGoogleCalendarLink } from "@/lib/utils";
 import { IClub } from "@/lib/models/Club";
+import { useAuth } from "@/contexts/AuthContext";
 
 type EventModalProps = {
   event: IEvent;
@@ -20,7 +19,7 @@ type EventModalProps = {
 const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: EventModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [canEdit, setCanEdit] = useState(false);
-  const token = Cookies.get("token");
+  const { isLoggedIn, user } = useAuth();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -48,24 +47,17 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
   }, []);
 
   useEffect(() => {
-    if (token) {
+    if (isLoggedIn && user) {
       try {
-        let userEmail: string = "";
-        if (token) {
-          const decoded = jwtDecode<{ email: string; netid: string }>(token);
-          if (decoded.netid == "efm28") {
-            userEmail = "ethan.mathieu@yale.edu";
-          } else {
-            userEmail = decoded.email;
-          }
-        }
+        const userEmail: string = user.email;
+
         const isBoardMember = associatedClubLeaders.some((leader) => leader.email === userEmail);
         setCanEdit(isBoardMember);
       } catch (err) {
         console.error("Failed to decode token:", err);
       }
     }
-  }, [associatedClubLeaders, token]);
+  }, [associatedClubLeaders, user, isLoggedIn]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-10">
@@ -77,13 +69,13 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
           >
             &times;
           </button>
-          {canEdit && token ? (
+          {canEdit && isLoggedIn ? (
             <Link href={`/CreateUpdateEvent?eventId=${event._id}`}>
               <button className="px-4 py-2 text-lg font-medium text-white bg-indigo-600 rounded shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                 Edit Event
               </button>
             </Link>
-          ) : token ? (
+          ) : isLoggedIn ? (
             <button
               className="px-4 py-2 text-lg font-medium text-white bg-gray-400 rounded shadow cursor-not-allowed"
               disabled

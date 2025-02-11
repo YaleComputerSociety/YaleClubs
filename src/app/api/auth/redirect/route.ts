@@ -83,7 +83,10 @@ export async function GET(request: Request): Promise<NextResponse> {
         secure: true,
         path: "/",
         maxAge: 60 * 60 * 24 * 7,
+        httpOnly: true,
+        sameSite: "strict",
       });
+
       return response;
     } catch (e) {
       return NextResponse.json({ error: "Authentication failed: " + e }, { status: 401 });

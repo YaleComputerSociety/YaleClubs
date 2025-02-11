@@ -4,6 +4,9 @@ import { NextResponse } from "next/server";
 import { Tag, IEventInput } from "../../../lib/models/Event";
 import Club, { ClubLeader, IClub } from "@/lib/models/Club";
 import UpdateLog from "../../../lib/models/Updates";
+import { cookies } from "next/headers";
+import { console } from "inspector";
+import jwt from "jsonwebtoken";
 
 const generateChangeLog = (
   original: {
@@ -54,7 +57,16 @@ const generateChangeLog = (
 
 export async function GET(): Promise<NextResponse> {
   try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token");
+    console.log(token);
+
     await connectToDatabase();
+
+    if (!token) {
+      console.log("no auth");
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
 
     const events = await Event.find().sort({ start: 1 });
 
@@ -69,12 +81,17 @@ export async function POST(req: Request): Promise<NextResponse> {
   try {
     await connectToDatabase();
 
-    // Get user email from the header set by middleware
-    const userEmail = req.headers.get("X-Email");
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token");
 
-    if (!userEmail) {
+    if (!token?.value || !process.env.JWT_SECRET) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
+
+    const verified = jwt.verify(token.value, process.env.JWT_SECRET) as unknown as {
+      netid: string;
+      email: string;
+    };
 
     let body: IEventInput;
     try {
@@ -103,7 +120,7 @@ export async function POST(req: Request): Promise<NextResponse> {
         return NextResponse.json({ error: `Club ${clubName} not found` }, { status: 404 });
       }
 
-      const isLeader = club.leaders.some((leader: ClubLeader) => leader.email === userEmail);
+      const isLeader = club.leaders.some((leader: ClubLeader) => leader.email === verified.email);
       if (isLeader) {
         isLeaderOfAnyClub = true;
         break;
@@ -117,15 +134,15 @@ export async function POST(req: Request): Promise<NextResponse> {
       );
     }
 
-    body.createdBy = userEmail;
+    body.createdBy = verified.email;
 
-    const event = new Event({ ...body, createdBy: userEmail });
+    const event = new Event({ ...body, createdBy: verified.email });
     const savedEvent = await event.save();
 
     // Log the creation in UpdateLog
     await UpdateLog.create({
       documentId: savedEvent._id,
-      updatedBy: userEmail,
+      updatedBy: verified.email,
       changes: "Event created",
     });
 
@@ -139,11 +156,23 @@ export async function POST(req: Request): Promise<NextResponse> {
 export async function PUT(req: Request): Promise<NextResponse> {
   try {
     await connectToDatabase();
-    const userEmail = req.headers.get("X-Email");
 
-    if (!userEmail) {
+    const JWT_SECRET = process.env.JWT_SECRET;
+    if (!JWT_SECRET) {
+      return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
+    }
+
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token");
+    if (!token?.value) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
+
+    interface JWTPayload {
+      netid: string;
+      email: string;
+    }
+    const verified = jwt.verify(token.value, JWT_SECRET) as unknown as JWTPayload;
 
     let body: IEventInput;
     try {
@@ -160,7 +189,7 @@ export async function PUT(req: Request): Promise<NextResponse> {
         return NextResponse.json({ error: `Club ${clubName} not found` }, { status: 404 });
       }
 
-      const isLeader = club.leaders.some((leader: ClubLeader) => leader.email === userEmail);
+      const isLeader = club.leaders.some((leader: ClubLeader) => leader.email === verified.email);
       if (isLeader) {
         isLeaderOfAnyClub = true;
         break;
@@ -176,8 +205,6 @@ export async function PUT(req: Request): Promise<NextResponse> {
 
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
-
-    console.log(id);
 
     if (!id) {
       return NextResponse.json({ error: "Event ID is required." }, { status: 400 });
@@ -247,15 +274,13 @@ export async function PUT(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Event not found after update." }, { status: 404 });
     }
 
-    const updateEmail = req.headers.get("X-Email");
-
     if (changeLog) {
       console.log(changeLog);
 
       // Save the change log
       await UpdateLog.create({
         documentId: id,
-        updatedBy: updateEmail,
+        updatedBy: verified.email,
         changes: changeLog,
       });
     }
@@ -268,35 +293,35 @@ export async function PUT(req: Request): Promise<NextResponse> {
   }
 }
 
-export async function DELETE(req: Request): Promise<NextResponse> {
-  try {
-    await connectToDatabase();
+// export async function DELETE(req: Request): Promise<NextResponse> {
+//   try {
+//     await connectToDatabase();
 
-    const netid = req.headers.get("X-NetID");
-    // const userEmail = req.headers.get("X-Email");
-    if (netid !== "admin_a1b2c3e") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+//     const netid = req.headers.get("X-NetID");
+//     // const userEmail = req.headers.get("X-Email");
+//     if (netid !== "admin_a1b2c3e") {
+//       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+//     }
 
-    // Get the event ID from the query parameters
-    const url = new URL(req.url);
-    const id = url.searchParams.get("id");
+//     // Get the event ID from the query parameters
+//     const url = new URL(req.url);
+//     const id = url.searchParams.get("id");
 
-    if (!id) {
-      return NextResponse.json({ error: "Event ID is required." }, { status: 400 });
-    }
+//     if (!id) {
+//       return NextResponse.json({ error: "Event ID is required." }, { status: 400 });
+//     }
 
-    // Attempt to delete the event
-    const result = await Event.findByIdAndDelete(id);
+//     // Attempt to delete the event
+//     const result = await Event.findByIdAndDelete(id);
 
-    if (!result) {
-      return NextResponse.json({ error: "Event not found." }, { status: 404 });
-    }
+//     if (!result) {
+//       return NextResponse.json({ error: "Event not found." }, { status: 404 });
+//     }
 
-    // Respond with a success message
-    return NextResponse.json({ message: "Event deleted successfully." }, { status: 200 });
-  } catch (error) {
-    console.error("Error deleting event:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-  }
-}
+//     // Respond with a success message
+//     return NextResponse.json({ message: "Event deleted successfully." }, { status: 200 });
+//   } catch (error) {
+//     console.error("Error deleting event:", error);
+//     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+//   }
+// }
