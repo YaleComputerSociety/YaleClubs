@@ -230,7 +230,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
                   alt="Club Logo"
                   width={90}
                   height={90}
-                  className={`${club.logo ? "rounded-xl" : ""} flex-shrink-0`}
+                  className={`rounded-xl flex-shrink-0 object-cover w-[90px] h-[90px]`}
                 />
                 <FollowButton
                   isFollowing={isFollowing}

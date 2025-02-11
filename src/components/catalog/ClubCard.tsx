@@ -140,7 +140,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
               alt="Club Logo"
               width={100}
               height={100}
-              className="rounded-xl flex-shrink-0 w-[80px] h-[80px]"
+              className="rounded-xl flex-shrink-0 object-cover w-[80px] h-[80px]"
             />
             <div className="flex flex-col items-center">
               <FollowButton
