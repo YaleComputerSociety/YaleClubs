@@ -68,7 +68,7 @@ const Catalog = ({
 
   const renderSkeletons = () => (
     <div className="grid gap-5 md:gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center py-5">
-      {[...Array(6)].map((_, i) => (
+      {[...Array(12)].map((_, i) => (
         <SkeletonClubCard key={i} />
       ))}
     </div>
@@ -88,25 +88,33 @@ const Catalog = ({
 
   return (
     <div className="mt-1 md:mt-4">
-      <div>
-        <div className="grid gap-5 md:gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center">
-          {clubs.slice(0, visibleClubs).map(renderClubItem)}
-          {selectedClub && (
-            <ClubModal
-              club={selectedClub}
-              onClose={handleCloseModal}
-              setFollowedClubs={setFollowedClubs}
-              followedClubs={followedClubs}
-              initialFollowing={initialFollowedClubs.includes(selectedClub._id)}
-            />
+      {isLoading ? (
+        <div className="flex justify-center items-center mt-10">
+          <div className="w-8 h-8 border-4 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : clubs.length === 0 ? (
+        <div className="text-center text-gray-500 mt-10">No results found.</div>
+      ) : (
+        <div>
+          <div className="grid gap-5 md:gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center">
+            {clubs.slice(0, visibleClubs).map(renderClubItem)}
+            {selectedClub && (
+              <ClubModal
+                club={selectedClub}
+                onClose={handleCloseModal}
+                setFollowedClubs={setFollowedClubs}
+                followedClubs={followedClubs}
+                initialFollowing={initialFollowedClubs.includes(selectedClub._id)}
+              />
+            )}
+          </div>
+          {visibleClubs < clubs.length && (
+            <div className="flex justify-center items-center mt-10">
+              <div className="w-8 h-8 border-4 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
           )}
         </div>
-        {visibleClubs < clubs.length && (
-          <div className="flex justify-center items-center mt-10">
-            <div className="w-8 h-8 border-4 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 };
