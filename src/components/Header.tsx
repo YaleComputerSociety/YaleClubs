@@ -3,12 +3,19 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  // const [bannerHeight, setBannerHeight] = useState(0);
+  const pathname = usePathname();
+
+  const links = [
+    { href: "/", label: "Clubs" },
+    { href: "/Events", label: "Events" },
+    { href: "/about", label: "About" },
+  ];
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 1000px)");
@@ -107,15 +114,15 @@ const Header = () => {
           </div>
         ) : (
           <div className="hidden sm:flex flex-row items-center gap-x-12 text-xl font-semibold">
-            <Link href="/">
-              <div>Clubs</div>
-            </Link>
-            <Link href="/Events">
-              <div>Events</div>
-            </Link>
-            <Link href="/about">
-              <div>About</div>
-            </Link>
+            {links.map(({ href, label }) => (
+              <Link key={href} href={href} className="relative">
+                <div
+                  className={`${pathname === href ? "underline underline-offset-4" : ""} hover:text-clubPurple duration-300 transition-colors`}
+                >
+                  {label}
+                </div>
+              </Link>
+            ))}
             {isLoggedIn ? (
               <button onClick={handleLogout} className={authButton}>
                 Sign Out
