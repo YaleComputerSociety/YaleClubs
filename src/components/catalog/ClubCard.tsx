@@ -126,7 +126,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
           <div className="flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="md:text-xl font-semibold line-clamp-1 md:line-clamp-2 overflow-hidden break-all">
+                <div className="md:text-xl font-semibold line-clamp-1 md:line-clamp-2 overflow-hidden break-all sm:break-normal">
                   {club.name}
                 </div>
               </div>
