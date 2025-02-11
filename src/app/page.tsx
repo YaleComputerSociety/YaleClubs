@@ -11,6 +11,7 @@ import { IClub } from "@/lib/models/Club";
 import SearchControl from "@/components/search/SearchControl";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import Link from "next/link";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -72,17 +73,17 @@ export default function Home() {
           <Header />
           <div className="flex flex-col w-full px-5 md:px-20">
             <div className="mt-20 md:mt-24"></div>
-            <div className="flex flex-col md:flex-row items-start w-full mt-4 space-y-3 md:space-y-0 md:space-x-6 mb-4">
+            <div className="flex flex-col md:flex-row justify-between items-start w-full mt-4 space-y-3 md:space-y-0 md:space-x-12 mb-4">
               <div className="flex flex-col">
                 <h1 className="text-3xl font-bold text-black">Browse Clubs</h1>
                 <h2 className="text-xl">Finding Clubs has Never Been Easier.</h2>
               </div>
-              <a
+              <Link
                 href="/Events"
-                className="relative w-full md:w-auto px-4 py-4 text-lg font-bold text-white bg-purple-600 rounded-xl shadow-lg transition duration-300 hover:scale-105 hover:bg-purple-700 border-2 border-transparent flex justify-center items-center"
+                className="relative w-full md:w-auto px-4 py-4  text-lg font-bold text-white bg-gradient-to-r from-clubPurple to-clubTaro transition duration-300 hover:scale-105"
               >
-                ✨ View Events ✨
-              </a>
+                Check out our new events page!
+              </Link>
             </div>
           </div>
           <SearchControl
