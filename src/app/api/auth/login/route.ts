@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+// import express from "express";
+// import passport from "passport";
+// import { Strategy as CasStrategy } from "passport";
 
 export async function GET(): Promise<NextResponse> {
   const BASE_URL = process.env.BASE_URL as string;

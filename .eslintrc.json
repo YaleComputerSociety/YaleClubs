@@ -11,6 +11,8 @@
   "rules": {
     "semi": ["error", "always"],
     "prettier/prettier": "warn",
-    "@typescript-eslint/no-explicit-any": "off"
+    "@typescript-eslint/no-explicit-any": "off",
+    // don't get up and arms about this addison, just allows me to use the spread operator
+    "@typescript-eslint/no-unused-vars": ["error", { "ignoreRestSiblings": true }]
   }
 }

@@ -2,16 +2,12 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-
-import AuthWrapper from "../components/AuthWrapper";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Catalog from "../components/catalog/Catalog";
 import { IClub } from "@/lib/models/Club";
 import SearchControl from "@/components/search/SearchControl";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
-import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -20,17 +16,8 @@ export default function Home() {
   const [currentClubs, setCurrentClubs] = useState<IClub[]>([]);
   const [followedClubs, setFollowedClubs] = useState<string[]>([]);
   const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
-  const token = Cookies.get("token");
-  let netid = "";
-
-  if (token) {
-    try {
-      netid = jwtDecode<{ netid: string }>(token).netid;
-    } catch (error) {
-      console.error("Failed to decode token:", error);
-    }
-  }
-
+  const { user } = useAuth();
+  const netid = user?.netid;
   useEffect(() => {
     const fetchApiMessage = async () => {
       try {
@@ -67,45 +54,33 @@ export default function Home() {
   }, [netid]);
 
   return (
-    <AuthWrapper>
-      <main className=" flex flex-col min-h-screen">
-        <div className="flex-grow">
-          <Header />
-          <div className="flex flex-col w-full px-5 md:px-20">
-            <div className="mt-20 md:mt-24"></div>
-            <div className="flex flex-col md:flex-row justify-between items-start w-full mt-4 space-y-3 md:space-y-0 md:space-x-12 mb-4">
-              <div className="flex flex-col">
-                <h1 className="text-3xl font-bold text-black">Browse Clubs</h1>
-                <h2 className="text-xl">Finding Clubs has Never Been Easier.</h2>
-              </div>
-              <Link
-                href="/Events"
-                className="relative w-full md:w-auto px-4 py-4  text-lg font-bold text-white bg-gradient-to-r from-clubPurple to-clubTaro transition duration-300 hover:scale-105"
-              >
-                Check out our new events page!
-              </Link>
-            </div>
-          </div>
-          <SearchControl
-            clubs={clubs}
-            setCurrentClubs={setCurrentClubs}
-            setIsLoading={setIsLoading}
+    <main className=" flex flex-col min-h-screen">
+      <div className="flex-grow">
+        <Header />
+        <div className="flex flex-col w-full px-5 md:px-20">
+          <div className="mt-20 md:mt-24"></div>
+          <h1 className="text-3xl font-bold text-black">Browse Clubs</h1>
+          <h2 className="text-xl mb-4 md:mb-8">Finding Clubs has Never Been Easier.</h2>
+        </div>
+        <SearchControl
+          clubs={clubs}
+          setCurrentClubs={setCurrentClubs}
+          setIsLoading={setIsLoading}
+          followedClubs={followedClubs}
+          setSelectedClub={setSelectedClub}
+        />
+        <div className="flex flex-col w-full px-5 md:px-20">
+          <Catalog
+            clubs={currentClubs}
+            isLoading={isLoading}
             followedClubs={followedClubs}
+            setFollowedClubs={setFollowedClubs}
+            selectedClub={selectedClub}
             setSelectedClub={setSelectedClub}
           />
-          <div className="flex flex-col w-full px-5 md:px-20">
-            <Catalog
-              clubs={currentClubs}
-              isLoading={isLoading}
-              followedClubs={followedClubs}
-              setFollowedClubs={setFollowedClubs}
-              selectedClub={selectedClub}
-              setSelectedClub={setSelectedClub}
-            />
-          </div>
         </div>
-        <Footer />
-      </main>
-    </AuthWrapper>
+      </div>
+      <Footer />
+    </main>
   );
 }

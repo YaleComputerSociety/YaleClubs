@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
+import { cookies } from "next/headers";
 
 async function decodeJWTToken(token: string): Promise<any> {
   const JWT_SECRET = process.env.JWT_SECRET as string;
@@ -17,32 +17,61 @@ async function decodeJWTToken(token: string): Promise<any> {
   }
 }
 
+const SECURE_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "strict" as const,
+  path: "/",
+  maxAge: 3600,
+};
+
 export async function middleware(request: NextRequest) {
-  if (request.method === "GET") {
-    return NextResponse.next();
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token");
+  let decodedToken = null;
+
+  if (token) {
+    decodedToken = await decodeJWTToken(token.value);
+    if (!decodedToken) {
+      const response = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      response.cookies.delete("token");
+      console.log("bad token");
+      return response;
+    }
   }
 
-  const authHeader = request.headers.get("Authorization");
-  if (!authHeader) {
-    return NextResponse.json({ error: "Authorization required" }, { status: 401 });
-  }
-  if (!authHeader.startsWith("Bearer ")) {
-    return NextResponse.json({ error: "Invalid Authorization format" }, { status: 401 });
+  // For /api/clubs GET requests, we need to allow unauthenticated access
+  if (request.nextUrl.pathname === "/api/clubs" && request.method === "GET") {
+    const response = NextResponse.next();
+
+    if (decodedToken) {
+      response.cookies.set("auth_netid", decodedToken.netid, SECURE_COOKIE_OPTIONS);
+      response.cookies.set("auth_email", decodedToken.email, SECURE_COOKIE_OPTIONS);
+      response.cookies.set("auth_status", "true", SECURE_COOKIE_OPTIONS);
+    } else {
+      response.cookies.delete("auth_netid");
+      response.cookies.delete("auth_email");
+      response.cookies.delete("auth_status");
+    }
+
+    return response;
   }
 
-  const token = authHeader.split(" ")[1];
-  const decoded = await decodeJWTToken(token);
-  if (!decoded) {
-    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
-  }
-
-  if (decoded.netid == "efm28") {
-    decoded.email = "ethan.mathieu@yale.edu";
+  // For all other routes, require valid token
+  if (!decodedToken) {
+    const response = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // Clear all auth cookies
+    response.cookies.delete("auth_netid");
+    response.cookies.delete("auth_email");
+    response.cookies.delete("auth_status");
+    return response;
   }
 
   const response = NextResponse.next();
-  response.headers.set("X-NetID", decoded.netid);
-  response.headers.set("X-Email", decoded.email);
+
+  response.cookies.set("auth_netid", decodedToken.netid, SECURE_COOKIE_OPTIONS);
+  response.cookies.set("auth_email", decodedToken.email, SECURE_COOKIE_OPTIONS);
+
   return response;
 }
 

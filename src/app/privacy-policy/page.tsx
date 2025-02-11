@@ -14,8 +14,8 @@ export default function PrivacyPage() {
           <section>
             <h3 className="text-md sm:text-lg underline">Introduction</h3>
             <p className="text-sm sm:text-md">
-              Yale Clubs is an app designed for the Yale community to manage Intramural Sports competitions and
-              schedules. To provide this service, we collect and use limited data as described below.
+              Yale Clubs is an app designed for the Yale community to display information about upcoming campus events.
+              To provide this service, we collect and use limited data as described below.
             </p>
           </section>
           <br></br>

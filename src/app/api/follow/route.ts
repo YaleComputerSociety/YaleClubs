@@ -1,27 +1,43 @@
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
-import { jwtDecode } from "jwt-decode";
 import connectToDatabase from "../../../lib/mongodb";
 import User from "../../../lib/models/Users";
 import Club from "../../../lib/models/Club";
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
 
-const getNetId = (req: Request): string | null => {
-  const authHeader = req.headers.get("authorization");
-  if (!authHeader || !authHeader.startsWith("Bearer ")) throw new Error("Authorization token missing or invalid");
+const getNetId = async (): Promise<string> => {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token");
 
-  // Decode the token
-  const token = authHeader.split(" ")[1];
-  const decoded = jwtDecode<{ netid: string }>(token);
-  const netid = decoded.netid; // Assuming the payload contains the netid field
-  if (!netid) throw new Error("Token is missing required 'netid' field");
-  return netid;
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not defined");
+    }
+    const verified = jwt.verify(token.value, process.env.JWT_SECRET) as unknown as {
+      netid: string;
+      email: string;
+    };
+
+    return verified.netid;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Authentication failed: ${error.message}`);
+    } else {
+      throw new Error("Authentication failed: Unknown error");
+    }
+  }
 };
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const netid = getNetId(req);
+    const netid = getNetId();
 
     const { clubId, isFollowing: shouldFollow } = body;
     if (!clubId || shouldFollow === undefined) {

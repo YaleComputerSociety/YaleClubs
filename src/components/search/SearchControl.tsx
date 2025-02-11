@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import FollowFilter from "./FollowFilter";
-import Cookies from "js-cookie";
+
 import SearchBar from "./SearchBar";
 import FilterButton from "../Filter";
 import { Affiliation, Category, IClub, School } from "@/lib/models/Club";
 import Trie from "./Trie";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SearchControlProps {
   clubs: IClub[];
@@ -29,19 +30,7 @@ const SearchControl = ({
   const [trie, setTrie] = useState<Trie | null>(null);
   const [showFollowedOnly, setShowFollowedOnly] = useState(false);
   const [searchKeyToClubName, setSearchKeyToClubName] = useState<Record<string, string[]>>({});
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const token = Cookies.get("token");
-    if (token) {
-      try {
-        setIsLoggedIn(true);
-      } catch (err) {
-        console.error("Invalid token:", err);
-        setIsLoggedIn(false);
-      }
-    }
-  }, []);
+  const { isLoggedIn } = useAuth();
 
   // Initialize Trie with club names and aliases along with a mapping for lookups.
   useEffect(() => {

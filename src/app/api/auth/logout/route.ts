@@ -6,6 +6,14 @@ export async function GET(): Promise<NextResponse> {
     throw new Error("Please define the BASE_URL environment variable");
   }
   const response = NextResponse.redirect(`${process.env.BASE_URL}/`);
-  response.cookies.delete("token");
+
+  response.cookies.delete({
+    name: "token",
+    secure: true,
+    path: "/",
+    httpOnly: true,
+    sameSite: "strict",
+  });
+
   return response;
 }

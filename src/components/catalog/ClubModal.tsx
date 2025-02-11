@@ -4,12 +4,11 @@ import Image from "next/image";
 import { getAdjustedNumMembers, getInstagramLink } from "@/lib/utils";
 import { useMediaQuery } from "react-responsive";
 import Link from "next/link";
-import { jwtDecode } from "jwt-decode";
-import Cookies from "js-cookie";
 import FollowButton from "./FollowButton";
 import { FiCopy } from "react-icons/fi";
 import Board from "./Board";
 import { LabelList } from "./LabelList";
+import { useAuth } from "@/contexts/AuthContext";
 
 type ClubModalProps = {
   club: IClub;
@@ -24,8 +23,8 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
   const isSm = useMediaQuery({ maxWidth: 639 });
   const [canEdit, setCanEdit] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const { isLoggedIn, user } = useAuth();
 
-  const token = Cookies.get("token");
   const isFollowing = followedClubs.includes(club._id);
 
   const adjustedFollowers = club.followers
@@ -62,27 +61,15 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
   }, []);
 
   useEffect(() => {
-    if (token) {
+    if (isLoggedIn) {
       try {
-        const decoded = jwtDecode<{ email: string }>(token);
-        const userEmail = decoded.email;
-
-        const admin_emails = [
-          "lucas.huang@yale.edu",
-          "addison.goolsbee@yale.edu",
-          "francis.fan@yale.edu",
-          "grady.yu@yale.edu",
-          "lauren.lee.ll2243@yale.edu",
-          "koray.akduman@yale.edu",
-        ];
-
-        const isBoardMember = club.leaders.some((leader) => leader.email === userEmail);
-        setCanEdit(isBoardMember || admin_emails.includes(userEmail));
+        const isBoardMember = club.leaders.some((leader) => leader.email === user?.email);
+        setCanEdit(isBoardMember);
       } catch (err) {
-        console.error("Failed to decode token:", err);
+        console.error("You are not logged in", err);
       }
     }
-  }, [club.leaders, token]);
+  }, [club.leaders, isLoggedIn]);
 
   type RightLinkProps = {
     content: string;
@@ -149,7 +136,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
 
   const getButtonProps = () => {
     if (!isSm) {
-      if (token) {
+      if (isLoggedIn) {
         if (canEdit) {
           return {
             href: `/update?clubId=${club._id}`,
@@ -255,7 +242,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
               </div>
             </div>
             {isSm && <LabelList club={club} className="whitespace-nowrap flex-wrap mt-4" />}
-            <Board isLoggedIn={token !== undefined} leaders={club.leaders} />
+            <Board isLoggedIn={isLoggedIn} leaders={club.leaders} />
           </div>
 
           {errorMessage && (

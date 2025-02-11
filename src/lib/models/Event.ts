@@ -29,6 +29,7 @@ export interface IEventInput {
   flyer?: string;
   tags?: Tag[];
   createdBy?: string;
+  
 }
 
 export interface IEvent extends Document {

@@ -3,12 +3,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { usePathname } from "next/navigation";
 
 const Header = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const { isLoggedIn, logout } = useAuth();
+
   const pathname = usePathname();
 
   const links = [
@@ -30,11 +32,6 @@ const Header = () => {
     return () => mediaQuery.removeEventListener("change", updateIsMobile);
   }, []);
 
-  useEffect(() => {
-    const token = document.cookie.includes("token=");
-    setIsLoggedIn(token);
-  }, []);
-
   const handleLogout = async () => {
     try {
       const response = await fetch("/api/auth/logout", {
@@ -43,7 +40,6 @@ const Header = () => {
       });
 
       if (response.ok) {
-        setIsLoggedIn(false);
         window.location.reload();
       } else {
         console.error("Logout failed:", response.statusText);
@@ -91,8 +87,9 @@ const Header = () => {
                     {isLoggedIn ? (
                       <button
                         onClick={() => {
-                          handleLogout();
-                          setIsMenuOpen(false);
+                          logout().then(() => {
+                            setIsMenuOpen(false);
+                          });
                         }}
                         className={authButton}
                       >

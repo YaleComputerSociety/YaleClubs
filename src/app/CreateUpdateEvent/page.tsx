@@ -6,12 +6,10 @@ import { dbDateToFrontendDate } from "@/lib/utils";
 import { IEvent, IEventInput, Tag } from "@/lib/models/Event";
 import Header from "@/components/Header";
 import AddFlyerSection from "@/components/events/update/AddFlyerSection";
-import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import Footer from "@/components/Footer";
 import Filter from "@/components/Filter";
-import { getCookie } from "cookies-next";
+import { useAuth } from "@/contexts/AuthContext";
 import { useSearchParams } from "next/navigation";
 import {
   DESCRIPTION_MAX_LENGTH,
@@ -49,6 +47,7 @@ const CreateUpdateEventPage = () => {
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
 
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const { isLoggedIn, user } = useAuth();
 
   // const admin_emails = [
   //   "lucas.huang@yale.edu",
@@ -148,11 +147,9 @@ const CreateUpdateEventPage = () => {
     };
 
     // Get user email first, then fetch data in parallel
-    const token = Cookies.get("token");
-    if (token) {
-      const decoded = jwtDecode<{ email: string; netid: string }>(token);
-      const email = decoded.netid === "efm28" ? "ethan.mathieu@yale.edu" : decoded.email;
-      setUserEmail(email);
+
+    if (isLoggedIn) {
+      setUserEmail(user?.email ?? null);
 
       Promise.all([fetchEventData(), fetchClubData()])
         .catch((error) => {
@@ -176,7 +173,11 @@ const CreateUpdateEventPage = () => {
   useEffect(() => {
     const fetchEventsCount = async () => {
       try {
-        const response = await axios.get<IEvent[]>("/api/events");
+        const response = await axios.get<IEvent[]>("/api/events", {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
         const allEvents = response.data;
         const oneMonthAgo = new Date(formData.start);
         oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
@@ -238,14 +239,12 @@ const CreateUpdateEventPage = () => {
       }
     });
 
-    const token = getCookie("token");
-    if ((token && numberOfEventsLeft > 0) || (token && updatingAlreadyMadeEvent)) {
+    if ((isLoggedIn && numberOfEventsLeft > 0) || (isLoggedIn && updatingAlreadyMadeEvent)) {
       const url = updatingAlreadyMadeEvent ? `/api/events?id=${searchParams.get("eventId")}` : `/api/events`;
       fetch(url, {
         method: updatingAlreadyMadeEvent ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
         },
         body: JSON.stringify(formData),
       })
