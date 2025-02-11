@@ -23,7 +23,7 @@ const Catalog = ({
   const [visibleClubs, setVisibleClubs] = useState(50);
   const firstRef = useRef(true);
   const initialFollowedClubsRef = useRef<string[]>([]);
-  const hasLoadedDataRef = useRef(false);
+  const initialLoadCompletedRef = useRef(false);
 
   const handleCloseModal = () => setSelectedClub(null);
 
@@ -35,10 +35,10 @@ const Catalog = ({
   }, [followedClubs]);
 
   useEffect(() => {
-    if (!isLoading && clubs.length > 0) {
-      hasLoadedDataRef.current = true;
+    if (!isLoading && !initialLoadCompletedRef.current) {
+      initialLoadCompletedRef.current = true;
     }
-  }, [isLoading, clubs.length]);
+  }, [isLoading]);
 
   const initialFollowedClubs = initialFollowedClubsRef.current;
 
@@ -74,8 +74,16 @@ const Catalog = ({
     </div>
   );
 
-  if (isLoading || !hasLoadedDataRef.current) {
+  if (!initialLoadCompletedRef.current) {
     return renderSkeletons();
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center mt-10">
+        <div className="w-8 h-8 border-4 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
   }
 
   if (clubs.length === 0) {
