@@ -67,6 +67,21 @@ export default function EventsPage() {
   const pathname = usePathname();
   const skeletonCount = useSkeletonCount();
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    const updateIsMobile = () => setIsMobile(mediaQuery.matches);
+
+    // Set the initial value
+    updateIsMobile();
+
+    // Add event listener for changes
+    mediaQuery.addEventListener("change", updateIsMobile);
+
+    return () => mediaQuery.removeEventListener("change", updateIsMobile);
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -103,7 +118,7 @@ export default function EventsPage() {
         setFeaturedEvents(getRandomThree(upcoming));
       } catch (error) {
         console.error("Error fetching data:", error);
-        setError("Failed to load events. Please try again later.");
+        setError("Failed to load events. Please try reloading the page.");
       } finally {
         setIsInitialLoading(false);
       }
@@ -162,7 +177,7 @@ export default function EventsPage() {
               </div>
               <div className="flex items-center mb-4 md:mb-0">
                 <Link href="/CreateUpdateEvent">
-                  <button className="flex items-center font-semibold justify-center gap-2 flex-row rounded-full text-xl drop-shadow-md transition hover:shadow-lg hover:bg-violet-500 bg-violet-600 text-white px-5 py-3">
+                  <button className="flex items-center font-semibold justify-center gap-2 flex-row rounded-full text-xl drop-shadow-md transition duration-300 hover:shadow-lg bg-clubPurple hover:bg-clubBlurple text-white px-5 py-3">
                     <FaPlus /> Create Event
                   </button>
                 </Link>
@@ -189,6 +204,7 @@ export default function EventsPage() {
                 isLoading={isInitialLoading}
                 showFeatured={currentUpcomingEvents.length + currentPastEvents.length === events.length}
                 skeletonCount={skeletonCount}
+                isMobile={isMobile}
               />
             </div>
           </div>

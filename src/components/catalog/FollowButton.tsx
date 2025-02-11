@@ -6,9 +6,16 @@ type FollowButtonProps = {
   clubId: string;
   followedClubs: string[];
   setFollowedClubs: Dispatch<SetStateAction<string[]>>;
+  className?: string;
 };
 
-const FollowButton: React.FC<FollowButtonProps> = ({ isFollowing, clubId, followedClubs, setFollowedClubs }) => {
+const FollowButton: React.FC<FollowButtonProps> = ({
+  className,
+  isFollowing,
+  clubId,
+  followedClubs,
+  setFollowedClubs,
+}) => {
   const { isLoggedIn } = useAuth();
 
   const toggleStar = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -40,9 +47,9 @@ const FollowButton: React.FC<FollowButtonProps> = ({ isFollowing, clubId, follow
   return (
     <button
       onClick={toggleStar}
-      className={`mr-1 py-1 rounded-lg text-md font-semibold focus:outline-none text-blue-400 transition-transform duration-200 hover:scale-110 ${isFollowing ? "text-sm md:text-base" : ""}`}
+      className={`${className} py-1 rounded-lg text-md focus:outline-none transition-transform duration-200 hover:scale-105 ${isFollowing ? "bg-[#eee] text-black font-normal" : "text-white bg-clubPurple font-semibold"}`}
     >
-      {isFollowing ? "Following" : "Follow"}
+      {isFollowing ? "Following" : "+ Follow"}
     </button>
   );
 };
