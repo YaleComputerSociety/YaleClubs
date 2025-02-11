@@ -11,7 +11,7 @@ const Header = () => {
   // const [bannerHeight, setBannerHeight] = useState(0);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    const mediaQuery = window.matchMedia("(max-width: 1000px)");
     const updateIsMobile = () => setIsMobile(mediaQuery.matches);
 
     // Set the initial value
