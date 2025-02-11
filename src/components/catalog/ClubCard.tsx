@@ -4,6 +4,7 @@ import React, { Dispatch, SetStateAction } from "react";
 import { IClub, RecruitmentStatus } from "@/lib/models/Club";
 import Image from "next/image";
 import FollowButton from "./FollowButton";
+import { LabelList } from "./LabelList";
 
 type ClubCardProps = {
   club: IClub;
@@ -128,19 +129,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
                 <div className="md:text-xl font-semibold line-clamp-1 md:line-clamp-2 overflow-hidden">{club.name}</div>
               </div>
             </div>
-            <div className="mt-2 flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
-              {club.school && <span className="bg-[#acf] rounded px-2 py-1 text-xs">{club.school}</span>}
-              {club.categories?.map((tag, index) => (
-                <span key={index} className="bg-[#eee] rounded px-2 py-1 text-xs">
-                  {tag}
-                </span>
-              ))}
-              {club.affiliations?.map((tag, index) => (
-                <span key={index} className="bg-[#feb] rounded px-2 py-1 text-xs">
-                  {tag}
-                </span>
-              ))}
-            </div>
+            <LabelList club={club} className="mt-2 scrollbar-hide overflow-x-auto" />
             <div className="text-sm md:text:lg text-gray-800 line-clamp-3 mt-2">
               {club.description ?? "No description"}
             </div>
@@ -151,7 +140,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
               alt="Club Logo"
               width={100}
               height={100}
-              className="rounded-xl flex-shrink-0 w-16 md:w-[80px] h-16 md:h-[80px]"
+              className="rounded-xl flex-shrink-0 object-cover w-[80px] h-[80px]"
             />
             <div className="flex flex-col items-center">
               <FollowButton
@@ -159,6 +148,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
                 clubId={club._id}
                 followedClubs={followedClubs}
                 setFollowedClubs={setFollowedClubs}
+                className="w-[80.1px] my-2"
               />
               <div className="text-sm text-gray-500">
                 {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}

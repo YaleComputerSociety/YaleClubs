@@ -10,8 +10,10 @@ export default function ScrollableLeaders({ leaders, isLoggedIn }: { leaders: Cl
     if (!scrollContainerRef.current) return;
 
     const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+    const buffer = 1; // Small buffer to handle rounding inconsistencies
+
     setIsScrolledToStart(scrollLeft === 0);
-    setIsScrolledToEnd(scrollLeft + clientWidth >= scrollWidth);
+    setIsScrolledToEnd(scrollLeft + clientWidth >= scrollWidth - buffer);
   };
 
   useEffect(() => {
@@ -22,10 +24,10 @@ export default function ScrollableLeaders({ leaders, isLoggedIn }: { leaders: Cl
     <>
       {leaders.length > 0 && (
         <div className="mt-4">
-          <div className="text-xl font-bold">Board</div>
+          <div className="text-lg font-bold">Board Members</div>
           <div className="relative">
             <div
-              className="flex flex-row gap-4 mt-2 overflow-x-auto whitespace-nowrap scrollbar-hide"
+              className="flex flex-row gap-2 sm:gap-3 mt-2 overflow-x-auto whitespace-nowrap scrollbar-hide"
               ref={scrollContainerRef}
               onScroll={handleScroll}
             >
@@ -37,14 +39,17 @@ export default function ScrollableLeaders({ leaders, isLoggedIn }: { leaders: Cl
               )}
 
               {leaders.map((leader, index) => (
-                <div key={index} className="flex items-center rounded-lg border p-2 text-sm">
+                <div
+                  key={index}
+                  className="flex items-center rounded-lg border-gray-200 border-2 text-xs sm:text-sm px-2 py-1"
+                >
                   <div className="flex flex-col items-start">
-                    <div className="flex flex-row justify-between w-full">
-                      <div className="text-md font-semibold">{leader.name}</div>
+                    <div className="flex flex-row justify-between w-full text-gray-800">
+                      <div className="text-md font-semibold max-w-[160px] truncate pr-2 ">{leader.name}</div>
                       {(leader.year?.valueOf() || 0) > 0 && <div>{" '" + (leader.year ? leader.year % 100 : "")} </div>}
                     </div>
-                    {isLoggedIn && <div>{leader.email}</div>}
-                    <div>{leader.role}</div>
+                    <div className="text-gray-700">{leader.role}</div>
+                    {isLoggedIn && <div className="max-w-[180px] truncate text-gray-500">{leader.email}</div>}
                   </div>
                 </div>
               ))}

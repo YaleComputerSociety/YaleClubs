@@ -70,7 +70,6 @@ export default function EventsPage() {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 767px)");
-
     const updateIsMobile = () => setIsMobile(mediaQuery.matches);
 
     // Set the initial value
@@ -119,7 +118,7 @@ export default function EventsPage() {
         setFeaturedEvents(getRandomThree(upcoming));
       } catch (error) {
         console.error("Error fetching data:", error);
-        setError("Failed to load events. Please try again later.");
+        setError("Failed to load events. Please try reloading the page.");
       } finally {
         setIsInitialLoading(false);
       }
