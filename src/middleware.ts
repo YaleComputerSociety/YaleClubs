@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-// import { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
@@ -41,17 +40,15 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // For /api/clubs GET requests, set auth data in HttpOnly cookies
+  // For /api/clubs GET requests, we need to allow unauthenticated access
   if (request.nextUrl.pathname === "/api/clubs" && request.method === "GET") {
     const response = NextResponse.next();
 
     if (decodedToken) {
-      // Store auth data in HttpOnly cookies
       response.cookies.set("auth_netid", decodedToken.netid, SECURE_COOKIE_OPTIONS);
       response.cookies.set("auth_email", decodedToken.email, SECURE_COOKIE_OPTIONS);
       response.cookies.set("auth_status", "true", SECURE_COOKIE_OPTIONS);
     } else {
-      // Clear auth cookies if not authenticated
       response.cookies.delete("auth_netid");
       response.cookies.delete("auth_email");
       response.cookies.delete("auth_status");
@@ -62,7 +59,6 @@ export async function middleware(request: NextRequest) {
 
   // For all other routes, require valid token
   if (!decodedToken) {
-    console.log("bad token 2");
     const response = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     // Clear all auth cookies
     response.cookies.delete("auth_netid");
@@ -73,7 +69,6 @@ export async function middleware(request: NextRequest) {
 
   const response = NextResponse.next();
 
-  // Set auth data in HttpOnly cookies
   response.cookies.set("auth_netid", decodedToken.netid, SECURE_COOKIE_OPTIONS);
   response.cookies.set("auth_email", decodedToken.email, SECURE_COOKIE_OPTIONS);
 
