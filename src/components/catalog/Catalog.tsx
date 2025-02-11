@@ -66,8 +66,10 @@ const Catalog = ({
     };
   }, [clubs.length]);
 
+  const gridStyle = "grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 justify-items-center";
+
   const renderSkeletons = () => (
-    <div className="grid gap-5 md:gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center py-5">
+    <div className={`${gridStyle} py-5`}>
       {[...Array(12)].map((_, i) => (
         <SkeletonClubCard key={i} />
       ))}
@@ -96,7 +98,7 @@ const Catalog = ({
         <div className="text-center text-gray-500 mt-10">No results found.</div>
       ) : (
         <div>
-          <div className="grid gap-5 md:gap-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center">
+          <div className={gridStyle}>
             {clubs.slice(0, visibleClubs).map(renderClubItem)}
             {selectedClub && (
               <ClubModal
@@ -119,22 +121,24 @@ const Catalog = ({
   );
 };
 
+const skeletonBlockStyle = "h-4 bg-gray-300/30 rounded";
+
 const SkeletonClubCard = () => (
-  <div className="relative w-full max-w-2xl rounded-xl shadow-md animate-pulse flex flex-col justify-between border border-gray-300/30">
+  <div className="relative w-full max-w-2xl rounded-xl shadow-md animate-pulse flex flex-col justify-start border border-gray-300/30">
     <div className="flex flex-row gap-4 px-3 py-2 md:px-4 md:py-3">
       <div className="flex-1 min-w-0">
         <div className="h-5 bg-gray-300/40 rounded w-3/5 mb-2"></div>
-        <div className="h-4 bg-gray-300/30 rounded w-1/2 mb-2"></div>
+        <div className={skeletonBlockStyle + "w-1/2 mb-2"}></div>
         <div className="space-y-2">
-          <div className="h-4 bg-gray-300/30 rounded w-full"></div>
-          <div className="h-4 bg-gray-300/30 rounded w-4/5"></div>
-          <div className="h-4 bg-gray-300/30 rounded w-3/5"></div>
+          <div className={skeletonBlockStyle + "w-full"}></div>
+          <div className={skeletonBlockStyle + "w-4/5"}></div>
+          <div className={skeletonBlockStyle + "w-3/5"}></div>
         </div>
       </div>
       <div className="flex flex-col items-center">
-        <div className="w-[80px] h-[80px] bg-gray-300/40 rounded-xl mb-2"></div>
-        <div className="w-[80.1px] h-6 bg-gray-300/40 rounded"></div>
-        <div className="h-4 bg-gray-300/30 rounded w-[50px] mt-2"></div>
+        <div className="w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] bg-gray-300/40 rounded-xl mb-2"></div>
+        <div className="w-[60px] sm:w-[80.1px] h-4 sm:h-6 bg-gray-300/40 rounded"></div>
+        <div className={skeletonBlockStyle + "w-[50px] mt-2"}></div>
       </div>
     </div>
     <div className="w-full py-2 px-3 md:px-4 bg-gray-200/30 rounded-b-xl">
