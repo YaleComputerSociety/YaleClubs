@@ -15,7 +15,7 @@ const geistMono = CustomFont({
 });
 
 export const metadata: Metadata = {
-  title: "Yale Clubs",
+  title: "YaleClubs",
   description: "With Yale Clubs, finding clubs has never been easier",
   icons: {
     icon: "assets/logo.svg",
