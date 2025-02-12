@@ -31,7 +31,6 @@ export async function GET(req: Request): Promise<NextResponse> {
 }
 
 export async function PUT(req: Request): Promise<NextResponse> {
-  console.log("hello");
   try {
     if (!(await checkIfAdmin())) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
