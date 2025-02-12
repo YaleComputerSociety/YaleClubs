@@ -72,7 +72,7 @@ export async function GET(request: Request): Promise<NextResponse> {
       } else {
         console.log(`User already exists for NetID: ${netid}`);
       }
-      const token = jwt.sign({ netid, email }, JWT_SECRET, {
+      const token = jwt.sign({ netid, email, role: existingUser.role || "user" }, JWT_SECRET, {
         expiresIn: "7d",
       });
 
