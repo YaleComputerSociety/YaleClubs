@@ -171,6 +171,7 @@ export async function PUT(req: Request): Promise<NextResponse> {
     interface JWTPayload {
       netid: string;
       email: string;
+      role: string;
     }
     const verified = jwt.verify(token.value, JWT_SECRET) as unknown as JWTPayload;
 
@@ -196,7 +197,7 @@ export async function PUT(req: Request): Promise<NextResponse> {
       }
     }
 
-    if (!isLeaderOfAnyClub) {
+    if (!isLeaderOfAnyClub && verified.role !== "admin") {
       return NextResponse.json(
         { error: "You must be a leader of at least one of the clubs to edit the event" },
         { status: 403 },

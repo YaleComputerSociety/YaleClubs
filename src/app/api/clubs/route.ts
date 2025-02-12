@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { Category, IClubInput } from "../../../lib/models/Club";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
+import { checkIfAdmin } from "@/lib/serverUtils";
 
 interface DecodedToken {
   netid: string;
@@ -18,6 +19,7 @@ function isValidDecodedToken(decoded: any): decoded is DecodedToken {
     typeof decoded === "object" &&
     typeof decoded.netid === "string" &&
     typeof decoded.email === "string" &&
+    typeof decoded.role === "string" &&
     typeof decoded.iat === "number" &&
     typeof decoded.exp === "number"
   );
@@ -59,19 +61,12 @@ export async function GET(): Promise<NextResponse> {
   }
 }
 
-// const admin_emails = [
-//   "lucas.huang@yale.edu",
-//   "addison.goolsbee@yale.edu",
-//   "francis.fan@yale.edu",
-//   "grady.yu@yale.edu",
-//   "lauren.lee.ll2243@yale.edu",
-//   "koray.akduman@yale.edu",
-// ];
-
-// POST request
 export async function POST(req: Request): Promise<NextResponse> {
   try {
-    // Connect to the database
+    if (!(await checkIfAdmin())) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     await connectToDatabase();
 
     let body: IClubInput;
@@ -223,9 +218,12 @@ export async function PUT(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
+    const isAdmin = await checkIfAdmin();
+
     if (
-      !verified.email ||
-      (verified.email && !originalClub.leaders.some((leader: ClubLeader) => leader.email === verified.email))
+      !isAdmin &&
+      (!verified.email ||
+        (verified.email && !originalClub.leaders.some((leader: ClubLeader) => leader.email === verified.email)))
     ) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

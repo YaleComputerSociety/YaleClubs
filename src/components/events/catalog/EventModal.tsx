@@ -52,7 +52,7 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
         const userEmail: string = user.email;
 
         const isBoardMember = associatedClubLeaders.some((leader) => leader.email === userEmail);
-        setCanEdit(isBoardMember);
+        setCanEdit(isBoardMember || user.role === "admin");
       } catch (err) {
         console.error("Failed to decode token:", err);
       }

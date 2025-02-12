@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 interface DecodedToken {
   netid: string;
   email: string;
+  role?: string;
   iat: number;
   exp: number;
 }
@@ -14,6 +15,7 @@ function isValidDecodedToken(decoded: any): decoded is DecodedToken {
     typeof decoded === "object" &&
     typeof decoded.netid === "string" &&
     typeof decoded.email === "string" &&
+    (decoded.role === undefined || typeof decoded.role === "string") &&
     typeof decoded.iat === "number" &&
     typeof decoded.exp === "number"
   );
@@ -53,6 +55,7 @@ export async function GET(): Promise<NextResponse> {
       user: {
         netid: decoded.netid,
         email: decoded.email,
+        role: decoded.role || "user",
       },
     });
   } catch (error) {
