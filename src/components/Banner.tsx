@@ -12,6 +12,9 @@ const Banner: React.FC<BannerProps> = ({ onHeightChange }) => {
   const [isMobile, setIsMobile] = useState(false);
   const bannerRef = useRef<HTMLDivElement | null>(null);
 
+  const BANNER_VERSION = "1"; // Increment this to force a new logout
+  const BANNER_KEY = "bannerClosed";
+
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 767px)");
     const updateIsMobile = () => setIsMobile(mediaQuery.matches);
@@ -29,8 +32,8 @@ const Banner: React.FC<BannerProps> = ({ onHeightChange }) => {
   }, []);
 
   useEffect(() => {
-    const isClosed = localStorage.getItem("bannerClosed2");
-    if (!isClosed) {
+    const isClosed = localStorage.getItem(BANNER_KEY);
+    if (isClosed !== BANNER_VERSION) {
       const timer = setTimeout(() => {
         setIsVisible(true);
         if (bannerRef.current) {
@@ -46,7 +49,7 @@ const Banner: React.FC<BannerProps> = ({ onHeightChange }) => {
 
   const handleClose = () => {
     setIsVisible(false);
-    localStorage.setItem("bannerClosed2", "true");
+    localStorage.setItem(BANNER_KEY, BANNER_VERSION);
     onHeightChange(0);
   };
 
