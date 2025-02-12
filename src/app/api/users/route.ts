@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "../../../lib/mongodb";
 import User from "../../../lib/models/Users";
-import { cookies } from "next/headers";
-import jwt from "jsonwebtoken";
+import { checkIfAdmin } from "@/lib/serverUtils";
 
 export async function GET(req: Request): Promise<NextResponse> {
   try {
@@ -32,19 +31,9 @@ export async function GET(req: Request): Promise<NextResponse> {
 }
 
 export async function PUT(req: Request): Promise<NextResponse> {
+  console.log("hello");
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token");
-
-    if (!token?.value || !process.env.JWT_SECRET) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const verified = jwt.verify(token.value, process.env.JWT_SECRET) as unknown as {
-      role: string;
-    };
-
-    if (!verified.role || verified.role !== "admin") {
+    if (!(await checkIfAdmin())) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
