@@ -159,7 +159,7 @@ const CreateUpdateEventPage = () => {
           setIsLoading(false);
         });
     }
-  }, [searchParams]);
+  }, [isLoggedIn, searchParams, user]);
 
   useEffect(() => {
     if (clubs.length > 0 && userEmail) {
