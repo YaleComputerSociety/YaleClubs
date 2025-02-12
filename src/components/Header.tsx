@@ -5,10 +5,12 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePathname } from "next/navigation";
+import Banner from "./Banner";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [bannerHeight, setBannerHeight] = useState(0);
   const { isLoggedIn, logout } = useAuth();
 
   const pathname = usePathname();
@@ -53,7 +55,11 @@ const Header = () => {
     "px-6 py-2 text-white bg-clubPurple rounded-full shadow-md hover:bg-clubBlurple focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap";
 
   return (
-    <div className="w-full flex flex-col fixed z-50 transition-[margin-top] duration-1000">
+    <div
+      style={{ marginTop: `${bannerHeight}px` }}
+      className="w-full flex flex-col fixed z-50 transition-[margin-top] duration-1000"
+    >
+      <Banner onHeightChange={(height) => setBannerHeight(height)} />
       <div className="flex flex-row w-full justify-between p-[22px] md:px-20 bg-background">
         <Link href="/" className="flex flex-row items-center">
           <Image src="/assets/logo.svg" alt="Logo" width={35} height={35} unoptimized />

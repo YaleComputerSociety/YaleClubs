@@ -29,7 +29,7 @@ const Banner: React.FC<BannerProps> = ({ onHeightChange }) => {
   }, []);
 
   useEffect(() => {
-    const isClosed = localStorage.getItem("bannerClosed");
+    const isClosed = localStorage.getItem("bannerClosed2");
     if (!isClosed) {
       const timer = setTimeout(() => {
         setIsVisible(true);
@@ -46,7 +46,7 @@ const Banner: React.FC<BannerProps> = ({ onHeightChange }) => {
 
   const handleClose = () => {
     setIsVisible(false);
-    localStorage.setItem("bannerClosed", "true");
+    localStorage.setItem("bannerClosed2", "true");
     onHeightChange(0);
   };
 
