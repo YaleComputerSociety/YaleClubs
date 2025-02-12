@@ -24,13 +24,40 @@ const AuthContext = createContext<AuthContextType>({
   checkAuth: async () => {},
 });
 
+const LOGOUT_VERSION = "1"; // Increment this to force a new logout
+const LOGOUT_KEY = "logout_version";
+
 let authCheckPromise: Promise<void> | null = null;
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
+  const logout = useCallback(async () => {
+    if (!isLoggedIn) return;
+
+    try {
+      const response = await fetch("/api/auth/logout");
+      if (response.ok) {
+        setIsLoggedIn(false);
+        setUser(null);
+        window.location.href = "/"; // Force reload after logout
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  }, [isLoggedIn]);
+
   const checkAuth = useCallback(async () => {
+    const storedVersion = localStorage.getItem(LOGOUT_KEY);
+
+    if (storedVersion !== LOGOUT_VERSION) {
+      console.log("Forcing logout due to version change");
+      await logout();
+      localStorage.setItem(LOGOUT_KEY, LOGOUT_VERSION); // Mark logout as done
+      return;
+    }
+
     // If there's already a check in progress, return that promise
     if (authCheckPromise) {
       return authCheckPromise;
@@ -58,20 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
     return authCheckPromise;
-  }, []);
-
-  const logout = useCallback(async () => {
-    try {
-      const response = await fetch("/api/auth/logout");
-      if (response.ok) {
-        setIsLoggedIn(false);
-        setUser(null);
-        window.location.href = "/"; // Force reload after logout
-      }
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
-  }, []);
+  }, [logout]);
 
   useEffect(() => {
     checkAuth();
