@@ -52,7 +52,7 @@ const Header = () => {
   };
 
   const authButton =
-    "px-6 py-2 text-white bg-clubPurple rounded-full shadow-md hover:bg-clubBlurple focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap";
+    "px-6 py-2 rounded-full shadow-md hover:bg-clubBlurple focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap";
 
   return (
     <div
@@ -62,8 +62,8 @@ const Header = () => {
       <Banner onHeightChange={(height) => setBannerHeight(height)} />
       <div className="flex flex-row w-full justify-between p-[22px] md:px-20 bg-background">
         <Link href="/" className="flex flex-row items-center">
-          <Image src="/assets/logo.svg" alt="Logo" width={35} height={35} unoptimized />
-          <div className="ml-2 font-semibold text-xl">YaleClubs</div>
+          <Image src="/assets/logo.svg" alt="Logo" width={30} height={30} unoptimized />
+          <div className="ml-3 font-semibold text-xl">YaleClubs</div>
         </Link>
 
         {isMobile ? (
@@ -97,12 +97,16 @@ const Header = () => {
                             setIsMenuOpen(false);
                           });
                         }}
-                        className={authButton}
+                        className={authButton + " bg-gray-200 text-gray-500"}
                       >
                         Sign Out
                       </button>
                     ) : (
-                      <Link href="/api/auth/redirect" onClick={() => setIsMenuOpen(false)} className={authButton}>
+                      <Link
+                        href="/api/auth/redirect"
+                        onClick={() => setIsMenuOpen(false)}
+                        className={authButton + " bg-clubPurple text-white"}
+                      >
                         Sign In
                       </Link>
                     )}
@@ -123,11 +127,11 @@ const Header = () => {
               </Link>
             ))}
             {isLoggedIn ? (
-              <button onClick={handleLogout} className={authButton}>
+              <button onClick={handleLogout} className={authButton + " bg-gray-200 text-gray-500"}>
                 Sign Out
               </button>
             ) : (
-              <Link href="/api/auth/redirect" className={authButton}>
+              <Link href="/api/auth/redirect" className={authButton + " bg-clubPurple text-white"}>
                 Sign In
               </Link>
             )}
