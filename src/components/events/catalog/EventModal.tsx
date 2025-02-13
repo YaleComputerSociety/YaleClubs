@@ -8,7 +8,8 @@ import { TagBlock } from "./TagBlock";
 import { generateGoogleCalendarLink } from "@/lib/utils";
 import { IClub } from "@/lib/models/Club";
 import { useAuth } from "@/contexts/AuthContext";
-
+import { FaTrash } from "react-icons/fa";
+import axios from "axios";
 type EventModalProps = {
   event: IEvent;
   associatedClubLeaders: ClubLeader[];
@@ -70,11 +71,33 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
             &times;
           </button>
           {canEdit && isLoggedIn ? (
-            <Link href={`/CreateUpdateEvent?eventId=${event._id}`}>
-              <button className="px-4 py-2 text-lg font-medium text-white bg-indigo-600 rounded shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                Edit Event
+            <div className="flex flex-row space-x-3">
+              <Link href={`/CreateUpdateEvent?eventId=${event._id}`}>
+                <button className="px-4 py-2 text-lg font-medium text-white bg-indigo-600 rounded shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                  Edit Event
+                </button>
+              </Link>
+              <button
+                className="px-4 py-2 text-lg font-medium text-white bg-red-600 rounded shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                onClick={() => {
+                  if (window.confirm("Are you sure you want to delete this event? This action cannot be undone.")) {
+                    axios
+                      .delete(`/api/events?id=${event._id}`, {
+                        data: event,
+                      })
+                      .then(() => {
+                        onClose();
+                        window.location.reload();
+                      });
+                  }
+                }}
+              >
+                <div className="flex flex-row items-center space-x-2">
+                  <FaTrash />
+                  <span>Delete Event</span>
+                </div>
               </button>
-            </Link>
+            </div>
           ) : isLoggedIn ? (
             <button
               className="px-4 py-2 text-lg font-medium text-white bg-gray-400 rounded shadow cursor-not-allowed"
