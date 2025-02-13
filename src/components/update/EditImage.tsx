@@ -187,7 +187,7 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
             </h2>
 
             <div className="mb-4">
-              <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" className="hidden" />
+              <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" />
               <button
                 onClick={() => fileInputRef.current?.click()}
                 className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mb-2"
