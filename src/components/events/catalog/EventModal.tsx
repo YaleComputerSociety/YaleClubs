@@ -79,16 +79,18 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
               </Link>
               <button
                 className="px-4 py-2 text-lg font-medium text-white bg-red-600 rounded shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                onClick={() => {
+                onClick={async () => {
                   if (window.confirm("Are you sure you want to delete this event? This action cannot be undone.")) {
-                    axios
-                      .delete(`/api/events?id=${event._id}`, {
+                    try {
+                      await axios.delete(`/api/events?id=${event._id}`, {
                         data: event,
-                      })
-                      .then(() => {
-                        onClose();
-                        window.location.reload();
                       });
+                      onClose();
+                      window.location.reload();
+                    } catch (error) {
+                      alert(`Failed to delete event: ${error instanceof Error ? error.message : "Unknown error"}`);
+                      console.error("Error deleting event:", error);
+                    }
                   }
                 }}
               >
