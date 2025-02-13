@@ -37,7 +37,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const netid = getNetId();
+    const netid = await getNetId();
 
     const { clubId, isFollowing: shouldFollow } = body;
     if (!clubId || shouldFollow === undefined) {
