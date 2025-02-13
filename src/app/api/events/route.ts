@@ -293,35 +293,73 @@ export async function PUT(req: Request): Promise<NextResponse> {
   }
 }
 
-// export async function DELETE(req: Request): Promise<NextResponse> {
-//   try {
-//     await connectToDatabase();
+export async function DELETE(req: Request): Promise<NextResponse> {
+  try {
+    await connectToDatabase();
 
-//     const netid = req.headers.get("X-NetID");
-//     // const userEmail = req.headers.get("X-Email");
-//     if (netid !== "admin_a1b2c3e") {
-//       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-//     }
+    let body: IEventInput;
+    try {
+      body = await req.json();
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    }
 
-//     // Get the event ID from the query parameters
-//     const url = new URL(req.url);
-//     const id = url.searchParams.get("id");
+    interface JWTPayload {
+      netid: string;
+      email: string;
+    }
 
-//     if (!id) {
-//       return NextResponse.json({ error: "Event ID is required." }, { status: 400 });
-//     }
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token");
 
-//     // Attempt to delete the event
-//     const result = await Event.findByIdAndDelete(id);
+    if (!token?.value || !process.env.JWT_SECRET) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
 
-//     if (!result) {
-//       return NextResponse.json({ error: "Event not found." }, { status: 404 });
-//     }
+    const verified = jwt.verify(token?.value, process.env.JWT_SECRET) as unknown as JWTPayload;
 
-//     // Respond with a success message
-//     return NextResponse.json({ message: "Event deleted successfully." }, { status: 200 });
-//   } catch (error) {
-//     console.error("Error deleting event:", error);
-//     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-//   }
-// }
+    // Get the event ID from the query parameters
+    const url = new URL(req.url);
+    const id = url.searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "Event ID is required." }, { status: 400 });
+    }
+
+    let isLeaderOfAnyClub = false;
+    for (const clubName of body.clubs) {
+      const club = await Club.findOne({ name: clubName });
+      if (!club) {
+        console.log("club not found");
+        return NextResponse.json({ error: `Club ${clubName} not found` }, { status: 404 });
+      }
+
+      const isLeader = club.leaders.some((leader: ClubLeader) => leader.email === verified.email);
+      if (isLeader) {
+        isLeaderOfAnyClub = true;
+        break;
+      }
+    }
+
+    if (!isLeaderOfAnyClub) {
+      return NextResponse.json(
+        { error: "You must be a leader of at least one of the clubs to delete the event" },
+        { status: 403 },
+      );
+    }
+
+    // Attempt to delete the event
+    const result = await Event.findByIdAndDelete(id);
+
+    if (!result) {
+      return NextResponse.json({ error: "Event not found." }, { status: 404 });
+    }
+
+    // Respond with a success message
+    return NextResponse.json({ message: "Event deleted successfully." }, { status: 200 });
+  } catch (error) {
+    console.error("Error deleting event:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
