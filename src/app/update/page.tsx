@@ -26,12 +26,13 @@ import RecruitmentStatusDropdown from "@/components/update/RecruitmentDropdown";
 import AliasesDropdown from "@/components/update/ClubAliases";
 import Filter from "@/components/Filter";
 import { useAuth } from "@/contexts/AuthContext";
+import { MdLockOutline } from "react-icons/md";
 
 const UpdatePage = () => {
   const searchParams = useSearchParams();
   const [club, setClub] = useState<IClub | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   const [formData, setFormData] = useState<IClubInput>({
     name: "", // done
     subheader: "",
@@ -287,6 +288,48 @@ const UpdatePage = () => {
         <main className="flex-grow bg-gray-100 flex items-center justify-center">
           <div className="bg-white rounded-lg shadow-md p-6 text-center">
             <p className="text-xl font-semibold text-gray-700">Loading...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  const isAuthorized =
+    isLoggedIn && (club?.leaders?.some((leader) => leader.email === user?.email) || user?.role === "admin");
+
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen">
+        <Header />
+        <main className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] px-4">
+          <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="p-3 bg-violet-100 rounded-full">
+                <MdLockOutline className="w-8 h-8 text-violet-600" />
+              </div>
+              <h1 className="text-2xl font-bold text-gray-900">Access Restricted</h1>
+              <p className="text-lg text-gray-600">
+                {isLoggedIn
+                  ? `Sorry, you must be a board member of ${club?.name} to edit this club.`
+                  : `You're not currently logged in. If you are a board member of ${club?.name}, please log in.`}
+              </p>
+            </div>
+            <div className="p-4 rounded-md text-center">
+              <p className="text-gray-700">
+                Please{" "}
+                <a
+                  href={`/api/auth/redirect?from=${window.location.pathname}`}
+                  className="inline-flex items-center font-semibold text-violet-600 hover:text-violet-500 transition-colors"
+                >
+                  log in
+                  <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>{" "}
+                to manage your club.
+              </p>
+            </div>
           </div>
         </main>
         <Footer />
