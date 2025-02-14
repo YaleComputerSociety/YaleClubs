@@ -188,6 +188,7 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
           <div className="flex flex-wrap gap-2 mt-3">
             {event.tags?.map((tag: Tag, index) => <TagBlock key={index} tag={tag} />)}
           </div>
+          <FollowersList />
         </div>
       </div>
     </div>
