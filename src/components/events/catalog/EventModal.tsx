@@ -8,6 +8,7 @@ import { TagBlock } from "./TagBlock";
 import { generateGoogleCalendarLink } from "@/lib/utils";
 import { IClub } from "@/lib/models/Club";
 import { useAuth } from "@/contexts/AuthContext";
+import FollowersList from "@/components/FollowersList";
 
 type EventModalProps = {
   event: IEvent;
@@ -144,6 +145,7 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
           <div className="flex flex-wrap gap-2 mt-3">
             {event.tags?.map((tag: Tag, index) => <TagBlock key={index} tag={tag} />)}
           </div>
+          <FollowersList />
         </div>
       </div>
     </div>
