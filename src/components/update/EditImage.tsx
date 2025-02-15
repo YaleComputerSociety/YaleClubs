@@ -1,11 +1,11 @@
-import { ClubLeader, IClubInput } from "@/lib/models/Club";
+import { IClubInput } from "@/lib/models/Club";
 import React, { useState, useRef } from "react";
 import Cropper from "react-easy-crop";
 import Image from "next/image";
 
 interface EditableImageSectionProps {
   formData: IClubInput;
-  handleChange: (field: keyof IClubInput, value: string | number | ClubLeader[] | undefined) => void;
+  handleChange: (field: "logoFile" | "backgroundImageFile", value: File) => void;
   validationErrors: Record<keyof IClubInput, string>;
 }
 
@@ -13,8 +13,8 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, handleChange, validationErrors }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentField, setCurrentField] = useState<"backgroundImage" | "logo">("backgroundImage");
-  const [inputValue, setInputValue] = useState("");
+  const [currentField, setCurrentField] = useState<"backgroundImageFile" | "logoFile">("logoFile");
+  const [inputValue, setInputValue] = useState<File | string | undefined>(undefined);
   const [modalError, setModalError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -54,8 +54,7 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
     setModalError("");
 
     try {
-      const localUrl = await readFileAsDataURL(file);
-      setInputValue(localUrl);
+      setInputValue(file);
     } catch (error) {
       setModalError((error as Error).message);
     } finally {
@@ -63,18 +62,24 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
     }
   };
 
-  const readFileAsDataURL = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = () => reject(new Error("Failed to read file"));
-      reader.readAsDataURL(file);
-    });
-  };
+  // const readFileAsDataURL = (file: File): Promise<string> => {
+  //   return new Promise((resolve, reject) => {
+  //     const reader = new FileReader();
+  //     reader.onload = () => resolve(reader.result as string);
+  //     reader.onerror = () => reject(new Error("Failed to read file"));
+  //     reader.readAsDataURL(file);
+  //   });
+  // };
 
   const openModal = (field: "backgroundImage" | "logo") => {
-    setCurrentField(field);
-    setInputValue(formData[field] as string);
+    const fileField = field === "backgroundImage" ? "backgroundImageFile" : "logoFile";
+    if (formData[fileField] !== undefined) {
+      setCurrentField(fileField);
+      setInputValue(formData[fileField]);
+    } else {
+      setCurrentField(fileField);
+      setInputValue(formData[field] as string);
+    }
     setModalError("");
     setIsModalOpen(true);
   };
@@ -82,19 +87,19 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
   const closeModal = () => {
     setIsModalOpen(false);
     setModalError("");
-    setInputValue("");
+    setInputValue(undefined);
     setCrop({ x: 0, y: 0 });
     setZoom(1);
   };
 
   const handleSave = async () => {
-    if (inputValue && !inputValue.startsWith("data:") && !isValidUrl(inputValue)) {
+    if (inputValue && typeof inputValue === "string" && !inputValue.startsWith("data:") && !isValidUrl(inputValue)) {
       setModalError("Invalid URL format.");
       return;
     }
 
     try {
-      const croppedImage = await cropImage();
+      const croppedImage = await cropImage(inputValue as File | string);
       handleChange(currentField, croppedImage);
       closeModal();
     } catch (error) {
@@ -107,8 +112,8 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
     setCroppedAreaPixels(croppedAreaPixels);
   };
 
-  const cropImage = async (): Promise<string> => {
-    const image = await createImage(inputValue);
+  const cropImage = async (input: File | string): Promise<File> => {
+    const image = await createImage(input);
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
@@ -123,18 +128,36 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
       ctx.drawImage(image, x, y, width, height, 0, 0, width, height);
     }
 
-    return canvas.toDataURL("image/jpeg");
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (!blob) return reject(new Error("Canvas toBlob failed"));
+        resolve(new File([blob], "cropped-image.jpg", { type: "image/jpeg" }));
+      }, "image/jpeg");
+    });
   };
 
-  const createImage = (url: string): Promise<HTMLImageElement> => {
+  const createImage = async (input: string | File): Promise<HTMLImageElement> => {
     return new Promise((resolve, reject) => {
       const img = new window.Image();
-      img.src = url;
-      if (!url.startsWith("data:")) {
-        img.crossOrigin = "anonymous";
-      }
+      img.crossOrigin = "anonymous";
+
       img.onload = () => resolve(img);
-      img.onerror = reject;
+      img.onerror = () => reject(new Error("Failed to load image"));
+
+      if (typeof input === "string") {
+        img.src = input;
+      } else {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === "string") {
+            img.src = reader.result;
+          } else {
+            reject(new Error("Failed to read file"));
+          }
+        };
+        reader.onerror = () => reject(new Error("FileReader error"));
+        reader.readAsDataURL(input);
+      }
     });
   };
 
@@ -143,7 +166,11 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
       <div className="relative h-64 w-full rounded-lg overflow-hidden flex items-center flex-col">
         <div className="w-[920px] h-[252px] relative flex items-center">
           <Image
-            src={formData.backgroundImage || "/assets/default-background.png"}
+            src={
+              formData.backgroundImageFile
+                ? URL.createObjectURL(formData.backgroundImageFile)
+                : formData.backgroundImage || "/assets/default-background.png"
+            }
             alt="Background"
             className="object-cover"
             width={1920}
@@ -162,7 +189,9 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
       <div className="absolute -bottom-6 right-16">
         <div className="relative w-48 h-48 rounded-lg shadow-lg bg-white flex items-center justify-center">
           <Image
-            src={formData.logo || "/assets/default-logo.png"}
+            src={
+              formData.logoFile ? URL.createObjectURL(formData.logoFile) : formData.logo || "/assets/default-logo.png"
+            }
             alt="Logo"
             className="object-cover rounded-lg"
             width={240}
@@ -183,7 +212,7 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
             <h2 className="text-lg font-semibold mb-4">
-              Edit {currentField === "backgroundImage" ? "Background Image" : "Logo"}
+              Edit {currentField === "backgroundImageFile" ? "Background Image" : "Logo"}
             </h2>
 
             <div className="mb-4">
@@ -200,7 +229,7 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
 
             <input
               type="text"
-              value={inputValue}
+              value={typeof inputValue === "string" ? inputValue : ""}
               onChange={(e) => {
                 setInputValue(e.target.value);
                 setModalError("");
@@ -215,7 +244,7 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
               <div>
                 <div className="relative w-full h-[300px] overflow-hidden">
                   <Cropper
-                    image={inputValue}
+                    image={inputValue instanceof File ? URL.createObjectURL(inputValue) : inputValue}
                     crop={crop}
                     zoom={zoom}
                     aspect={30 / 30}

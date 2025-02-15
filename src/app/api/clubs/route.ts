@@ -3,6 +3,7 @@ import Club, { ClubLeader } from "../../../lib/models/Club";
 import UpdateLog from "../../../lib/models/Updates";
 import { NextResponse } from "next/server";
 import { Category, IClubInput } from "../../../lib/models/Club";
+import { deleteImage, uploadImage } from "@/lib/serverUtils";
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -141,25 +142,49 @@ export async function PUT(req: Request): Promise<NextResponse> {
     // Connect to the database
     await connectToDatabase();
 
-    let body: IClubInput;
-    try {
-      body = await req.json();
-    } catch (error) {
-      console.error("Error parsing JSON:", error);
-      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    if (!req.headers.get("content-type")?.includes("multipart/form-data")) {
+      return NextResponse.json({ error: "Expected multipart/form-data" }, { status: 400 });
     }
 
+    const formData = await req.formData();
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
     if (!id) {
       return NextResponse.json({ error: "Club ID is required." }, { status: 400 });
     }
 
+    const logoFile = formData.get("logoFile") as File | null;
+    console.log("Received logoFile:", logoFile ? logoFile : "No file");
+
+    const data: Record<string, any> = {};
+
+    formData.forEach((value, key) => {
+      if (key.includes("[")) {
+        const baseKey = key.replace(/\[\d+\]$/, "");
+        if (!data[baseKey]) data[baseKey] = [];
+        data[baseKey].push(value);
+      } else {
+        try {
+          const parsedValue = JSON.parse(value as string);
+          if (Array.isArray(parsedValue) && typeof parsedValue[0] === "object") {
+            data[key] = parsedValue;
+          } else {
+            data[key] = parsedValue;
+          }
+        } catch {
+          data[key] = value;
+        }
+      }
+    });
+
+    // console.log("Parsed FormData:", data);
+    // console.log(data["logoFile"]);
+
     // Disallow updates to restricted fields
     const restrictedFields = ["yaleConnectId", "scraped", "inactive", "_id", "createdAt", "updatedAt", "followers"];
     const allowedFields = Object.keys(IClubInputKeys);
     const validUpdateData = Object.fromEntries(
-      Object.entries(body).filter(([key]) => allowedFields.includes(key) && !restrictedFields.includes(key)),
+      Object.entries(data).filter(([key]) => allowedFields.includes(key) && !restrictedFields.includes(key)),
     );
 
     if (Object.keys(validUpdateData).length === 0) {
@@ -193,6 +218,22 @@ export async function PUT(req: Request): Promise<NextResponse> {
         !admin_emails.includes(updateEmail))
     ) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    if (data["logoFile"] !== undefined) {
+      if (originalClub.logo) {
+        await deleteImage(originalClub.logo);
+      }
+      const fileUrl = await uploadImage(data["logoFile"], "logos", false);
+      validUpdateData["logo"] = fileUrl;
+    }
+
+    if (data["backgroundImageFile"] !== undefined) {
+      if (originalClub.backgroundImage) {
+        await deleteImage(originalClub.backgroundImage);
+      }
+      const fileUrl = await uploadImage(data["backgroundImageFile"], "backgrounds", false);
+      validUpdateData["backgroundImage"] = fileUrl;
     }
 
     // Perform the update

@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, ObjectCannedACL } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, ObjectCannedACL, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import crypto from "crypto";
 
 const s3 = new S3Client({
@@ -36,5 +36,30 @@ export async function uploadImage(file: Blob, folderPath: string, isPrivate: boo
   } catch (err) {
     console.error("Upload to DigitalOcean Spaces failed:", err);
     return null;
+  }
+}
+
+/**
+ * Deletes a file from DigitalOcean Spaces.
+ * @param fileUrl - The full URL of the file to delete
+ * @returns `true` if deletion was successful, `false` otherwise
+ */
+export async function deleteImage(fileUrl: string): Promise<boolean> {
+  try {
+    const bucketName = process.env.DO_SPACES_BUCKET || "yaleclubs";
+
+    // Extract file path from full URL
+    const url = new URL(fileUrl);
+    const key = url.pathname.substring(1); // Remove leading "/"
+
+    const deleteParams = {
+      Bucket: bucketName,
+      Key: key,
+    };
+
+    await s3.send(new DeleteObjectCommand(deleteParams));
+    return true;
+  } catch {
+    return false;
   }
 }
