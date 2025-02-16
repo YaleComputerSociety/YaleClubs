@@ -221,7 +221,7 @@ export async function PUT(req: Request): Promise<NextResponse> {
     }
 
     if (data["logoFile"] !== undefined) {
-      if (originalClub.logo) {
+      if (originalClub.logo && originalClub.logo.startsWith("https://yaleclubs")) {
         await deleteImage(originalClub.logo);
       }
       const fileUrl = await uploadImage(data["logoFile"], "logos", false);
@@ -229,7 +229,7 @@ export async function PUT(req: Request): Promise<NextResponse> {
     }
 
     if (data["backgroundImageFile"] !== undefined) {
-      if (originalClub.backgroundImage) {
+      if (originalClub.backgroundImage && originalClub.backgroundImage.startsWith("https://yaleclubs")) {
         await deleteImage(originalClub.backgroundImage);
       }
       const fileUrl = await uploadImage(data["backgroundImageFile"], "backgrounds", false);

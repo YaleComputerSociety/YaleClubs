@@ -62,15 +62,6 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
     }
   };
 
-  // const readFileAsDataURL = (file: File): Promise<string> => {
-  //   return new Promise((resolve, reject) => {
-  //     const reader = new FileReader();
-  //     reader.onload = () => resolve(reader.result as string);
-  //     reader.onerror = () => reject(new Error("Failed to read file"));
-  //     reader.readAsDataURL(file);
-  //   });
-  // };
-
   const openModal = (field: "backgroundImage" | "logo") => {
     const fileField = field === "backgroundImage" ? "backgroundImageFile" : "logoFile";
     if (formData[fileField] !== undefined) {
@@ -104,7 +95,7 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
       closeModal();
     } catch (error) {
       console.error("Error cropping image:", error);
-      setModalError("Failed to process image.");
+      setModalError("Failed to process. Try uploading a new image.");
     }
   };
 
@@ -210,33 +201,11 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
 
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-lg font-semibold mb-4">
+          <div className="bg-white p-4 rounded-xl w-xl flex flex-col gap-4">
+            <h2 className="text-3xl font-semibold">
               Edit {currentField === "backgroundImageFile" ? "Background Image" : "Logo"}
             </h2>
-
-            <div className="mb-4">
-              <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" />
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mb-2"
-                disabled={isUploading}
-              >
-                {isUploading ? "Processing..." : "Upload Image"}
-              </button>
-              <div className="text-sm text-gray-500">or</div>
-            </div>
-
-            <input
-              type="text"
-              value={typeof inputValue === "string" ? inputValue : ""}
-              onChange={(e) => {
-                setInputValue(e.target.value);
-                setModalError("");
-              }}
-              className="w-full border border-gray-300 rounded-lg p-2 mb-2"
-              placeholder="Enter image URL"
-            />
+            <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" />
 
             {modalError && <p className="text-red-500 mb-2">{modalError}</p>}
 
