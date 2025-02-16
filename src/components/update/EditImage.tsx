@@ -1,5 +1,5 @@
 import { IClubInput } from "@/lib/models/Club";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import Cropper from "react-easy-crop";
 import Image from "next/image";
 
@@ -35,6 +35,13 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
       return false;
     }
   };
+
+  const blobUrl = useMemo(() => {
+    if (inputValue instanceof File) {
+      return URL.createObjectURL(inputValue);
+    }
+    return inputValue; // Use URL directly if it's already a string
+  }, [inputValue]);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -154,8 +161,8 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
 
   return (
     <div className="relative">
-      <div className="relative h-64 w-full rounded-lg overflow-hidden flex items-center flex-col">
-        <div className="w-[920px] h-[252px] relative flex items-center">
+      <div className="relative w-full rounded-lg overflow-hidden flex items-center flex-col">
+        <div className="w-[768px] h-[242px] relative flex items-center">
           <Image
             src={
               formData.backgroundImageFile
@@ -212,15 +219,17 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
             {inputValue && (
               <div>
                 <div className="relative w-full h-[300px] overflow-hidden">
-                  <Cropper
-                    image={inputValue instanceof File ? URL.createObjectURL(inputValue) : inputValue}
-                    crop={crop}
-                    zoom={zoom}
-                    aspect={30 / 30}
-                    onCropChange={setCrop}
-                    onZoomChange={setZoom}
-                    onCropComplete={onCropComplete}
-                  />
+                  {blobUrl !== undefined && (
+                    <Cropper
+                      image={blobUrl}
+                      crop={crop}
+                      zoom={zoom}
+                      aspect={currentField === "backgroundImageFile" ? 768 / 240 : 30 / 30}
+                      onCropChange={setCrop}
+                      onZoomChange={setZoom}
+                      onCropComplete={onCropComplete}
+                    />
+                  )}
                 </div>
                 <div className="flex items-center mt-4">
                   <label htmlFor="zoom-slider" className="mr-4 text-sm font-medium text-gray-700">
