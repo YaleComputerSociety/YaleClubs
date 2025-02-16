@@ -115,11 +115,11 @@ export interface IClubInput {
   instagram?: string | undefined;
   applyForm?: string | undefined;
   mailingListForm?: string | undefined;
-  meeting?: string | undefined;
+  meeting?: string | undefined; // obsolete
   calendarLink?: string | undefined;
   yaleConnectId?: number | undefined;
-  intensity?: Intensity | undefined;
-  howToJoin?: string | undefined;
+  intensity?: Intensity | undefined; // unused
+  howToJoin?: string | undefined; // unused
   scraped?: boolean | undefined;
   inactive?: boolean | undefined;
   applicationStatus?: string | undefined;

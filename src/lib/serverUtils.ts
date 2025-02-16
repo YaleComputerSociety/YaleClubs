@@ -1,5 +1,7 @@
 import { S3Client, PutObjectCommand, ObjectCannedACL, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import crypto from "crypto";
+import jwt from "jsonwebtoken";
+import { cookies } from "next/headers";
 
 const s3 = new S3Client({
   region: "us-east-1",
@@ -62,4 +64,23 @@ export async function deleteImage(fileUrl: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+export async function checkIfAdmin(): Promise<boolean> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token");
+
+  if (!token?.value || !process.env.JWT_SECRET) {
+    return false;
+  }
+
+  const verified = jwt.verify(token.value, process.env.JWT_SECRET) as unknown as {
+    role: string;
+  };
+
+  if (!verified.role || verified.role !== "admin") {
+    return false;
+  }
+
+  return true;
 }

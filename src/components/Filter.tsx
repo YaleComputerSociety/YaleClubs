@@ -8,7 +8,7 @@ interface FilterProps {
   aliasMapping?: Record<string, string[]>; // Optional alias mapping
 }
 
-const MAX_TOGGLE_WIDTH = 320;
+const MAX_TOGGLE_WIDTH = 192; // Maximum width of the filter toggle before showing "+x" -- just make sure it can fit the longest possible filter + some buffer
 
 const Filter = ({ selectedItems, setSelectedItems, allItems, label, aliasMapping = {} }: FilterProps) => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -70,7 +70,7 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label, aliasMapping
     let currentLength = 0;
 
     for (const item of selectedItems) {
-      if (currentLength + item.length <= MAX_TOGGLE_WIDTH / 8) {
+      if (currentLength + item.length <= MAX_TOGGLE_WIDTH / 8 || currentLength == 0) {
         visibleFilters.push(item);
         currentLength += item.length;
       } else {
@@ -86,7 +86,7 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label, aliasMapping
     <div ref={dropdownRef} className="relative">
       {/* Filter Toggle */}
       <div
-        className=" px-2 py-2 rounded cursor-pointer min-w-[5rem] max-w-[20rem] flex items-center justify-between h-10 md:h-11 hover:bg-gray-200 transition-colors duration-200"
+        className="px-2 py-2 rounded cursor-pointer min-w-[5rem] max-w-[12rem] flex items-center justify-between h-10 md:h-11 hover:bg-gray-200 transition-colors duration-200"
         onClick={() => setShowDropdown((prev) => !prev)}
       >
         <div className="flex items-center overflow-hidden min-w-0 space-x-2">

@@ -98,7 +98,17 @@ const AddFlyerSection: React.FC<EditableImageSectionProps> = ({ formData, handle
           <div className="bg-white p-6 rounded-lg shadow-lg w-[600px] max-h-[90vh] relative overflow-hidden">
             <h2 className="text-lg font-semibold mb-4">Upload or Crop Your Flyer</h2>
             <p>Please input a publicly-accessible URL.</p>
-            <p className="mb-4 text-sm text-gray-500">Try uploading your image to imgur.com or postimages.org.</p>
+            <p className="mb-4 text-sm text-gray-500">
+              Try uploading your image to imgur.com or postimages.org. Learn how to get a link from Imgur{" "}
+              <a
+                className={"font-bold underline text-violet-500"}
+                href={"/assets/How to Upload Images.pdf"}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                here.
+              </a>
+            </p>
             <input
               type="text"
               value={inputValue}
