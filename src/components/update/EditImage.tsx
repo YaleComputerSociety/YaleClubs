@@ -160,8 +160,8 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
 
   return (
     <div className="relative">
-      <div className="relative w-full overflow-hidden flex items-center flex-col border-4">
-        <div className="w-[768px] h-[242px] relative flex items-center">
+      <div className="relative overflow-hidden flex items-center flex-col">
+        <div className="w-[768px] h-[242px] relative flex items-center border-4">
           <Image
             onClick={() => openModal("backgroundImage")}
             src={
