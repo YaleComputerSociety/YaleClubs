@@ -27,6 +27,7 @@ export interface IEventInput {
   location: string;
   registrationLink?: string;
   flyer?: string;
+  flyerFile?: File;
   tags?: Tag[];
   createdBy?: string;
 }

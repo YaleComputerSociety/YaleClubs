@@ -43,6 +43,7 @@ const Header = () => {
 
       if (response.ok) {
         window.location.reload();
+        window.location.href = "/";
       } else {
         console.error("Logout failed:", response.statusText);
       }

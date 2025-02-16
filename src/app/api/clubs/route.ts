@@ -3,6 +3,7 @@ import Club, { ClubLeader } from "../../../lib/models/Club";
 import UpdateLog from "../../../lib/models/Updates";
 import { NextResponse } from "next/server";
 import { Category, IClubInput } from "../../../lib/models/Club";
+import { deleteImage, getFormData, uploadImage } from "@/lib/serverUtils";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { checkIfAdmin } from "@/lib/serverUtils";
@@ -169,15 +170,10 @@ const IClubInputKeys = {
 
 export async function PUT(req: Request): Promise<NextResponse> {
   try {
-    // Connect to the database
     await connectToDatabase();
 
-    let body: IClubInput;
-    try {
-      body = await req.json();
-    } catch (error) {
-      console.error("Error parsing JSON:", error);
-      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    if (!req.headers.get("content-type")?.includes("multipart/form-data")) {
+      return NextResponse.json({ error: "Expected multipart/form-data" }, { status: 400 });
     }
 
     const url = new URL(req.url);
@@ -186,11 +182,13 @@ export async function PUT(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Club ID is required." }, { status: 400 });
     }
 
+    const data = await getFormData(req);
+
     // Disallow updates to restricted fields
     const restrictedFields = ["yaleConnectId", "scraped", "inactive", "_id", "createdAt", "updatedAt", "followers"];
     const allowedFields = Object.keys(IClubInputKeys);
     const validUpdateData = Object.fromEntries(
-      Object.entries(body).filter(([key]) => allowedFields.includes(key) && !restrictedFields.includes(key)),
+      Object.entries(data).filter(([key]) => allowedFields.includes(key) && !restrictedFields.includes(key)),
     );
 
     if (Object.keys(validUpdateData).length === 0) {
@@ -226,6 +224,22 @@ export async function PUT(req: Request): Promise<NextResponse> {
         (verified.email && !originalClub.leaders.some((leader: ClubLeader) => leader.email === verified.email)))
     ) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    if (data["logoFile"] !== undefined) {
+      if (originalClub.logo && originalClub.logo.startsWith("https://yaleclubs")) {
+        await deleteImage(originalClub.logo);
+      }
+      const fileUrl = await uploadImage(data["logoFile"], "logos", false);
+      validUpdateData["logo"] = fileUrl;
+    }
+
+    if (data["backgroundImageFile"] !== undefined) {
+      if (originalClub.backgroundImage && originalClub.backgroundImage.startsWith("https://yaleclubs")) {
+        await deleteImage(originalClub.backgroundImage);
+      }
+      const fileUrl = await uploadImage(data["backgroundImageFile"], "backgrounds", false);
+      validUpdateData["backgroundImage"] = fileUrl;
     }
 
     // Perform the update
@@ -264,36 +278,3 @@ export async function PUT(req: Request): Promise<NextResponse> {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
-
-// export async function DELETE(req: Request): Promise<NextResponse> {
-//   try {
-//     // Connect to the database
-//     await connectToDatabase();
-
-//     const email = req.headers.get("X-Email");
-//     if (!(email === "admin_a1b2c3e" || (email && admin_emails.includes(email)))) {
-//       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-//     }
-
-//     // Get the club ID from the query parameters
-//     const url = new URL(req.url);
-//     const id = url.searchParams.get("id");
-
-//     if (!id) {
-//       return NextResponse.json({ error: "Club ID is required." }, { status: 400 });
-//     }
-
-//     // Attempt to delete the club
-//     const result = await Club.findByIdAndDelete(id);
-
-//     if (!result) {
-//       return NextResponse.json({ error: "Club not found." }, { status: 404 });
-//     }
-
-//     // Respond with a success message
-//     return NextResponse.json({ message: "Club deleted successfully." }, { status: 200 });
-//   } catch (error) {
-//     console.error("Error deleting club:", error);
-//     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-//   }
-// }
