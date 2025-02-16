@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, Suspense } from "react";
-import { dbDateToFrontendDate } from "@/lib/utils";
+import { dbDateToFrontendDate, objectToFormData } from "@/lib/utils";
 
 import { IEvent, IEventInput, Tag } from "@/lib/models/Event";
 import Header from "@/components/Header";
@@ -48,15 +48,6 @@ const CreateUpdateEventPage = () => {
 
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const { isLoggedIn, user } = useAuth();
-
-  // const admin_emails = [
-  //   "lucas.huang@yale.edu",
-  //   "addison.goolsbee@yale.edu",
-  //   "francis.fan@yale.edu",
-  //   "grady.yu@yale.edu",
-  //   "lauren.lee.ll2243@yale.edu",
-  //   "ethan.mathieu@yale.edu",
-  // ];
 
   const validateInput = React.useCallback(
     (field: keyof IEventInput, value: string | Tag[] | Date | string[] | undefined): string => {
@@ -215,6 +206,10 @@ const CreateUpdateEventPage = () => {
   };
 
   const handleSave = () => {
+    if (formDataObject.flyerFile) {
+      delete formDataObject.flyer;
+    }
+
     const errors = Object.keys(formDataObject).reduce(
       (acc, field) => {
         const value = formDataObject[field as keyof IEventInput];
@@ -244,13 +239,13 @@ const CreateUpdateEventPage = () => {
     });
 
     if ((isLoggedIn && numberOfEventsLeft > 0) || (isLoggedIn && updatingAlreadyMadeEvent)) {
+      const formData = objectToFormData(formDataObject);
+
       const url = updatingAlreadyMadeEvent ? `/api/events?id=${searchParams.get("eventId")}` : `/api/events`;
+
       fetch(url, {
         method: updatingAlreadyMadeEvent ? "PUT" : "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formDataObject),
+        body: formData,
       })
         .then((response) => {
           if (response.status === 200) {

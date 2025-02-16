@@ -3,7 +3,7 @@ import Club, { ClubLeader } from "../../../lib/models/Club";
 import UpdateLog from "../../../lib/models/Updates";
 import { NextResponse } from "next/server";
 import { Category, IClubInput } from "../../../lib/models/Club";
-import { deleteImage, uploadImage } from "@/lib/serverUtils";
+import { deleteImage, getFormData, uploadImage } from "@/lib/serverUtils";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { checkIfAdmin } from "@/lib/serverUtils";
@@ -170,46 +170,19 @@ const IClubInputKeys = {
 
 export async function PUT(req: Request): Promise<NextResponse> {
   try {
-    // Connect to the database
     await connectToDatabase();
 
     if (!req.headers.get("content-type")?.includes("multipart/form-data")) {
       return NextResponse.json({ error: "Expected multipart/form-data" }, { status: 400 });
     }
 
-    const formData = await req.formData();
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
     if (!id) {
       return NextResponse.json({ error: "Club ID is required." }, { status: 400 });
     }
 
-    const logoFile = formData.get("logoFile") as File | null;
-    console.log("Received logoFile:", logoFile ? logoFile : "No file");
-
-    const data: Record<string, any> = {};
-
-    formData.forEach((value, key) => {
-      if (key.includes("[")) {
-        const baseKey = key.replace(/\[\d+\]$/, "");
-        if (!data[baseKey]) data[baseKey] = [];
-        data[baseKey].push(value);
-      } else {
-        try {
-          const parsedValue = JSON.parse(value as string);
-          if (Array.isArray(parsedValue) && typeof parsedValue[0] === "object") {
-            data[key] = parsedValue;
-          } else {
-            data[key] = parsedValue;
-          }
-        } catch {
-          data[key] = value;
-        }
-      }
-    });
-
-    // console.log("Parsed FormData:", data);
-    // console.log(data["logoFile"]);
+    const data = await getFormData(req);
 
     // Disallow updates to restricted fields
     const restrictedFields = ["yaleConnectId", "scraped", "inactive", "_id", "createdAt", "updatedAt", "followers"];

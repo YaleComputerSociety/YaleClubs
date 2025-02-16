@@ -23,6 +23,7 @@ import RecruitmentStatusDropdown from "@/components/update/RecruitmentDropdown";
 import AliasesDropdown from "@/components/update/ClubAliases";
 import Filter from "@/components/Filter";
 import { useAuth } from "@/contexts/AuthContext";
+import { objectToFormData } from "@/lib/utils";
 
 const UpdatePage = () => {
   const searchParams = useSearchParams();
@@ -266,30 +267,9 @@ const UpdatePage = () => {
     });
 
     const clubId = searchParams.get("clubId");
+
     if (clubId && isLoggedIn) {
-      const formData = new FormData();
-
-      Object.entries(formDataObject).forEach(([key, value]) => {
-        if (value === undefined || value === null) return;
-
-        if (value instanceof File) {
-          formData.append(key, value); // Directly append file
-        } else if (Array.isArray(value)) {
-          if (typeof value[0] === "object") {
-            // Handle list of objects (serialize as JSON string)
-            formData.append(key, JSON.stringify(value));
-          } else {
-            // Handle list of primitives (like enums or strings)
-            value.forEach((item, index) => {
-              formData.append(`${key}[${index}]`, item.toString());
-            });
-          }
-        } else if (typeof value === "object") {
-          formData.append(key, JSON.stringify(value)); // Serialize nested objects
-        } else {
-          formData.append(key, value.toString()); // Convert numbers, enums, and other primitives to strings
-        }
-      });
+      const formData = objectToFormData(formDataObject);
 
       fetch(`/api/clubs?id=${clubId}`, {
         method: "PUT",

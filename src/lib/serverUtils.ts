@@ -84,3 +84,28 @@ export async function checkIfAdmin(): Promise<boolean> {
 
   return true;
 }
+
+export const getFormData = async (req: Request) => {
+  const formData = await req.formData();
+  const data: Record<string, any> = {};
+
+  formData.forEach((value, key) => {
+    if (key.includes("[")) {
+      const baseKey = key.replace(/\[\d+\]$/, "");
+      if (!data[baseKey]) data[baseKey] = [];
+      data[baseKey].push(value);
+    } else {
+      try {
+        const parsedValue = JSON.parse(value as string);
+        if (Array.isArray(parsedValue) && typeof parsedValue[0] === "object") {
+          data[key] = parsedValue;
+        } else {
+          data[key] = parsedValue;
+        }
+      } catch {
+        data[key] = value;
+      }
+    }
+  });
+  return data;
+};

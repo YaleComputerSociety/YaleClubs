@@ -85,3 +85,30 @@ export function generateGoogleCalendarLink(event: IEvent): string {
 
   return `${baseUrl}&${params.toString()}`;
 }
+
+export const objectToFormData = (formDataObject: Record<string, any>): FormData => {
+  const formData = new FormData();
+
+  Object.entries(formDataObject).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+
+    if (value instanceof File) {
+      formData.append(key, value); // Directly append file
+    } else if (Array.isArray(value)) {
+      if (typeof value[0] === "object") {
+        // Handle list of objects (serialize as JSON string)
+        formData.append(key, JSON.stringify(value));
+      } else {
+        // Handle list of primitives (like enums or strings)
+        value.forEach((item, index) => {
+          formData.append(`${key}[${index}]`, item.toString());
+        });
+      }
+    } else if (typeof value === "object") {
+      formData.append(key, JSON.stringify(value)); // Serialize nested objects
+    } else {
+      formData.append(key, value.toString()); // Convert numbers, enums, and other primitives to strings
+    }
+  });
+  return formData;
+};
