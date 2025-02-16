@@ -31,7 +31,7 @@ const CreateUpdateEventPage = () => {
   const [availeHostClubs, setAvailHostClubs] = useState<string[]>([]);
   const [numberOfEventsLeft, setNumberOfEventsLeft] = useState(MAX_NUMBER_OF_EVENTS_PER_MONTH);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  const [formData, setFormData] = useState<IEventInput>({
+  const [formDataObject, setFormDataObject] = useState<IEventInput>({
     name: "",
     description: "",
     clubs: [],
@@ -126,7 +126,7 @@ const CreateUpdateEventPage = () => {
               createdBy: specificEvent.createdBy || "",
             };
             setEvent(specificEvent);
-            setFormData(eventInput);
+            setFormDataObject(eventInput);
             setSelectedClubs(eventInput.clubs);
             setSelectedTags(eventInput.tags?.map((tag) => tag.toString()) ?? []);
           }
@@ -179,7 +179,7 @@ const CreateUpdateEventPage = () => {
           },
         });
         const allEvents = response.data;
-        const oneMonthAgo = new Date(formData.start);
+        const oneMonthAgo = new Date(formDataObject.start);
         oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
 
         // first event is the considered the anchor event that dictates if you have events left
@@ -199,21 +199,25 @@ const CreateUpdateEventPage = () => {
     } else {
       setNumberOfEventsLeft(MAX_NUMBER_OF_EVENTS_PER_MONTH);
     }
-  }, [selectedClubs, formData.start]);
+  }, [selectedClubs, formDataObject.start]);
 
   const handleChange = React.useCallback(
     (field: keyof IEventInput, value: string | Date | Tag[] | string[] | undefined) => {
       const error = validateInput(field as keyof IEventInput, value !== undefined ? value : "");
       setValidationErrors((prev) => ({ ...prev, [field]: error }));
-      setFormData((prev) => ({ ...prev, [field]: value }));
+      setFormDataObject((prev) => ({ ...prev, [field]: value }));
     },
     [validateInput],
   );
 
+  const handleImageChange = (field: "flyerFile", value: File) => {
+    setFormDataObject((prev) => ({ ...prev, [field]: value }));
+  };
+
   const handleSave = () => {
-    const errors = Object.keys(formData).reduce(
+    const errors = Object.keys(formDataObject).reduce(
       (acc, field) => {
-        const value = formData[field as keyof IEventInput];
+        const value = formDataObject[field as keyof IEventInput];
         const error = validateInput(field as keyof IEventInput, value !== undefined ? String(value) : "");
         if (error) acc[field] = error;
         return acc;
@@ -229,13 +233,13 @@ const CreateUpdateEventPage = () => {
       return;
     }
 
-    Object.keys(formData).forEach((key) => {
-      const value = formData[key as keyof IEventInput];
+    Object.keys(formDataObject).forEach((key) => {
+      const value = formDataObject[key as keyof IEventInput];
       if (typeof value === "string" && value.trim() === "") {
-        delete formData[key as keyof IEventInput];
+        delete formDataObject[key as keyof IEventInput];
       }
       if (typeof value === "number" && value === 0) {
-        delete formData[key as keyof IEventInput];
+        delete formDataObject[key as keyof IEventInput];
       }
     });
 
@@ -246,7 +250,7 @@ const CreateUpdateEventPage = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formDataObject),
       })
         .then((response) => {
           if (response.status === 200) {
@@ -303,19 +307,18 @@ const CreateUpdateEventPage = () => {
             </Link>
             <div className="flex items-center space-x-4 justify-center flex-grow">
               <h1 className="text-3xl font-bold text-center pb-2">
-                {updatingAlreadyMadeEvent ? "Edit" : "Create"} an Event
+                {updatingAlreadyMadeEvent ? "Edit" : "Create"} Event
               </h1>
             </div>
             <div className="w-16"></div>
           </div>
-          <div className="flex items-center justify-center text-lg">Event Flyer</div>
 
           <div className="flex items-center justify-center m-4">
-            <AddFlyerSection formData={formData} handleChange={handleChange} />
+            <AddFlyerSection formData={formDataObject} handleChange={handleImageChange} />
           </div>
 
-          <div className="flex items-center justify-center m-3 text-gray-500">
-            Note: Events with a flyer have a higher chance of being featured!
+          <div className="flex items-center text-sm justify-center m-3 text-gray-400">
+            Events with a flyer have a higher chance of being featured!
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
@@ -324,7 +327,7 @@ const CreateUpdateEventPage = () => {
                 <div className="text-red-600 m-0">*</div>
                 <input
                   type="text"
-                  value={formData.name ?? ""}
+                  value={formDataObject.name ?? ""}
                   onChange={(e) => handleChange("name", e.target.value)}
                   className="w-full border border-gray-300 rounded-lg p-2"
                   placeholder="Event Name"
@@ -356,7 +359,7 @@ const CreateUpdateEventPage = () => {
             <div>
               <div className="text-red-600 m-0">*</div>
               <textarea
-                value={formData.description ?? ""}
+                value={formDataObject.description ?? ""}
                 onChange={(e) => handleChange("description", e.target.value)}
                 className="w-full border border-gray-300 rounded-lg p-2"
                 placeholder="Event Description"
@@ -384,7 +387,7 @@ const CreateUpdateEventPage = () => {
                       handleChange("start", utcDate);
                     }
                   }}
-                  value={dbDateToFrontendDate(new Date(formData.start))}
+                  value={dbDateToFrontendDate(new Date(formDataObject.start))}
                 />
                 {validationErrors.start && <p className="text-red-500">{validationErrors.start}</p>}
               </div>
@@ -393,7 +396,7 @@ const CreateUpdateEventPage = () => {
 
                 <input
                   type="text"
-                  value={formData.location ?? ""}
+                  value={formDataObject.location ?? ""}
                   onChange={(e) => handleChange("location", e.target.value)}
                   className="w-full border border-gray-300 rounded-lg p-2"
                   placeholder="Location"
@@ -403,7 +406,7 @@ const CreateUpdateEventPage = () => {
               <div>
                 <input
                   type="text"
-                  value={formData.registrationLink ?? ""}
+                  value={formDataObject.registrationLink ?? ""}
                   onChange={(e) => handleChange("registrationLink", e.target.value)}
                   className="w-full border border-gray-300 rounded-lg p-2"
                   placeholder="Registration Link"
@@ -418,7 +421,7 @@ const CreateUpdateEventPage = () => {
           <div className="mb-4 mt-2 flex items-center gap-2 justify-end">
             {!updatingAlreadyMadeEvent && selectedClubs.length != 0 && (
               <p>
-                Your club only has{" "}
+                Your club has{" "}
                 <span
                   className={`${numberOfEventsLeft === 0 || numberOfEventsLeft === 1 ? "font-bold text-red-500" : "font-bold"}`}
                 >

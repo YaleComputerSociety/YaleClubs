@@ -15,9 +15,7 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentField, setCurrentField] = useState<"backgroundImageFile" | "logoFile">("logoFile");
   const [inputValue, setInputValue] = useState<File | string | undefined>(undefined);
-  const [modalError, setModalError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<{
     x: number;
     y: number;
@@ -26,6 +24,8 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
   } | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+  const [errorMessage, setErrorMessage] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isValidUrl = (value: string) => {
     try {
@@ -48,22 +48,22 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
     if (!file) return;
 
     if (file.size > MAX_FILE_SIZE) {
-      setModalError(`File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`);
+      setErrorMessage(`File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`);
       return;
     }
 
     if (!file.type.startsWith("image/")) {
-      setModalError("Please upload an image file");
+      setErrorMessage("Please upload an image file");
       return;
     }
 
     setIsUploading(true);
-    setModalError("");
+    setErrorMessage("");
 
     try {
       setInputValue(file);
     } catch (error) {
-      setModalError((error as Error).message);
+      setErrorMessage((error as Error).message);
     } finally {
       setIsUploading(false);
     }
@@ -78,21 +78,20 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
       setCurrentField(fileField);
       setInputValue(formData[field] as string);
     }
-    setModalError("");
+    setErrorMessage("");
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setModalError("");
-    setInputValue(undefined);
+    setErrorMessage("");
     setCrop({ x: 0, y: 0 });
     setZoom(1);
   };
 
   const handleSave = async () => {
     if (inputValue && typeof inputValue === "string" && !inputValue.startsWith("data:") && !isValidUrl(inputValue)) {
-      setModalError("Invalid URL format.");
+      setErrorMessage("Invalid URL format.");
       return;
     }
 
@@ -102,7 +101,7 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
       closeModal();
     } catch (error) {
       console.error("Error cropping image:", error);
-      setModalError("Failed to process. Try uploading a new image.");
+      setErrorMessage("Failed to process. Try uploading a new image.");
     }
   };
 
@@ -164,13 +163,14 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
       <div className="relative w-full overflow-hidden flex items-center flex-col border-4">
         <div className="w-[768px] h-[242px] relative flex items-center">
           <Image
+            onClick={() => openModal("backgroundImage")}
             src={
               formData.backgroundImageFile
                 ? URL.createObjectURL(formData.backgroundImageFile)
                 : formData.backgroundImage || "/assets/default-background.png"
             }
             alt="Background"
-            className="object-cover"
+            className="object-cover cursor-pointer"
             width={1920}
             height={1080}
           />
@@ -187,11 +187,12 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
       <div className="absolute -bottom-6 right-16">
         <div className="relative w-48 h-48 rounded-3xl border-4 flex items-center justify-center">
           <Image
+            onClick={() => openModal("logo")}
             src={
               formData.logoFile ? URL.createObjectURL(formData.logoFile) : formData.logo || "/assets/default-logo.png"
             }
             alt="Logo"
-            className="object-cover rounded-3xl"
+            className="object-cover rounded-3xl cursor-pointer"
             width={240}
             height={240}
             priority
@@ -208,13 +209,13 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
 
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-4 rounded-xl w-xl flex flex-col gap-4">
+          <div className="bg-white p-4 rounded-xl max-w-xl flex flex-col gap-4">
             <h2 className="text-3xl font-semibold">
               Edit {currentField === "backgroundImageFile" ? "Background Image" : "Logo"}
             </h2>
             <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" />
 
-            {modalError && <p className="text-red-500 mb-2">{modalError}</p>}
+            {errorMessage && <p className="text-red-500 text-sm mb-2">{errorMessage}</p>}
 
             {inputValue && (
               <div>
