@@ -29,7 +29,7 @@ export default function Footer() {
             </p>
             {/* <div className="mt-8 text-right text-black"> */}
             <p className="text-md mt-2">YaleClubs © {new Date().getFullYear()}</p>
-        {/* </div> */}
+            {/* </div> */}
           </div>
 
           <div className="basis-2/3 grid grid-cols-3 text-sm sm:text-md">
@@ -99,7 +99,6 @@ export default function Footer() {
             </div>
           </div>
         </div>
-
       </div>
       <br></br>
       <div className="text-center text-xs w-4/5 mx-auto text-gray-300 ">

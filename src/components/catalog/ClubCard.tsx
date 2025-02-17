@@ -44,15 +44,13 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
           const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
           if (localDate.getTime() + 3 * 24 * 60 * 60 * 1000 < now.getTime()) {
             return null;
-          } else
-          {
+          } else {
             return "Applications Closed";
           }
-        } else
-        {
-            return null;
+        } else {
+          return null;
         }
-        // compare recruitment status to the date
+      // compare recruitment status to the date
       case RecruitmentStatus.APPENDS:
         if (club.recruitmentEndDate) {
           const date = new Date(club.recruitmentEndDate);
@@ -99,7 +97,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
             : "";
           if (endlocalDate && endlocalDate.getTime() + 4 * 24 * 60 * 60 * 1000 < now.getTime()) {
             return null;
-          } 
+          }
           if (endlocalDate && endlocalDate.getTime() + 24 * 60 * 60 * 1000 < now.getTime()) {
             return "Applications Closed";
           }
