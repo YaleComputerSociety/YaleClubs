@@ -37,7 +37,22 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
 
     switch (club.recruitmentStatus) {
       case RecruitmentStatus.APPCLOSED:
-        return "Applications Closed";
+        if (club.recruitmentEndDate) {
+          const date = new Date(club.recruitmentEndDate);
+          const now = new Date();
+
+          const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+          if (localDate.getTime() + 3 * 24 * 60 * 60 * 1000 < now.getTime()) {
+            return null;
+          } else
+          {
+            return "Applications Closed";
+          }
+        } else
+        {
+            return null;
+        }
+        // compare recruitment status to the date
       case RecruitmentStatus.APPENDS:
         if (club.recruitmentEndDate) {
           const date = new Date(club.recruitmentEndDate);
@@ -49,6 +64,10 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
             month: "short",
             day: "numeric",
           });
+
+          if (localDate.getTime() + 3 * 24 * 60 * 60 * 1000 < now.getTime()) {
+            return null;
+          }
 
           if (localDate.getTime() + 24 * 60 * 60 * 1000 < now.getTime()) {
             return "Applications Closed";
@@ -78,7 +97,9 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
                 day: "numeric",
               })
             : "";
-
+          if (endlocalDate && endlocalDate.getTime() + 4 * 24 * 60 * 60 * 1000 < now.getTime()) {
+            return null;
+          } 
           if (endlocalDate && endlocalDate.getTime() + 24 * 60 * 60 * 1000 < now.getTime()) {
             return "Applications Closed";
           }
