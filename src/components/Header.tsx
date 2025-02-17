@@ -98,7 +98,7 @@ const Header = () => {
                             setIsMenuOpen(false);
                           });
                         }}
-                        className={authButton + " bg-gray-200 text-gray-500"}
+                        className={authButton + " bg-gray-200 text-gray-600"}
                       >
                         Sign Out
                       </button>
@@ -128,7 +128,7 @@ const Header = () => {
               </Link>
             ))}
             {isLoggedIn ? (
-              <button onClick={handleLogout} className={authButton + " bg-gray-200 text-gray-500"}>
+              <button onClick={handleLogout} className={authButton + " bg-gray-200 text-gray-600"}>
                 Sign Out
               </button>
             ) : (

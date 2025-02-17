@@ -60,18 +60,17 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
     }
   }, [associatedClubLeaders, user, isLoggedIn]);
 
-  console.log(isLoggedIn);
-
-  const editButtonStyle =
-    "px-3 py-1 text-base font-medium rounded-xl shadow";
+  const editButtonStyle = "px-3 py-1 text-base font-medium rounded-xl shadow";
 
   const EditDeleteButton = () => {
     return (
       <div className="absolute top-3 right-3 z-50">
-        {canEdit && isLoggedIn ? (
+        {canEdit && isLoggedIn && false && (
           <div className="flex flex-row space-x-3">
             <Link href={`/CreateUpdateEvent?eventId=${event._id}`}>
-              <button className={`${editButtonStyle} bg-clubPurple text-white hover:bg-clubBlurple transition-all duration-300 hover:scale-105`}>
+              <button
+                className={`${editButtonStyle} bg-clubPurple text-white hover:bg-clubBlurple transition-all duration-300 hover:scale-105`}
+              >
                 Edit Event
               </button>
             </Link>
@@ -98,15 +97,6 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
               </div>
             </button>
           </div>
-        ) : isLoggedIn ? (
-          <button
-            className="px-4 py-2 text-lg font-medium text-white bg-gray-400 rounded shadow cursor-not-allowed"
-            disabled
-          >
-            Edit Event
-          </button>
-        ) : (
-          <div></div>
         )}
       </div>
     );
@@ -116,7 +106,7 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
       <div
         ref={modalRef}
-        className="relative bg-white rounded-2xl w-full max-w-lg h-5/6 max-h-[1000px] overflow-y-auto"
+        className="relative bg-white rounded-2xl w-full max-w-lg h-[85dvh] max-h-[1000px] overflow-y-auto"
       >
         <div className="bg-white z-50 absolute top-4 left-4 h-5 w-5 rounded-full"></div>
         <Image
@@ -141,13 +131,23 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
           />
         </div>
 
-        <div className="max-w-lg mx-auto px-4">
+        <div className="max-w-lg mx-auto p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
             <div className="flex-1 w-full">
-              <h2 className="text-2xl sm:text-3xl font-bold leading-tight break-words">{event.name}</h2>
-              <div>{new Date(event.start).toLocaleString(undefined, { dateStyle: "medium" })}</div>
-              <div>
-                {event.location} | {new Date(event.start).toLocaleString(undefined, { timeStyle: "short" })}
+              <div className="text-2xl sm:text-3xl font-bold tracking-tight break-words relative -top-1">
+                {event.name}
+              </div>
+              <div className="flex flex-row flex-wrap gap-x-6 font-semibold text-gray-700">
+                <div>
+                  {new Date(event.start).toLocaleDateString(undefined, {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </div>
+                <div>{new Date(event.start).toLocaleString(undefined, { timeStyle: "short" })}</div>
+                <div>{event.location}</div>
               </div>
               <div className="flex flex-wrap gap-2 text-xs mt-2">
                 {event.registrationLink && (
@@ -169,19 +169,21 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
                   ) : (
                     <Image
                       src={"/assets/default-logo.png"}
-                      className="rounded-lg"
+                      className="rounded-md"
                       alt="Club Logo"
-                      width={36}
-                      height={36}
+                      width={40}
+                      height={40}
                     />
                   )}
-                  <div className="text-sm sm:text-base text-gray-600 font-bold max-w-[125px]">{club.name}</div>
+                  <div className="text-sm sm:text-sm text-gray-700 max-w-[125px]" style={{ lineHeight: "1.2" }}>
+                    {club.name}
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="text-gray-500 text-sm sm:text-base mt-3 break-words">{event.description}</div>
+          <div className="text-gray-700 text-sm sm:text-base mt-3 break-words">{event.description}</div>
 
           <div className="flex flex-wrap gap-2 mt-3">
             {event.tags?.map((tag: Tag, index) => <TagBlock key={index} tag={tag} />)}
