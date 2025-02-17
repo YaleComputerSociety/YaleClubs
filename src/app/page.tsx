@@ -9,6 +9,7 @@ import { IClub } from "@/lib/models/Club";
 import SearchControl from "@/components/search/SearchControl";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
+import { IUsers } from "@/lib/models/Users";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -17,6 +18,7 @@ export default function Home() {
   const [currentClubs, setCurrentClubs] = useState<IClub[]>([]);
   const [followedClubs, setFollowedClubs] = useState<string[]>([]);
   const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
+  const [users, setUsers] = useState<IUsers[]>([]);
   const { user } = useAuth();
   const netid = user?.netid;
   useEffect(() => {
@@ -36,11 +38,25 @@ export default function Home() {
   }, [setFollowedClubs, setClubs, setIsLoading]);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUsers = async () => {
       try {
-        // get /users&netid
+        const usersResponse = await axios.get<IUsers[]>("/api/users");
+        setUsers(usersResponse.data); // Store users
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  useEffect(() => {
+    const fetchUserFollowedClubs = async () => {
+      if (!netid) return;
+
+      try {
         const response = await axios.get("/api/users", {
-          params: { netid: netid },
+          params: { netid },
         });
 
         setFollowedClubs(response.data.user.followedClubs);
@@ -51,9 +67,8 @@ export default function Home() {
       }
     };
 
-    fetchUser();
+    fetchUserFollowedClubs();
   }, [netid]);
-
   return (
     <main className=" flex flex-col min-h-screen">
       <div className="flex-grow">
@@ -79,6 +94,7 @@ export default function Home() {
           setIsLoading={setIsLoading}
           followedClubs={followedClubs}
           setSelectedClub={setSelectedClub}
+          users={users} 
         />
         <div className="flex flex-col w-full px-5 md:px-20">
           <Catalog
