@@ -4,6 +4,7 @@ import React, { Dispatch, SetStateAction } from "react";
 import { IClub, RecruitmentStatus } from "@/lib/models/Club";
 import Image from "next/image";
 import FollowButton from "./FollowButton";
+import { LabelList } from "./LabelList";
 
 type ClubCardProps = {
   club: IClub;
@@ -123,7 +124,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
   const hasApplicationStatus = applicationStatus !== null;
 
   return (
-    <div className="relative w-full max-w-2xl">
+    <div className="relative w-full">
       <div
         className={`bg-white rounded-xl flex flex-col justify-between w-full cursor-pointer h-full shadow-md  `}
         onClick={onClick}
@@ -142,27 +143,17 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
             </div>
           </div>
         )}
-        <div className="flex flex-row gap-4 px-3 py-2 md:px-4 md:py-3 ">
+        <div className="flex flex-row gap-2 sm:gap-4 px-3 py-2 md:px-4 md:py-3 ">
           <div className="flex flex-col justify-center flex-1 min-w-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="md:text-xl font-semibold line-clamp-1 md:line-clamp-2 overflow-hidden">{club.name}</div>
+                <div className="md:text-xl font-semibold line-clamp-1 md:line-clamp-2 overflow-hidden break-all sm:break-normal">
+                  {club.name}
+                </div>
               </div>
             </div>
-            <div className="mt-2 flex gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
-              {club.school && <span className="bg-[#acf] rounded px-2 py-1 text-xs">{club.school}</span>}
-              {club.categories?.map((tag, index) => (
-                <span key={index} className="bg-[#eee] rounded px-2 py-1 text-xs">
-                  {tag}
-                </span>
-              ))}
-              {club.affiliations?.map((tag, index) => (
-                <span key={index} className="bg-[#feb] rounded px-2 py-1 text-xs">
-                  {tag}
-                </span>
-              ))}
-            </div>
-            <div className="text-sm md:text:lg text-gray-800 line-clamp-3 mt-2">
+            <LabelList club={club} className="mt-2 scrollbar-hide overflow-x-auto" />
+            <div className="text-xs sm:text-sm md:text:lg text-gray-800 line-clamp-3 mt-2">
               {club.description ?? "No description"}
             </div>
           </div>
@@ -172,7 +163,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
               alt="Club Logo"
               width={100}
               height={100}
-              className="rounded-xl flex-shrink-0 w-16 md:w-[80px] h-16 md:h-[80px]"
+              className="rounded-xl flex-shrink-0 object-cover w-[60px] h-[60px] sm:w-[80px] sm:h-[80px]"
             />
             <div className="flex flex-col items-center">
               <FollowButton
@@ -180,8 +171,9 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
                 clubId={club._id}
                 followedClubs={followedClubs}
                 setFollowedClubs={setFollowedClubs}
+                className="w-[60px] sm:w-[80.1px] my-2 text-xs sm:text-sm"
               />
-              <div className="text-sm text-gray-500">
+              <div className="text-xs sm:text-sm text-gray-500">
                 {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}
               </div>
             </div>
@@ -191,7 +183,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
           <div className="w-full overflow-hidden cursor-pointer" onClick={onClick}>
             <div className="w-full bg-purple-50 py-2 px-3 md:px-4 rounded-b-xl">
               <div className="flex items-center justify-center">
-                <span className="line-clamp-1 text-purple-800 text-sm font-medium">{applicationStatus}</span>
+                <span className="line-clamp-1 text-purple-800 text-xs sm:text-sm font-medium">{applicationStatus}</span>
               </div>
             </div>
           </div>

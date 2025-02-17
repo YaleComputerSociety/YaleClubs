@@ -106,18 +106,20 @@ export interface IClubInput {
   affiliations?: Affiliation[] | undefined;
   school?: School | undefined;
   logo?: string | undefined;
+  logoFile: File | undefined;
   backgroundImage?: string | undefined;
+  backgroundImageFile: File | undefined;
   numMembers?: number | undefined;
   website?: string | undefined;
   email?: string | undefined;
   instagram?: string | undefined;
   applyForm?: string | undefined;
   mailingListForm?: string | undefined;
-  meeting?: string | undefined;
+  meeting?: string | undefined; // obsolete
   calendarLink?: string | undefined;
   yaleConnectId?: number | undefined;
-  intensity?: Intensity | undefined;
-  howToJoin?: string | undefined;
+  intensity?: Intensity | undefined; // unused
+  howToJoin?: string | undefined; // unused
   scraped?: boolean | undefined;
   inactive?: boolean | undefined;
   applicationStatus?: string | undefined;

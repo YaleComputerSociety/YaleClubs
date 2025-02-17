@@ -1,17 +1,20 @@
-import React, { useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import Cropper from "react-easy-crop";
 import Image from "next/image";
-import { IEventInput, Tag } from "@/lib/models/Event";
+import { IEventInput } from "@/lib/models/Event";
 import { MAX_IMAGE_HEIGHT, MAX_IMAGE_WIDTH } from "../constants";
 
 interface EditableImageSectionProps {
   formData: IEventInput;
-  handleChange: (field: keyof IEventInput, value: string | Tag[] | undefined) => void;
+  handleChange: (field: "flyerFile", value: File) => void;
 }
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 const AddFlyerSection: React.FC<EditableImageSectionProps> = ({ formData, handleChange }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState<File | string | undefined>(undefined);
+  const [isUploading, setIsUploading] = useState(false);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<{
     x: number;
     y: number;
@@ -21,23 +24,71 @@ const AddFlyerSection: React.FC<EditableImageSectionProps> = ({ formData, handle
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [errorMessage, setErrorMessage] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const blobUrl = useMemo(() => {
+    if (inputValue instanceof File) {
+      return URL.createObjectURL(inputValue);
+    }
+    return inputValue; // Use URL directly if it's already a string
+  }, [inputValue]);
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > MAX_FILE_SIZE) {
+      setErrorMessage(`File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`);
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      setErrorMessage("Please upload an image file");
+      return;
+    }
+
+    setIsUploading(true);
+    setErrorMessage("");
+
+    try {
+      setInputValue(file);
+    } catch (error) {
+      setErrorMessage((error as Error).message);
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const openModal = () => {
-    setInputValue(formData.flyer || "");
+    setInputValue(formData.flyerFile || formData.flyer || undefined);
     setIsModalOpen(true);
+    setErrorMessage("");
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setErrorMessage(""); // Clear error message
+    setErrorMessage("");
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+  };
+
+  const handleSave = async () => {
+    try {
+      const croppedImage = await cropImage(inputValue as File | string);
+      handleChange("flyerFile", croppedImage);
+      closeModal();
+    } catch (error) {
+      console.error("Error cropping image:", error);
+      setErrorMessage("Failed to process. Try uploading a new image.");
+    }
   };
 
   const onCropComplete = (_: any, croppedAreaPixels: { x: number; y: number; width: number; height: number }) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
 
-  const cropImage = async (): Promise<string> => {
-    const image = await createImage(inputValue);
+  const cropImage = async (input: File | string): Promise<File> => {
+    const image = await createImage(input);
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
@@ -52,36 +103,47 @@ const AddFlyerSection: React.FC<EditableImageSectionProps> = ({ formData, handle
       ctx.drawImage(image, x, y, width, height, 0, 0, width, height);
     }
 
-    return canvas.toDataURL("image/jpeg");
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (!blob) return reject(new Error("Canvas toBlob failed"));
+        resolve(new File([blob], "cropped-image.png", { type: "image/png" }));
+      }, "image/png");
+    });
   };
 
-  const handleSave = async () => {
-    try {
-      const croppedImage = await cropImage();
-      handleChange("flyer", croppedImage);
-      closeModal();
-    } catch (error) {
-      console.error("Error cropping image:", error);
-    }
-  };
-
-  const createImage = (url: string): Promise<HTMLImageElement> => {
+  const createImage = async (input: string | File): Promise<HTMLImageElement> => {
     return new Promise((resolve, reject) => {
       const img = new window.Image();
-      img.src = url;
       img.crossOrigin = "anonymous";
+
       img.onload = () => resolve(img);
-      img.onerror = reject;
+      img.onerror = () => reject(new Error("Failed to load image"));
+
+      if (typeof input === "string") {
+        img.src = input;
+      } else {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === "string") {
+            img.src = reader.result;
+          } else {
+            reject(new Error("Failed to read file"));
+          }
+        };
+        reader.onerror = () => reject(new Error("FileReader error"));
+        reader.readAsDataURL(input);
+      }
     });
   };
 
   return (
     <div className="relative">
-      <div className="relative w-48 h-48 rounded-lg shadow-lg">
+      <div className="relative w-96 h-96 rounded-lg shadow-lg">
         <Image
-          src={formData.flyer || "/assets/default-background.png"}
+          onClick={openModal}
+          src={formData.flyerFile ? URL.createObjectURL(formData.flyerFile) : formData.flyer || "/assets/noImage.avif"}
           alt="Flyer"
-          className="object-cover rounded-lg"
+          className="object-cover rounded-lg cursor-pointer"
           fill
           priority
         />
@@ -95,32 +157,26 @@ const AddFlyerSection: React.FC<EditableImageSectionProps> = ({ formData, handle
 
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[600px] max-h-[90vh] relative overflow-hidden">
-            <h2 className="text-lg font-semibold mb-4">Upload or Crop Your Flyer</h2>
-            <p>Please input a publicly-accessible URL.</p>
-            <p className="mb-4 text-sm text-gray-500">Try uploading your image to imgur.com or postimages.org.</p>
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg p-2 mb-2"
-              placeholder="Enter image URL"
-            />
+          <div className="bg-white p-4 rounded-xl max-w-xl flex flex-col gap-4">
+            <h2 className="text-3xl font-semibold">Flyer</h2>
+            <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" />
 
             {errorMessage && <p className="text-red-500 text-sm mb-2">{errorMessage}</p>}
 
             {inputValue && (
               <div>
                 <div className="relative w-full h-[300px] overflow-hidden">
-                  <Cropper
-                    image={inputValue}
-                    crop={crop}
-                    zoom={zoom}
-                    aspect={MAX_IMAGE_WIDTH / MAX_IMAGE_HEIGHT}
-                    onCropChange={setCrop}
-                    onZoomChange={setZoom}
-                    onCropComplete={onCropComplete}
-                  />
+                  {blobUrl !== undefined && (
+                    <Cropper
+                      image={blobUrl}
+                      crop={crop}
+                      zoom={zoom}
+                      aspect={MAX_IMAGE_WIDTH / MAX_IMAGE_HEIGHT}
+                      onCropChange={setCrop}
+                      onZoomChange={setZoom}
+                      onCropComplete={onCropComplete}
+                    />
+                  )}
                 </div>
                 <div className="flex items-center mt-4">
                   <label htmlFor="zoom-slider" className="mr-4 text-sm font-medium text-gray-700">
@@ -140,11 +196,15 @@ const AddFlyerSection: React.FC<EditableImageSectionProps> = ({ formData, handle
               </div>
             )}
 
-            <div className="flex justify-end mt-4 space-x-4">
+            <div className="flex justify-end space-x-4 mt-4">
               <button onClick={closeModal} className="py-2 px-4 bg-gray-300 rounded-lg hover:bg-gray-400">
                 Cancel
               </button>
-              <button onClick={handleSave} className="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+              <button
+                onClick={handleSave}
+                className="py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                disabled={!inputValue || isUploading}
+              >
                 Save
               </button>
             </div>

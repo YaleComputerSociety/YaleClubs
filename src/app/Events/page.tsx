@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import AuthWrapper from "@/components/AuthWrapper";
 import SearchControlEvent from "@/components/events/catalog/SearchControlEvents";
 import Catalog from "@/components/events/catalog/Catalog";
 
@@ -58,15 +58,16 @@ export default function EventsPage() {
   const [events, setEvents] = useState<IEvent[]>([]);
   const [clubs, setClubs] = useState<IClub[]>([]);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const [currentUpcomingEvents, setCurrentUpcomingEvents] = useState<IEvent[]>([]);
   const [currentPastEvents, setCurrentPastEvents] = useState<IEvent[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [featuredEvents, setFeaturedEvents] = useState<IEvent[]>([]);
-  const [isMobile, setIsMobile] = useState(false);
-
+  const { isLoggedIn } = useAuth();
   const pathname = usePathname();
   const skeletonCount = useSkeletonCount();
+
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 767px)");
@@ -81,19 +82,17 @@ export default function EventsPage() {
     return () => mediaQuery.removeEventListener("change", updateIsMobile);
   }, []);
 
-
-  useEffect(() => {
-    setIsLoggedIn(document.cookie.includes("token="));
-  }, []);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsInitialLoading(true);
         setError(null);
-
         const [eventsResponse, clubsResponse] = await Promise.all([
-          axios.get<IEvent[]>("/api/events"),
+          axios.get<IEvent[]>("/api/events/", {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }),
           axios.get<IClub[]>("/api/clubs"),
         ]);
 
@@ -119,7 +118,7 @@ export default function EventsPage() {
         setFeaturedEvents(getRandomThree(upcoming));
       } catch (error) {
         console.error("Error fetching data:", error);
-        setError("Failed to load events. Please try again later.");
+        setError("Failed to load events. Please try reloading the page.");
       } finally {
         setIsInitialLoading(false);
       }
@@ -164,7 +163,7 @@ export default function EventsPage() {
   }
 
   return (
-    <AuthWrapper>
+    <>
       <main className="flex flex-col min-h-screen">
         <Header />
         <div className="flex-grow">
@@ -178,7 +177,7 @@ export default function EventsPage() {
               </div>
               <div className="flex items-center mb-4 md:mb-0">
                 <Link href="/CreateUpdateEvent">
-                  <button className="flex items-center font-semibold justify-center gap-2 flex-row rounded-full text-xl drop-shadow-md transition hover:shadow-lg hover:bg-violet-500 bg-violet-600 text-white px-5 py-3">
+                  <button className="flex items-center font-semibold justify-center gap-2 flex-row rounded-full text-xl drop-shadow-md transition duration-300 hover:shadow-lg bg-clubPurple hover:bg-clubBlurple text-white px-5 py-3">
                     <FaPlus /> Create Event
                   </button>
                 </Link>
@@ -205,13 +204,13 @@ export default function EventsPage() {
                 isLoading={isInitialLoading}
                 showFeatured={currentUpcomingEvents.length + currentPastEvents.length === events.length}
                 skeletonCount={skeletonCount}
-                isMobile = {isMobile}
+                isMobile={isMobile}
               />
             </div>
           </div>
         </div>
         <Footer />
       </main>
-    </AuthWrapper>
+    </>
   );
 }

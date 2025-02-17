@@ -95,78 +95,71 @@ const ClubLeadersSection: React.FC<{
     handleChange("leaders", updatedLeaders);
   };
 
+  interface IconButtonProps {
+    onClick: () => void;
+    icon: string;
+    alt: string;
+    rotate?: boolean;
+    className?: string;
+  }
+
+  const IconButton: React.FC<IconButtonProps> = ({ onClick, icon, alt, rotate = false, className = "" }) => (
+    <button
+      onClick={onClick}
+      className={`p-1 rounded-lg hover:bg-gray-300 flex-shrink-0 ${className}`}
+      aria-label={alt}
+    >
+      <Image src={icon} alt={alt} width={24} height={24} className={`w-4 h-4 ${rotate ? "rotate-180" : ""}`} />
+    </button>
+  );
+
   return (
     <div>
-      <p className="block text-sm font-medium text-gray-700 mb-2">Board</p>
-      <ul className="mb-2">
+      <p className="block text-sm font-medium text-gray-700 mb-2">Board Members</p>
+      <div className="mb-2 flex flex-col gap-2">
         {leaders.map((leader, index) => (
-          <li key={index} className="flex items-center p-1 rounded-lg mb-2 hover">
-            <div>
-              <p className="font-medium">{leader.name || "Unnamed Board Member"}</p>
-              {leader.role && <p className="text-sm text-gray-600">Role: {leader.role}</p>}
+          <li
+            key={index}
+            className="flex flex-wrap items-center justify-between p-2 rounded-lg border bg-white w-full overflow-hidden"
+          >
+            <div className="flex flex-col flex-[2] min-w-0 truncate">
+              <div className="font-medium">{leader.name || "Unnamed Board Member"}</div>
+              {leader.role && <div className="text-sm text-gray-600">{leader.role}</div>}
+              {leader.email && <div className="text-sm text-gray-600">{leader.email}</div>}
             </div>
-            <div className="ml-auto flex space-x-1">
-              {index > 0 && (
-                <button
-                  onClick={() => moveLeader(index, index - 1)}
-                  className="text-white p-1 rounded-lg hover:bg-gray-300"
-                >
-                  <Image
-                    src="/assets/up-arrow-svgrepo-com.svg"
-                    alt="Up Arrow"
-                    width={24}
-                    height={24}
-                    className="w-6 h-6"
-                  />
-                </button>
-              )}
 
-              {index < leaders.length - 1 && (
-                <button
-                  onClick={() => moveLeader(index, index + 1)}
-                  className="text-white p-1 rounded-lg hover:bg-gray-300"
-                >
-                  <Image
-                    src="/assets/up-arrow-svgrepo-com.svg"
-                    alt="Down Arrow"
-                    width={24}
-                    height={24}
-                    className="w-6 h-6 transform rotate-180"
-                  />
-                </button>
+            <div className="ml-auto flex space-x-1 flex-shrink-0 mix-w-[120px] justify-end overflow-hidden flex-1">
+              {index > 0 && (
+                <IconButton
+                  onClick={() => moveLeader(index, index - 1)}
+                  icon="/assets/up-arrow-svgrepo-com.svg"
+                  alt="Move Up"
+                />
               )}
-              <button
+              {index < leaders.length - 1 && (
+                <IconButton
+                  onClick={() => moveLeader(index, index + 1)}
+                  icon="/assets/up-arrow-svgrepo-com.svg"
+                  alt="Move Down"
+                  rotate
+                />
+              )}
+              <IconButton
                 onClick={() => openModal(leader, index)}
-                className="bg-gray-300 text-white py-1 px-3 rounded-lg hover:bg-gray-400"
-              >
-                <div className="w-4 h-4">
-                  <Image
-                    src="/assets/edit-3-svgrepo-com.svg"
-                    alt="Edit Icon"
-                    width={24}
-                    height={24}
-                    className="w-full h-full"
-                  />
-                </div>
-              </button>
-              <button
+                icon="/assets/edit-3-svgrepo-com.svg"
+                alt="Edit"
+                className="bg-gray-300 hover:bg-gray-400"
+              />
+              <IconButton
                 onClick={() => handleDelete(index)}
-                className="bg-red-500 text-white py-1 px-3 rounded-lg hover:bg-red-600"
-              >
-                <div className="w-4 h-4">
-                  <Image
-                    src="/assets/cross-svgrepo-com (1).svg"
-                    alt="Delete Icon"
-                    width={24}
-                    height={24}
-                    className="w-full h-full"
-                  />
-                </div>
-              </button>
+                icon="/assets/cross-svgrepo-com (1).svg"
+                alt="Delete"
+                className="bg-red-500 hover:bg-red-600"
+              />
             </div>
           </li>
         ))}
-      </ul>
+      </div>
       <button onClick={() => openModal()} className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">
         Add Board Member
       </button>

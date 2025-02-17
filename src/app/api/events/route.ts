@@ -1,9 +1,13 @@
 import connectToDatabase from "@/lib/mongodb";
-import Event from "../../../lib/models/Event";
+import Event from "@/lib/models/Event";
 import { NextResponse } from "next/server";
-import { Tag, IEventInput } from "../../../lib/models/Event";
+import { Tag, IEventInput } from "@/lib/models/Event";
 import Club, { ClubLeader, IClub } from "@/lib/models/Club";
-import UpdateLog from "../../../lib/models/Updates";
+import UpdateLog from "@/lib/models/Updates";
+import { cookies } from "next/headers";
+import { console } from "inspector";
+import jwt from "jsonwebtoken";
+import { deleteImage, getFormData, uploadImage } from "@/lib/serverUtils";
 
 const generateChangeLog = (
   original: {
@@ -54,7 +58,16 @@ const generateChangeLog = (
 
 export async function GET(): Promise<NextResponse> {
   try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token");
+    console.log(token);
+
     await connectToDatabase();
+
+    if (!token) {
+      console.log("no auth");
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
 
     const events = await Event.find().sort({ start: 1 });
 
@@ -69,23 +82,25 @@ export async function POST(req: Request): Promise<NextResponse> {
   try {
     await connectToDatabase();
 
-    // Get user email from the header set by middleware
-    const userEmail = req.headers.get("X-Email");
-
-    if (!userEmail) {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token");
+    if (!token?.value || !process.env.JWT_SECRET) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    let body: IEventInput;
-    try {
-      body = await req.json();
-    } catch (error) {
-      console.error("Error parsing JSON:", error);
-      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    const verified = jwt.verify(token.value, process.env.JWT_SECRET) as unknown as {
+      netid: string;
+      email: string;
+    };
+
+    if (!req.headers.get("content-type")?.includes("multipart/form-data")) {
+      return NextResponse.json({ error: "Expected multipart/form-data" }, { status: 400 });
     }
 
+    const data = await getFormData(req);
+
     // Validate required fields
-    if (!body.name || !body.description || !body.clubs || !body.start || !body.location) {
+    if (!data.name || !data.description || !data.clubs || !data.start || !data.location) {
       return NextResponse.json(
         { error: "Name, description, club, start and location are required fields." },
         { status: 400 },
@@ -93,17 +108,17 @@ export async function POST(req: Request): Promise<NextResponse> {
     }
 
     // Validate `tags` against Tag enum
-    if (body.tags && !body.tags.every((tag) => Object.values(Tag).includes(tag))) {
+    if (data.tags && !data.tags.every((tag: Tag) => Object.values(Tag).includes(tag))) {
       return NextResponse.json({ error: "Invalid tag provided." }, { status: 400 });
     }
     let isLeaderOfAnyClub = false;
-    for (const clubName of body.clubs) {
+    for (const clubName of data.clubs) {
       const club = await Club.findOne({ name: clubName });
       if (!club) {
         return NextResponse.json({ error: `Club ${clubName} not found` }, { status: 404 });
       }
 
-      const isLeader = club.leaders.some((leader: ClubLeader) => leader.email === userEmail);
+      const isLeader = club.leaders.some((leader: ClubLeader) => leader.email === verified.email);
       if (isLeader) {
         isLeaderOfAnyClub = true;
         break;
@@ -117,15 +132,21 @@ export async function POST(req: Request): Promise<NextResponse> {
       );
     }
 
-    body.createdBy = userEmail;
+    if (data["flyerFile"] !== undefined) {
+      const fileUrl = await uploadImage(data["flyerFile"], "events", false);
+      data["flyer"] = fileUrl;
+      data["flyerFile"] = undefined;
+    }
 
-    const event = new Event({ ...body, createdBy: userEmail });
+    data.createdBy = verified.email;
+
+    const event = new Event({ ...data, createdBy: verified.email });
     const savedEvent = await event.save();
 
     // Log the creation in UpdateLog
     await UpdateLog.create({
       documentId: savedEvent._id,
-      updatedBy: userEmail,
+      updatedBy: verified.email,
       changes: "Event created",
     });
 
@@ -139,35 +160,46 @@ export async function POST(req: Request): Promise<NextResponse> {
 export async function PUT(req: Request): Promise<NextResponse> {
   try {
     await connectToDatabase();
-    const userEmail = req.headers.get("X-Email");
 
-    if (!userEmail) {
+    const JWT_SECRET = process.env.JWT_SECRET;
+    if (!JWT_SECRET) {
+      return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
+    }
+
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token");
+    if (!token?.value) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    let body: IEventInput;
-    try {
-      body = await req.json();
-    } catch (error) {
-      console.error("Error parsing JSON:", error);
-      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    interface JWTPayload {
+      netid: string;
+      email: string;
+      role: string;
+    }
+    const verified = jwt.verify(token.value, JWT_SECRET) as unknown as JWTPayload;
+
+    if (!req.headers.get("content-type")?.includes("multipart/form-data")) {
+      return NextResponse.json({ error: "Expected multipart/form-data" }, { status: 400 });
     }
 
+    const data = await getFormData(req);
+
     let isLeaderOfAnyClub = false;
-    for (const clubName of body.clubs) {
+    for (const clubName of data.clubs) {
       const club = await Club.findOne({ name: clubName });
       if (!club) {
         return NextResponse.json({ error: `Club ${clubName} not found` }, { status: 404 });
       }
 
-      const isLeader = club.leaders.some((leader: ClubLeader) => leader.email === userEmail);
+      const isLeader = club.leaders.some((leader: ClubLeader) => leader.email === verified.email);
       if (isLeader) {
         isLeaderOfAnyClub = true;
         break;
       }
     }
 
-    if (!isLeaderOfAnyClub) {
+    if (!isLeaderOfAnyClub && verified.role !== "admin") {
       return NextResponse.json(
         { error: "You must be a leader of at least one of the clubs to edit the event" },
         { status: 403 },
@@ -177,18 +209,15 @@ export async function PUT(req: Request): Promise<NextResponse> {
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
 
-    console.log(id);
-
     if (!id) {
       return NextResponse.json({ error: "Event ID is required." }, { status: 400 });
     }
 
     // Disallow updates to restricted fields
     const restrictedFields = ["_id", "createdAt", "updatedAt", "createdBy"];
-    const validUpdateData = Object.fromEntries(Object.entries(body).filter(([key]) => !restrictedFields.includes(key)));
+    const validUpdateData = Object.fromEntries(Object.entries(data).filter(([key]) => !restrictedFields.includes(key)));
 
     if (Object.keys(validUpdateData).length === 0) {
-      console.log("no fields", validUpdateData);
       return NextResponse.json(
         { error: "No valid fields provided for update. Restricted fields cannot be updated." },
         { status: 400 },
@@ -201,7 +230,15 @@ export async function PUT(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Event not found." }, { status: 404 });
     }
 
-    console.log(originalEvent);
+    if (data["flyerFile"] !== undefined) {
+      process.stdout.write("here");
+      if (originalEvent.flyer && originalEvent.flyer.startsWith("https://yaleclubs")) {
+        process.stdout.write("deleting");
+        await deleteImage(originalEvent.flyer);
+      }
+      const fileUrl = await uploadImage(data["flyerFile"], "events", false);
+      validUpdateData["flyer"] = fileUrl;
+    }
 
     const clubsHostingEvent = originalEvent.clubs;
     const clubs: IClub[] = await Promise.all(
@@ -247,15 +284,13 @@ export async function PUT(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Event not found after update." }, { status: 404 });
     }
 
-    const updateEmail = req.headers.get("X-Email");
-
     if (changeLog) {
       console.log(changeLog);
 
       // Save the change log
       await UpdateLog.create({
         documentId: id,
-        updatedBy: updateEmail,
+        updatedBy: verified.email,
         changes: changeLog,
       });
     }
@@ -272,11 +307,27 @@ export async function DELETE(req: Request): Promise<NextResponse> {
   try {
     await connectToDatabase();
 
-    const netid = req.headers.get("X-NetID");
-    // const userEmail = req.headers.get("X-Email");
-    if (netid !== "admin_a1b2c3e") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    let body: IEventInput;
+    try {
+      body = await req.json();
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
     }
+
+    interface JWTPayload {
+      netid: string;
+      email: string;
+    }
+
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token");
+
+    if (!token?.value || !process.env.JWT_SECRET) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
+
+    const verified = jwt.verify(token?.value, process.env.JWT_SECRET) as unknown as JWTPayload;
 
     // Get the event ID from the query parameters
     const url = new URL(req.url);
@@ -284,6 +335,28 @@ export async function DELETE(req: Request): Promise<NextResponse> {
 
     if (!id) {
       return NextResponse.json({ error: "Event ID is required." }, { status: 400 });
+    }
+
+    let isLeaderOfAnyClub = false;
+    for (const clubName of body.clubs) {
+      const club = await Club.findOne({ name: clubName });
+      if (!club) {
+        console.log("club not found");
+        return NextResponse.json({ error: `Club ${clubName} not found` }, { status: 404 });
+      }
+
+      const isLeader = club.leaders.some((leader: ClubLeader) => leader.email === verified.email);
+      if (isLeader) {
+        isLeaderOfAnyClub = true;
+        break;
+      }
+    }
+
+    if (!isLeaderOfAnyClub) {
+      return NextResponse.json(
+        { error: "You must be a leader of at least one of the clubs to delete the event" },
+        { status: 403 },
+      );
     }
 
     // Attempt to delete the event

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import CustomFont from "next/font/local";
 import "./globals.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import Providers from "./providers";
 
 const geistSans = CustomFont({
   src: "../../public/fonts/GeistVF.woff",
@@ -15,7 +16,7 @@ const geistMono = CustomFont({
 });
 
 export const metadata: Metadata = {
-  title: "Yale Clubs",
+  title: "YaleClubs",
   description: "With Yale Clubs, finding clubs has never been easier",
   icons: {
     icon: "assets/logo.svg",
@@ -29,7 +30,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Providers>{children}</Providers>
+      </body>
       <GoogleAnalytics gaId="G-XCG2T9LY5T" />
     </html>
   );

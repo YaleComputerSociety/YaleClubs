@@ -56,8 +56,6 @@ const Catalog = ({
   const handleClickEvent = (event: IEvent) => setSelectedEvent(event);
   const handleCloseModal = () => setSelectedEvent(null);
 
-  console.log(isLoading);
-
   if (isLoading) {
     return (
       <div className="w-full">
