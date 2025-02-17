@@ -28,7 +28,7 @@ export default function Footer() {
               </span>
             </p>
             {/* <div className="mt-8 text-right text-black"> */}
-            <p className="text-md">YaleClubs © {new Date().getFullYear()}</p>
+            <p className="text-md mt-2">YaleClubs © {new Date().getFullYear()}</p>
         {/* </div> */}
           </div>
 

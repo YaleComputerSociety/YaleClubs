@@ -96,7 +96,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
                 day: "numeric",
               })
             : "";
-          if (endlocalDate && endlocalDate.getTime() + 3 * 24 * 60 * 60 * 1000 < now.getTime()) {
+          if (endlocalDate && endlocalDate.getTime() + 4 * 24 * 60 * 60 * 1000 < now.getTime()) {
             return null;
           } 
           if (endlocalDate && endlocalDate.getTime() + 24 * 60 * 60 * 1000 < now.getTime()) {
