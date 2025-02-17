@@ -67,7 +67,7 @@ const Catalog = ({
           )}
           <div>
             <h1 className="text-2xl font-bold mb-4">Upcoming Events</h1>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {[...Array(skeletonCount)].map((_, i) => (
                 <SkeletonCard key={i} />
               ))}
@@ -75,7 +75,7 @@ const Catalog = ({
           </div>
           <div>
             <h1 className="text-2xl font-bold mb-4">Past Events</h1>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {[...Array(skeletonCount)].map((_, i) => (
                 <SkeletonCard key={i} />
               ))}
@@ -97,7 +97,7 @@ const Catalog = ({
 
             <div>
               <h1 className="text-2xl font-bold mb-4">Upcoming Events</h1>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {upcomingEvents.map((event) => (
                   <EventCard key={event._id} event={event} onClick={() => handleClickEvent(event)} />
                 ))}
@@ -118,7 +118,7 @@ const Catalog = ({
         {pastEvents.length > 0 ? (
           <div className="opacity-60">
             <h1 className="text-2xl font-bold mb-4">Past Events</h1>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {pastEvents.map((event) => (
                 <EventCard key={event._id} event={event} onClick={() => handleClickEvent(event)} />
               ))}
