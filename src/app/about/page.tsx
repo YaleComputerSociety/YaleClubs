@@ -145,7 +145,7 @@ const teamMembers = [
     linkedin: "https://linkedin.com/in/krisaziabor/",
   },
   {
-    name: "Matteo Balbarin",
+    name: "Mateo Balbarin",
     role: "Marketing Ops",
     headshot: "/assets/people/matteo.jpg",
     linkedin: "https://linkedin.com/in/mateo-balbarin-849395237/",
