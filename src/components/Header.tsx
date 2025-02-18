@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePathname } from "next/navigation";
 import Banner from "./Banner";
@@ -12,6 +12,7 @@ const Header = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [bannerHeight, setBannerHeight] = useState(0);
   const { isLoggedIn, logout } = useAuth();
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const pathname = usePathname();
 
@@ -25,14 +26,28 @@ const Header = () => {
     const mediaQuery = window.matchMedia("(max-width: 767px)");
     const updateIsMobile = () => setIsMobile(mediaQuery.matches);
 
-    // Set the initial value
     updateIsMobile();
 
-    // Add event listener for changes
     mediaQuery.addEventListener("change", updateIsMobile);
 
     return () => mediaQuery.removeEventListener("change", updateIsMobile);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   const handleLogout = async () => {
     try {
@@ -68,7 +83,7 @@ const Header = () => {
         </Link>
 
         {isMobile ? (
-          <div className="relative">
+          <div className="relative" ref={menuRef}>
             <button onClick={() => setIsMenuOpen((prev) => !prev)} className="text-4xl focus:outline-none">
               ☰
             </button>
