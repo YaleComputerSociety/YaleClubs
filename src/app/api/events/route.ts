@@ -133,7 +133,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     }
 
     if (data["flyerFile"] !== undefined) {
-      const fileUrl = await uploadImage(data["flyerFile"], "events", false);
+      const fileUrl = await uploadImage(data["flyerFile"], "events");
       data["flyer"] = fileUrl;
       data["flyerFile"] = undefined;
     }
@@ -236,7 +236,7 @@ export async function PUT(req: Request): Promise<NextResponse> {
         process.stdout.write("deleting");
         await deleteImage(originalEvent.flyer);
       }
-      const fileUrl = await uploadImage(data["flyerFile"], "events", false);
+      const fileUrl = await uploadImage(data["flyerFile"], "events");
       validUpdateData["flyer"] = fileUrl;
     }
 
