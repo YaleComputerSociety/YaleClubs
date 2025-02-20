@@ -106,7 +106,9 @@ export interface IClubInput {
   affiliations?: Affiliation[] | undefined;
   school?: School | undefined;
   logo?: string | undefined;
+  logoFile: File | undefined;
   backgroundImage?: string | undefined;
+  backgroundImageFile: File | undefined;
   numMembers?: number | undefined;
   website?: string | undefined;
   email?: string | undefined;

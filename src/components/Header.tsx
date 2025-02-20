@@ -5,10 +5,12 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePathname } from "next/navigation";
+import Banner from "./Banner";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [bannerHeight, setBannerHeight] = useState(0);
   const { isLoggedIn, logout } = useAuth();
 
   const pathname = usePathname();
@@ -41,6 +43,7 @@ const Header = () => {
 
       if (response.ok) {
         window.location.reload();
+        window.location.href = "/";
       } else {
         console.error("Logout failed:", response.statusText);
       }
@@ -50,14 +53,18 @@ const Header = () => {
   };
 
   const authButton =
-    "px-6 py-2 text-white bg-clubPurple rounded-full shadow-md hover:bg-clubBlurple focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap";
+    "px-6 py-2 rounded-full shadow-md hover:bg-clubBlurple focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap";
 
   return (
-    <div className="w-full flex flex-col fixed z-50 transition-[margin-top] duration-1000">
+    <div
+      style={{ marginTop: `${bannerHeight}px` }}
+      className="w-full flex flex-col fixed z-50 transition-[margin-top] duration-1000"
+    >
+      <Banner onHeightChange={(height) => setBannerHeight(height)} />
       <div className="flex flex-row w-full justify-between p-[22px] md:px-20 bg-background">
         <Link href="/" className="flex flex-row items-center">
-          <Image src="/assets/logo.svg" alt="Logo" width={35} height={35} unoptimized />
-          <div className="ml-2 font-semibold text-xl">YaleClubs</div>
+          <Image src="/assets/logo.svg" alt="Logo" width={30} height={30} unoptimized />
+          <div className="ml-3 font-semibold text-xl">YaleClubs</div>
         </Link>
 
         {isMobile ? (
@@ -91,12 +98,16 @@ const Header = () => {
                             setIsMenuOpen(false);
                           });
                         }}
-                        className={authButton}
+                        className={authButton + " bg-gray-200 text-gray-600"}
                       >
                         Sign Out
                       </button>
                     ) : (
-                      <Link href="/api/auth/redirect" onClick={() => setIsMenuOpen(false)} className={authButton}>
+                      <Link
+                        href="/api/auth/redirect"
+                        onClick={() => setIsMenuOpen(false)}
+                        className={authButton + " bg-clubPurple text-white"}
+                      >
                         Sign In
                       </Link>
                     )}
@@ -110,18 +121,18 @@ const Header = () => {
             {links.map(({ href, label }) => (
               <Link key={href} href={href} className="relative">
                 <div
-                  className={`${pathname === href ? "underline underline-offset-4" : ""} hover:text-clubPurple duration-300 transition-colors`}
+                  className={`${pathname === href ? "underline underline-offset-4 text-clubPurple" : ""} hover:text-clubPurple duration-300 transition-colors`}
                 >
                   {label}
                 </div>
               </Link>
             ))}
             {isLoggedIn ? (
-              <button onClick={handleLogout} className={authButton}>
+              <button onClick={handleLogout} className={authButton + " bg-gray-200 text-gray-600"}>
                 Sign Out
               </button>
             ) : (
-              <Link href="/api/auth/redirect" className={authButton}>
+              <Link href="/api/auth/redirect" className={authButton + " bg-clubPurple text-white"}>
                 Sign In
               </Link>
             )}

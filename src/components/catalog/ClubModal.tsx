@@ -64,12 +64,12 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
     if (isLoggedIn) {
       try {
         const isBoardMember = club.leaders.some((leader) => leader.email === user?.email);
-        setCanEdit(isBoardMember);
+        setCanEdit(isBoardMember || user?.role === "admin");
       } catch (err) {
         console.error("You are not logged in", err);
       }
     }
-  }, [club.leaders, isLoggedIn]);
+  }, [club.leaders, isLoggedIn, user]);
 
   type RightLinkProps = {
     content: string;

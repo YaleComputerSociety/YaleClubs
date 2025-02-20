@@ -1,12 +1,13 @@
 import connectToDatabase from "@/lib/mongodb";
-import Event from "../../../lib/models/Event";
+import Event from "@/lib/models/Event";
 import { NextResponse } from "next/server";
-import { Tag, IEventInput } from "../../../lib/models/Event";
+import { Tag, IEventInput } from "@/lib/models/Event";
 import Club, { ClubLeader, IClub } from "@/lib/models/Club";
-import UpdateLog from "../../../lib/models/Updates";
+import UpdateLog from "@/lib/models/Updates";
 import { cookies } from "next/headers";
 import { console } from "inspector";
 import jwt from "jsonwebtoken";
+import { deleteImage, getFormData, uploadImage } from "@/lib/serverUtils";
 
 const generateChangeLog = (
   original: {
@@ -83,7 +84,6 @@ export async function POST(req: Request): Promise<NextResponse> {
 
     const cookieStore = await cookies();
     const token = cookieStore.get("token");
-
     if (!token?.value || !process.env.JWT_SECRET) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
@@ -93,16 +93,14 @@ export async function POST(req: Request): Promise<NextResponse> {
       email: string;
     };
 
-    let body: IEventInput;
-    try {
-      body = await req.json();
-    } catch (error) {
-      console.error("Error parsing JSON:", error);
-      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    if (!req.headers.get("content-type")?.includes("multipart/form-data")) {
+      return NextResponse.json({ error: "Expected multipart/form-data" }, { status: 400 });
     }
 
+    const data = await getFormData(req);
+
     // Validate required fields
-    if (!body.name || !body.description || !body.clubs || !body.start || !body.location) {
+    if (!data.name || !data.description || !data.clubs || !data.start || !data.location) {
       return NextResponse.json(
         { error: "Name, description, club, start and location are required fields." },
         { status: 400 },
@@ -110,11 +108,11 @@ export async function POST(req: Request): Promise<NextResponse> {
     }
 
     // Validate `tags` against Tag enum
-    if (body.tags && !body.tags.every((tag) => Object.values(Tag).includes(tag))) {
+    if (data.tags && !data.tags.every((tag: Tag) => Object.values(Tag).includes(tag))) {
       return NextResponse.json({ error: "Invalid tag provided." }, { status: 400 });
     }
     let isLeaderOfAnyClub = false;
-    for (const clubName of body.clubs) {
+    for (const clubName of data.clubs) {
       const club = await Club.findOne({ name: clubName });
       if (!club) {
         return NextResponse.json({ error: `Club ${clubName} not found` }, { status: 404 });
@@ -134,9 +132,15 @@ export async function POST(req: Request): Promise<NextResponse> {
       );
     }
 
-    body.createdBy = verified.email;
+    if (data["flyerFile"] !== undefined) {
+      const fileUrl = await uploadImage(data["flyerFile"], "events");
+      data["flyer"] = fileUrl;
+      data["flyerFile"] = undefined;
+    }
 
-    const event = new Event({ ...body, createdBy: verified.email });
+    data.createdBy = verified.email;
+
+    const event = new Event({ ...data, createdBy: verified.email });
     const savedEvent = await event.save();
 
     // Log the creation in UpdateLog
@@ -171,19 +175,18 @@ export async function PUT(req: Request): Promise<NextResponse> {
     interface JWTPayload {
       netid: string;
       email: string;
+      role: string;
     }
     const verified = jwt.verify(token.value, JWT_SECRET) as unknown as JWTPayload;
 
-    let body: IEventInput;
-    try {
-      body = await req.json();
-    } catch (error) {
-      console.error("Error parsing JSON:", error);
-      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    if (!req.headers.get("content-type")?.includes("multipart/form-data")) {
+      return NextResponse.json({ error: "Expected multipart/form-data" }, { status: 400 });
     }
 
+    const data = await getFormData(req);
+
     let isLeaderOfAnyClub = false;
-    for (const clubName of body.clubs) {
+    for (const clubName of data.clubs) {
       const club = await Club.findOne({ name: clubName });
       if (!club) {
         return NextResponse.json({ error: `Club ${clubName} not found` }, { status: 404 });
@@ -196,7 +199,7 @@ export async function PUT(req: Request): Promise<NextResponse> {
       }
     }
 
-    if (!isLeaderOfAnyClub) {
+    if (!isLeaderOfAnyClub && verified.role !== "admin") {
       return NextResponse.json(
         { error: "You must be a leader of at least one of the clubs to edit the event" },
         { status: 403 },
@@ -212,10 +215,9 @@ export async function PUT(req: Request): Promise<NextResponse> {
 
     // Disallow updates to restricted fields
     const restrictedFields = ["_id", "createdAt", "updatedAt", "createdBy"];
-    const validUpdateData = Object.fromEntries(Object.entries(body).filter(([key]) => !restrictedFields.includes(key)));
+    const validUpdateData = Object.fromEntries(Object.entries(data).filter(([key]) => !restrictedFields.includes(key)));
 
     if (Object.keys(validUpdateData).length === 0) {
-      console.log("no fields", validUpdateData);
       return NextResponse.json(
         { error: "No valid fields provided for update. Restricted fields cannot be updated." },
         { status: 400 },
@@ -228,7 +230,15 @@ export async function PUT(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Event not found." }, { status: 404 });
     }
 
-    console.log(originalEvent);
+    if (data["flyerFile"] !== undefined) {
+      process.stdout.write("here");
+      if (originalEvent.flyer && originalEvent.flyer.startsWith("https://yaleclubs")) {
+        process.stdout.write("deleting");
+        await deleteImage(originalEvent.flyer);
+      }
+      const fileUrl = await uploadImage(data["flyerFile"], "events");
+      validUpdateData["flyer"] = fileUrl;
+    }
 
     const clubsHostingEvent = originalEvent.clubs;
     const clubs: IClub[] = await Promise.all(

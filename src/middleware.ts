@@ -35,23 +35,27 @@ export async function middleware(request: NextRequest) {
     if (!decodedToken) {
       const response = NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       response.cookies.delete("token");
+      response.cookies.delete("auth_netid");
+      response.cookies.delete("auth_email");
       console.log("bad token");
       return response;
     }
   }
 
   // For /api/clubs GET requests, we need to allow unauthenticated access
-  if (request.nextUrl.pathname === "/api/clubs" && request.method === "GET") {
+  if (["/api/clubs"].includes(request.nextUrl.pathname) && request.method === "GET") {
     const response = NextResponse.next();
 
     if (decodedToken) {
       response.cookies.set("auth_netid", decodedToken.netid, SECURE_COOKIE_OPTIONS);
       response.cookies.set("auth_email", decodedToken.email, SECURE_COOKIE_OPTIONS);
+      response.cookies.set("auth_role", decodedToken.role || "user", SECURE_COOKIE_OPTIONS);
       response.cookies.set("auth_status", "true", SECURE_COOKIE_OPTIONS);
     } else {
       response.cookies.delete("auth_netid");
       response.cookies.delete("auth_email");
       response.cookies.delete("auth_status");
+      response.cookies.delete("auth_role");
     }
 
     return response;
@@ -76,5 +80,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/api/clubs/:path*", "/api/events/:path*"],
+  matcher: ["/api/clubs/:path*", "/api/events/:path*", "/api/follow/:path*", "/api/users/:path*"],
 };
