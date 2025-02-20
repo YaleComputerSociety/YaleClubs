@@ -133,18 +133,6 @@ const teamMembers = [
     linkedin: "https://linkedin.com/in/zhiyu-lily-lin/",
   },
   {
-    name: "Aditya Das",
-    role: "UX Designer",
-    headshot: "/assets/people/aditya.jpg",
-    linkedin: "https://linkedin.com/in/aditya-das-me/",
-  },
-  {
-    name: "Kris Aziabor",
-    role: "UX Designer",
-    headshot: "/assets/people/kris.jpg",
-    linkedin: "https://linkedin.com/in/krisaziabor/",
-  },
-  {
     name: "Matteo Balbarin",
     role: "Marketing Ops",
     headshot: "/assets/people/matteo.jpg",
