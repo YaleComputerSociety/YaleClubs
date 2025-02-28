@@ -71,7 +71,12 @@ const eventSchema = new Schema<IEvent>(
     flyer: { type: String, required: false },
     tags: { type: [String], enum: Object.values(Tag), default: [] },
     createdBy: { type: String, required: true },
-    frequency: { type: [String], enum: Object.values(Frequency), default: [], required: true },
+    frequency: {
+      type: String,
+      enum: Object.values(Frequency),
+      default: null,
+      required: false,
+    },
     recurringEnd: { type: Date, required: true },
     //recurring: { type: [String], enum: Object.values(Recurring), default: [] },
   },

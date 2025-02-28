@@ -58,25 +58,18 @@ function setReccuringDisplayDate(event: IEvent) {
   const recurDisplayDate = new Date(event.start);
   const recurEndDate = new Date(event.recurringEnd);
   const now = new Date();
-  if(recurDisplayDate < now && recurEndDate > now)
-  {
-    if(event.frequency != null && event.frequency[0] == Frequency.Monthly)
-    {
+  if (recurDisplayDate < now && recurEndDate > now) {
+    if (event.frequency != null && event.frequency[0] == Frequency.Monthly) {
       recurDisplayDate.setMonth(recurDisplayDate.getMonth() + 1);
-
     }
-    if(event.frequency != null && event.frequency[0] == Frequency.Weekly)
-    {
+    if (event.frequency != null && event.frequency[0] == Frequency.Weekly) {
       recurDisplayDate.setDate(recurDisplayDate.getDate() + 7);
-
     }
-    if(event.frequency != null && event.frequency[0] == Frequency.BiWeekly)
-    {
+    if (event.frequency != null && event.frequency[0] == Frequency.BiWeekly) {
       recurDisplayDate.setDate(recurDisplayDate.getDate() + 14);
     }
-
   }
-  
+
   event.start = recurDisplayDate; // Update the date
   return event;
 }
@@ -109,7 +102,6 @@ export default function EventsPage() {
     return () => mediaQuery.removeEventListener("change", updateIsMobile);
   }, []);
 
-
   useEffect(() => {
     setIsLoggedIn(document.cookie.includes("token="));
   }, []);
@@ -136,31 +128,32 @@ export default function EventsPage() {
         const now = new Date();
 
         // recurring event object
-        let recurringEvents: IEvent[] = [];
+        const recurringEvents: IEvent[] = [];
         eventsResponse.data
-          .filter((event) => (event?.frequency?.length != 0))
+          .filter((event) => event?.frequency?.length != 0)
           .forEach((event) => {
-            recurringEvents.push(setReccuringDisplayDate(event))
-          })
-          
+            recurringEvents.push(setReccuringDisplayDate(event));
+          });
 
         recurringEvents.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
-          //.forEach(setRecurringDisplayDate);
-          //.forEach((event) => (event.start = now));
-        
+        //.forEach(setRecurringDisplayDate);
+        //.forEach((event) => (event.start = now));
+        console.log(eventsResponse.data);
         const upcoming = eventsResponse.data
-          .filter((event) => (event?.frequency?.length === 0) || event?.frequency == undefined)
-           //.filter((event) => (event.frequency != null && event.frequency.length == 0))
+          .filter((event) => event?.frequency == null)
+          //.filter((event) => (event.frequency != null && event.frequency.length == 0))
           //.filter((event) => (!(event.frequency != null && event.frequency.length != 0)))
           .filter((event) => new Date(event.start) >= now)
           .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 
         const past = eventsResponse.data
-         .filter((event) => ((new Date(event.start) < now && (event.frequency == null || event.frequency.length == 0))
-          || (new Date(event.recurringEnd) < now && (event.frequency != null && event.frequency.length != 0))))
+          .filter(
+            (event) =>
+              (new Date(event.start) < now && (event.frequency == null || event.frequency.length == 0)) ||
+              (new Date(event.recurringEnd) < now && event.frequency != null && event.frequency.length != 0),
+          )
           //.filter((event) => ((new Date(event.start) < now)))
           .sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime());
-
 
         setCurrentRecurringEvents(recurringEvents);
         setCurrentUpcomingEvents(upcoming);
@@ -255,7 +248,7 @@ export default function EventsPage() {
                 isLoading={isInitialLoading}
                 showFeatured={currentUpcomingEvents.length + currentPastEvents.length === events.length}
                 skeletonCount={skeletonCount}
-                isMobile = {isMobile}
+                isMobile={isMobile}
               />
             </div>
           </div>
