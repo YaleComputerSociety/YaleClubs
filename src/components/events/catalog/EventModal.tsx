@@ -9,6 +9,7 @@ import { IEvent } from "@/lib/models/Event";
 import { TagBlock } from "./TagBlock";
 import { generateGoogleCalendarLink } from "@/lib/utils";
 import { IClub } from "@/lib/models/Club";
+import { MdEventRepeat } from "react-icons/md";
 
 type EventModalProps = {
   event: IEvent;
@@ -106,14 +107,9 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
             />
             {event.frequency != null && event.frequency.length !- 0 ? (
               <div className="absolute bottom-0 right-0 p-4"> 
-                <Image
-                  src="/assets/icon.png"
-                  alt="Icon"
-                  className="object-cover rounded-lg"
-                  width={100}
-                  height={100}
-                  priority
-                  />
+                <div className="absolute bottom-0 right-0 p-4">
+                  <MdEventRepeat size={50} className="text-blue-700"/>
+                </div>
               </div>
             ) : (
               <div>
