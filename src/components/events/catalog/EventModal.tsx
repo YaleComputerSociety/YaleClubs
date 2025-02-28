@@ -104,8 +104,24 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
               fill
               priority
             />
+            {event.frequency != null && event.frequency.length !- 0 ? (
+              <div className="absolute bottom-0 right-0 p-4"> 
+                <Image
+                  src="/assets/icon.png"
+                  alt="Icon"
+                  className="object-cover rounded-lg"
+                  width={100}
+                  height={100}
+                  priority
+                  />
+              </div>
+            ) : (
+              <div>
+                </div>
+            )}
+            </div>
           </div>
-        </div>
+     
 
         <div className="max-w-lg mx-auto px-4">
           <div className="flex flex-col sm:flex-row justify-between items-start gap-4">

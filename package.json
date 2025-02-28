@@ -10,6 +10,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^6.4.4",
     "@next/third-parties": "^15.1.4",
     "@types/js-cookie": "^3.0.6",
     "axios": "^1.7.7",

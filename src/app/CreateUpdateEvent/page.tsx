@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useState, Suspense } from "react";
-import { dbDateToFrontendDate } from "@/lib/utils";
+import { dbDateToFrontendDate} from "@/lib/utils";
 
-import { IEvent, IEventInput, Tag } from "@/lib/models/Event";
+import { Frequency, IEvent, IEventInput, Tag } from "@/lib/models/Event";
 import Header from "@/components/Header";
 import AddFlyerSection from "@/components/events/update/AddFlyerSection";
 import Cookies from "js-cookie";
@@ -24,6 +24,11 @@ import {
 } from "@/components/events/constants";
 import Link from "next/link";
 import { IClub } from "@/lib/models/Club";
+//import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+//import { freemem } from "os";
+//import { arrayBuffer } from "stream/consumers";
 
 const CreateUpdateEventPage = () => {
   const searchParams = useSearchParams();
@@ -33,6 +38,7 @@ const CreateUpdateEventPage = () => {
   const [availeHostClubs, setAvailHostClubs] = useState<string[]>([]);
   const [numberOfEventsLeft, setNumberOfEventsLeft] = useState(MAX_NUMBER_OF_EVENTS_PER_MONTH);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  
   const [formData, setFormData] = useState<IEventInput>({
     name: "",
     description: "",
@@ -42,11 +48,17 @@ const CreateUpdateEventPage = () => {
     registrationLink: "",
     flyer: "",
     tags: [],
+    frequency: undefined,
+    recurringEnd: new Date(),
+    //recurring: [],
   });
 
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
+  //const [selectedRecurring, setSelectedRecurring] = useState<string[]>([]);
+  const [isRecurring, setIsRecurring] = useState<boolean>(false);
+  const [selectedFrequency, setSelectedFrequency] = useState<string[]>([]);
 
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
@@ -60,7 +72,7 @@ const CreateUpdateEventPage = () => {
   // ];
 
   const validateInput = React.useCallback(
-    (field: keyof IEventInput, value: string | Tag[] | Date | string[] | undefined): string => {
+    (field: keyof IEventInput, value: string | Tag[] | Frequency[] | Date | string[] | undefined): string => {
       switch (field) {
         case "name":
           if (value instanceof Date) return "Name must be a string.";
@@ -80,7 +92,6 @@ const CreateUpdateEventPage = () => {
         case "clubs":
           if (value === undefined) return "Must provide a club";
           if (value instanceof Array && value.length == 0) return "Must provide a club";
-          console.log(value);
           return "";
         case "location":
           if (value instanceof Date) return "Location must be a string.";
@@ -94,15 +105,113 @@ const CreateUpdateEventPage = () => {
           if (typeof value === "string" && !urlRegex.test(value)) return "URL must start with http:// or https://.";
           return "";
         }
+        
+        case "frequency":
+          if(value instanceof Array)
+            console.log(value[0]);
+          console.log(isRecurring);
+          //console.log(isLoading);
+          //if(value == null) return "";
+          //if(!(value instanceof Array)) return "Invalid frequency";
+          //else if (!isRecurring && (value != null || value.length != 0)) return "Event is not recurring";
+         /* if(value instanceof Array)
+          {
+            //if (!isRecurring && value.length != 0) return "Event is not recurring";
+            if (isRecurring && value.length != 1) return "Frequency is required for a recurring event."; 
+          }
+          else return "Invlaid frequency" */
+          if(value != Frequency.Weekly && value != Frequency.BiWeekly && value != Frequency.Monthly && isRecurring)
+            return "Valid frequency required for recurring event.";
+          
+          
+          if((value == Frequency.Weekly || value == Frequency.BiWeekly || value == Frequency.Monthly) && !isRecurring)
+            {
+              console.log("here2");
+              console.log(value);
+              console.log("here3");
+              //console.log(formData.frequency);
+              handleChange("frequency", []);
+              return "";
+              //return "Event is not recurring - there should be no frequency.";
+            }
+              
+            
+          
+          //FIX THIS ONE
+          //if(typeof value == "string") return "Invalid frequency";
+          //else if (value && !Object.values(Frequency).includes(value)) return "Invalid frequency"
+          //else if(!(value instanceof Array)) return "Invalid frequency";
+          return "";
+      //     if (body.tags && !body.tags.every((tag) => Object.values(Tag).includes(tag))) {
+      // return NextResponse.json({ error: "Invalid tag provided." }, { status: 400 });
+        //value exists in enum 
+
+        case "recurringEnd":
+          //const myStart = formData.start.valueOf();
+          //console.log(myStart);
+          if(value instanceof Date)
+          {
+            console.log(value.valueOf());
+            console.log( (formData.recurringEnd.valueOf() - formData.start.valueOf()));
+          }
+          
+          //if(!isRecurring) return "Event is not recurring";
+          if(!value) return "End date is required for recurring event.";
+          //else if(!(value instanceof Date)) return "End date must be a date.";
+          if(value <= formData.start && isRecurring) return "End date must occur after start date.";
+          if(value <= new Date() && isRecurring) return "End date cannot be a current or past date";
+          if(formData.frequency && value instanceof Date && isRecurring)
+          {
+            console.log("here:");
+            console.log(formData.frequency[0]);
+            //if(formData.frequency[0] == Frequency.Weekly && isRecurring) return "check for time";
+            if(formData.frequency[0] == Frequency.Weekly)
+            {
+              if(formData.recurringEnd.valueOf() - formData.start.valueOf() < 6.048e+8)
+              {
+                return "Durration of recurring event too short for event to reoccur with selected frequency";
+              }
+            }
+            if(formData.frequency[0] == Frequency.BiWeekly)
+            {
+              if(formData.recurringEnd.valueOf() - formData.start.valueOf() < 6.048e+8 * 2)
+              {
+                return "Durration of recurring event too short for event to reoccur with selected frequency";
+              }
+            }
+            if(formData.frequency[0] == Frequency.Monthly)
+            {
+              console.log(formData.recurringEnd.valueOf());
+              console.log(formData.start.valueOf());
+              if(formData.recurringEnd.valueOf() - formData.start.valueOf() < 2.592e+9)
+              {
+                return "Durration of recurring event too short for event to reoccur with selected frequency";
+              }
+            }
+           
+           // else if(formData.frequency == "BiWeekly") return "check for time";
+            //else if(formData.frequency == "Monthly") return "check for time";
+          
+          return "";
+
+          }
+          return "";
+            
+          //after now, after start, enough time for a repetition, 
+          //isrecurring must be true for us to check this
+          
         case "flyer":
           return "";
         case "tags":
           return "";
+
         default:
           return "";
       }
     },
-    [],
+    //[isRecurring, formData.recurringEnd, formData.start],
+    [isRecurring],
+    //[],
   );
 
   useEffect(() => {
@@ -126,11 +235,18 @@ const CreateUpdateEventPage = () => {
               flyer: specificEvent.flyer || "",
               tags: specificEvent.tags || [],
               createdBy: specificEvent.createdBy || "",
+              // recurring: specificEvent.recurring || false,
+              frequency: specificEvent.frequency || undefined,
+              recurringEnd: specificEvent.recurringEnd || new Date(),
+              //recurring: specificEvent.recurring || [],
             };
             setEvent(specificEvent);
             setFormData(eventInput);
             setSelectedClubs(eventInput.clubs);
             setSelectedTags(eventInput.tags?.map((tag) => tag.toString()) ?? []);
+            // setSelectedFrequency(eventInput.frequency?.map((frequency) => frequency.toString()) ?? []);
+            //setSelectedRecurring(eventInput.recurring.map((recurring) => recurring.toString()) ?? []);
+            
           }
         }
       } catch {
@@ -202,7 +318,7 @@ const CreateUpdateEventPage = () => {
   }, [selectedClubs, formData.start]);
 
   const handleChange = React.useCallback(
-    (field: keyof IEventInput, value: string | Date | Tag[] | string[] | undefined) => {
+    (field: keyof IEventInput, value: string | Date | Tag[] | Frequency[] | string[] | undefined) => {
       const error = validateInput(field as keyof IEventInput, value !== undefined ? value : "");
       setValidationErrors((prev) => ({ ...prev, [field]: error }));
       setFormData((prev) => ({ ...prev, [field]: value }));
@@ -211,6 +327,7 @@ const CreateUpdateEventPage = () => {
   );
 
   const handleSave = () => {
+    console.log(formData.frequency);
     const errors = Object.keys(formData).reduce(
       (acc, field) => {
         const value = formData[field as keyof IEventInput];
@@ -220,6 +337,7 @@ const CreateUpdateEventPage = () => {
       },
       {} as Record<string, string>,
     );
+
 
     setValidationErrors(errors);
 
@@ -266,6 +384,98 @@ const CreateUpdateEventPage = () => {
     }
   };
 
+  const handleSwitch = () => {
+    
+    setIsRecurring(!isRecurring);
+
+   
+
+
+    //need to update errors - call validate 
+
+    /*
+    const error = validateInput("recurringEnd", formData.recurringEnd);
+    setValidationErrors((prev) => ({ ...prev, "recurringEnd": error }));
+    if(isRecurring)
+    {
+      const error2 = validateInput("frequency", formData.frequency);
+      setValidationErrors((prev) => ({ ...prev, "frequency": error2 }));
+    }
+    else
+    {
+      const error3 = validateInput("frequency", []);
+      setValidationErrors((prev) => ({ ...prev, "frequency": error3 }));
+    }
+      */
+/*
+    handleChange("recurringEnd", formData.recurringEnd);
+    console.log("in handle switch:");
+    console.log(isRecurring);
+    if(!isRecurring)
+    {
+      handleChange("frequency", selectedFrequency);
+    }
+    else
+    {
+      handleChange("frequency", []);
+      console.log("emptied frequency");
+    }
+
+    if(isRecurring)
+    {
+      console.log("recurring true");
+    }
+    else
+    {
+      console.log("recurring false");
+    } 
+      */
+  };  
+
+  useEffect( () => {
+    console.log("in handle switch:");
+    console.log(isRecurring);
+    handleChange("recurringEnd", formData.recurringEnd);
+    if(isRecurring)
+    {
+      handleChange("frequency", selectedFrequency);
+    }
+    else
+    {
+      handleChange("frequency", []);
+      console.log("emptied frequency");
+    }
+
+    if(isRecurring)
+    {
+      console.log("recurring true");
+    }
+    else
+    {
+      console.log("recurring false");
+    }
+    //console.log(isRecurring);
+  }, [isRecurring]);  
+
+  useEffect(() => {
+    handleChange("frequency", formData.frequency);
+    handleChange("start", formData.start);
+
+  }, [formData.recurringEnd]);
+
+  useEffect(() => {
+    handleChange("recurringEnd", formData.recurringEnd);
+    handleChange("start", formData.start);
+
+  }, [formData.frequency]);
+
+  useEffect(() => {
+    handleChange("frequency", formData.frequency);
+    handleChange("recurringEnd", formData.recurringEnd);
+
+  }, [formData.start]);
+
+
   useEffect(() => {
     const dateTimeInput = document.querySelector('input[type="datetime-local"]');
     dateTimeInput?.addEventListener("change", (e) => {
@@ -279,12 +489,32 @@ const CreateUpdateEventPage = () => {
   }, [handleChange]);
 
   useEffect(() => {
+    const recurringDateTimeInput = document.querySelector('input[type="date"]');
+    recurringDateTimeInput?.addEventListener("change2", (e) => {
+      const value = (e.target as HTMLInputElement)?.value;
+      handleChange("recurringEnd", value);
+    });
+
+    return () => {
+      recurringDateTimeInput?.removeEventListener("change2", () => {});
+    };
+  }, [handleChange]);
+
+  useEffect(() => {
     handleChange("clubs", selectedClubs);
   }, [selectedClubs, handleChange]);
 
   useEffect(() => {
     handleChange("tags", selectedTags);
   }, [selectedTags, handleChange]);
+
+  useEffect(() => {
+    handleChange("frequency", selectedFrequency);
+  }, [selectedFrequency, handleChange]);
+
+    //useEffect(() => {
+    //.handleChange("recurring", selectedRecurring);
+  //}, [selectedRecurring, handleChange]);
 
   if (isLoading) {
     return (
@@ -389,6 +619,49 @@ const CreateUpdateEventPage = () => {
                   value={dbDateToFrontendDate(new Date(formData.start))}
                 />
                 {validationErrors.start && <p className="text-red-500">{validationErrors.start}</p>}
+              </div>
+               <div>
+                <div className="recurring-switch"></div>
+                <FormControlLabel control={<Switch  />} label="Recurring Event" onChange={handleSwitch}/>
+              </div>
+              <div>
+                {isRecurring && (
+               <Filter limit={1} selectedItems={selectedFrequency} setSelectedItems={setSelectedFrequency} allItems={Object.values(Frequency)} label="Frequency" />
+               )}
+               {validationErrors.frequency && <p className="text-red-500"> {validationErrors.frequency}</p>}
+               {isRecurring && (
+               <div className="flex items-center m-3 text-gray-500">
+                Enter the end date for the recurring event below.
+                </div>
+               )}
+                {isRecurring && (
+                  <input
+                    className="w-full border border-gray-300 rounded-lg p-2"
+                    aria-label="Date"
+                    type="date"
+                    min={dbDateToFrontendDate(new Date())}
+                    //min = {dbDateToFrontendDate(new Date(formData.start))}
+                    onChange={(e) => {
+                      const selectedDate = new Date(e.target.value);
+                      const now = new Date();
+                      const start = new Date(formData.start);
+                      if (selectedDate < start){
+                        e.target.value = dbDateToFrontendDate(start).split("T")[0];
+                        handleChange("recurringEnd", start);
+                      } else if (selectedDate < now){
+                        e.target.value = dbDateToFrontendDate(now).split("T")[0];
+                        handleChange("recurringEnd", formData.start);
+                      } else {
+                        console.log(e.target.value);
+                        const utcDate = new Date(selectedDate.getTime());
+                        handleChange("recurringEnd", utcDate);
+                        //fix issue with display - date is off by 1 day
+                      }
+                    }}
+                    value={dbDateToFrontendDate(new Date(formData.recurringEnd)).split("T")[0]}
+                  />
+                )}
+                {validationErrors.recurringEnd && <p className="text-red-500"> {validationErrors.recurringEnd}</p>}
               </div>
               <div>
                 <div className="text-red-600 m-0">*</div>

@@ -19,6 +19,12 @@ export enum Tag {
   ProfessionalDevelopment = "Professional Development",
 }
 
+export enum Frequency {
+  Weekly = "Weekly",
+  BiWeekly = "BiWeekly",
+  Monthly = "Monthly",
+}
+
 export interface IEventInput {
   name: string;
   description: string;
@@ -29,6 +35,10 @@ export interface IEventInput {
   flyer?: string;
   tags?: Tag[];
   createdBy?: string;
+
+  // recurring?: boolean;
+  frequency?: Frequency | undefined;
+  recurringEnd: Date;
 }
 
 export interface IEvent extends Document {
@@ -45,6 +55,9 @@ export interface IEvent extends Document {
   registrationLink?: string;
   flyer?: string;
   tags?: Tag[];
+  recurring?: boolean;
+  frequency?: Frequency;
+  recurringEnd: Date;
 }
 
 const eventSchema = new Schema<IEvent>(
@@ -58,6 +71,9 @@ const eventSchema = new Schema<IEvent>(
     flyer: { type: String, required: false },
     tags: { type: [String], enum: Object.values(Tag), default: [] },
     createdBy: { type: String, required: true },
+    frequency: { type: [String], enum: Object.values(Frequency), default: [], required: true },
+    recurringEnd: { type: Date, required: true },
+    //recurring: { type: [String], enum: Object.values(Recurring), default: [] },
   },
   { timestamps: true },
 );

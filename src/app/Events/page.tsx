@@ -14,7 +14,7 @@ import Catalog from "@/components/events/catalog/Catalog";
 import { FaPlus } from "react-icons/fa";
 import { MdLockOutline } from "react-icons/md";
 
-import { IEvent } from "@/lib/models/Event";
+import { Frequency, IEvent } from "@/lib/models/Event";
 import { IClub } from "@/lib/models/Club";
 
 const useSkeletonCount = () => {
@@ -54,11 +54,39 @@ function getRandomThree(array: IEvent[]) {
   return shuffled.slice(0, 3);
 }
 
+function setReccuringDisplayDate(event: IEvent) {
+  const recurDisplayDate = new Date(event.start);
+  const recurEndDate = new Date(event.recurringEnd);
+  const now = new Date();
+  if(recurDisplayDate < now && recurEndDate > now)
+  {
+    if(event.frequency != null && event.frequency[0] == Frequency.Monthly)
+    {
+      recurDisplayDate.setMonth(recurDisplayDate.getMonth() + 1);
+
+    }
+    if(event.frequency != null && event.frequency[0] == Frequency.Weekly)
+    {
+      recurDisplayDate.setDate(recurDisplayDate.getDate() + 7);
+
+    }
+    if(event.frequency != null && event.frequency[0] == Frequency.BiWeekly)
+    {
+      recurDisplayDate.setDate(recurDisplayDate.getDate() + 14);
+    }
+
+  }
+  
+  event.start = recurDisplayDate; // Update the date
+  return event;
+}
+
 export default function EventsPage() {
   const [events, setEvents] = useState<IEvent[]>([]);
   const [clubs, setClubs] = useState<IClub[]>([]);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentRecurringEvents, setCurrentRecurringEvents] = useState<IEvent[]>([]);
   const [currentUpcomingEvents, setCurrentUpcomingEvents] = useState<IEvent[]>([]);
   const [currentPastEvents, setCurrentPastEvents] = useState<IEvent[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -69,7 +97,7 @@ export default function EventsPage() {
   const skeletonCount = useSkeletonCount();
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 767px)");``
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
     const updateIsMobile = () => setIsMobile(mediaQuery.matches);
 
     // Set the initial value
@@ -106,14 +134,35 @@ export default function EventsPage() {
 
         // Split and sort events
         const now = new Date();
+
+        // recurring event object
+        let recurringEvents: IEvent[] = [];
+        eventsResponse.data
+          .filter((event) => (event?.frequency?.length != 0))
+          .forEach((event) => {
+            recurringEvents.push(setReccuringDisplayDate(event))
+          })
+          
+
+        recurringEvents.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+          //.forEach(setRecurringDisplayDate);
+          //.forEach((event) => (event.start = now));
+        
         const upcoming = eventsResponse.data
+          .filter((event) => (event?.frequency?.length === 0) || event?.frequency == undefined)
+           //.filter((event) => (event.frequency != null && event.frequency.length == 0))
+          //.filter((event) => (!(event.frequency != null && event.frequency.length != 0)))
           .filter((event) => new Date(event.start) >= now)
           .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 
         const past = eventsResponse.data
-          .filter((event) => new Date(event.start) < now)
+         .filter((event) => ((new Date(event.start) < now && (event.frequency == null || event.frequency.length == 0))
+          || (new Date(event.recurringEnd) < now && (event.frequency != null && event.frequency.length != 0))))
+          //.filter((event) => ((new Date(event.start) < now)))
           .sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime());
 
+
+        setCurrentRecurringEvents(recurringEvents);
         setCurrentUpcomingEvents(upcoming);
         setCurrentPastEvents(past);
         setFeaturedEvents(getRandomThree(upcoming));
@@ -200,6 +249,7 @@ export default function EventsPage() {
               <Catalog
                 clubs={clubs}
                 featuredEvents={featuredEvents}
+                recurringEvents={currentRecurringEvents}
                 upcomingEvents={currentUpcomingEvents}
                 pastEvents={currentPastEvents}
                 isLoading={isInitialLoading}

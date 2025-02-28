@@ -8,6 +8,7 @@ import Carousel from "./Carousel";
 
 interface EventCatalogProps {
   clubs: IClub[];
+  recurringEvents: IEvent[];
   upcomingEvents: IEvent[];
   pastEvents: IEvent[];
   featuredEvents: IEvent[];
@@ -42,6 +43,7 @@ const SkeletonFeatured = () => (
 );
 
 const Catalog = ({
+  recurringEvents,
   upcomingEvents,
   pastEvents,
   featuredEvents,
@@ -91,7 +93,7 @@ const Catalog = ({
   return (
     <div className="w-full">
       <div className="flex flex-col gap-8 m-6 md:m-0">
-        {upcomingEvents.length > 0 ? (
+        {upcomingEvents.length + recurringEvents.length> 0 ? (
           <>
             {showFeatured && !isMobile && (
               <Carousel items={featuredEvents} ItemComponent={FeaturedEventCard} onItemClick={handleClickEvent} />
@@ -116,6 +118,29 @@ const Catalog = ({
             button!
           </div>
         )}
+
+       {/* 
+       iterate over recurring events
+       date.now()
+
+       */
+
+       
+       recurringEvents.length > 0 ? (
+        <div>
+          <h1 className="text-2xl font-bold mb-4">Recurring Events</h1>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {recurringEvents.map((event) => (
+              <EventCard key={event._id} event={event} onClick={() => handleClickEvent(event)} />
+              ))}
+              </div>
+            </div>
+       ) : (
+        <div>
+          </div>
+       )
+       
+       }
 
         {pastEvents.length > 0 ? (
           <div className="opacity-60">

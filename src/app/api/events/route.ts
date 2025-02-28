@@ -1,5 +1,5 @@
 import connectToDatabase from "@/lib/mongodb";
-import Event from "../../../lib/models/Event";
+import Event, { Frequency } from "../../../lib/models/Event";
 import { NextResponse } from "next/server";
 import { Tag, IEventInput } from "../../../lib/models/Event";
 import Club, { ClubLeader, IClub } from "@/lib/models/Club";
@@ -96,6 +96,68 @@ export async function POST(req: Request): Promise<NextResponse> {
     if (body.tags && !body.tags.every((tag) => Object.values(Tag).includes(tag))) {
       return NextResponse.json({ error: "Invalid tag provided." }, { status: 400 });
     }
+/*
+    if (body.frequency && !Object.values(Frequency).includes(body.frequency)) {
+      return NextResponse.json({ error: "Invalid frequency provided." }, { status: 400 });
+    }*/
+    
+    if (!body.recurringEnd && !(body.frequency == null || body.frequency.length == 0)) {
+      console.log("1");
+      return NextResponse.json({ error: "Recurring end date is required filed." }, { status: 400 });
+      
+    }
+
+    if(new Date(body.recurringEnd) <= new Date(body.start) && body.frequency != null && body.frequency.length != 0) {
+      console.log("3");
+      return NextResponse.json({ error: "Invalid start and end date pair." }, { status: 400 });
+    } 
+
+    if(body.frequency != null)
+    {
+      if(body.frequency[0] == Frequency.Weekly)
+      {
+        //compares the duration of recursion to the number of miliseconds in a week
+        if(body.recurringEnd.valueOf() - body.start.valueOf() < 6.048e+8)
+        {
+          console.log("3");
+          console.log(body.recurringEnd.valueOf() - body.start.valueOf());
+          return NextResponse.json({ error: "Durration of recurring event too short for event to reoccur with selected frequency." }, { status: 400 });
+        }
+
+      }
+
+      if(body.frequency[0] == Frequency.BiWeekly)
+      {
+        if(body.recurringEnd.valueOf() - body.start.valueOf() < (6.048e+8 * 2))
+        {
+          console.log("4");
+          return NextResponse.json({ error: "Durration of recurring event too short for event to reoccur with selected frequency." }, { status: 400 });
+        }
+      }
+      if(body.frequency[0] == Frequency.Monthly)
+      {
+        console.log("month");
+        //const endofRecursion = new Date(body.recurringEnd);
+        //const plusMonth = new Date(body.start.setMonth(body.start.getMonth() + 1));
+        if(body.recurringEnd.valueOf() - body.start.valueOf() < 2.592e+9)
+        //if(plusMonth < endofRecursion)
+        {
+          console.log("Durration of recurring event too short for event to reoccur with selected frequency");
+          return NextResponse.json({ error: "Durration of recurring event too short for event to reoccur with selected frequency." }, { status: 400 });
+          //return NextResponse.json({ error: "Durration of recurring event too short for event to reoccur with selected frequency." }, { status: 400 });
+        }
+      }
+
+    }
+
+  
+
+    /*
+    // Validate `frequency` against Frequency enum
+    if (!(Object.values(Frequency).includes(body.frequency))) {
+      return NextResponse.json({ error: "Invalid frequency provided." }, { status: 400 });
+    } */
+
     let isLeaderOfAnyClub = false;
     for (const clubName of body.clubs) {
       const club = await Club.findOne({ name: clubName });

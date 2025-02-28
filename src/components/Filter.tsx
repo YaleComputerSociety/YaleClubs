@@ -6,11 +6,12 @@ interface FilterProps {
   allItems: string[];
   label: string;
   aliasMapping?: Record<string, string[]>; // Optional alias mapping
+  limit?: number;
 }
 
 const MAX_TOGGLE_WIDTH = 192; // Maximum width of the filter toggle before showing "+x" -- just make sure it can fit the longest possible filter + some buffer
 
-const Filter = ({ selectedItems, setSelectedItems, allItems, label, aliasMapping = {} }: FilterProps) => {
+const Filter = ({ limit = 999, selectedItems, setSelectedItems, allItems, label, aliasMapping = {} }: FilterProps) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -33,6 +34,7 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label, aliasMapping
   });
 
   const handleAddItem = (item: string) => {
+    if (selectedItems.length >= limit) return;
     setSelectedItems((prev) => [...prev, item]);
     setSearchTerm("");
   };
@@ -128,6 +130,7 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label, aliasMapping
                       onClick={() => handleRemoveItem(item)}
                       className="text-gray-500 hover:text-red-700 focus:outline-none"
                     >
+                      
                       &#x2715;
                     </button>
                   </div>
