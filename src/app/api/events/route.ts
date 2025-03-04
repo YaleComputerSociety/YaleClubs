@@ -60,12 +60,10 @@ export async function GET(): Promise<NextResponse> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("token");
-    console.log(token);
 
     await connectToDatabase();
 
     if (!token) {
-      console.log("no auth");
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
@@ -285,8 +283,6 @@ export async function PUT(req: Request): Promise<NextResponse> {
     }
 
     if (changeLog) {
-      console.log(changeLog);
-
       // Save the change log
       await UpdateLog.create({
         documentId: id,
@@ -341,7 +337,6 @@ export async function DELETE(req: Request): Promise<NextResponse> {
     for (const clubName of body.clubs) {
       const club = await Club.findOne({ name: clubName });
       if (!club) {
-        console.log("club not found");
         return NextResponse.json({ error: `Club ${clubName} not found` }, { status: 404 });
       }
 

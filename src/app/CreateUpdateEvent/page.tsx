@@ -377,7 +377,6 @@ const CreateUpdateEventPage = () => {
                       e.target.value = dbDateToFrontendDate(now);
                       handleChange("start", now);
                     } else {
-                      console.log(e.target.value);
                       const utcDate = new Date(selectedDate.getTime());
                       handleChange("start", utcDate);
                     }

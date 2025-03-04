@@ -50,7 +50,7 @@ export async function GET(request: Request): Promise<NextResponse> {
 
       const netid = success[0]["cas:user"][0];
 
-      const yaliesURL = "https://yalies.io/api/people";
+      const yaliesURL = "https://api.yalies.io/v2/people";
       const yaliesResponse = await fetch(yaliesURL, {
         method: "POST",
         headers: {
