@@ -191,7 +191,6 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
             {event.tags?.map((tag: Tag, index) => <TagBlock key={index} tag={tag} />)}
           </div>
           <FollowersList />
-          <FollowersList />
         </div>
       </div>
     </div>
