@@ -10,6 +10,8 @@ import { IClub } from "@/lib/models/Club";
 import { useAuth } from "@/contexts/AuthContext";
 import { FaTrash } from "react-icons/fa";
 import axios from "axios";
+import FollowersList from "@/components/FollowersList";
+
 type EventModalProps = {
   event: IEvent;
   associatedClubLeaders: ClubLeader[];
@@ -188,6 +190,7 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
           <div className="flex flex-wrap gap-2 mt-3">
             {event.tags?.map((tag: Tag, index) => <TagBlock key={index} tag={tag} />)}
           </div>
+          <FollowersList />
         </div>
       </div>
     </div>
