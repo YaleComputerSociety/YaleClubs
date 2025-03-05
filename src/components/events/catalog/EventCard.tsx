@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import { IEvent, Tag } from "@/lib/models/Event";
 import { TagBlock } from "./TagBlock";
+import { MdEventRepeat } from "react-icons/md";
 
 type EventCardProps = {
   event: IEvent;
@@ -21,14 +22,7 @@ const EventCard = ({ event, onClick }: EventCardProps) => {
         />
         {event.frequency != null ? (
           <div className="absolute bottom-0 right-0 p-4">
-            <Image
-              src="/assets/icon.png"
-              alt="Icon"
-              className="object-cover rounded-lg"
-              width={50}
-              height={50}
-              priority
-            />
+            <MdEventRepeat size={50} className="text-blue-700"/>
           </div>
         ) : (
           <div></div>

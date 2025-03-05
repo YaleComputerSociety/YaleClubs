@@ -161,17 +161,17 @@ const CreateUpdateEventPage = () => {
             console.log("here:");
             console.log(formData.frequency[0]);
             //if(formData.frequency[0] == Frequency.Weekly && isRecurring) return "check for time";
-            if (formData.frequency[0] == Frequency.Weekly) {
+            if (formData.frequency == Frequency.Weekly) {
               if (formData.recurringEnd.valueOf() - formData.start.valueOf() < 6.048e8) {
                 return "Durration of recurring event too short for event to reoccur with selected frequency";
               }
             }
-            if (formData.frequency[0] == Frequency.BiWeekly) {
+            if (formData.frequency == Frequency.BiWeekly) {
               if (formData.recurringEnd.valueOf() - formData.start.valueOf() < 6.048e8 * 2) {
                 return "Durration of recurring event too short for event to reoccur with selected frequency";
               }
             }
-            if (formData.frequency[0] == Frequency.Monthly) {
+            if (formData.frequency == Frequency.Monthly) {
               console.log(formData.recurringEnd.valueOf());
               console.log(formData.start.valueOf());
               if (formData.recurringEnd.valueOf() - formData.start.valueOf() < 2.592e9) {
@@ -199,7 +199,7 @@ const CreateUpdateEventPage = () => {
       }
     },
     //[isRecurring, formData.recurringEnd, formData.start],
-    [isRecurring],
+    [isRecurring, formData.frequency],
     //[],
   );
 
