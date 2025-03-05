@@ -54,22 +54,52 @@ function getRandomThree(array: IEvent[]) {
   return shuffled.slice(0, 3);
 }
 
-function setReccuringDisplayDate(event: IEvent) {
-  const recurDisplayDate = new Date(event.start);
+function setRecurringDisplayDate(event: IEvent) {
+  const recurDisplayDate = new Date(event.start); // Original start date
   const recurEndDate = new Date(event.recurringEnd);
   const now = new Date();
+  
+  // Only process if the event has started but hasn't ended yet
   if (recurDisplayDate < now && recurEndDate > now) {
-    if (event.frequency != null && event.frequency[0] == Frequency.Monthly) {
-      recurDisplayDate.setMonth(recurDisplayDate.getMonth() + 1);
-    }
-    if (event.frequency != null && event.frequency[0] == Frequency.Weekly) {
-      recurDisplayDate.setDate(recurDisplayDate.getDate() + 7);
-    }
-    if (event.frequency != null && event.frequency[0] == Frequency.BiWeekly) {
-      recurDisplayDate.setDate(recurDisplayDate.getDate() + 14);
+    // Calculate time difference in milliseconds
+    const timeDiff = now.getTime() - recurDisplayDate.getTime();
+    
+    if (event.frequency != null) {
+      if (event.frequency == Frequency.Monthly) {
+        // Calculate months passed
+        const monthsPassed = (now.getFullYear() - recurDisplayDate.getFullYear()) * 12 + 
+                            (now.getMonth() - recurDisplayDate.getMonth());
+        // Add those months to get the next occurrence after now
+        recurDisplayDate.setMonth(recurDisplayDate.getMonth() + monthsPassed);
+        
+        // If still in the past, add one more period
+        if (recurDisplayDate < now) {
+          recurDisplayDate.setMonth(recurDisplayDate.getMonth() + 1);
+        }
+      } 
+      else if (event.frequency == Frequency.Weekly) {
+        // Calculate weeks passed and add them
+        const weeksPassed = Math.floor(timeDiff / (7 * 24 * 60 * 60 * 1000));
+        recurDisplayDate.setDate(recurDisplayDate.getDate() + (weeksPassed * 7));
+        
+        // If still in the past, add one more period
+        if (recurDisplayDate < now) {
+          recurDisplayDate.setDate(recurDisplayDate.getDate() + 7);
+        }
+      }
+      else if (event.frequency == Frequency.BiWeekly) {
+        // Calculate 2-week periods passed
+        const biWeeksPassed = Math.floor(timeDiff / (14 * 24 * 60 * 60 * 1000));
+        recurDisplayDate.setDate(recurDisplayDate.getDate() + (biWeeksPassed * 14));
+        
+        // If still in the past, add one more period
+        if (recurDisplayDate < now) {
+          recurDisplayDate.setDate(recurDisplayDate.getDate() + 14);
+        }
+      }
     }
   }
-
+  
   event.start = recurDisplayDate; // Update the date
   return event;
 }
@@ -129,12 +159,12 @@ export default function EventsPage() {
 
         // recurring event object
         // First, process recurring events
-const recurringEvents = eventsResponse.data
-  .filter((event) => event.frequency)
-  .map((event) => setReccuringDisplayDate(event));
+        const recurringEvents = eventsResponse.data
+            .filter((event) => event.frequency)
+            .map((event) => setRecurringDisplayDate(event));
 
 
-recurringEvents.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+        recurringEvents.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 
 // Create a Set of recurring event IDs for quick lookup
 const recurringEventIds = recurringEvents.map(event => event._id);
@@ -142,7 +172,7 @@ console.log(recurringEvents);
 console.log(recurringEventIds);
 
 // Filter upcoming events, excluding any that are in recurringEvents
-const upcoming = eventsResponse.data
+let upcoming = eventsResponse.data
   .filter((event) => new Date(event.start) >= now)
   .filter((event) => {
     console.log(event);    
@@ -150,20 +180,22 @@ const upcoming = eventsResponse.data
   }  )
   .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 
-        const past = eventsResponse.data
-          .filter(
-            (event) =>
-              (new Date(event.start) < now && (event.frequency == null || event.frequency.length == 0)) ||
-              (new Date(event.recurringEnd) < now && event.frequency != null && event.frequency.length != 0),
-          )
-          //.filter((event) => ((new Date(event.start) < now)))
-          .sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime());
+  const past = eventsResponse.data
+    .filter(
+      (event) =>
+        (new Date(event.start) < now && (event.frequency == null || event.frequency.length == 0)) ||
+        (new Date(event.recurringEnd) < now && event.frequency != null && event.frequency.length != 0),
+    )
+    //.filter((event) => ((new Date(event.start) < now)))
+    .sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime());
 
-        setCurrentRecurringEvents(recurringEvents);
-        setCurrentUpcomingEvents(upcoming);
-        setCurrentPastEvents(past);
-        setFeaturedEvents(getRandomThree(upcoming));
-      } catch (error) {
+  upcoming = upcoming.concat(recurringEvents).sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+
+      setCurrentRecurringEvents(recurringEvents);
+      setCurrentUpcomingEvents(upcoming);
+      setCurrentPastEvents(past);
+      setFeaturedEvents(getRandomThree(upcoming));
+    } catch (error) {
         console.error("Error fetching data:", error);
         setError("Failed to load events. Please try again later.");
       } finally {
@@ -232,12 +264,12 @@ const upcoming = eventsResponse.data
             </div>
 
             <div className="flex flex-col md:flex-row lg:flex-row items-center justify-between mb-0 md:mb-6">
-              <SearchControlEvent
+              {/* <SearchControlEvent
                 clubsForFilter={clubs}
                 events={events}
                 setCurrentUpcomingEvents={setCurrentUpcomingEvents}
                 setCurrentPastEvents={setCurrentPastEvents}
-              />
+              /> */}
             </div>
 
             {error && <div className="w-full p-4 mb-4 text-red-700 bg-red-100 rounded-lg">{error}</div>}

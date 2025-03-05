@@ -72,7 +72,7 @@ const CreateUpdateEventPage = () => {
   // ];
 
   const validateInput = React.useCallback(
-    (field: keyof IEventInput, value: string | Tag[] | Frequency[] | Date | string[] | undefined): string => {
+    (field: keyof IEventInput, value: string | Tag[] | Frequency[] | Date | string[] | undefined | null): string => {
       switch (field) {
         case "name":
           if (value instanceof Date) return "Name must be a string.";
@@ -84,9 +84,9 @@ const CreateUpdateEventPage = () => {
         case "description":
           if (value instanceof Date) return "Description must be a string.";
           if (value === undefined) return "Description is required.";
-          if (value.length < DESCRIPTION_MIN_LENGTH)
+          if (value?.length && value?.length < DESCRIPTION_MIN_LENGTH)
             return `Description must be at least ${DESCRIPTION_MIN_LENGTH} characters.`;
-          if (value.length > DESCRIPTION_MAX_LENGTH)
+          if (value?.length && value?.length > DESCRIPTION_MAX_LENGTH)
             return `Description must be at most ${DESCRIPTION_MAX_LENGTH} characters.`;
           return "";
         case "clubs":
@@ -96,8 +96,8 @@ const CreateUpdateEventPage = () => {
         case "location":
           if (value instanceof Date) return "Location must be a string.";
           if (value === undefined) return "Location is required.";
-          if (value.length < LOCATION_MIN_LENGTH) return `Location must be at least ${LOCATION_MIN_LENGTH} characters.`;
-          if (value.length > LOCATION_MAX_LENGTH) return `Location must be at most ${LOCATION_MAX_LENGTH} characters.`;
+          if (value?.length && value?.length < LOCATION_MIN_LENGTH) return `Location must be at least ${LOCATION_MIN_LENGTH} characters.`;
+          if (value?.length && value?.length > LOCATION_MAX_LENGTH) return `Location must be at most ${LOCATION_MAX_LENGTH} characters.`;
           return "";
         case "registrationLink": {
           if (!value) return "";
@@ -130,7 +130,7 @@ const CreateUpdateEventPage = () => {
             console.log(value);
             console.log("here3");
             //console.log(formData.frequency);
-            handleChange("frequency", []);
+            handleChange("frequency", null);
             return "";
             //return "Event is not recurring - there should be no frequency.";
           }
@@ -306,7 +306,7 @@ const CreateUpdateEventPage = () => {
   }, [selectedClubs, formData.start]);
 
   const handleChange = React.useCallback(
-    (field: keyof IEventInput, value: string | Date | Tag[] | Frequency[] | string[] | undefined) => {
+    (field: keyof IEventInput, value: string | Date | Tag[] | Frequency[] | string[] | undefined | null) => {
       const error = validateInput(field as keyof IEventInput, value !== undefined ? value : "");
       setValidationErrors((prev) => ({ ...prev, [field]: error }));
       setFormData((prev) => ({ ...prev, [field]: value }));
@@ -420,9 +420,10 @@ const CreateUpdateEventPage = () => {
     console.log(isRecurring);
     handleChange("recurringEnd", formData.recurringEnd);
     if (isRecurring) {
-      handleChange("frequency", selectedFrequency[0]);
+      handleChange("frequency", selectedFrequency);
     } else {
-      handleChange("frequency", []);
+      handleChange("frequency", null)
+      handleChange("recurringEnd", new Date());
       console.log("emptied frequency");
     }
 
@@ -576,18 +577,18 @@ const CreateUpdateEventPage = () => {
                   className="w-full border border-gray-300 rounded-lg p-2 [&::-webkit-datetime-edit-day-field]:disabled:text-gray-300 [&::-webkit-datetime-edit-month-field]:disabled:text-gray-300 [&::-webkit-datetime-edit-year-field]:disabled:text-gray-300 [&::-webkit-datetime-edit-hour-field]:disabled:text-gray-300 [&::-webkit-datetime-edit-minute-field]:disabled:text-gray-300"
                   aria-label="Date and time"
                   type="datetime-local"
-                  min={dbDateToFrontendDate(new Date())}
+                  // min={dbDateToFrontendDate(new Date())}
                   onChange={(e) => {
                     const selectedDate = new Date(e.target.value);
-                    const now = new Date();
-                    if (selectedDate < now) {
-                      e.target.value = dbDateToFrontendDate(now);
-                      handleChange("start", now);
-                    } else {
-                      console.log(e.target.value);
+                    // const now = new Date();
+                    // if (selectedDate < now) {
+                    //   e.target.value = dbDateToFrontendDate(now);
+                      // handleChange("start", utcDa);
+                    // } else {
+                    //   console.log(e.target.value);
                       const utcDate = new Date(selectedDate.getTime());
                       handleChange("start", utcDate);
-                    }
+                    // }
                   }}
                   value={dbDateToFrontendDate(new Date(formData.start))}
                 />
