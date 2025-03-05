@@ -128,23 +128,27 @@ export default function EventsPage() {
         const now = new Date();
 
         // recurring event object
-        const recurringEvents: IEvent[] = [];
-        eventsResponse.data
-          .filter((event) => event?.frequency?.length != 0)
-          .forEach((event) => {
-            recurringEvents.push(setReccuringDisplayDate(event));
-          });
+        // First, process recurring events
+const recurringEvents = eventsResponse.data
+  .filter((event) => event.frequency)
+  .map((event) => setReccuringDisplayDate(event));
 
-        recurringEvents.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
-        //.forEach(setRecurringDisplayDate);
-        //.forEach((event) => (event.start = now));
-        console.log(eventsResponse.data);
-        const upcoming = eventsResponse.data
-          .filter((event) => event?.frequency == null)
-          //.filter((event) => (event.frequency != null && event.frequency.length == 0))
-          //.filter((event) => (!(event.frequency != null && event.frequency.length != 0)))
-          .filter((event) => new Date(event.start) >= now)
-          .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+
+recurringEvents.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+
+// Create a Set of recurring event IDs for quick lookup
+const recurringEventIds = recurringEvents.map(event => event._id);
+console.log(recurringEvents);
+console.log(recurringEventIds);
+
+// Filter upcoming events, excluding any that are in recurringEvents
+const upcoming = eventsResponse.data
+  .filter((event) => new Date(event.start) >= now)
+  .filter((event) => {
+    console.log(event);    
+    return !recurringEventIds.includes(event._id)
+  }  )
+  .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 
         const past = eventsResponse.data
           .filter(
