@@ -161,17 +161,17 @@ const CreateUpdateEventPage = () => {
             console.log("here:");
             console.log(formData.frequency[0]);
             //if(formData.frequency[0] == Frequency.Weekly && isRecurring) return "check for time";
-            if (formData.frequency[0] == Frequency.Weekly) {
+            if (formData.frequency == Frequency.Weekly) {
               if (formData.recurringEnd.valueOf() - formData.start.valueOf() < 6.048e8) {
                 return "Durration of recurring event too short for event to reoccur with selected frequency";
               }
             }
-            if (formData.frequency[0] == Frequency.BiWeekly) {
+            if (formData.frequency == Frequency.BiWeekly) {
               if (formData.recurringEnd.valueOf() - formData.start.valueOf() < 6.048e8 * 2) {
                 return "Durration of recurring event too short for event to reoccur with selected frequency";
               }
             }
-            if (formData.frequency[0] == Frequency.Monthly) {
+            if (formData.frequency == Frequency.Monthly) {
               console.log(formData.recurringEnd.valueOf());
               console.log(formData.start.valueOf());
               if (formData.recurringEnd.valueOf() - formData.start.valueOf() < 2.592e9) {
@@ -199,7 +199,7 @@ const CreateUpdateEventPage = () => {
       }
     },
     //[isRecurring, formData.recurringEnd, formData.start],
-    [isRecurring],
+    [isRecurring, formData.frequency],
     //[],
   );
 
@@ -576,18 +576,18 @@ const CreateUpdateEventPage = () => {
                   className="w-full border border-gray-300 rounded-lg p-2 [&::-webkit-datetime-edit-day-field]:disabled:text-gray-300 [&::-webkit-datetime-edit-month-field]:disabled:text-gray-300 [&::-webkit-datetime-edit-year-field]:disabled:text-gray-300 [&::-webkit-datetime-edit-hour-field]:disabled:text-gray-300 [&::-webkit-datetime-edit-minute-field]:disabled:text-gray-300"
                   aria-label="Date and time"
                   type="datetime-local"
-                  min={dbDateToFrontendDate(new Date())}
+                  // min={dbDateToFrontendDate(new Date())}
                   onChange={(e) => {
                     const selectedDate = new Date(e.target.value);
-                    const now = new Date();
-                    if (selectedDate < now) {
-                      e.target.value = dbDateToFrontendDate(now);
-                      handleChange("start", now);
-                    } else {
-                      console.log(e.target.value);
-                      const utcDate = new Date(selectedDate.getTime());
-                      handleChange("start", utcDate);
-                    }
+                    // const now = new Date();
+                    // if (selectedDate < now) {
+                    //   e.target.value = dbDateToFrontendDate(now);
+                    // handleChange("start", now);
+                    // } else {
+                    console.log(e.target.value);
+                    const utcDate = new Date(selectedDate.getTime());
+                    handleChange("start", utcDate);
+                    // }
                   }}
                   value={dbDateToFrontendDate(new Date(formData.start))}
                 />
