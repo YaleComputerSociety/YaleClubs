@@ -69,7 +69,7 @@ export default function Home() {
               href="/Events"
               className="relative w-full md:w-auto px-4 py-4  text-lg font-bold text-white bg-gradient-to-r from-clubPurple to-clubTaro transition duration-300 hover:scale-105"
             >
-              Check out our new events page!
+              Check out our events page!
             </Link>
           </div>
         </div>

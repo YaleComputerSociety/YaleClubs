@@ -6,11 +6,25 @@ on:
       - main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run a command
-        run: echo "Hello, GitHub Actions!"
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 137.184.143.33 >> ~/.ssh/known_hosts
+
+      - name: Deploy to DigitalOcean Droplet
+        run: |
+          ssh root@137.184.143.33 << 'EOF'
+            cd /var/www/YaleClubs
+            git pull origin main
+            npm install
+            npm run build
+            pm2 restart all
+          EOF
