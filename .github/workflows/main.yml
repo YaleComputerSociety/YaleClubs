@@ -28,6 +28,6 @@ jobs:
               cd /var/www/YaleClubs
               git pull origin main
               npm install
-              npm run build
+              NODE_OPTIONS="--max-old-space-size=512" npm run  build --workers=1
               pm2 restart all
           EOF
