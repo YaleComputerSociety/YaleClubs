@@ -63,7 +63,12 @@ const Banner: React.FC<BannerProps> = ({ onHeightChange }) => {
       {isMobile ? (
         <div className="flex justify-center gap-5 px-5 py-0 text-l">
           <p>
-            <a href="https://yaleclubs.canny.io" target="_blank" rel="noopener noreferrer" className="underline">
+            <a
+              href="https://forms.gle/APtJYSsztGU8DfSf9"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+            >
               We want your feedback! Take a quick survey to help us improve.
             </a>
           </p>
