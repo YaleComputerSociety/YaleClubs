@@ -22,9 +22,12 @@ jobs:
       - name: Deploy to DigitalOcean Droplet
         run: |
           ssh root@137.184.143.33 << 'EOF'
-            cd /var/www/YaleClubs
-            git pull origin main
-            npm install
-            npm run build
-            pm2 restart all
+              export NVM_DIR="/root/.nvm"
+              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+              export PATH=$NVM_DIR/versions/node/v18.20.7/bin:$PATH
+              cd /var/www/YaleClubs
+              git pull origin main
+              npm install
+              npm run build
+              pm2 restart all
           EOF
