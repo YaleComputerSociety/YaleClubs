@@ -185,14 +185,14 @@ const EditableImageSection: React.FC<EditableImageSectionProps> = ({ formData, h
       {validationErrors?.backgroundImage && <p className="text-red-500 mt-2">{validationErrors.backgroundImage}</p>}
 
       <div className="absolute -bottom-6 right-16">
-        <div className="relative w-48 h-48 rounded-3xl border-4 flex items-center justify-center">
+        <div className="relative w-48 h-48 rounded-2xl border-2 flex items-center justify-center">
           <Image
             onClick={() => openModal("logo")}
             src={
               formData.logoFile ? URL.createObjectURL(formData.logoFile) : formData.logo || "/assets/default-logo.png"
             }
             alt="Logo"
-            className="object-cover rounded-3xl cursor-pointer"
+            className="object-cover rounded-2xl cursor-pointer"
             width={240}
             height={240}
             priority
