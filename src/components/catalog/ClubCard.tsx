@@ -124,7 +124,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
   return (
     <div className="relative w-full">
       <div
-        className={`bg-white rounded-xl flex flex-col justify-between w-full cursor-pointer h-full shadow-md  `}
+        className={`bg-white/80 backdrop-blur-sm rounded-xl flex flex-col justify-between w-full cursor-pointer h-full shadow-sm hover:shadow-md transition-shadow duration-300`}
         onClick={onClick}
       >
         {isNew() && (
@@ -179,7 +179,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
         </div>
         {hasApplicationStatus && (
           <div className="w-full overflow-hidden cursor-pointer" onClick={onClick}>
-            <div className="w-full bg-purple-50 py-2 px-3 md:px-4 rounded-b-xl">
+            <div className="w-full bg-purple-50/80 py-2 px-3 md:px-4 rounded-b-xl">
               <div className="flex items-center justify-center">
                 <span className="line-clamp-1 text-purple-800 text-xs sm:text-sm font-medium">{applicationStatus}</span>
               </div>

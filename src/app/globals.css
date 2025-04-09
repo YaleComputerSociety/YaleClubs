@@ -19,15 +19,92 @@ body {
 }
 
 @font-face {
-  font-family: 'Fira Sans';
-  src: url('/fonts/FiraSansCondensed-Medium.ttf') format('truetype');
+  font-family: "Fira Sans";
+  src: url("/fonts/FiraSansCondensed-Medium.ttf") format("truetype");
   font-weight: 500;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Fira Sans';
-  src: url('/fonts/FiraSansCondensed-Bold.ttf') format('truetype');
+  font-family: "Fira Sans";
+  src: url("/fonts/FiraSansCondensed-Bold.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
+}
+
+/* Floating balls animation */
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* Floating balls container */
+.floating-balls {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.floating-ball {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+}
+
+.floating-ball-1 {
+  top: 10%;
+  left: 10%;
+  width: 300px;
+  height: 300px;
+  background-color: #9368fb; /* clubPurple */
+  animation: blob 7s infinite;
+}
+
+.floating-ball-2 {
+  top: 60%;
+  right: 10%;
+  width: 250px;
+  height: 250px;
+  background-color: #cc88f9; /* clubTaro */
+  animation: blob 7s infinite;
+  animation-delay: 2s;
+}
+
+.floating-ball-3 {
+  bottom: 10%;
+  left: 20%;
+  width: 280px;
+  height: 280px;
+  background-color: #684efe; /* clubBlurple */
+  animation: blob 7s infinite;
+  animation-delay: 4s;
 }
