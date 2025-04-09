@@ -45,7 +45,7 @@ const SortButton = ({
     <div ref={ButtonRef} className="relative">
       {/* Toggle Button */}
      <div
-        className="px-3 h-10 w-full w-[7rem] flex items-center justify-between border border-l-0 border-gray-300 bg-white rounded-r-md cursor-pointer hover:bg-gray-100 transition-colors"
+        className="px-3 h-10 w-full w-[6.5rem] flex items-center justify-between border border-l-0 border-gray-300 bg-white rounded-r-md cursor-pointer hover:bg-gray-100 transition-colors"
         onClick={() => setOpen((prev) => !prev)}
       >
         <span className="truncate text-sm">

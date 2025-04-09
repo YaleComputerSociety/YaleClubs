@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import FollowFilter from "./FollowFilter";
 
-import SearchBar from "./SearchBar";
 import FilterButton from "../Filter";
 import { Affiliation, Category, IClub, School } from "@/lib/models/Club";
 import Trie from "./Trie";
@@ -190,7 +189,7 @@ const SearchControl = ({
             className="h-10 w-full px-4 border border-gray-300 rounded-l-md focus:outline-none focus:ring focus:border-blue-300 text-sm"
           />
         </div>
-        <div className="w-[9rem]">
+        <div className="w-[7rem]">
           <SortButton
             sortOption={sortOption}
             sortDirection={sortDirection}
