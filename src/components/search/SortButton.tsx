@@ -2,15 +2,24 @@ import React, { useState, useRef, useEffect } from "react";
 
 interface SortButtonProps {
   sortOption: "followers" | "alphabetical";
+  sortDirection: "asc" | "desc";
   setSortOption: React.Dispatch<React.SetStateAction<"followers" | "alphabetical">>;
+  setSortDirection: React.Dispatch<React.SetStateAction<"asc" | "desc">>;
 }
 
-const SORT_OPTIONS: { label: string; value: "followers" | "alphabetical" }[] = [
-  { label: "Followers", value: "followers" },
-  { label: "A–Z", value: "alphabetical" },
+const SORT_OPTIONS = [
+  { label: "Fo ↓", value: { option: "followers", direction: "desc" } },
+  { label: "Fo ↑", value: { option: "followers", direction: "asc" } },
+  { label: "A–Z", value: { option: "alphabetical", direction: "asc" } },
+  { label: "Z–A", value: { option: "alphabetical", direction: "desc" } },
 ];
 
-const SortButton = ({ sortOption, setSortOption }: SortButtonProps) => {
+const SortButton = ({
+  sortOption,
+  sortDirection,
+  setSortOption,
+  setSortDirection,
+}: SortButtonProps) => {
   const [open, setOpen] = useState(false);
   const ButtonRef = useRef<HTMLDivElement>(null);
 
@@ -26,38 +35,53 @@ const SortButton = ({ sortOption, setSortOption }: SortButtonProps) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
-  const selectedLabel = SORT_OPTIONS.find((opt) => opt.value === sortOption)?.label;
+  const selectedLabel =
+    SORT_OPTIONS.find(
+      (opt) =>
+        opt.value.option === sortOption && opt.value.direction === sortDirection
+    )?.label ?? "Sort";
 
   return (
     <div ref={ButtonRef} className="relative">
       {/* Toggle Button */}
-      <div
-        className="px-2 py-2 rounded cursor-pointer w-[11rem] flex items-center justify-between h-10 md:h-11 hover:bg-gray-200 transition-colors duration-200 text-gray-700"
+     <div
+        className="px-3 h-10 w-full w-[7rem] flex items-center justify-between border border-l-0 border-gray-300 bg-white rounded-r-md cursor-pointer hover:bg-gray-100 transition-colors"
         onClick={() => setOpen((prev) => !prev)}
       >
-       <span className="truncate">
-          Sort by: <span className="text-blue-500">{selectedLabel}</span>
+        <span className="truncate text-sm">
+          <span className="text-gray-600">Sort:</span>{" "}
+          <span className="text-blue-500">{selectedLabel}</span>
         </span>
-        <span className="ml-2 text-xs">&#x25BC;</span>
+        <span className="ml-1 text-xs">&#x25BC;</span>
       </div>
 
-      {/* Button Items */}
+
+      {/* Dropdown Items */}
       {open && (
-        <div className="absolute mt-2 w-full bg-white border border-gray-300 rounded shadow-lg z-10">
-          {SORT_OPTIONS.map((option) => (
-            <div
-              key={option.value}
-              className={`cursor-pointer px-4 py-2 hover:bg-gray-100 ${
-                sortOption === option.value ? "bg-gray-100 text-blue-600 font-medium" : "text-gray-700"
-              }`}
-              onClick={() => {
-                setSortOption(option.value);
-                setOpen(false);
-              }}
-            >
-              {option.label}
-            </div>
-          ))}
+        <div className="absolute mt-2 w-full w-[7rem] bg-white border border-gray-300 rounded shadow-lg z-10">
+          {SORT_OPTIONS.map((option) => {
+            const isSelected =
+              sortOption === option.value.option &&
+              sortDirection === option.value.direction;
+
+            return (
+              <div
+                key={`${option.value.option}-${option.value.direction}`}
+                className={`cursor-pointer px-4 py-2 hover:bg-gray-100 ${
+                  isSelected
+                    ? "bg-gray-100 text-blue-600 font-medium"
+                    : "text-gray-700"
+                }`}
+                onClick={() => {
+                  setSortOption(option.value.option);
+                  setSortDirection(option.value.direction);
+                  setOpen(false);
+                }}
+              >
+                {option.label}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

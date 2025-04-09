@@ -6,7 +6,7 @@ import FilterButton from "../Filter";
 import { Affiliation, Category, IClub, School } from "@/lib/models/Club";
 import Trie from "./Trie";
 import { useAuth } from "@/contexts/AuthContext";
-import SortDirectionToggle from "./SortDirectionToggle";
+// import SortDirectionToggle from "./SortDirectionToggle";
 
 import SortButton from "./SortButton";
 
@@ -36,8 +36,6 @@ const SearchControl = ({
   const { isLoggedIn } = useAuth();
   const [sortOption, setSortOption] = useState<"followers" | "alphabetical">("followers");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-  
-
 
 
   // Initialize Trie with club names and aliases along with a mapping for lookups.
@@ -130,20 +128,28 @@ const SearchControl = ({
       .filter((club) => (showFollowedOnly ? followedClubs.includes(club._id) : true));
 
       const sortedFilteredClubs = [...filteredClubs].sort((a, b) => {
-      if (sortOption === "followers") {
-        const followerDiff = a.followers - b.followers;
-        return sortDirection === "asc" ? followerDiff : -followerDiff;
-      }
+        if (sortOption === "followers") {
+          const followerDiff = a.followers - b.followers;
+          if (followerDiff !== 0) {
+            return sortDirection === "asc" ? followerDiff : -followerDiff;
+          }
 
-      if (sortOption === "alphabetical") {
-        const nameDiff = a.name.toLowerCase().localeCompare(b.name.toLowerCase(), undefined, {
-          sensitivity: "base",
-        });
-        return sortDirection === "asc" ? nameDiff : -nameDiff;
-      }
+          const nameDiff = a.name.toLowerCase().localeCompare(b.name.toLowerCase(), undefined, {
+            sensitivity: "base",
+          });
+          return nameDiff;
+        }
 
-      return 0;
-    });
+        if (sortOption === "alphabetical") {
+          const nameDiff = a.name.toLowerCase().localeCompare(b.name.toLowerCase(), undefined, {
+            sensitivity: "base",
+          });
+          return sortDirection === "asc" ? nameDiff : -nameDiff;
+        }
+
+        return 0;
+      });
+
 
 
 
@@ -174,7 +180,26 @@ const SearchControl = ({
         zIndex: 20,
       }}
     >
-      <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <div className="flex w-full sm:w-[32rem]">
+        <div className="flex-grow">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search clubs..."
+            className="h-10 w-full px-4 border border-gray-300 rounded-l-md focus:outline-none focus:ring focus:border-blue-300 text-sm"
+          />
+        </div>
+        <div className="w-[9rem]">
+          <SortButton
+            sortOption={sortOption}
+            sortDirection={sortDirection}
+            setSortOption={setSortOption}
+            setSortDirection={setSortDirection}
+          />
+        </div>
+      </div>
+
       <div className="flex gap-2 pt-4 sm:pt-0 sm:flex-wrap sm:flex-row sm:gap-4">
         <FilterButton
           selectedItems={selectedCategories}
@@ -182,10 +207,6 @@ const SearchControl = ({
           allItems={[...Object.values(Category), ...Object.values(Affiliation)].sort()}
           label="Categories"
         />
-        <div className="flex gap-2 items-center">
-          <SortButton sortOption={sortOption} setSortOption={setSortOption} />
-          <SortDirectionToggle sortDirection={sortDirection} setSortDirection={setSortDirection} />
-        </div>
 
 
         {isLoggedIn && <FollowFilter showFollowedOnly={showFollowedOnly} setShowFollowedOnly={setShowFollowedOnly} />}
