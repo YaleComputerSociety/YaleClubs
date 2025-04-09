@@ -6,6 +6,9 @@ import FilterButton from "../Filter";
 import { Affiliation, Category, IClub, School } from "@/lib/models/Club";
 import Trie from "./Trie";
 import { useAuth } from "@/contexts/AuthContext";
+import SortDirectionToggle from "./SortDirectionToggle";
+
+import SortButton from "./SortButton";
 
 interface SearchControlProps {
   clubs: IClub[];
@@ -31,6 +34,11 @@ const SearchControl = ({
   const [showFollowedOnly, setShowFollowedOnly] = useState(false);
   const [searchKeyToClubName, setSearchKeyToClubName] = useState<Record<string, string[]>>({});
   const { isLoggedIn } = useAuth();
+  const [sortOption, setSortOption] = useState<"followers" | "alphabetical">("followers");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  
+
+
 
   // Initialize Trie with club names and aliases along with a mapping for lookups.
   useEffect(() => {
@@ -121,12 +129,24 @@ const SearchControl = ({
       )
       .filter((club) => (showFollowedOnly ? followedClubs.includes(club._id) : true));
 
-    const sortedFilteredClubs = filteredClubs.sort((a, b) => {
-      if (b.followers !== a.followers) {
-        return b.followers - a.followers;
+      const sortedFilteredClubs = [...filteredClubs].sort((a, b) => {
+      if (sortOption === "followers") {
+        const followerDiff = a.followers - b.followers;
+        return sortDirection === "asc" ? followerDiff : -followerDiff;
       }
-      return a.name.toLowerCase().localeCompare(b.name.toLowerCase(), undefined, { sensitivity: "base" });
+
+      if (sortOption === "alphabetical") {
+        const nameDiff = a.name.toLowerCase().localeCompare(b.name.toLowerCase(), undefined, {
+          sensitivity: "base",
+        });
+        return sortDirection === "asc" ? nameDiff : -nameDiff;
+      }
+
+      return 0;
     });
+
+
+
 
     setCurrentClubs(sortedFilteredClubs);
     setIsLoading(false);
@@ -141,6 +161,8 @@ const SearchControl = ({
     followedClubs,
     showFollowedOnly,
     searchKeyToClubName,
+    sortOption,
+    sortDirection,
   ]);
 
   return (
@@ -160,6 +182,12 @@ const SearchControl = ({
           allItems={[...Object.values(Category), ...Object.values(Affiliation)].sort()}
           label="Categories"
         />
+        <div className="flex gap-2 items-center">
+          <SortButton sortOption={sortOption} setSortOption={setSortOption} />
+          <SortDirectionToggle sortDirection={sortDirection} setSortDirection={setSortDirection} />
+        </div>
+
+
         {isLoggedIn && <FollowFilter showFollowedOnly={showFollowedOnly} setShowFollowedOnly={setShowFollowedOnly} />}
         <button
           className="text-blue-500 hover:text-blue-700 hidden md:inline-block"
