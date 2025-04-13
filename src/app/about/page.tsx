@@ -32,7 +32,7 @@ const AboutPage: React.FC = () => {
 
         <div className="max-w-6xl text-center mt-10">
           <h2 className="text-3xl font-bold mb-6">Meet the Team</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {teamMembers.map((member) => (
               <div key={member.name} className="bg-white p-6 rounded-lg shadow-md">
                 <MemberCard member={member}></MemberCard>
@@ -63,27 +63,11 @@ const teamMembers = [
     github: "https://github.com/laurenwylee",
   },
   {
-    name: "Koray Akduman",
-    role: "Developer",
-    headshot: "/assets/people/koray.jpg",
-    website: "https://korayakduman.com",
-    linkedin: "https://www.linkedin.com/in/korayakduman/",
-    github: "https://github.com/kakduman",
-  },
-  {
     name: "Grady Yu",
     role: "Developer",
     headshot: "/assets/people/grady.jpg",
     linkedin: "https://www.linkedin.com/in/gradyyu/",
     github: "https://github.com/Ragyudy",
-  },
-  {
-    name: "Lucas Huang",
-    role: "Developer",
-    headshot: "/assets/people/lucas.jpg",
-    website: "https://lucashua.ng/",
-    linkedin: "https://www.linkedin.com/in/huangl16/",
-    github: "https://github.com/Quintec",
   },
   {
     name: "Francis Fan",
@@ -109,42 +93,58 @@ const teamMembers = [
     github: "https://github.com/AlyssaQuarles1",
   },
   {
-    name: "Marie Bong",
-    role: "Marketing Lead",
-    headshot: "/assets/people/marie.jpg",
-    linkedin: "https://www.linkedin.com/in/mariebong/",
+    name: "Lucas Huang",
+    role: "Developer",
+    headshot: "/assets/people/lucas.jpg",
+    website: "https://lucashua.ng/",
+    linkedin: "https://www.linkedin.com/in/huangl16/",
+    github: "https://github.com/Quintec",
   },
   {
-    name: "Michelle Zheng",
-    role: "Marketing",
-    headshot: "/assets/people/michy.jpg",
-    linkedin: "https://www.linkedin.com/in/mzheng8/",
+    name: "Koray Akduman",
+    role: "Developer",
+    headshot: "/assets/people/koray.jpg",
+    website: "https://korayakduman.com",
+    linkedin: "https://www.linkedin.com/in/korayakduman/",
+    github: "https://github.com/kakduman",
   },
-  {
-    name: "Amanda Huang",
-    role: "Marketing",
-    headshot: "/assets/people/amanda.jpg",
-    linkedin: "https://linkedin.com/in/amandaminhuang/",
-  },
-  {
-    name: "Lily Lin",
-    role: "UX Designer",
-    headshot: "/assets/people/lily.jpg",
-    linkedin: "https://linkedin.com/in/zhiyu-lily-lin/",
-  },
-  {
-    name: "Matteo Balbarin",
-    role: "Marketing Ops",
-    headshot: "/assets/people/matteo.jpg",
-    linkedin: "https://linkedin.com/in/mateo-balbarin-849395237/",
-    github: "https://github.com/mateo1442/",
-  },
-  {
-    name: "Michael Chu",
-    role: "Ideas Man",
-    headshot: "/assets/people/michael.jpg",
-    linkedin: "https://linkedin.com/in/michael-chu-a28034203/",
-  },
+  // {
+  //   name: "Marie Bong",
+  //   role: "Marketing Lead",
+  //   headshot: "/assets/people/marie.jpg",
+  //   linkedin: "https://www.linkedin.com/in/mariebong/",
+  // },
+  // {
+  //   name: "Michelle Zheng",
+  //   role: "Marketing",
+  //   headshot: "/assets/people/michy.jpg",
+  //   linkedin: "https://www.linkedin.com/in/mzheng8/",
+  // },
+  // {
+  //   name: "Amanda Huang",
+  //   role: "Marketing",
+  //   headshot: "/assets/people/amanda.jpg",
+  //   linkedin: "https://linkedin.com/in/amandaminhuang/",
+  // },
+  // {
+  //   name: "Lily Lin",
+  //   role: "UX Designer",
+  //   headshot: "/assets/people/lily.jpg",
+  //   linkedin: "https://linkedin.com/in/zhiyu-lily-lin/",
+  // },
+  // {
+  //   name: "Matteo Balbarin",
+  //   role: "Marketing Ops",
+  //   headshot: "/assets/people/matteo.jpg",
+  //   linkedin: "https://linkedin.com/in/mateo-balbarin-849395237/",
+  //   github: "https://github.com/mateo1442/",
+  // },
+  // {
+  //   name: "Michael Chu",
+  //   role: "Ideas Man",
+  //   headshot: "/assets/people/michael.jpg",
+  //   linkedin: "https://linkedin.com/in/michael-chu-a28034203/",
+  // },
 ];
 
 export default AboutPage;
