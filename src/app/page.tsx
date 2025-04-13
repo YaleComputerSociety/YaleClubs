@@ -58,7 +58,7 @@ export default function Home() {
     <main className=" flex flex-col min-h-screen">
       <div className="flex-grow">
         <Header />
-        <div className="flex flex-col w-full px-5 md:px-20">
+        <div className="bg-background flex flex-col w-full px-5 md:px-20">
           <div className="mt-20 md:mt-24"></div>
           <div className="flex flex-col md:flex-row justify-between items-start w-full mt-4 space-y-3 md:space-y-0 md:space-x-12 mb-4">
             <div className="flex flex-col">

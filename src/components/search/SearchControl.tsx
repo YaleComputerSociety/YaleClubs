@@ -145,7 +145,7 @@ const SearchControl = ({
 
   return (
     <div
-      className="search-control flex flex-wrap sm:gap-2 items-center pb-4 pt-2 bg-gray-100 w-full px-5 md:px-20"
+      className="search-control flex flex-wrap sm:gap-2 items-center pb-4 pt-4 bg-background w-full px-5 md:px-20"
       style={{
         position: "sticky",
         top: `84px`, // Adjust "80px" based on Header's height

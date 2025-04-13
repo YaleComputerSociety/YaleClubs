@@ -34,7 +34,7 @@ const AboutPage: React.FC = () => {
           <h2 className="text-3xl font-bold mb-6">Meet the Team</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {teamMembers.map((member) => (
-              <div key={member.name} className="bg-white p-6 rounded-lg shadow-md">
+              <div key={member.name} className="bg-white/70 backdrop-blur-lg p-6 rounded-lg shadow-md">
                 <MemberCard member={member}></MemberCard>
               </div>
             ))}

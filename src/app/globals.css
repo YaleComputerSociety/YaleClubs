@@ -38,10 +38,10 @@ body {
     transform: translate(0px, 0px) scale(1);
   }
   33% {
-    transform: translate(30px, -50px) scale(1.1);
+    transform: translate(10px, -15px) scale(1.03);
   }
   66% {
-    transform: translate(-20px, 20px) scale(0.9);
+    transform: translate(-8px, 12px) scale(0.97);
   }
   100% {
     transform: translate(0px, 0px) scale(1);
@@ -75,36 +75,63 @@ body {
 .floating-ball {
   position: absolute;
   border-radius: 50%;
-  filter: blur(40px);
+  filter: blur(64px);
   opacity: 0.5;
   mix-blend-mode: multiply;
 }
 
 .floating-ball-1 {
-  top: 10%;
-  left: 10%;
-  width: 300px;
-  height: 300px;
-  background-color: #9368fb; /* clubPurple */
+  top: 5%;
+  left: 2%;
+  width: 600px;
+  height: 550px;
+  background-color: #cc88f9; /* clubPurple */
   animation: blob 7s infinite;
 }
 
 .floating-ball-2 {
-  top: 60%;
-  right: 10%;
-  width: 250px;
-  height: 250px;
+  top: 2%;
+  right: 2%;
+  width: 500px;
+  height: 500px;
   background-color: #cc88f9; /* clubTaro */
   animation: blob 7s infinite;
   animation-delay: 2s;
 }
 
 .floating-ball-3 {
-  bottom: 10%;
-  left: 20%;
-  width: 280px;
-  height: 280px;
-  background-color: #684efe; /* clubBlurple */
+  bottom: -30%;
+  left: 40%;
+  width: 500px;
+  height: 500px;
+  background-color: #cc88f9; /* clubBlurple */
   animation: blob 7s infinite;
   animation-delay: 4s;
+}
+
+@media (max-width: 768px) {
+  .floating-ball {
+    filter: blur(80px);
+  }
+
+  .floating-ball-1 {
+    width: 300px;
+    height: 275px;
+    top: 10%;
+    left: 5%;
+  }
+
+  .floating-ball-2 {
+    width: 250px;
+    height: 250px;
+    top: 8%;
+    right: 5%;
+  }
+
+  .floating-ball-3 {
+    width: 250px;
+    height: 250px;
+    bottom: -20%;
+    left: 30%;
+  }
 }
