@@ -59,23 +59,29 @@ export async function GET(request: Request): Promise<NextResponse> {
         },
         body: JSON.stringify({ filters: { netid } }),
       });
+      console.log(yaliesResponse);
+      console.log("Here a");
       const yaliesJSON = await yaliesResponse.json();
+      console.log(yaliesJSON);
+      console.log("Here 1");
       const email = yaliesJSON[0].email;
 
       await connectToDatabase();
       const existingUser = await Users.findOne({ netid });
+      console.log("Here 2");
       if (!existingUser) {
         console.log(`Creating new user for NetID: ${netid}`);
         await Users.create({
           netid,
         });
       } else {
+        console.log("Here 3");
         console.log(`User already exists for NetID: ${netid}`);
       }
       const token = jwt.sign({ netid, email, role: existingUser.role || "user" }, JWT_SECRET, {
         expiresIn: "7d",
       });
-
+      console.log("Here 4");
       const redirectPath = from && from.includes("/Events") ? "/Events" : "/";
 
       const response = NextResponse.redirect(`${process.env.BASE_URL}${redirectPath}`);

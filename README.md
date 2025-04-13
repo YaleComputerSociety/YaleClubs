@@ -31,3 +31,14 @@ Infrastructure consists of the following three services, all within DigitalOcean
 - Spaces: A DO Object Store that stores uploaded images. ~$5/month
 
 Currently, all infrastructure is under the account addison.goolsbee@yale.edu because of the free $200 in student credits. Eventually it will be transfered to an account under yaleclubsycs@gmail.com
+
+## NGINX Server
+
+The server should rebuild automatically and download new packages, but if you need to do something like update an environment variable (which it cannot pull from github), you must login and manually rebuild:
+
+- Go to DigitalOcean and login to the account
+- Go to the server, click on the *console* button, and a terminal should open up
+- The YaleClubs repo is in `/var/www/YaleClubs`, go there
+- Manually update it however you'd like
+- Rebuild with `npm run build`
+- The `pm2` command should automatically detect the new build and serve the program. Check its status with `pm2 list`
