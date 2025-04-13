@@ -108,43 +108,43 @@ const teamMembers = [
     linkedin: "https://www.linkedin.com/in/alyssa-quarles-65735b316/",
     github: "https://github.com/AlyssaQuarles1",
   },
-  {
-    name: "Marie Bong",
-    role: "Marketing Lead",
-    headshot: "/assets/people/marie.jpg",
-    linkedin: "https://www.linkedin.com/in/mariebong/",
-  },
-  {
-    name: "Michelle Zheng",
-    role: "Marketing",
-    headshot: "/assets/people/michy.jpg",
-    linkedin: "https://www.linkedin.com/in/mzheng8/",
-  },
-  {
-    name: "Amanda Huang",
-    role: "Marketing",
-    headshot: "/assets/people/amanda.jpg",
-    linkedin: "https://linkedin.com/in/amandaminhuang/",
-  },
-  {
-    name: "Lily Lin",
-    role: "UX Designer",
-    headshot: "/assets/people/lily.jpg",
-    linkedin: "https://linkedin.com/in/zhiyu-lily-lin/",
-  },
-  {
-    name: "Matteo Balbarin",
-    role: "Marketing Ops",
-    headshot: "/assets/people/matteo.jpg",
-    linkedin: "https://linkedin.com/in/mateo-balbarin-849395237/",
-    github: "https://github.com/mateo1442/",
-  },
-  {
-    name: "Michael Chu",
-    role: "Ideas Man",
-    headshot: "/assets/people/michael.jpg",
-    linkedin: "https://linkedin.com/in/michael-chu-a28034203/",
-  },
+  // {
+  //   name: "Marie Bong",
+  //   role: "Marketing Lead",
+  //   headshot: "/assets/people/marie.jpg",
+  //   linkedin: "https://www.linkedin.com/in/mariebong/",
+  // },
+  // {
+  //   name: "Michelle Zheng",
+  //   role: "Marketing",
+  //   headshot: "/assets/people/michy.jpg",
+  //   linkedin: "https://www.linkedin.com/in/mzheng8/",
+  // },
+  // {
+  //   name: "Amanda Huang",
+  //   role: "Marketing",
+  //   headshot: "/assets/people/amanda.jpg",
+  //   linkedin: "https://linkedin.com/in/amandaminhuang/",
+  // },
+  // {
+  //   name: "Lily Lin",
+  //   role: "UX Designer",
+  //   headshot: "/assets/people/lily.jpg",
+  //   linkedin: "https://linkedin.com/in/zhiyu-lily-lin/",
+  // },
+  // {
+  //   name: "Matteo Balbarin",
+  //   role: "Marketing Ops",
+  //   headshot: "/assets/people/matteo.jpg",
+  //   linkedin: "https://linkedin.com/in/mateo-balbarin-849395237/",
+  //   github: "https://github.com/mateo1442/",
+  // },
+  // {
+  //   name: "Michael Chu",
+  //   role: "Ideas Man",
+  //   headshot: "/assets/people/michael.jpg",
+  //   linkedin: "https://linkedin.com/in/michael-chu-a28034203/",
+  // },
 ];
 
 export default AboutPage;
