@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import FollowFilter from "./FollowFilter";
 
-import SearchBar from "./SearchBar";
 import FilterButton from "../Filter";
 import { Affiliation, Category, IClub, School } from "@/lib/models/Club";
 import Trie from "./Trie";
 import { useAuth } from "@/contexts/AuthContext";
+// import SortDirectionToggle from "./SortDirectionToggle";
+
+import SortButton from "./SortButton";
 
 interface SearchControlProps {
   clubs: IClub[];
@@ -31,6 +33,9 @@ const SearchControl = ({
   const [showFollowedOnly, setShowFollowedOnly] = useState(false);
   const [searchKeyToClubName, setSearchKeyToClubName] = useState<Record<string, string[]>>({});
   const { isLoggedIn } = useAuth();
+  const [sortOption, setSortOption] = useState<"followers" | "alphabetical">("followers");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+
 
   // Initialize Trie with club names and aliases along with a mapping for lookups.
   useEffect(() => {
@@ -121,12 +126,32 @@ const SearchControl = ({
       )
       .filter((club) => (showFollowedOnly ? followedClubs.includes(club._id) : true));
 
-    const sortedFilteredClubs = filteredClubs.sort((a, b) => {
-      if (b.followers !== a.followers) {
-        return b.followers - a.followers;
-      }
-      return a.name.toLowerCase().localeCompare(b.name.toLowerCase(), undefined, { sensitivity: "base" });
-    });
+      const sortedFilteredClubs = [...filteredClubs].sort((a, b) => {
+        if (sortOption === "followers") {
+          const followerDiff = a.followers - b.followers;
+          if (followerDiff !== 0) {
+            return sortDirection === "asc" ? followerDiff : -followerDiff;
+          }
+
+          const nameDiff = a.name.toLowerCase().localeCompare(b.name.toLowerCase(), undefined, {
+            sensitivity: "base",
+          });
+          return nameDiff;
+        }
+
+        if (sortOption === "alphabetical") {
+          const nameDiff = a.name.toLowerCase().localeCompare(b.name.toLowerCase(), undefined, {
+            sensitivity: "base",
+          });
+          return sortDirection === "asc" ? nameDiff : -nameDiff;
+        }
+
+        return 0;
+      });
+
+
+
+
 
     setCurrentClubs(sortedFilteredClubs);
     setIsLoading(false);
@@ -141,6 +166,8 @@ const SearchControl = ({
     followedClubs,
     showFollowedOnly,
     searchKeyToClubName,
+    sortOption,
+    sortDirection,
   ]);
 
   return (
@@ -152,7 +179,26 @@ const SearchControl = ({
         zIndex: 20,
       }}
     >
-      <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <div className="flex w-full sm:w-[32rem]">
+        <div className="flex-grow">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search clubs..."
+            className="h-10 w-full px-4 border border-gray-300 rounded-l-md focus:outline-none focus:ring focus:border-blue-300 text-sm"
+          />
+        </div>
+        <div className="w-[7rem]">
+          <SortButton
+            sortOption={sortOption}
+            sortDirection={sortDirection}
+            setSortOption={setSortOption}
+            setSortDirection={setSortDirection}
+          />
+        </div>
+      </div>
+
       <div className="flex gap-2 pt-4 sm:pt-0 sm:flex-wrap sm:flex-row sm:gap-4">
         <FilterButton
           selectedItems={selectedCategories}
@@ -160,6 +206,8 @@ const SearchControl = ({
           allItems={[...Object.values(Category), ...Object.values(Affiliation)].sort()}
           label="Categories"
         />
+
+
         {isLoggedIn && <FollowFilter showFollowedOnly={showFollowedOnly} setShowFollowedOnly={setShowFollowedOnly} />}
         <button
           className="text-blue-500 hover:text-blue-700 hidden md:inline-block"
