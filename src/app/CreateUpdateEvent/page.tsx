@@ -31,6 +31,7 @@ const CreateUpdateEventPage = () => {
   const [availeHostClubs, setAvailHostClubs] = useState<string[]>([]);
   const [numberOfEventsLeft, setNumberOfEventsLeft] = useState(MAX_NUMBER_OF_EVENTS_PER_MONTH);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [isAdmin, setIsAdmin] = useState(false);
   const [formDataObject, setFormDataObject] = useState<IEventInput>({
     name: "",
     description: "",
@@ -141,6 +142,7 @@ const CreateUpdateEventPage = () => {
 
     if (isLoggedIn) {
       setUserEmail(user?.email ?? null);
+      setIsAdmin(user?.role == "admin");
 
       Promise.all([fetchEventData(), fetchClubData()])
         .catch((error) => {
@@ -155,7 +157,7 @@ const CreateUpdateEventPage = () => {
   useEffect(() => {
     if (clubs.length > 0 && userEmail) {
       const availableClubs = clubs
-        .filter((club) => club.leaders.map((leader) => leader.email).includes(userEmail))
+        .filter((club) => club.leaders.map((leader) => leader.email).includes(userEmail) || isAdmin)
         .map((club) => club.name);
       setAvailHostClubs(availableClubs);
     }
