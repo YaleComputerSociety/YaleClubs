@@ -6,14 +6,10 @@ import axios from "axios";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import EventCard from "../../components/events/catalog/EventCard";
-// import Catalog from "../../components/catalog/Catalog";
-// import SearchControl from "@/components/search/SearchControl";
 import EventModal from "../../components/events/catalog/EventModal";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-//import SearchControlEvent from "@/components/events/catalog/SearchControlEvents";
-//import Catalog from "@/components/events/catalog/Catalog";
 
 import { FaPlus } from "react-icons/fa";
 import { MdLockOutline } from "react-icons/md";
@@ -22,34 +18,6 @@ import { IEvent } from "@/lib/models/Event";
 import { IClub } from "@/lib/models/Club";
 import ClubModal from "@/components/catalog/ClubModal";
 import ClubCard from "@/components/catalog/ClubCard";
-
-// const useSkeletonCount = () => {
-//   const [skeletonCount, setSkeletonCount] = useState(8);
-
-//   useEffect(() => {
-//     const calculateSkeletons = () => {
-//       const containerWidth = window.innerWidth - 40;
-//       let itemsPerRow;
-//       if (containerWidth < 640) itemsPerRow = 1;
-//       else if (containerWidth < 768) itemsPerRow = 2;
-//       else if (containerWidth < 1024) itemsPerRow = 3;
-//       else itemsPerRow = 4;
-
-//       const itemHeight = 256;
-//       const viewportHeight = window.innerHeight;
-//       const rowsThatFit = Math.ceil(viewportHeight / itemHeight);
-//       const rowsToShow = rowsThatFit + 1;
-
-//       setSkeletonCount(itemsPerRow * rowsToShow);
-//     };
-
-//     calculateSkeletons();
-//     window.addEventListener("resize", calculateSkeletons);
-//     return () => window.removeEventListener("resize", calculateSkeletons);
-//   }, []);
-
-//   return skeletonCount;
-// };
 
 export default function ProfilePage() {
   const [, setEvents] = useState<IEvent[]>([]);
@@ -60,43 +28,32 @@ export default function ProfilePage() {
 
   const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
 
-  //   const [currentUpcomingEvents, setCurrentUpcomingEvents] = useState<IEvent[]>([]);
-  //   const [currentPastEvents, setCurrentPastEvents] = useState<IEvent[]>([]);
-
-  //   const [, setClubEvents] = useState<IEvent[]>([]);
+ 
   const [followingEvents, setFollowingEvents] = useState<IEvent[]>([]);
   const [followedClubs, setFollowedClubs] = useState<string[]>([]);
   const [officerEvents, setOfficerEvents] = useState<IEvent[]>([]);
   const [officerClubs, setOfficerClubs] = useState<IClub[]>([]);
 
   const [error, setError] = useState<string | null>(null);
-  //const [featuredEvents, setFeaturedEvents] = useState<IEvent[]>([]);
   const { isLoggedIn } = useAuth();
   const pathname = usePathname();
-  //   const skeletonCount = useSkeletonCount();
   const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
   const handleClickEvent = (event: IEvent) => setSelectedEvent(event);
 
   const [, setIsMobile] = useState(false);
 
-  //    const [, setCurrentClubs] = useState<IClub[]>([]);
-
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 767px)");
     const updateIsMobile = () => setIsMobile(mediaQuery.matches);
 
-    // Set the initial value
     updateIsMobile();
 
-    // Add event listener for changes
     mediaQuery.addEventListener("change", updateIsMobile);
 
     return () => mediaQuery.removeEventListener("change", updateIsMobile);
   }, []);
 
   const [visibleClubs] = useState(50);
-  //const firstRef = useRef(true);
-  // = useRef<string[]>([]);
   const hasLoadedDataRef = useRef(false);
 
   const gridStyle = "grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 justify-items-center";
@@ -104,20 +61,11 @@ export default function ProfilePage() {
   const handleCloseClubModal = () => setSelectedClub(null);
   const handleCloseEventModal = () => setSelectedEvent(null);
 
-  // useEffect(() => {
-  //   if (followedClubs.length > 0 && firstRef.current) {
-  //     initialFollowedClubsRef.current = followedClubs;
-  //     firstRef.current = false;
-  //   }
-  // }, [followedClubs]);
-
   useEffect(() => {
     if (!isLoading && clubs.length > 0) {
       hasLoadedDataRef.current = true;
     }
   }, [isLoading, clubs.length]);
-
- // const initialFollowedClubs = initialFollowedClubsRef.current;
 
   const renderClubItem = (club: IClub) => (
     <ClubCard
@@ -127,7 +75,6 @@ export default function ProfilePage() {
       followedClubs={followedClubs}
       onClick={() => setSelectedClub(club)}
       initialFollowing={followedClubs.includes(club._id)}
-      //initialFollowing={initialFollowedClubs.includes(club._id)}
     />
   );
 
@@ -155,9 +102,6 @@ export default function ProfilePage() {
         setError(null);
         const [eventsResponse, clubsResponse] = await Promise.all([
           axios.get<IEvent[]>("/api/events/", {
-            // headers: {
-            //   "Content-Type": "application/json",
-            // },
           }),
           axios.get<IClub[]>("/api/clubs"),
         ]);
@@ -169,68 +113,6 @@ export default function ProfilePage() {
         setEvents(eventsResponse.data);
         setClubs(yaleCollegeClubs);
 
-        // Split and sort events
-        // const now = new Date();
-        // const upcoming = eventsResponse.data
-        //   .filter((event) => new Date(event.start) >= now)
-        //   .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
-
-        // const past = eventsResponse.data
-        //   .filter((event) => event.clubs )
-        //   .sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime());
-
-        // const clubMemberships = eventsResponse.data.
-        //   .f
-
-        // const YALIES_API_KEY = process.env.YALIES_API_KEY as string;
-        // if (!YALIES_API_KEY) {
-        // throw new Error("Please define the YALIES_API_KEY environment variable");
-        // }
-
-        //const yaliesURL = "https://api.yalies.io/v2/people";
-        // const yaliesResponse = await fetch(yaliesURL, {
-        // method: "POST",
-        // headers: {
-        //   "Content-Type": "application/json",
-        //   Authorization: "Bearer " + YALIES_API_KEY,
-        // },
-        // body: JSON.stringify({ filters: { netid } }),
-        // });
-        //const yaliesJSON = await yaliesResponse.json();
-        //const email = yaliesJSON[0].email;
-
-        //clubs the user is an officer for
-        // const officerClubsList = clubs
-        //   .filter((club) => club && club.leaders.includes(email))
-        //    .sort((a, b) => a.name.localeCompare(b.name));
-
-        //events from clubs that the user is an officer for
-        // const clubsEv = eventsResponse.data
-        //   .filter((event) => event.clubs && event.clubs.some(club => officerClubs.includes(club)))
-        //   .sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime());
-
-        //events from clubs that the user follows
-        // const followingEv = eventsResponse.data
-        //   .filter((event) => event.clubs && event.clubs.some((club) => followedClubs.includes(club)))
-        //   .sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime());
-
-        //clubs followed by user
-        //const followedClubsList = yaleCollegeClubs
-
-        // const followedClubsList = clubs
-        //   .filter((club) => club && followedClubs.includes(club._id))
-        //   .sort((a, b) => a.name.localeCompare(b.name));
-
-        // setFollowedClubs2(followedClubsList);
-        //setOfficerClubs(officerClubsList);
-
-        // setCurrentUpcomingEvents(upcoming);
-        // setCurrentPastEvents(past);
-        // setFeaturedEvents(getRandomThree(upcoming));
-
-        //setClubEvents(clubsEv);
-        //setFollowingEvents(followingEv);
-        //setOfficerEvents(clubsEv);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError("Failed to load events. Please try reloading the page.");
@@ -298,13 +180,6 @@ export default function ProfilePage() {
           .filter((club) => !officerClubsList.includes(club))
           .sort((a, b) => a.name.localeCompare(b.name));
 
-        // Events from clubs the user follows
-        // const followingEv = eventsResponse.data
-        //   //.filter((event) => event.clubs && event.clubs.some((club) => userData.user.followedClubs.includes(club)))
-        //   //.filter((event) => event.clubs && event.clubs.some((club) => followedClubs.includes(club)))
-        //   .filter((event) => event.clubs && event.clubs.some((club) => followedClubsList.some((club2) => club2.name).includes(club)))
-        //   .sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime());
-
         const followingEv = eventsResponse.data
           .filter(
             (event) =>
@@ -344,44 +219,6 @@ export default function ProfilePage() {
       loadData();
     }
   }, [netid]);
-
-  
-
-
-  //   if (false) {
-  //     return (
-  //       <div className="min-h-screen">
-  //         <Header />
-  //         <main className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] px-4">
-  //           <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
-  //             <div className="flex flex-col items-center text-center space-y-4">
-  //               <div className="p-3 bg-violet-100 rounded-full">
-  //                 <MdLockOutline className="w-8 h-8 text-violet-600" />
-  //               </div>
-  //               <h1 className="text-2xl font-bold text-gray-900">Welcome to YaleClubs Events</h1>
-  //               <p className="text-lg text-gray-600">Discover and join exciting events happening around our campus</p>
-  //             </div>
-  //             <div className="p-4 rounded-md text-center">
-  //               <p className="text-gray-700">
-  //                 Please{" "}
-  //                 <a
-  //                   href={`/api/auth/redirect?from=${pathname}`}
-  //                   className="inline-flex items-center font-semibold text-violet-600 hover:text-violet-500 transition-colors"
-  //                 >
-  //                   log in
-  //                   <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  //                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-  //                   </svg>
-  //                 </a>{" "}
-  //                 to view and participate in events
-  //               </p>
-  //             </div>
-  //           </div>
-  //         </main>
-  //         <Footer />
-  //       </div>
-  //     );
-  //   }
 
   if (!isLoggedIn) {
     return (
@@ -502,7 +339,6 @@ export default function ProfilePage() {
                     setFollowedClubs={setFollowedClubs}
                     followedClubs={followedClubs}
                     initialFollowing={followedClubs.includes(selectedClub._id)}
-                    //initialFollowing={initialFollowedClubs.includes(selectedClub._id)}
                   />
                 )}
               </div>
