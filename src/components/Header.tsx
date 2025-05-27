@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePathname } from "next/navigation";
 import Banner from "./Banner";
+import { CgProfile } from "react-icons/cg";
 
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/dropdown";
 import { Button } from "@heroui/button";
@@ -97,10 +98,12 @@ const Header = () => {
                       <Dropdown>
                         <DropdownTrigger>
                           <Button
-                            className="px-6 py-6 text-lg rounded-full shadow-md hover:bg-clubBlurple focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
+                            className="w-11 h-11 px-6 py-6 text-lg rounded-full shadow-md hover:bg-clubBlurple focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
                             variant="bordered"
                           >
-                            Menu
+                            <div>
+                              <CgProfile size={35}></CgProfile>
+                            </div>
                           </Button>
                         </DropdownTrigger>
                         <DropdownMenu aria-label="Link Actions" className="bg-white rounded-lg shadow-md p-2">
@@ -149,21 +152,19 @@ const Header = () => {
               <Dropdown>
                 <DropdownTrigger>
                   <Button
-                    className="px-6 py-6 text-lg rounded-full shadow-md hover:bg-clubBlurple focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
+                    className="w-11 h-11 px-6 py-6 text-lg rounded-full shadow-md hover:bg-clubBlurple focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
                     variant="bordered"
                   >
-                    Menu
+                    <div>
+                      <CgProfile size={35}></CgProfile>
+                    </div>
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Link Actions" className="bg-white rounded-lg shadow-md p-2">
                   <DropdownItem key="profile" className="px-2 py-2 text-lg">
                     <Link href="/Profile">Profile</Link>
                   </DropdownItem>
-                  <DropdownItem
-                    key="signout"
-                    className="px-2 py-2 text-lg"
-                    onPress={handleLogout}
-                  >
+                  <DropdownItem key="signout" className="px-2 py-2 text-lg" onPress={handleLogout}>
                     Sign Out
                   </DropdownItem>
                 </DropdownMenu>
