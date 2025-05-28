@@ -251,7 +251,6 @@ export default function ProfilePage() {
         <Header />
         <div className="flex-grow mt-10">
           <div className="flex flex-col w-full px-5 md:px-20 max-w-7xl mx-auto">
-            {/* Hero Section */}
             <div className="mt-16 md:mt-20 mb-12">
               <div className="flex flex-col md:flex-row items-center justify-between w-full gap-6 md:gap-8">
                 <div className="flex-1 text-center md:text-left w-full">
@@ -279,7 +278,6 @@ export default function ProfilePage() {
               </div>
             )}
 
-            {/* Officer Clubs Section */}
             {officerClubs.length > 0 && (
               <section className="mb-16">
                 <div className="flex items-center gap-4 mb-8">
@@ -314,7 +312,6 @@ export default function ProfilePage() {
               </section>
             )}
 
-            {/* Officer Events Section */}
             {officerEvents.length > 0 && (
               <section className="mb-16">
                 <div className="flex items-center gap-4 mb-8">
@@ -395,7 +392,6 @@ export default function ProfilePage() {
               </section>
             )}
 
-            {/* Event Modal */}
             {selectedEvent && (
               <EventModal
                 associatedClubLeaders={clubs
@@ -407,7 +403,6 @@ export default function ProfilePage() {
               />
             )}
 
-            {/* Empty State */}
             {officerClubs.length == 0 &&
               officerEvents.length == 0 &&
               followedClubs2.length == 0 &&
