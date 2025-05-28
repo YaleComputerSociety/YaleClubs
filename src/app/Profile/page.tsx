@@ -11,13 +11,16 @@ import EventModal from "../../components/events/catalog/EventModal";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-import { FaPlus } from "react-icons/fa";
-import { MdLockOutline } from "react-icons/md";
-
 import { IEvent } from "@/lib/models/Event";
 import { IClub } from "@/lib/models/Club";
 import ClubModal from "@/components/catalog/ClubModal";
 import ClubCard from "@/components/catalog/ClubCard";
+import CreateEventButton from "@/components/events/update/CreateEventButton";
+
+import { HiUserGroup } from "react-icons/hi";
+import { MdCalendarToday, MdArrowForward, MdLockOutline } from "react-icons/md";
+import { AiOutlineHeart } from "react-icons/ai";
+import { BiCheckCircle } from "react-icons/bi";
 
 export default function ProfilePage() {
   const [, setEvents] = useState<IEvent[]>([]);
@@ -28,7 +31,6 @@ export default function ProfilePage() {
 
   const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
 
- 
   const [followingEvents, setFollowingEvents] = useState<IEvent[]>([]);
   const [followedClubs, setFollowedClubs] = useState<string[]>([]);
   const [officerEvents, setOfficerEvents] = useState<IEvent[]>([]);
@@ -78,7 +80,6 @@ export default function ProfilePage() {
     />
   );
 
-
   useEffect(() => {
     const fetchApiMessage = async () => {
       try {
@@ -101,8 +102,7 @@ export default function ProfilePage() {
         setIsInitialLoading(true);
         setError(null);
         const [eventsResponse, clubsResponse] = await Promise.all([
-          axios.get<IEvent[]>("/api/events/", {
-          }),
+          axios.get<IEvent[]>("/api/events/", {}),
           axios.get<IClub[]>("/api/clubs"),
         ]);
 
@@ -112,7 +112,6 @@ export default function ProfilePage() {
 
         setEvents(eventsResponse.data);
         setClubs(yaleCollegeClubs);
-
       } catch (error) {
         console.error("Error fetching data:", error);
         setError("Failed to load events. Please try reloading the page.");
@@ -169,8 +168,10 @@ export default function ProfilePage() {
 
         const officerEventsList = eventsResponse.data
           .filter(
-            (event) => event.clubs &&
-              event.clubs.some((clubName) => officerClubsList.some((clubObj) => clubObj.name == clubName)))
+            (event) =>
+              event.clubs &&
+              event.clubs.some((clubName) => officerClubsList.some((clubObj) => clubObj.name == clubName)),
+          )
           .filter((event) => new Date(event.start).getTime() > new Date().getTime())
           .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 
@@ -188,15 +189,6 @@ export default function ProfilePage() {
           )
           .filter((event) => new Date(event.start).getTime() > new Date().getTime())
           .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
-
-        console.log(followedClubs);
-        console.log(followingEv);
-        console.log(officerClubsList);
-        console.log(officerEventsList);
-        console.log(netid);
-        console.log(followedClubsList[0].leaders[0].email);
-        console.log("followed clubs string list:");
-        console.log(followedClubs);
 
         setFollowedClubs2(followedClubsList);
         setFollowingEvents(followingEv);
@@ -241,9 +233,7 @@ export default function ProfilePage() {
                   className="inline-flex items-center font-semibold text-violet-600 hover:text-violet-500 transition-colors"
                 >
                   log in
-                  <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                  </svg>
+                  <MdArrowForward className="w-4 h-4 ml-1" />
                 </a>{" "}
                 to view your profile
               </p>
@@ -257,39 +247,53 @@ export default function ProfilePage() {
 
   return (
     <>
-      <main className="flex flex-col min-h-screen">
+      <main className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-white">
         <Header />
-        <div className="flex-grow">
-          <div className="flex flex-col w-full px-5 md:px-20">
-            <div className="mt-20 md:mt-24"></div>
-
-            <div className="flex flex-col md:flex-row items-center justify-between w-full gap-4 md:gap-0">
-              <div className="flex-1 text-center md:text-left w-full">
-                <h1 className="text-3xl font-bold text-black">Hello!</h1>
-                <h2 className="text-xl mb-0 md:mb-4">
-                  View the clubs and events of which you are an officer or follower.
-                </h2>
-              </div>
-              {(officerClubs.length != 0 || followedClubs2.length == 0) && (
-                <div className="flex items-center mb-4 md:mb-0">
-                  <Link href="/CreateUpdateEvent">
-                    <button className="flex items-center font-semibold justify-center gap-2 flex-row rounded-full text-xl drop-shadow-md transition duration-300 hover:shadow-lg bg-clubPurple hover:bg-clubBlurple text-white px-5 py-3">
-                      <FaPlus /> Create Event
-                    </button>
-                  </Link>
+        <div className="flex-grow mt-10">
+          <div className="flex flex-col w-full px-5 md:px-20 max-w-7xl mx-auto">
+            {/* Hero Section */}
+            <div className="mt-16 md:mt-20 mb-12">
+              <div className="flex flex-col md:flex-row items-center justify-between w-full gap-6 md:gap-8">
+                <div className="flex-1 text-center md:text-left w-full">
+                  <div className="relative">
+                    <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-clubPurple to-clubBlurple bg-clip-text text-transparent mb-4">
+                      Welcome Back!
+                    </h1>
+                    <div className="absolute -bottom-2 left-0 md:left-0 right-0 md:right-auto h-1 bg-gradient-to-r from-clubPurple to-clubBlurple rounded-full w-24 mx-auto md:mx-0"></div>
+                  </div>
+                  <p className="text-lg md:text-xl text-gray-600 mt-6 leading-relaxed">
+                    Manage your clubs and discover exciting events in your community
+                  </p>
                 </div>
-              )}
+                {(officerClubs.length != 0 || followedClubs2.length == 0) && (
+                  <div className="flex items-center">
+                    <CreateEventButton />
+                  </div>
+                )}
+              </div>
             </div>
 
-            {error && <div className="w-full p-4 mb-4 text-red-700 bg-red-100 rounded-lg">{error}</div>}
+            {error && (
+              <div className="w-full p-4 mb-8 text-red-700 bg-red-50 border border-red-200 rounded-xl shadow-sm">
+                {error}
+              </div>
+            )}
 
-            <div>
-              <h1 className="text-2xl font-bold mb-4"></h1>
-            </div>
-
+            {/* Officer Clubs Section */}
             {officerClubs.length > 0 && (
-              <div>
-                <h1 className="text-2xl font-bold mb-4">Your Club Memberships</h1>
+              <section className="mb-16">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-clubPurple to-clubBlurple rounded-xl flex items-center justify-center">
+                      <HiUserGroup className="w-5 h-5 text-white" />
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Your Club Leaderships</h2>
+                  </div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-clubPurple/30 to-transparent"></div>
+                  <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                    {officerClubs.length} {officerClubs.length === 1 ? "Club" : "Clubs"}
+                  </span>
+                </div>
                 <div className={gridStyle}>
                   {officerClubs.slice(0, visibleClubs).map(renderClubItem)}
                   {selectedClub && (
@@ -299,67 +303,99 @@ export default function ProfilePage() {
                       setFollowedClubs={setFollowedClubs}
                       followedClubs={followedClubs}
                       initialFollowing={followedClubs.includes(selectedClub._id)}
-                      //initialFollowing={initialFollowedClubs.includes(selectedClub._id)}
                     />
                   )}
                 </div>
                 {visibleClubs < officerClubs.length && (
                   <div className="flex justify-center items-center mt-10">
-                    <div className="w-8 h-8 border-4 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-8 h-8 border-4 border-clubPurple/30 border-t-clubPurple rounded-full animate-spin"></div>
                   </div>
                 )}
-              </div>
+              </section>
             )}
 
-            <div>
-              <h1 className="text-2xl font-bold mb-4"></h1>
-            </div>
-
-            <div>
-              {officerEvents.length > 0 && (
-                <h1 className="text-2xl font-bold mb-4">Events for Your Club Memberships</h1>
-              )}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {officerEvents.map((event) => (
-                  <EventCard key={event._id} event={event} onClick={() => handleClickEvent(event)} />
-                ))}
-              </div>
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold mb-4"></h1>
-            </div>
-            <div>
-              {followedClubs2.length > 0 && <h1 className="text-2xl font-bold mb-4">Clubs You Follow</h1>}
-              <div className={gridStyle}>
-                {followedClubs2.slice(0, visibleClubs).map(renderClubItem)}
-                {selectedClub && (
-                  <ClubModal
-                    club={selectedClub}
-                    onClose={handleCloseClubModal}
-                    setFollowedClubs={setFollowedClubs}
-                    followedClubs={followedClubs}
-                    initialFollowing={followedClubs.includes(selectedClub._id)}
-                  />
-                )}
-              </div>
-              {visibleClubs < followedClubs2.length && (
-                <div className="flex justify-center items-center mt-10">
-                  <div className="w-8 h-8 border-4 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
+            {/* Officer Events Section */}
+            {officerEvents.length > 0 && (
+              <section className="mb-16">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
+                      <MdCalendarToday className="w-5 h-5 text-white" />
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Your Club&apos;s Events</h2>
+                  </div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-emerald-500/30 to-transparent"></div>
+                  <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                    {officerEvents.length} {officerEvents.length === 1 ? "Event" : "Events"}
+                  </span>
                 </div>
-              )}
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold mb-4"></h1>
-            </div>
-            <div>
-              {followingEvents.length > 0 && <h1 className="text-2xl font-bold mb-4">Events for Followed Clubs</h1>}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {followingEvents.map((event) => (
-                  <EventCard key={event._id} event={event} onClick={() => handleClickEvent(event)} />
-                ))}
-              </div>
-            </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {officerEvents.map((event) => (
+                    <EventCard key={event._id} event={event} onClick={() => handleClickEvent(event)} />
+                  ))}
+                </div>
+              </section>
+            )}
 
+            {/* Followed Clubs Section */}
+            {followedClubs2.length > 0 && (
+              <section className="mb-16">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-rose-500 to-pink-500 rounded-xl flex items-center justify-center">
+                      <AiOutlineHeart className="w-5 h-5 text-white" />
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Clubs You Follow</h2>
+                  </div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-rose-500/30 to-transparent"></div>
+                  <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                    {followedClubs2.length} {followedClubs2.length === 1 ? "Club" : "Clubs"}
+                  </span>
+                </div>
+                <div className={gridStyle}>
+                  {followedClubs2.slice(0, visibleClubs).map(renderClubItem)}
+                  {selectedClub && (
+                    <ClubModal
+                      club={selectedClub}
+                      onClose={handleCloseClubModal}
+                      setFollowedClubs={setFollowedClubs}
+                      followedClubs={followedClubs}
+                      initialFollowing={followedClubs.includes(selectedClub._id)}
+                    />
+                  )}
+                </div>
+                {visibleClubs < followedClubs2.length && (
+                  <div className="flex justify-center items-center mt-10">
+                    <div className="w-8 h-8 border-4 border-rose-500/30 border-t-rose-500 rounded-full animate-spin"></div>
+                  </div>
+                )}
+              </section>
+            )}
+
+            {/* Following Events Section */}
+            {followingEvents.length > 0 && (
+              <section className="mb-16">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
+                      <BiCheckCircle className="w-5 h-5 text-white" />
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Events from Followed Clubs</h2>
+                  </div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-amber-500/30 to-transparent"></div>
+                  <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                    {followingEvents.length} {followingEvents.length === 1 ? "Event" : "Events"}
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {followingEvents.map((event) => (
+                    <EventCard key={event._id} event={event} onClick={() => handleClickEvent(event)} />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Event Modal */}
             {selectedEvent && (
               <EventModal
                 associatedClubLeaders={clubs
@@ -371,31 +407,64 @@ export default function ProfilePage() {
               />
             )}
 
+            {/* Empty State */}
             {officerClubs.length == 0 &&
               officerEvents.length == 0 &&
               followedClubs2.length == 0 &&
               followingEvents.length == 0 && (
-                <h1 className="text-2xl font-bold mb-4 text-center text-center">
-                  Follow Clubs and View Events to Add Content to Your Profile
-                </h1>
-              )}
+                <div className="text-center py-20">
+                  <div className="max-w-md mx-auto">
+                    <div className="w-24 h-24 bg-gradient-to-r from-clubPurple to-clubBlurple rounded-full flex items-center justify-center mx-auto mb-8">
+                      <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-800 mb-4">Get Started</h3>
+                    <p className="text-gray-600 mb-8 leading-relaxed">
+                      Discover amazing clubs and events in your community. Follow clubs and attend events to personalize
+                      your experience.
+                    </p>
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+                      <Link href="/Events">
+                        <button className="group flex items-center font-semibold justify-center gap-2 flex-row rounded-2xl text-lg drop-shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 bg-gradient-to-r from-clubPurple to-clubBlurple text-white px-8 py-4 w-full sm:w-auto">
+                          <svg
+                            className="w-5 h-5 group-hover:scale-110 transition-transform duration-300"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          View Events
+                        </button>
+                      </Link>
 
-            {officerClubs.length == 0 &&
-              officerEvents.length == 0 &&
-              followedClubs2.length == 0 &&
-              followingEvents.length == 0 && (
-                <div className="flex justify-center items-center gap-x-4 my-6">
-                  <Link href="/Events">
-                    <button className="flex items-center font-semibold justify-center gap-2 flex-row rounded-full text-xl drop-shadow-md transition duration-300 hover:shadow-lg bg-clubPurple hover:bg-clubBlurple text-white px-5 py-3">
-                      View Events
-                    </button>
-                  </Link>
-
-                  <Link href="/Clubs">
-                    <button className="flex items-center font-semibold justify-center gap-2 flex-row rounded-full text-xl drop-shadow-md transition duration-300 hover:shadow-lg bg-clubPurple hover:bg-clubBlurple text-white px-5 py-3">
-                      View Clubs
-                    </button>
-                  </Link>
+                      <Link href="/Clubs">
+                        <button className="group flex items-center font-semibold justify-center gap-2 flex-row rounded-2xl text-lg border-2 border-clubPurple text-clubPurple hover:bg-clubPurple hover:text-white transition-all duration-300 hover:shadow-lg hover:scale-105 px-8 py-4 w-full sm:w-auto">
+                          <svg
+                            className="w-5 h-5 group-hover:scale-110 transition-transform duration-300"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          View Clubs
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
                 </div>
               )}
           </div>
