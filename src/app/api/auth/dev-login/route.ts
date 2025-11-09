@@ -21,9 +21,9 @@ export async function GET(request: Request): Promise<NextResponse> {
   const redirectParam = url.searchParams.get("redirect");
 
   // Allow overriding via query params for testing, otherwise use sensible defaults
-  const netid = url.searchParams.get("netid") || "fyf2";
-  const email = url.searchParams.get("email") || `$francis.fan@yale.edu`;
-  const role = url.searchParams.get("role") || "admin";
+  const netid = url.searchParams.get("netid") || (process.env.USER_NETID as string);
+  const email = url.searchParams.get("email") || (process.env.USER_EMAIL as string);
+  const role = url.searchParams.get("role") || (process.env.USER_ROLE as string);
 
   const token = jwt.sign({ netid, email, role }, JWT_SECRET, {
     expiresIn: "7d",
