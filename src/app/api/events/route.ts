@@ -89,6 +89,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     const verified = jwt.verify(token.value, process.env.JWT_SECRET) as unknown as {
       netid: string;
       email: string;
+      role: string;
     };
 
     if (!req.headers.get("content-type")?.includes("multipart/form-data")) {
@@ -117,7 +118,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       }
 
       const isLeader = club.leaders.some((leader: ClubLeader) => leader.email === verified.email);
-      if (isLeader) {
+      if (isLeader || verified.role == "admin") {
         isLeaderOfAnyClub = true;
         break;
       }

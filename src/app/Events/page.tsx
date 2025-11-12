@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import axios from "axios";
-import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 
 import Header from "@/components/Header";
@@ -11,11 +10,11 @@ import Footer from "@/components/Footer";
 import SearchControlEvent from "@/components/events/catalog/SearchControlEvents";
 import Catalog from "@/components/events/catalog/Catalog";
 
-import { FaPlus } from "react-icons/fa";
 import { MdLockOutline } from "react-icons/md";
 
 import { IEvent } from "@/lib/models/Event";
 import { IClub } from "@/lib/models/Club";
+import CreateEventButton from "@/components/events/update/CreateEventButton";
 
 const useSkeletonCount = () => {
   const [skeletonCount, setSkeletonCount] = useState(8);
@@ -176,11 +175,7 @@ export default function EventsPage() {
                 <h2 className="text-xl mb-0 md:mb-4">Finding Upcoming Campus Events has Never Been Easier.</h2>
               </div>
               <div className="flex items-center mb-4 md:mb-0">
-                <Link href="/CreateUpdateEvent">
-                  <button className="flex items-center font-semibold justify-center gap-2 flex-row rounded-full text-xl drop-shadow-md transition duration-300 hover:shadow-lg bg-clubPurple hover:bg-clubBlurple text-white px-5 py-3">
-                    <FaPlus /> Create Event
-                  </button>
-                </Link>
+                <CreateEventButton />
               </div>
             </div>
 
