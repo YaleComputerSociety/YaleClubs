@@ -158,6 +158,50 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
                 <Link href={generateGoogleCalendarLink(event)} target="_blank" rel="noopener noreferrer">
                   <button className="bg-violet-600 p-2 rounded-lg text-white font-bold">Add to Calendar</button>
                 </Link>
+                <button
+                  className="bg-gray-100 p-2 rounded-lg text-gray-900 font-bold hover:bg-gray-200"
+                  onClick={async () => {
+                    const shareUrl = `${window.location.origin}/Events/${event._id}`;
+                    const title = `${event.name} | YaleClubs`;
+                    const text = `${new Date(event.start).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })} • ${event.location}`;
+
+                    // Try Web Share API with image file support (use flyer directly to avoid OG fetch)
+                    try {
+                      const imgUrl =
+                        event.flyer && event.flyer.trim() !== "" ? event.flyer : "/assets/default-background.png";
+                      const res = await fetch(imgUrl, { cache: "no-store" });
+                      if (res.ok) {
+                        const blob = await res.blob();
+                        const fileName = `event-${event._id}${blob.type === "image/jpeg" ? ".jpg" : ".png"}`;
+                        // Some browsers require a concrete content-type
+                        const file = new File([blob], fileName, { type: blob.type || "image/png" });
+
+                        const canShareFiles =
+                          typeof (navigator as any).canShare === "function" &&
+                          (navigator as any).canShare({ files: [file] });
+                        if (canShareFiles && typeof (navigator as any).share === "function") {
+                          // Pass the link via the url field only to avoid duplicate links in some apps
+                          await (navigator as any).share({ title, text, url: shareUrl, files: [file] });
+                          return;
+                        }
+                      }
+                    } catch (err) {
+                      console.warn("Image share not supported or failed, falling back to link share.", err);
+                    }
+
+                    // Fallback to link-only share
+                    try {
+                      if (navigator.share && typeof navigator.share === "function") {
+                        await navigator.share({ title, text, url: shareUrl });
+                        return;
+                      }
+                    } catch (err) {
+                      console.error("Link share failed, falling back to clipboard.", err);
+                    }
+                  }}
+                >
+                  Share
+                </button>
               </div>
             </div>
 
