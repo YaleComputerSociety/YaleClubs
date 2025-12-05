@@ -81,7 +81,7 @@ const FilterModal = ({
         className="px-3 py-2 rounded-md border hover:bg-gray-100 flex items-center gap-2 text-sm"
         aria-expanded={isOpen}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" className="w-4 h-4 fill-current">
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" className="w-4 h-4 fill-current">
           <path d="M96 128C83.1 128 71.4 135.8 66.4 147.8C61.4 159.8 64.2 173.5 73.4 182.6L256 365.3L256 480C256 488.5 259.4 496.6 265.4 502.6L329.4 566.6C338.6 575.8 352.3 578.5 364.3 573.5C376.3 568.5 384 556.9 384 544L384 365.3L566.6 182.7C575.8 173.5 578.5 159.8 573.5 147.8C568.5 135.8 556.9 128 544 128L96 128z" />
         </svg>
         <span>Filters</span>
@@ -98,9 +98,10 @@ const FilterModal = ({
             className="absolute top-[100px] left-1/2 transform -translate-x-1/2 w-full max-w-sm bg-white rounded-lg shadow-lg p-4"
             role="dialog"
             aria-modal="true"
+            aria-labelledby="filter-dialog-title"
           >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Filters</h3>
+              <h3 id="filter-dialog-title" className="text-lg font-semibold">Filters</h3>
               <div className="flex items-center gap-2">
                 <button onClick={clearAll} className="text-sm text-gray-600 hover:text-gray-900 px-2 py-1 rounded">
                   Clear all
@@ -108,6 +109,7 @@ const FilterModal = ({
                 <button
                   onClick={() => setIsOpen(false)}
                   className="px-3 py-1 rounded bg-violet-500 text-white text-sm hover:bg-violet-600"
+                  aria-label="Close filters dialog"
                 >
                   Done
                 </button>
