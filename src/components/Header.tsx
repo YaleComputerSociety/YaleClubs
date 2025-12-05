@@ -118,13 +118,13 @@ const Header = () => {
                         Sign Out
                       </button>
                     ) : (
-                      <Link
+                      <a
                         href="/api/auth/redirect"
                         onClick={() => setIsMenuOpen(false)}
                         className={authButton + " bg-clubPurple text-white"}
                       >
                         Sign In
-                      </Link>
+                      </a>
                     )}
                   </li>
                 </ul>
@@ -147,9 +147,9 @@ const Header = () => {
                 Sign Out
               </button>
             ) : (
-              <Link href="/api/auth/redirect" className={authButton + " bg-clubPurple text-white"}>
+              <a href="/api/auth/redirect" className={authButton + " bg-clubPurple text-white"}>
                 Sign In
-              </Link>
+              </a>
             )}
           </div>
         )}
