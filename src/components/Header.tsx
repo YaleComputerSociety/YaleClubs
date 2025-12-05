@@ -19,6 +19,7 @@ const Header = () => {
   const links = [
     { href: "/", label: "Clubs" },
     { href: "/Events", label: "Events" },
+    { href: "/applications", label: "Applications" },
     { href: "/about", label: "About" },
   ];
 
@@ -133,15 +134,18 @@ const Header = () => {
           </div>
         ) : (
           <div className="hidden sm:flex flex-row items-center gap-x-12 text-xl font-semibold">
-            {links.map(({ href, label }) => (
-              <Link key={href} href={href} className="relative">
-                <div
-                  className={`${pathname === href ? "underline underline-offset-4 text-clubPurple" : ""} hover:text-clubPurple duration-300 transition-colors`}
-                >
-                  {label}
-                </div>
-              </Link>
-            ))}
+            {links.map(({ href, label }) => {
+              const isActive = href === "/" ? pathname === href : pathname.startsWith(href);
+              return (
+                <Link key={href} href={href} className="relative">
+                  <div
+                    className={`${isActive ? "underline underline-offset-4 text-clubPurple" : ""} hover:text-clubPurple duration-300 transition-colors`}
+                  >
+                    {label}
+                  </div>
+                </Link>
+              );
+            })}
             {isLoggedIn ? (
               <button onClick={handleLogout} className={authButton + " bg-gray-200 text-gray-600 hover:bg-gray-300"}>
                 Sign Out

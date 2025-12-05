@@ -3,6 +3,7 @@
 import React, { Dispatch, SetStateAction } from "react";
 import { IClub, RecruitmentStatus } from "@/lib/models/Club";
 import Image from "next/image";
+import Link from "next/link";
 import FollowButton from "./FollowButton";
 import { LabelList } from "./LabelList";
 
@@ -163,15 +164,22 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
               height={100}
               className="rounded-xl flex-shrink-0 object-cover w-[60px] h-[60px] sm:w-[80px] sm:h-[80px]"
             />
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center w-full px-1">
               <FollowButton
                 isFollowing={isFollowing}
                 clubId={club._id}
                 followedClubs={followedClubs}
                 setFollowedClubs={setFollowedClubs}
-                className="w-[60px] sm:w-[80.1px] my-2 text-xs sm:text-sm"
+                className="w-full sm:w-[80.1px] my-1 text-xs sm:text-sm"
               />
-              <div className="text-xs sm:text-sm text-gray-500">
+              <Link
+                href={`/applications/form/${club._id}`}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full px-2 py-1.5 bg-gradient-to-r from-clubPurple to-clubTaro text-white text-xs sm:text-sm font-semibold rounded hover:opacity-90 transition text-center my-1"
+              >
+                Apply
+              </Link>
+              <div className="text-xs sm:text-sm text-gray-500 mt-1">
                 {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}
               </div>
             </div>
