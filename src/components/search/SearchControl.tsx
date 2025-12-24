@@ -119,7 +119,7 @@ const SearchControl = ({
             )
           : true,
       )
-      .filter((club) => (showFollowedOnly ? followedClubs.includes(club._id) : true));
+      .filter((club) => (showFollowedOnly ? followedClubs.includes(club._id.toString()) : true));
 
     const sortedFilteredClubs = filteredClubs.sort((a, b) => {
       if (b.followers !== a.followers) {

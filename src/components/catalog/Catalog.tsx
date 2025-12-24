@@ -44,12 +44,12 @@ const Catalog = ({
 
   const renderClubItem = (club: IClub) => (
     <ClubCard
-      key={club._id}
+      key={club._id.toString()}
       club={club}
       setFollowedClubs={setFollowedClubs}
       followedClubs={followedClubs}
       onClick={() => setSelectedClub(club)}
-      initialFollowing={initialFollowedClubs.includes(club._id)}
+      initialFollowing={initialFollowedClubs.includes(club._id.toString())}
     />
   );
 
@@ -106,7 +106,7 @@ const Catalog = ({
                 onClose={handleCloseModal}
                 setFollowedClubs={setFollowedClubs}
                 followedClubs={followedClubs}
-                initialFollowing={initialFollowedClubs.includes(selectedClub._id)}
+                initialFollowing={initialFollowedClubs.includes(selectedClub._id.toString())}
               />
             )}
           </div>

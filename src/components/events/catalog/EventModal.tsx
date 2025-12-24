@@ -67,7 +67,7 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
       <div className="absolute top-3 right-3 z-50">
         {canEdit && isLoggedIn && false && (
           <div className="flex flex-row space-x-3">
-            <Link href={`/CreateUpdateEvent?eventId=${event._id}`}>
+            <Link href={`/CreateUpdateEvent?eventId=${event._id.toString()}`}>
               <button
                 className={`${editButtonStyle} bg-clubPurple text-white hover:bg-clubBlurple transition-all duration-300 hover:scale-105`}
               >
@@ -79,7 +79,7 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
               onClick={async () => {
                 if (window.confirm("Are you sure you want to delete this event? This action cannot be undone.")) {
                   try {
-                    await axios.delete(`/api/events?id=${event._id}`, {
+                    await axios.delete(`/api/events?id=${event._id.toString()}`, {
                       data: event,
                     });
                     onClose();
@@ -161,7 +161,7 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
                 <button
                   className="bg-gray-100 p-2 rounded-lg text-gray-900 font-bold hover:bg-gray-200"
                   onClick={async () => {
-                    const shareUrl = `${window.location.origin}/Events/${event._id}`;
+                    const shareUrl = `${window.location.origin}/Events/${event._id.toString()}`;
                     const title = `${event.name} | YaleClubs`;
                     const text = `${new Date(event.start).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })} • ${event.location}`;
 
@@ -172,7 +172,7 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
                       const res = await fetch(imgUrl, { cache: "no-store" });
                       if (res.ok) {
                         const blob = await res.blob();
-                        const fileName = `event-${event._id}${blob.type === "image/jpeg" ? ".jpg" : ".png"}`;
+                        const fileName = `event-${event._id.toString()}${blob.type === "image/jpeg" ? ".jpg" : ".png"}`;
                         // Some browsers require a concrete content-type
                         const file = new File([blob], fileName, { type: blob.type || "image/png" });
 

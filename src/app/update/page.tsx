@@ -142,7 +142,7 @@ const UpdatePage = () => {
 
         const clubId = searchParams.get("clubId");
         if (clubId) {
-          const specificClub = allClubs.find((club: IClub) => club._id === clubId);
+          const specificClub = allClubs.find((club: IClub) => club._id?.toString() === clubId);
           if (specificClub) {
             const clubInput: IClubInput = {
               name: specificClub.name || "",

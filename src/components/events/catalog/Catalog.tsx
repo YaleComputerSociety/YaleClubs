@@ -99,7 +99,7 @@ const Catalog = ({
               <h1 className="text-2xl font-bold mb-4">Upcoming Events</h1>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {upcomingEvents.map((event) => (
-                  <EventCard key={event._id} event={event} onClick={() => handleClickEvent(event)} />
+                  <EventCard key={event._id.toString()} event={event} onClick={() => handleClickEvent(event)} />
                 ))}
               </div>
             </div>
@@ -120,7 +120,7 @@ const Catalog = ({
             <h1 className="text-2xl font-bold mb-4">Past Events</h1>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {pastEvents.map((event) => (
-                <EventCard key={event._id} event={event} onClick={() => handleClickEvent(event)} />
+                <EventCard key={event._id.toString()} event={event} onClick={() => handleClickEvent(event)} />
               ))}
             </div>
           </div>

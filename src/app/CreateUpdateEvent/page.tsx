@@ -103,7 +103,7 @@ const CreateUpdateEventPage = () => {
 
         if (eventId) {
           setUpdatingAlreadyMadeEvent(true);
-          const specificEvent = allEvents.find((event: IEvent) => event._id === eventId);
+          const specificEvent = allEvents.find((event: IEvent) => event._id.toString() === eventId);
           if (specificEvent) {
             const eventInput: IEventInput = {
               name: specificEvent.name || "",
