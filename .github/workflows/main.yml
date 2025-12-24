@@ -17,11 +17,11 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H 137.184.143.33 >> ~/.ssh/known_hosts
+          ssh-keyscan -H 45.55.236.241 >> ~/.ssh/known_hosts
 
       - name: Deploy to DigitalOcean Droplet
         run: |
-          ssh root@137.184.143.33 << 'EOF'
+          ssh root@45.55.236.241 << 'EOF'
               export NVM_DIR="/root/.nvm"
               [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
               export PATH=$NVM_DIR/versions/node/v18.20.7/bin:$PATH
