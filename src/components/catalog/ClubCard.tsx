@@ -164,13 +164,13 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
               className="rounded-xl flex-shrink-0 object-cover w-[60px] h-[60px] sm:w-[80px] sm:h-[80px]"
             />
             <div className="flex flex-col items-center">
-            <FollowButton
-              isFollowing={isFollowing}
-              clubId={club._id.toString()}
-              followedClubs={followedClubs}
-              setFollowedClubs={setFollowedClubs}
-              className="w-[60px] sm:w-[80.1px] my-2 text-xs sm:text-sm"
-            />
+              <FollowButton
+                isFollowing={isFollowing}
+                clubId={club._id.toString()}
+                followedClubs={followedClubs}
+                setFollowedClubs={setFollowedClubs}
+                className="w-[60px] sm:w-[80.1px] my-2 text-xs sm:text-sm"
+              />
               <div className="text-xs sm:text-sm text-gray-500">
                 {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}
               </div>
