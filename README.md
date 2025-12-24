@@ -18,7 +18,7 @@ We LOVE feedback! Please give us your thoughts [here](https://forms.gle/APtJYSsz
 - `npm run build` to build for prod
 - `npm run start` to run a built project (after npm run build)
 
-*Make sure to run `npm run build && npm run start` before submitting a pull request, as sometimes errors will only show up in prod!*
+_Make sure to run `npm run build && npm run start` before submitting a pull request, as sometimes errors will only show up in prod!_
 
 ## Infrastructure
 
@@ -37,7 +37,7 @@ Currently, all infrastructure is under the account addison.goolsbee@yale.edu bec
 The server should rebuild automatically and download new packages, but if you need to do something like update an environment variable (which it cannot pull from github), you must login and manually rebuild:
 
 - Go to DigitalOcean and login to the account
-- Go to the server, click on the *console* button, and a terminal should open up
+- Go to the server, click on the _console_ button, and a terminal should open up
 - The YaleClubs repo is in `/var/www/YaleClubs`, go there
 - Manually update it however you'd like
 - Rebuild with `npm run build`

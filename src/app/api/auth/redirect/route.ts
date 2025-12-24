@@ -24,7 +24,7 @@ export async function GET(request: Request): Promise<NextResponse> {
   const from = searchParams.get("from") || "/"; // Default to home if no 'from' parameter
 
   if (ticket) {
-    const ticketQuery = `https://secure.its.yale.edu/cas/serviceValidate?ticket=${ticket}&service=${process.env.BASE_URL}/api/auth/redirect?from=${from}`;
+    const ticketQuery = `https://secure-ts.its.yale.edu/cas/serviceValidate?ticket=${ticket}&service=${process.env.BASE_URL}/api/auth/redirect?from=${from}`;
     const response = await fetch(ticketQuery);
     const xml = await response.text();
 
