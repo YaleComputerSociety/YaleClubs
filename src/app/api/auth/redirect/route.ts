@@ -24,7 +24,7 @@ export async function GET(request: Request): Promise<NextResponse> {
   const from = searchParams.get("from") || "/"; // Default to home if no 'from' parameter
 
   if (ticket) {
-    const ticketQuery = `https://secure-ts.its.yale.edu/cas/serviceValidate?ticket=${ticket}&service=${process.env.BASE_URL}/api/auth/redirect?from=${from}`;
+    const ticketQuery = `https://secure.its.yale.edu/cas/serviceValidate?ticket=${ticket}&service=${process.env.BASE_URL}/api/auth/redirect?from=${from}`;
     const response = await fetch(ticketQuery);
     const xml = await response.text();
 
@@ -64,21 +64,28 @@ export async function GET(request: Request): Promise<NextResponse> {
       const yaliesJSON = await yaliesResponse.json();
       console.log(yaliesJSON);
       console.log("Here 1");
+      
+      // Check if yaliesJSON is an array and has at least one element
+      if (!Array.isArray(yaliesJSON) || yaliesJSON.length === 0) {
+        console.error(`No user found in Yalies API for NetID: ${netid}`);
+        return NextResponse.json({ error: "User not found in Yale directory" }, { status: 404 });
+      }
+      
       const email = yaliesJSON[0].email;
 
       await connectToDatabase();
-      const existingUser = await Users.findOne({ netid });
+      let existingUser = await Users.findOne({ netid });
       console.log("Here 2");
       if (!existingUser) {
         console.log(`Creating new user for NetID: ${netid}`);
-        await Users.create({
+        existingUser = await Users.create({
           netid,
         });
       } else {
         console.log("Here 3");
         console.log(`User already exists for NetID: ${netid}`);
       }
-      const token = jwt.sign({ netid, email, role: existingUser.role || "user" }, JWT_SECRET, {
+      const token = jwt.sign({ netid, email, role: existingUser?.role || "user" }, JWT_SECRET, {
         expiresIn: "7d",
       });
       console.log("Here 4");
