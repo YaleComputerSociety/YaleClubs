@@ -59,11 +59,17 @@ export async function GET(request: Request): Promise<NextResponse> {
         },
         body: JSON.stringify({ filters: { netid } }),
       });
-      console.log(yaliesResponse);
-      console.log("Here a");
+      
+      // Check if the Yalies API request was successful
+      if (!yaliesResponse.ok) {
+        const errorText = await yaliesResponse.text();
+        console.error(`Yalies API error (${yaliesResponse.status}):`, errorText);
+        return NextResponse.json({ 
+          error: "Failed to fetch user information from Yale directory. Please contact support." 
+        }, { status: 500 });
+      }
+      
       const yaliesJSON = await yaliesResponse.json();
-      console.log(yaliesJSON);
-      console.log("Here 1");
       
       // Check if yaliesJSON is an array and has at least one element
       if (!Array.isArray(yaliesJSON) || yaliesJSON.length === 0) {
