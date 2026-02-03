@@ -59,24 +59,27 @@ export async function GET(request: Request): Promise<NextResponse> {
         },
         body: JSON.stringify({ filters: { netid } }),
       });
-      
+
       // Check if the Yalies API request was successful
       if (!yaliesResponse.ok) {
         const errorText = await yaliesResponse.text();
         console.error(`Yalies API error (${yaliesResponse.status}):`, errorText);
-        return NextResponse.json({ 
-          error: "Failed to fetch user information from Yale directory. Please contact support." 
-        }, { status: 500 });
+        return NextResponse.json(
+          {
+            error: "Failed to fetch user information from Yale directory. Please contact support.",
+          },
+          { status: 500 },
+        );
       }
-      
+
       const yaliesJSON = await yaliesResponse.json();
-      
+
       // Check if yaliesJSON is an array and has at least one element
       if (!Array.isArray(yaliesJSON) || yaliesJSON.length === 0) {
         console.error(`No user found in Yalies API for NetID: ${netid}`);
         return NextResponse.json({ error: "User not found in Yale directory" }, { status: 404 });
       }
-      
+
       const email = yaliesJSON[0].email;
 
       await connectToDatabase();
