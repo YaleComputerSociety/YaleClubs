@@ -7,7 +7,8 @@
     "devprod": "npm run lint && dotenv -e .env.prod next dev",
     "build": "dotenv -e .env.prod next build",
     "start": "dotenv -e .env.prod next start",
-    "lint": "eslint --ext .ts,.tsx,.js,.jsx src"
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx src",
+    "test": "jest --watchAll=false"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.744.0",
@@ -42,11 +43,14 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^9.39.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/jwt-decode": "^2.2.1",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^20",
     "@types/passport": "^1.0.17",
+    "@types/jest": "^29.5.14",
     "@types/react": "^18",
     "@types/xml2js": "^0.4.14",
     "@typescript-eslint/eslint-plugin": "^8.13.0",
@@ -56,6 +60,9 @@
     "eslint-config-next": "15.0.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0",
+    "ts-jest": "^29.2.5",
     "postcss": "^8",
     "prettier": "^3.3.3",
     "tailwindcss": "^3.4.1",
