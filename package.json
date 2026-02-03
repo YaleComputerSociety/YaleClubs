@@ -7,7 +7,7 @@
     "devprod": "npm run lint && dotenv -e .env.prod next dev",
     "build": "dotenv -e .env.prod next build",
     "start": "dotenv -e .env.prod next start",
-    "lint": "next lint"
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx src"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.744.0",
@@ -40,6 +40,8 @@
     "xml2js": "^0.6.2"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^9.39.2",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/jwt-decode": "^2.2.1",
     "@types/mongoose": "^5.11.97",
@@ -50,7 +52,7 @@
     "@typescript-eslint/eslint-plugin": "^8.13.0",
     "@typescript-eslint/parser": "^8.13.0",
     "dotenv-cli": "^7.4.2",
-    "eslint": "^9.39.2",
+    "eslint": "^8.57.1",
     "eslint-config-next": "15.0.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",

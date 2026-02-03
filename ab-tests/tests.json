@@ -1,0 +1,19 @@
+{
+  "activeTests": [
+    {
+      "name": "homepage_layout",
+      "variations": ["A", "B"],
+      "description": "Testing different homepage layouts to see which leads to more club follows"
+    },
+    {
+      "name": "event_card_design",
+      "variations": ["compact", "detailed"],
+      "description": "Testing different event card designs to see which leads to more event clicks"
+    },
+    {
+      "name": "cta_button_color",
+      "variations": ["blue", "green", "red"],
+      "description": "Testing different call-to-action button colors to see which leads to more conversions"
+    }
+  ]
+}
