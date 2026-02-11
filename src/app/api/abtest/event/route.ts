@@ -43,8 +43,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No variation assignment found for this user and test" }, { status: 404 });
     }
 
-    // Log the event
-    await logABTestEvent(userId, testName, variation, eventType, eventData);
+    // Log the event asynchronously (non-blocking)
+    logABTestEvent(userId, testName, variation, eventType, eventData).catch((err) => {
+      console.error("Failed to log A/B test event:", err);
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

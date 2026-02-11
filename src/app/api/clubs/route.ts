@@ -263,11 +263,13 @@ export async function PUT(req: Request): Promise<NextResponse> {
     );
 
     if (changeLog) {
-      // Save the change log
-      await UpdateLog.create({
+      // Save the change log asynchronously (non-blocking)
+      UpdateLog.create({
         documentId: id,
         updatedBy: verified.email,
         changes: changeLog,
+      }).catch((err) => {
+        console.error("Failed to create change log:", err);
       });
     }
 
