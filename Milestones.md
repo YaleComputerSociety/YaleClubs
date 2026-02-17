@@ -1,9 +1,11 @@
-# A/B Testing Infrastructure - Milestone Documentation
+# A/B Testing Infrastructure - Milestone #1 Documentation
 
 ## Overview
+
 This milestone implements a comprehensive A/B testing infrastructure for the YClubs application. The infrastructure allows developers to easily create, manage, and analyze A/B tests to optimize user experience and measure conversion rates.
 
 ## Date Completed
+
 February 2, 2026
 
 ## Changes Made
@@ -11,6 +13,7 @@ February 2, 2026
 ### 1. Configuration Files
 
 #### `ab-tests/tests.json`
+
 - **Purpose**: Central configuration file defining all active A/B tests
 - **Structure**: Contains an array of test objects, each with:
   - `name`: Unique identifier for the test
@@ -24,15 +27,18 @@ February 2, 2026
 ### 2. Database Models
 
 #### `src/lib/models/ABTest.ts`
+
 Created two Mongoose models for storing A/B test data:
 
 **ABTestAssignment Model**:
+
 - Stores which variation each user is assigned to
 - Fields: `userId`, `testName`, `variation`, `assignedAt`
 - Ensures consistency: one assignment per user per test (unique compound index)
 - Supports both authenticated users (netid) and anonymous users (generated UUID)
 
 **ABTestEvent Model**:
+
 - Logs all events related to A/B tests
 - Fields: `userId`, `testName`, `variation`, `eventType`, `eventData`, `timestamp`
 - Indexed for efficient querying and analytics
@@ -41,9 +47,11 @@ Created two Mongoose models for storing A/B test data:
 ### 3. Core Utility Functions
 
 #### `src/lib/abTestUtils.ts`
+
 Comprehensive utility module providing:
 
 **Key Functions**:
+
 - `loadTestsConfig()`: Loads and caches test configuration from tests.json
 - `getTestConfig(testName)`: Retrieves configuration for a specific test
 - `getAllActiveTests()`: Returns all active tests from configuration
@@ -55,6 +63,7 @@ Comprehensive utility module providing:
 - `generateAnonymousUserId()`: Creates unique IDs for unauthenticated users
 
 **Key Features**:
+
 - Consistent hashing ensures same user always gets same variation
 - Automatic logging of assignment events
 - Support for both authenticated and anonymous users
@@ -63,9 +72,11 @@ Comprehensive utility module providing:
 ### 4. Middleware Functions
 
 #### `src/lib/abTestMiddleware.ts`
+
 Middleware utilities for automatic test assignment:
 
 **abTestMiddleware Function**:
+
 - Automatically assigns variations to users for specified tests
 - Handles user identification (authenticated or anonymous)
 - Sets anonymous user ID cookie for unauthenticated users
@@ -73,24 +84,29 @@ Middleware utilities for automatic test assignment:
 - Can be applied to any API route or globally
 
 **applyABTestMiddleware Function**:
+
 - Helper for applying A/B test middleware to specific routes
 - Simplifies integration in API handlers
 
 **getABTestAssignments Function**:
+
 - Extracts test assignments from request headers
 - Useful for reading middleware-assigned variations
 
 ### 5. Client-Side Utilities
 
 #### `src/lib/clientABTest.ts`
+
 React-friendly utilities for frontend A/B testing:
 
 **Functions**:
+
 - `getABTestVariation(testName)`: Fetches variation assignment from API
 - `logABTestEvent(testName, eventType, eventData)`: Logs events from client
 - `useABTest(testName)`: React hook for easy component integration
 
 **useABTest Hook Features**:
+
 - Automatic variation fetching on component mount
 - Loading state management
 - Memoized event logging function
@@ -101,6 +117,7 @@ React-friendly utilities for frontend A/B testing:
 Created three API endpoints for A/B testing:
 
 #### `src/app/api/abtest/assign/route.ts`
+
 - **Method**: POST
 - **Purpose**: Assigns or retrieves a variation for a user
 - **Request**: `{ "testName": "homepage_layout" }`
@@ -111,6 +128,7 @@ Created three API endpoints for A/B testing:
   - Returns consistent variation for returning users
 
 #### `src/app/api/abtest/event/route.ts`
+
 - **Method**: POST
 - **Purpose**: Logs events for analytics
 - **Request**: `{ "testName": "homepage_layout", "eventType": "click_follow_button", "eventData": { "clubId": "abc123" } }`
@@ -121,6 +139,7 @@ Created three API endpoints for A/B testing:
   - Tracks user actions for conversion analysis
 
 #### `src/app/api/abtest/analytics/route.ts`
+
 - **Method**: GET
 - **Purpose**: Retrieves analytics data for tests
 - **Query Params**: `testName` (optional)
@@ -132,6 +151,7 @@ Created three API endpoints for A/B testing:
   - Can be restricted to admin users (commented out for now)
 
 #### `src/app/api/abtest/example/route.ts`
+
 - **Method**: GET
 - **Purpose**: Example demonstrating middleware usage
 - **Shows**: How to integrate A/B test middleware in any API route
@@ -139,21 +159,25 @@ Created three API endpoints for A/B testing:
 ## Architecture Highlights
 
 ### Consistent User Assignment
+
 - Uses SHA-256 hashing of `userId + testName` to deterministically assign variations
 - Ensures user always sees same variation across sessions
 - Works with both authenticated (netid) and anonymous users
 
 ### User Identification
+
 - **Authenticated Users**: Uses `auth_netid` cookie
 - **Anonymous Users**: Generates and stores UUID in `ab_user_id` cookie (1-year expiry)
 - Seamless transition: anonymous assignments preserved if user logs in
 
 ### Database Optimization
+
 - Compound indexes for efficient queries
 - Unique constraints prevent duplicate assignments
 - Timestamps indexed for time-based analytics
 
 ### Flexibility
+
 - Middleware can be applied globally or per-route
 - Support for multiple simultaneous tests
 - Arbitrary number of variations per test
@@ -192,10 +216,10 @@ import { applyABTestMiddleware } from "@/lib/abTestMiddleware";
 
 export async function GET(request: NextRequest) {
   const response = NextResponse.json({ data: "..." });
-  
+
   // Automatically assign variations
   await applyABTestMiddleware(request, response, ["homepage_layout"]);
-  
+
   return response;
 }
 ```
@@ -206,9 +230,9 @@ export async function GET(request: NextRequest) {
 import { logABTestEvent } from "@/lib/clientABTest";
 
 async function handleButtonClick() {
-  await logABTestEvent("cta_button_color", "click", { 
+  await logABTestEvent("cta_button_color", "click", {
     buttonLocation: "header",
-    timestamp: Date.now() 
+    timestamp: Date.now(),
   });
   // ... button click logic
 }
@@ -227,6 +251,7 @@ curl http://localhost:3000/api/abtest/analytics
 ## How to Add a New A/B Test
 
 1. **Add test to configuration**:
+
    ```json
    // ab-tests/tests.json
    {
@@ -241,9 +266,10 @@ curl http://localhost:3000/api/abtest/analytics
    ```
 
 2. **Use in component**:
+
    ```typescript
    const { variation, logEvent } = useABTest("new_feature_test");
-   
+
    if (variation === "control") {
      // Show current version
    } else {
@@ -252,6 +278,7 @@ curl http://localhost:3000/api/abtest/analytics
    ```
 
 3. **Log target events**:
+
    ```typescript
    logEvent("conversion", { featureUsed: true });
    ```
@@ -264,6 +291,7 @@ curl http://localhost:3000/api/abtest/analytics
 ## Testing the Infrastructure
 
 ### 1. Test Assignment Consistency
+
 ```bash
 # Make multiple requests - should get same variation
 curl -X POST http://localhost:3000/api/abtest/assign \
@@ -272,6 +300,7 @@ curl -X POST http://localhost:3000/api/abtest/assign \
 ```
 
 ### 2. Test Event Logging
+
 ```bash
 curl -X POST http://localhost:3000/api/abtest/event \
   -H "Content-Type: application/json" \
@@ -283,6 +312,7 @@ curl -X POST http://localhost:3000/api/abtest/event \
 ```
 
 ### 3. Test Analytics
+
 ```bash
 curl http://localhost:3000/api/abtest/analytics
 ```
@@ -290,21 +320,25 @@ curl http://localhost:3000/api/abtest/analytics
 ## Challenges Encountered
 
 ### Challenge 1: User Identification Across Sessions
+
 **Problem**: Ensuring unauthenticated users receive consistent variations across browser sessions.
 
 **Solution**: Implemented anonymous user ID system using secure HTTP-only cookies with 1-year expiry. User IDs are generated using cryptographically secure random bytes and stored persistently.
 
 ### Challenge 2: Database Performance
+
 **Problem**: Analytics queries could become slow with large amounts of event data.
 
 **Solution**: Created compound indexes on frequently queried fields (testName + variation + eventType) and used MongoDB aggregation pipeline for efficient data summarization.
 
 ### Challenge 3: Middleware Integration
+
 **Problem**: Next.js App Router middleware has limitations on what code can run.
 
 **Solution**: Created separate middleware utilities that can be applied at the API route level rather than globally, providing more flexibility while avoiding Next.js middleware constraints with database connections.
 
 ### Challenge 4: Type Safety
+
 **Problem**: Ensuring type safety across TypeScript files while maintaining flexibility for event data.
 
 **Solution**: Used TypeScript interfaces with `Record<string, any>` for flexible event data while maintaining strict typing for core fields. Mongoose schemas provide runtime validation.
@@ -321,6 +355,7 @@ curl http://localhost:3000/api/abtest/analytics
 ## Files Added/Modified
 
 ### New Files Created:
+
 - `ab-tests/tests.json` - Test configuration
 - `src/lib/models/ABTest.ts` - Database models
 - `src/lib/abTestUtils.ts` - Core utilities
@@ -332,10 +367,13 @@ curl http://localhost:3000/api/abtest/analytics
 - `src/app/api/abtest/example/route.ts` - Example implementation
 
 ### Files Modified:
+
 - None (infrastructure is additive and doesn't modify existing code)
 
 ## Dependencies Used
+
 All required dependencies were already present in the project:
+
 - `mongoose`: Database ORM
 - `crypto`: For hashing and random ID generation
 - `fs`: For reading configuration files
@@ -345,6 +383,7 @@ All required dependencies were already present in the project:
 ## Conclusion
 
 The A/B testing infrastructure is now fully implemented and ready for use. It provides:
+
 - ✅ Easy test configuration via JSON
 - ✅ Consistent user assignment using hashing
 - ✅ Automatic middleware-based assignment
@@ -359,21 +398,25 @@ The infrastructure is production-ready and can be used immediately to start test
 
 ---
 
-# Load Testing and Concurrency Analysis - Milestone Documentation
+# Load Testing and Concurrency Analysis - Milestone #2 Documentation
 
 ## Overview
+
 This milestone implements comprehensive load testing of the YClubs backend API to identify scalability and concurrency issues under realistic concurrent load. Testing focuses on endpoints that perform write operations and mutate shared state, using Postman's load testing capabilities.
 
 ## Date Completed
+
 February 11, 2025
 
 ## Testing Methodology
 
 ### Tools Used
+
 - **Postman**: Primary load testing framework for running concurrent requests
 - **Postman Collection**: Custom collection created for systematic testing (`postman-load-test-collection.json`)
 
 ### Test Setup
+
 1. **Postman Collection Import**: Import the `postman-load-test-collection.json` file into Postman
 2. **Environment Variables**: Configure the following variables:
    - `base_url`: API base URL (default: `http://localhost:3000`)
@@ -385,13 +428,16 @@ February 11, 2025
 ### Test Scenarios
 
 #### Scenario 1: Concurrent Follow/Unfollow Operations
+
 **Endpoint**: `POST /api/follow`
 **Rationale**: This endpoint is critical for concurrency testing because:
+
 - It mutates shared state (follower counts on Club documents)
 - Uses MongoDB transactions to ensure atomicity
 - Multiple concurrent requests could reveal race conditions or transaction conflicts
 
 **Test Configuration**:
+
 - **Virtual Users**: 50 concurrent users
 - **Duration**: 2 minutes
 - **Request Rate**: 10 requests per second per user
@@ -399,18 +445,22 @@ February 11, 2025
 - **Test Pattern**: Alternating follow/unfollow operations on the same club
 
 **Expected Behavior**:
+
 - Follower count should remain consistent after all operations complete
 - No duplicate follow relationships in User documents
 - Transaction rollbacks should handle conflicts gracefully
 
 #### Scenario 2: Concurrent A/B Test Event Logging
+
 **Endpoint**: `POST /api/abtest/event`
 **Rationale**: Simpler write operation that tests:
+
 - Database write performance under load
 - Event logging consistency
 - Potential bottlenecks in event insertion
 
 **Test Configuration**:
+
 - **Virtual Users**: 100 concurrent users
 - **Duration**: 1 minute
 - **Request Rate**: 20 requests per second per user
@@ -418,10 +468,12 @@ February 11, 2025
 - **Test Pattern**: Continuous event logging with varying event types
 
 #### Scenario 3: Mixed Read/Write Load
+
 **Endpoints**: `GET /api/clubs` (read) + `POST /api/follow` (write)
 **Rationale**: Simulates realistic traffic patterns with both read and write operations
 
 **Test Configuration**:
+
 - **Virtual Users**: 75 concurrent users
 - **Duration**: 3 minutes
 - **Read/Write Ratio**: 80% reads, 20% writes
@@ -432,7 +484,9 @@ February 11, 2025
 ### Error Rates
 
 #### Follow/Unfollow Endpoint (`POST /api/follow`)
+
 - **Baseline Test (10 concurrent users)**:
+
   - Total Requests: 1,200
   - Successful (200): 1,198 (99.83%)
   - Errors (500): 2 (0.17%)
@@ -450,12 +504,15 @@ February 11, 2025
   - P99 Response Time: 2,800ms
 
 **Error Analysis**:
+
 - Most 500 errors occurred during peak load periods
 - Error messages indicated MongoDB transaction conflicts: "WriteConflict" errors
 - Timeouts occurred when database connection pool was exhausted
 
 #### A/B Test Event Endpoint (`POST /api/abtest/event`)
+
 - **Baseline Test (20 concurrent users)**:
+
   - Total Requests: 2,400
   - Successful (200): 2,400 (100%)
   - Average Response Time: 85ms
@@ -471,6 +528,7 @@ February 11, 2025
   - P99 Response Time: 1,100ms
 
 **Error Analysis**:
+
 - Errors were primarily database connection timeouts
 - No data corruption observed in event logs
 - Performance degradation was linear with load increase
@@ -478,23 +536,28 @@ February 11, 2025
 ### Data Consistency Analysis
 
 #### Follower Count Verification
+
 After running 6,000 concurrent follow/unfollow operations:
+
 - **Initial Follower Count**: 42
 - **Expected Final Count**: 42 (equal follows and unfollows)
 - **Actual Final Count**: 41
 - **Inconsistency Detected**: Yes (1 follower count discrepancy)
 
 **Root Cause Analysis**:
+
 - Race condition identified in the follow/unfollow logic
 - When multiple users simultaneously follow/unfollow the same club, the transaction isolation level may not prevent all conflicts
 - The `$inc` operation on follower count can have race conditions if not properly isolated
 
 **Verification Method**:
+
 1. Ran follow/unfollow operations in sequence (baseline)
 2. Compared final follower count with concurrent operations
 3. Verified User documents for duplicate/missing follow relationships
 
 #### A/B Test Event Logging Consistency
+
 - **Total Events Logged**: 11,892
 - **Expected Events**: 12,000
 - **Missing Events**: 108 (corresponds to error count)
@@ -504,7 +567,9 @@ After running 6,000 concurrent follow/unfollow operations:
 ### Performance Metrics
 
 #### Throughput
+
 - **Follow/Unfollow Endpoint**:
+
   - Baseline: ~120 requests/second
   - Under Load (50 users): ~50 requests/second
   - **Bottleneck**: Database transaction overhead
@@ -515,7 +580,9 @@ After running 6,000 concurrent follow/unfollow operations:
   - **Bottleneck**: Database write operations
 
 #### Response Time Distribution
+
 - **Follow/Unfollow**:
+
   - Median: 320ms
   - 95th percentile: 1,200ms
   - 99th percentile: 2,800ms
@@ -530,30 +597,36 @@ After running 6,000 concurrent follow/unfollow operations:
 ## Identified Issues
 
 ### 1. Transaction Conflicts in Follow/Unfollow
+
 **Issue**: MongoDB write conflicts when multiple users simultaneously follow/unfollow the same club
 **Impact**: 2.55% error rate under high concurrency
 **Location**: `src/app/api/follow/route.ts`
 
 **Current Implementation**:
+
 - Uses MongoDB transactions with `session.withTransaction()`
 - Transaction retry logic is handled by MongoDB driver
 - However, retries may fail under extreme load
 
 ### 2. Database Connection Pool Exhaustion
+
 **Issue**: Connection pool becomes exhausted under high concurrent load
 **Impact**: Timeouts and 500 errors
 **Location**: `src/lib/mongodb.ts` (connection management)
 
 **Current Implementation**:
+
 - Default MongoDB connection pool size (typically 10-100 connections)
 - No explicit connection pool configuration
 - Connections may not be released quickly enough under load
 
 ### 3. Synchronous Operations in Request Path
+
 **Issue**: Several operations that could be asynchronous are blocking the request
 **Impact**: Increased response times and reduced throughput
 
 **Identified Locations**:
+
 - `src/app/api/follow/route.ts`: Change log generation could be async
 - `src/app/api/abtest/event/route.ts`: Event logging is synchronous
 - `src/app/api/events/route.ts`: UpdateLog creation blocks response
@@ -561,31 +634,37 @@ After running 6,000 concurrent follow/unfollow operations:
 ## Async Opportunities and Refactoring
 
 ### 1. Asynchronous Event Logging
+
 **Current**: A/B test events are logged synchronously, blocking the response
 **Refactoring**: Move event logging to background queue
 
 **Implementation Plan**:
+
 ```typescript
 // Before (synchronous)
 await logABTestEvent(userId, testName, variation, eventType, eventData);
 return NextResponse.json({ success: true });
 
 // After (asynchronous)
-logABTestEvent(userId, testName, variation, eventType, eventData)
-  .catch(err => console.error('Failed to log event:', err));
+logABTestEvent(userId, testName, variation, eventType, eventData).catch((err) =>
+  console.error("Failed to log event:", err),
+);
 return NextResponse.json({ success: true });
 ```
 
 **Expected Impact**:
+
 - Reduced response time by ~50-80ms per request
 - Improved throughput by ~15-20%
 - Event logging failures won't affect user experience
 
 ### 2. Asynchronous Change Logging
+
 **Current**: UpdateLog creation blocks PUT requests
 **Refactoring**: Defer change log creation to background process
 
 **Implementation Plan**:
+
 ```typescript
 // Before (synchronous)
 if (changeLog) {
@@ -602,19 +681,22 @@ if (changeLog) {
     documentId: id,
     updatedBy: verified.email,
     changes: changeLog,
-  }).catch(err => console.error('Failed to create change log:', err));
+  }).catch((err) => console.error("Failed to create change log:", err));
 }
 ```
 
 **Expected Impact**:
+
 - Reduced response time by ~30-50ms per update request
 - Improved user experience for club/event updates
 
 ### 3. Connection Pool Optimization
+
 **Current**: Default MongoDB connection pool settings
 **Refactoring**: Explicitly configure connection pool size and timeout
 
 **Implementation Plan**:
+
 ```typescript
 // In src/lib/mongodb.ts
 const options = {
@@ -626,6 +708,7 @@ const options = {
 ```
 
 **Expected Impact**:
+
 - Reduced connection pool exhaustion
 - Lower timeout error rate
 - Better handling of concurrent requests
@@ -633,6 +716,7 @@ const options = {
 ## Performance Improvements After Refactoring
 
 ### Follow/Unfollow Endpoint (After Async Changes)
+
 - **Stress Test (50 concurrent users)**:
   - Total Requests: 6,000
   - Successful (200): 5,912 (98.53%) ⬆️ +1.08%
@@ -643,6 +727,7 @@ const options = {
   - P99 Response Time: 1,800ms ⬇️ -1,000ms
 
 ### A/B Test Event Endpoint (After Async Changes)
+
 - **Stress Test (100 concurrent users)**:
   - Total Requests: 12,000
   - Successful (200): 11,976 (99.80%) ⬆️ +0.70%
@@ -654,29 +739,37 @@ const options = {
 ## Additional Mitigations Planned
 
 ### 1. Implement Retry Logic with Exponential Backoff
+
 **For**: Transaction conflicts in follow/unfollow operations
 **Implementation**:
+
 - Add explicit retry logic with exponential backoff
 - Maximum 3 retries with delays: 50ms, 100ms, 200ms
 - Log retry attempts for monitoring
 
 ### 2. Database Indexing Optimization
+
 **For**: Improve query performance under load
 **Actions**:
+
 - Verify indexes on `followedClubs` array in User model
 - Add compound index on `(userId, testName)` for A/B test assignments
 - Monitor slow query logs and add indexes as needed
 
 ### 3. Rate Limiting
+
 **For**: Prevent abuse and protect against DDoS
 **Implementation**:
+
 - Implement rate limiting middleware
 - Limits: 100 requests/minute per user for write operations
 - Use Redis or in-memory store for rate limit tracking
 
 ### 4. Monitoring and Alerting
+
 **For**: Proactive issue detection
 **Implementation**:
+
 - Add application performance monitoring (APM)
 - Set up alerts for:
   - Error rate > 1%
@@ -685,22 +778,28 @@ const options = {
 - Log aggregation for error analysis
 
 ### 5. Caching Strategy
+
 **For**: Reduce database load for read operations
 **Implementation**:
+
 - Cache club data with 5-minute TTL
 - Invalidate cache on club updates
 - Use Redis or in-memory cache for frequently accessed data
 
 ### 6. Database Query Optimization
+
 **For**: Reduce query execution time
 **Actions**:
+
 - Review and optimize aggregation pipelines
 - Add database query logging in development
 - Use `explain()` to analyze query plans
 
 ### 7. Load Balancing and Horizontal Scaling
+
 **For**: Handle increased traffic
 **Considerations**:
+
 - Deploy multiple application instances behind load balancer
 - Ensure stateless application design (already achieved)
 - Use session affinity if needed for WebSocket connections
@@ -708,25 +807,31 @@ const options = {
 ## Challenges Encountered
 
 ### Challenge 1: Setting Up Authenticated Load Tests
+
 **Problem**: Load testing requires authentication tokens, which need to be generated and managed for multiple virtual users.
 
-**Solution**: 
+**Solution**:
+
 - Created dev login endpoint for easy token generation
 - Used Postman environment variables to store and rotate tokens
 - Implemented token refresh logic in test scripts
 
 ### Challenge 2: Identifying Race Conditions
+
 **Problem**: Detecting data inconsistencies requires careful verification after concurrent operations.
 
 **Solution**:
+
 - Implemented verification scripts to check follower counts before and after tests
 - Used database queries to verify data integrity
 - Created test scenarios that specifically target race conditions (same club, multiple users)
 
 ### Challenge 3: Distinguishing Between Expected and Unexpected Errors
+
 **Problem**: Some errors (like authentication failures) are expected in load tests, while others indicate real issues.
 
 **Solution**:
+
 - Categorized errors by type (authentication, validation, server errors)
 - Focused analysis on 500 errors and timeouts
 - Compared error rates across different load levels
@@ -734,14 +839,16 @@ const options = {
 ## Test Artifacts
 
 ### Postman Collection
+
 - **File**: `postman-load-test-collection.json`
-- **Contains**: 
+- **Contains**:
   - Follow/Unfollow endpoint test
   - A/B test event logging test
   - Club data retrieval test
   - Pre-request and test scripts
 
 ### Test Results Summary
+
 - Baseline tests: 10-20 concurrent users
 - Stress tests: 50-100 concurrent users
 - Total requests executed: ~25,000+
@@ -750,6 +857,7 @@ const options = {
 ## Conclusion
 
 The load testing revealed several areas for improvement:
+
 1. ✅ **Transaction conflicts** identified and mitigated with better retry logic
 2. ✅ **Async opportunities** identified and partially implemented
 3. ✅ **Performance improvements** achieved through async refactoring
@@ -761,9 +869,11 @@ The API demonstrates reasonable performance under moderate load but requires opt
 ## Files Added/Modified
 
 ### New Files Created:
+
 - `postman-load-test-collection.json` - Postman collection for load testing
 
 ### Files Modified:
+
 - `src/app/api/abtest/event/route.ts` - Made event logging non-blocking (async refactoring implemented)
 - `src/app/api/events/route.ts` - Made UpdateLog creation non-blocking in POST and PUT handlers (async refactoring implemented)
 - `src/app/api/clubs/route.ts` - Made UpdateLog creation non-blocking in PUT handler (async refactoring implemented)
@@ -778,21 +888,26 @@ The API demonstrates reasonable performance under moderate load but requires opt
 
 ---
 
-# Service Oriented Architecture & Canary Releases - Milestone Documentation
+# Service Oriented Architecture & Canary Releases - Milestone #3 Documentation
 
 ## Overview
+
 Split the backend into two containerized services and deployed them locally using Minikube, with canary release support.
 
 ## Date Completed
+
 February 18, 2026
 
 ## Services
 
 ### 1. Main App (`main-app`)
+
 The existing Next.js application (frontend + API routes for clubs, events, users, auth, A/B testing).
 
 ### 2. Analytics Service (`analytics-service`)
+
 Lightweight standalone Express.js service responsible for A/B test event logging and analytics aggregation. Connects to the same MongoDB instance and exposes:
+
 - `GET /health`
 - `GET /analytics?testName=<name>` — aggregate assignments & events
 - `POST /event` — log an A/B test event
@@ -800,6 +915,7 @@ Lightweight standalone Express.js service responsible for A/B test event logging
 ## Changes Made
 
 ### New Files
+
 - `Dockerfile` — multi-stage Docker build for the main Next.js app
 - `analytics-service/package.json` — Express + Mongoose dependencies
 - `analytics-service/server.js` — minimal Express service (mirrors A/B test models from `src/lib/models/ABTest.ts`)
@@ -810,6 +926,7 @@ Lightweight standalone Express.js service responsible for A/B test event logging
 - `k8s/analytics.yaml` — analytics Deployment (1 replica) + ClusterIP Service
 
 ### No Existing Files Modified
+
 All changes are additive.
 
 ## Deployment (Minikube)
