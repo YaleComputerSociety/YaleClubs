@@ -775,3 +775,94 @@ The API demonstrates reasonable performance under moderate load but requires opt
 3. **Conduct periodic load tests** to catch regressions
 4. **Implement database connection pooling** optimizations
 5. **Add comprehensive error logging** for production debugging
+
+---
+
+# Service Oriented Architecture & Canary Releases - Milestone Documentation
+
+## Overview
+Split the backend into two containerized services and deployed them locally using Minikube, with canary release support.
+
+## Date Completed
+February 18, 2026
+
+## Services
+
+### 1. Main App (`main-app`)
+The existing Next.js application (frontend + API routes for clubs, events, users, auth, A/B testing).
+
+### 2. Analytics Service (`analytics-service`)
+Lightweight standalone Express.js service responsible for A/B test event logging and analytics aggregation. Connects to the same MongoDB instance and exposes:
+- `GET /health`
+- `GET /analytics?testName=<name>` — aggregate assignments & events
+- `POST /event` — log an A/B test event
+
+## Changes Made
+
+### New Files
+- `Dockerfile` — multi-stage Docker build for the main Next.js app
+- `analytics-service/package.json` — Express + Mongoose dependencies
+- `analytics-service/server.js` — minimal Express service (mirrors A/B test models from `src/lib/models/ABTest.ts`)
+- `analytics-service/Dockerfile` — single-stage build for the analytics service
+- `k8s/secrets.yaml` — template for Kubernetes Secret (MongoDB URI, JWT, etc.)
+- `k8s/main-app-stable.yaml` — stable Deployment (3 replicas) + NodePort Service
+- `k8s/main-app-canary.yaml` — canary Deployment (1 replica, same `app: main-app` label)
+- `k8s/analytics.yaml` — analytics Deployment (1 replica) + ClusterIP Service
+
+### No Existing Files Modified
+All changes are additive.
+
+## Deployment (Minikube)
+
+```bash
+# 1. Start Minikube and point Docker CLI at its daemon
+minikube start
+eval $(minikube docker-env)
+
+# 2. Build images inside Minikube's Docker
+docker build -t main-app:stable .
+docker build -t analytics-service:latest ./analytics-service
+
+# 3. Create secrets (fill in real values)
+kubectl create secret generic app-secrets \
+  --from-literal=MONGODB_URI='<uri>' \
+  --from-literal=JWT_SECRET='<secret>' \
+  --from-literal=YALIES_API_KEY='<key>' \
+  --from-literal=DO_SPACES_KEY='<key>' \
+  --from-literal=DO_SPACES_SECRET='<secret>'
+
+# 4. Deploy services
+kubectl apply -f k8s/main-app-stable.yaml
+kubectl apply -f k8s/analytics.yaml
+
+# 5. Access main app
+minikube service main-app
+```
+
+## Canary Release
+
+Traffic is split by replica ratio — the `main-app` Service selects on `app: main-app` (no `track` selector), so requests are load-balanced across all matching pods.
+
+```bash
+# Build and tag canary image
+docker build -t main-app:canary .
+
+# Deploy canary (1 replica → ~25% of traffic)
+kubectl apply -f k8s/main-app-canary.yaml
+
+# Promote canary to stable
+kubectl set image deployment/main-app-stable main-app=main-app:canary
+
+# Roll back
+kubectl delete deployment main-app-canary
+```
+
+## Challenges
+
+- **No pre-existing containerization**: The app had no Dockerfile or Docker Compose. Chose a multi-stage Next.js build to keep the production image small.
+- **Shared MongoDB**: Both services connect to the same external MongoDB cluster (no in-cluster database needed), simplifying local setup significantly.
+- **imagePullPolicy: Never**: Required for Minikube so that locally built images are used without pushing to a registry.
+- **Node.js version mismatch**: The Dockerfile originally used `node:18-alpine`, but Next.js 16 requires Node.js ≥ 20.9.0. Fixed by upgrading the base image to `node:20-alpine`.
+- **Build script requires `.env.prod`**: The `npm run build` script wraps `next build` with `dotenv -e .env.prod`, which fails inside Docker where no `.env.prod` exists. Fixed by calling `npx next build` directly and passing placeholder values for env vars needed at build time (`MONGODB_URI`, `JWT_SECRET`).
+- **MongoDB URI checked at module load time**: Next.js's "collect page data" phase evaluates server modules, triggering the DB connection check before any runtime secrets are available. Resolved by injecting a placeholder `MONGODB_URI` as a build-time env var so the check passes during the build.
+- **Unused `React` default imports**: Several `.tsx` files imported `React` explicitly (a React 16 pattern), which TypeScript strict mode treats as an error in React 17+. Removed the default `React` import from all affected files while preserving named imports (`useState`, `useEffect`, etc.).

@@ -1,0 +1,40 @@
+# Canary deployment — 1 replica alongside 3 stable replicas (~25% traffic)
+# To promote canary:  kubectl set image deployment/main-app-stable main-app=main-app:canary
+# To roll back:       kubectl delete deployment main-app-canary
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: main-app-canary
+  labels:
+    app: main-app
+    track: canary
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: main-app
+      track: canary
+  template:
+    metadata:
+      labels:
+        app: main-app
+        track: canary
+    spec:
+      containers:
+        - name: main-app
+          image: main-app:canary
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: BASE_URL
+              value: http://localhost:3000
+            - name: DO_SPACES_ENDPOINT
+              value: https://yaleclubs.nyc3.digitaloceanspaces.com
+            - name: DO_SPACES_BUCKET
+              value: yaleclubs
+          envFrom:
+            - secretRef:
+                name: app-secrets

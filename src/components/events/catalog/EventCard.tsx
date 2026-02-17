@@ -1,4 +1,4 @@
-import React from "react";
+
 import Image from "next/image";
 import { IEvent, Tag } from "@/lib/models/Event";
 import { TagBlock } from "./TagBlock";

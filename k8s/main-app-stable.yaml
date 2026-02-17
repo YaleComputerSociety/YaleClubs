@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: main-app-stable
+  labels:
+    app: main-app
+    track: stable
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: main-app
+      track: stable
+  template:
+    metadata:
+      labels:
+        app: main-app
+        track: stable
+    spec:
+      containers:
+        - name: main-app
+          image: main-app:stable
+          imagePullPolicy: Never   # use local Minikube image cache
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: BASE_URL
+              value: http://localhost:3000
+            - name: DO_SPACES_ENDPOINT
+              value: https://yaleclubs.nyc3.digitaloceanspaces.com
+            - name: DO_SPACES_BUCKET
+              value: yaleclubs
+          envFrom:
+            - secretRef:
+                name: app-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: main-app
+spec:
+  selector:
+    app: main-app          # routes to BOTH stable and canary pods
+  ports:
+    - port: 80
+      targetPort: 3000
+  type: NodePort
