@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import FollowFilter from "./FollowFilter";
-
 import SearchBar from "./SearchBar";
-import FilterButton from "../Filter";
+import FilterModal from "./FilterModal";
 import { Affiliation, Category, IClub, School } from "@/lib/models/Club";
 import Trie from "./Trie";
 import { useAuth } from "@/contexts/AuthContext";
@@ -26,7 +24,10 @@ const SearchControl = ({
 }: SearchControlProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedSchools] = useState<string[]>([School.COLLEGE]);
+  const [selectedSchools, setSelectedSchools] = useState<string[]>([School.COLLEGE]);
+  const [selectedAffiliations, setSelectedAffiliations] = useState<string[]>([]);
+  const [selectedIntensity, setSelectedIntensity] = useState<string[]>([]);
+  const [selectedApplicationStatus, setSelectedApplicationStatus] = useState<string[]>([]);
   const [trie, setTrie] = useState<Trie | null>(null);
   const [showFollowedOnly, setShowFollowedOnly] = useState(false);
   const [searchKeyToClubName, setSearchKeyToClubName] = useState<Record<string, string[]>>({});
@@ -153,14 +154,23 @@ const SearchControl = ({
       }}
     >
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      <div className="flex gap-2 pt-4 sm:pt-0 sm:flex-wrap sm:flex-row sm:gap-4">
-        <FilterButton
-          selectedItems={selectedCategories}
-          setSelectedItems={setSelectedCategories}
-          allItems={[...Object.values(Category), ...Object.values(Affiliation)].sort()}
-          label="Categories"
+      <div className="flex gap-2 pt-4 sm:pt-0 sm:flex-wrap sm:flex-row sm:gap-4 items-center">
+        <FilterModal
+          selectedSchools={selectedSchools}
+          setSelectedSchools={setSelectedSchools}
+          selectedAffiliations={selectedAffiliations}
+          setSelectedAffiliations={setSelectedAffiliations}
+          selectedIntensity={selectedIntensity}
+          setSelectedIntensity={setSelectedIntensity}
+          selectedApplicationStatus={selectedApplicationStatus}
+          setSelectedApplicationStatus={setSelectedApplicationStatus}
+          selectedCategories={selectedCategories}
+          setSelectedCategories={setSelectedCategories}
+          showFollowedOnly={showFollowedOnly}
+          setShowFollowedOnly={setShowFollowedOnly}
+          isLoggedIn={isLoggedIn}
         />
-        {isLoggedIn && <FollowFilter showFollowedOnly={showFollowedOnly} setShowFollowedOnly={setShowFollowedOnly} />}
+
         <button
           className="text-blue-500 hover:text-blue-700 hidden md:inline-block"
           onClick={() => {
