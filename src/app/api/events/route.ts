@@ -141,11 +141,13 @@ export async function POST(req: Request): Promise<NextResponse> {
     const event = new Event({ ...data, createdBy: verified.email });
     const savedEvent = await event.save();
 
-    // Log the creation in UpdateLog
-    await UpdateLog.create({
+    // Log the creation in UpdateLog asynchronously (non-blocking)
+    UpdateLog.create({
       documentId: savedEvent._id,
       updatedBy: verified.email,
       changes: "Event created",
+    }).catch((err) => {
+      console.error("Failed to create change log:", err);
     });
 
     return NextResponse.json(savedEvent, { status: 200 });
@@ -283,11 +285,13 @@ export async function PUT(req: Request): Promise<NextResponse> {
     }
 
     if (changeLog) {
-      // Save the change log
-      await UpdateLog.create({
+      // Save the change log asynchronously (non-blocking)
+      UpdateLog.create({
         documentId: id,
         updatedBy: verified.email,
         changes: changeLog,
+      }).catch((err) => {
+        console.error("Failed to create change log:", err);
       });
     }
 

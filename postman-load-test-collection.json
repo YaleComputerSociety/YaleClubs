@@ -1,0 +1,274 @@
+{
+	"info": {
+		"_postman_id": "load-test-yclubs-2025",
+		"name": "YClubs Load Testing Collection",
+		"description": "Load testing collection for YClubs API endpoints focusing on concurrent write operations",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Anonymous User ID",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Extract and store user ID from response",
+							"if (pm.response.code === 200) {",
+							"    var jsonData = pm.response.json();",
+							"    if (jsonData.userId) {",
+							"        pm.environment.set('ab_user_id', jsonData.userId);",
+							"    }",
+							"    // Also extract from Set-Cookie header if present",
+							"    var cookies = pm.response.headers.get('Set-Cookie');",
+							"    if (cookies) {",
+							"        var match = cookies.match(/ab_user_id=([^;]+)/);",
+							"        if (match && match[1]) {",
+							"            pm.environment.set('ab_user_id', match[1]);",
+							"        }",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"testName\": \"homepage_layout\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/abtest/assign",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"abtest",
+						"assign"
+					]
+				},
+				"description": "Get or create an anonymous user ID for A/B testing. This sets the ab_user_id cookie automatically. Run this first before testing A/B test endpoints."
+			},
+			"response": []
+		},
+		{
+			"name": "Follow/Unfollow Club",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response has isFollowing and followers\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('isFollowing');",
+							"    pm.expect(jsonData).to.have.property('followers');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Cookie",
+						"value": "token={{auth_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"clubId\": \"{{test_club_id}}\",\n    \"isFollowing\": {{follow_action}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/follow",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"follow"
+					]
+				},
+				"description": "Follow or unfollow a club. This endpoint mutates shared state (follower counts) and uses MongoDB transactions, making it ideal for concurrency testing. **REQUIRES AUTHENTICATION** - This endpoint cannot be tested without a valid auth token."
+			},
+			"response": []
+		},
+		{
+			"name": "Log A/B Test Event",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response indicates success\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('success', true);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// If ab_user_id is not set, try to get it from cookies",
+							"if (!pm.environment.get('ab_user_id')) {",
+							"    // Postman will automatically use cookies from previous requests",
+							"    // But we can also set it manually if needed",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"testName\": \"homepage_layout\",\n    \"eventType\": \"click_follow_button\",\n    \"eventData\": {\n        \"clubId\": \"{{test_club_id}}\",\n        \"timestamp\": {{$timestamp}}\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/abtest/event",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"abtest",
+						"event"
+					]
+				},
+				"description": "Log an A/B test event. This is a simpler write operation that can help identify concurrency issues in event logging. **Works without authentication** - uses anonymous user ID from 'Get Anonymous User ID' request. Postman will automatically use cookies from previous requests."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Club Followers Count",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Store followers count for verification",
+							"if (pm.response.code === 200) {",
+							"    var clubs = pm.response.json();",
+							"    var testClub = clubs.find(c => c._id === pm.environment.get('test_club_id'));",
+							"    if (testClub) {",
+							"        pm.environment.set('last_followers_count', testClub.followers || 0);",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/clubs",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"clubs"
+					]
+				},
+				"description": "Get all clubs to verify follower counts after concurrent operations."
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "test_club_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ab_user_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "follow_action",
+			"value": "true",
+			"type": "string"
+		}
+	]
+}

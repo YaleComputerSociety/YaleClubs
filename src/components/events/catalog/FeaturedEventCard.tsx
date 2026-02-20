@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+
 import { IEvent, Tag } from "@/lib/models/Event";
 import Image from "next/image";
 import { TagBlock } from "./TagBlock";

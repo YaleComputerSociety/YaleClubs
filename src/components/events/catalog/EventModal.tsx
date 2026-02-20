@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Tag } from "@/lib/models/Event";
 import { ClubLeader } from "@/lib/models/Club";
 import Image from "next/image";

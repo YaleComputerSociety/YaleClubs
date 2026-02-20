@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { IClub } from "@/lib/models/Club";
 import Image from "next/image";
 import { getAdjustedNumMembers, getInstagramLink } from "@/lib/utils";
