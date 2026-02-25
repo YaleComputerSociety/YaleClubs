@@ -20,6 +20,7 @@ const Header = () => {
     { href: "/", label: "Clubs" },
     { href: "/Events", label: "Events" },
     { href: "/about", label: "About" },
+    ...(isLoggedIn ? [{ href: "/analytics", label: "Analytics" }] : []),
   ];
 
   useEffect(() => {
@@ -105,6 +106,13 @@ const Header = () => {
                       About
                     </Link>
                   </li>
+                  {isLoggedIn && (
+                    <li>
+                      <Link href="/analytics" onClick={() => setIsMenuOpen(false)}>
+                        Analytics
+                      </Link>
+                    </li>
+                  )}
                   <li>
                     {isLoggedIn ? (
                       <button

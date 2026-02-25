@@ -71,6 +71,19 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
     }
   }, [club.leaders, isLoggedIn, user]);
 
+  useEffect(() => {
+    const payload = JSON.stringify({
+      clubId: club._id.toString(),
+      eventType: "modal_view",
+    });
+    fetch("/api/analytics/event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: payload,
+      keepalive: true,
+    }).catch(() => {});
+  }, [club._id]);
+
   type RightLinkProps = {
     content: string;
     link: string | undefined;
