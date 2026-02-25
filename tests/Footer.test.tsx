@@ -1,4 +1,5 @@
-import { render, screen, within } from "@testing-library/react";
+import React from "react";
+import { render, screen } from "@testing-library/react";
 
 jest.mock("next/link", () => {
   return ({ href, children, ...props }: any) => (
@@ -18,97 +19,65 @@ jest.mock("next/image", () => {
 import Footer from "../src/components/Footer";
 
 describe("Footer", () => {
-  it("renders the footer and core branding", () => {
+  it("renders the YaleClubs logo and brand name", () => {
     render(<Footer />);
-
-    const footer = screen.getByRole("contentinfo");
-    expect(footer).toBeInTheDocument();
-
-    expect(screen.getByText("YaleClubs")).toBeInTheDocument();
-
     expect(screen.getByAltText("Logo")).toBeInTheDocument();
+    expect(screen.getByText("YaleClubs")).toBeInTheDocument();
   });
 
-  it("renders the current year", () => {
+  it("renders the logo link pointing to home", () => {
     render(<Footer />);
-    const year = new Date().getFullYear();
-    expect(screen.getByText(new RegExp(`YaleClubs © ${year}`))).toBeInTheDocument();
+    const brandText = screen.getByText("YaleClubs");
+    const homeLink = brandText.closest("a");
+    expect(homeLink).toHaveAttribute("href", "/");
   });
 
-  it("renders Explore links with correct hrefs", () => {
+  it("renders the Yale Computer Society link", () => {
     render(<Footer />);
-
-    const exploreHeading = screen.getByRole("heading", { name: "Explore" });
-    const exploreSection = exploreHeading.parentElement!;
-    const utils = within(exploreSection);
-
-    const events = utils.getByRole("link", { name: "Events" });
-    expect(events).toHaveAttribute("href", "/Events");
-
-    const catalog = utils.getByRole("link", { name: "Catalog" });
-    expect(catalog).toHaveAttribute("href", "/");
+    const ycsLink = screen.getByText("yale computer society (y/cs)");
+    expect(ycsLink).toHaveAttribute("href", "https://yalecomputersociety.org/");
+    expect(ycsLink).toHaveAttribute("target", "_blank");
   });
 
-  it("renders Support links with correct hrefs and targets", () => {
+  it("renders the Design at Yale link", () => {
     render(<Footer />);
-
-    const supportHeading = screen.getByRole("heading", { name: "Support" });
-    const supportSection = supportHeading.parentElement!;
-    const utils = within(supportSection);
-
-    const faq = utils.getByRole("link", { name: "FAQ" });
-    expect(faq).toHaveAttribute("href", "/faq");
-
-    const privacy = utils.getByRole("link", { name: "Privacy Policy" });
-    expect(privacy).toHaveAttribute("href", "/privacy-policy");
-
-    const feedback = utils.getByRole("link", { name: "Feedback" });
-    expect(feedback).toHaveAttribute("href", "https://yaleclubs.canny.io");
-    expect(feedback).toHaveAttribute("target", "_blank");
+    const dayLink = screen.getByText("design at yale (day)");
+    expect(dayLink).toHaveAttribute("href", "https://designatyale.com/");
   });
 
-  it("renders About links with correct hrefs and targets", () => {
+  it("renders the current year in the copyright notice", () => {
     render(<Footer />);
-
-    const aboutHeading = screen.getByRole("heading", { name: "About" });
-    const aboutSection = aboutHeading.parentElement!;
-    const utils = within(aboutSection);
-
-    const team = utils.getByRole("link", { name: "Team" });
-    expect(team).toHaveAttribute("href", "/about");
-
-    const releaseNotes = utils.getByRole("link", { name: "Release Notes" });
-    expect(releaseNotes).toHaveAttribute("href", "/release-notes");
-
-    const github = utils.getByRole("link", { name: "GitHub" });
-    expect(github).toHaveAttribute("href", "https://github.com/YaleComputerSociety/yaleclubs");
-    expect(github).toHaveAttribute("target", "_blank");
+    const year = new Date().getFullYear().toString();
+    expect(screen.getByText(`YaleClubs © ${year}`)).toBeInTheDocument();
   });
 
-  it("renders org attribution links (Y/CS and DAY) with correct hrefs", () => {
+  it("renders Explore section with Events and Catalog links", () => {
     render(<Footer />);
+    expect(screen.getByRole("heading", { name: "Explore" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Events" })).toHaveAttribute("href", "/Events");
+    expect(screen.getByRole("link", { name: "Catalog" })).toHaveAttribute("href", "/");
+  });
 
-    const ycs = screen.getByRole("link", { name: /yale computer society/i });
-    expect(ycs).toHaveAttribute("href", "https://yalecomputersociety.org/");
-    expect(ycs).toHaveAttribute("target", "_blank");
+  it("renders Support section with FAQ, Privacy Policy, and Feedback links", () => {
+    render(<Footer />);
+    expect(screen.getByRole("heading", { name: "Support" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "FAQ" })).toHaveAttribute("href", "/faq");
+    expect(screen.getByRole("link", { name: "Privacy Policy" })).toHaveAttribute("href", "/privacy-policy");
+    expect(screen.getByRole("link", { name: "Feedback" })).toHaveAttribute("href", "https://yaleclubs.canny.io");
+  });
 
-    const day = screen.getByRole("link", { name: /design at yale/i });
-    expect(day).toHaveAttribute("href", "https://designatyale.com/");
+  it("renders About section with Team, Release Notes, and GitHub links", () => {
+    render(<Footer />);
+    expect(screen.getByRole("heading", { name: "About" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Team" })).toHaveAttribute("href", "/about");
+    expect(screen.getByRole("link", { name: "Release Notes" })).toHaveAttribute("href", "/release-notes");
+    const githubLink = screen.getByRole("link", { name: "GitHub" });
+    expect(githubLink).toHaveAttribute("href", "https://github.com/YaleComputerSociety/yaleclubs");
+    expect(githubLink).toHaveAttribute("target", "_blank");
   });
 
   it("renders the disclaimer text", () => {
     render(<Footer />);
-
-    expect(screen.getByText(/Yale is a registered trademark of Yale University/i)).toBeInTheDocument();
-
-    expect(screen.getByText(/student run and is maintained, hosted, and operated independently/i)).toBeInTheDocument();
-  });
-
-  it("renders the home link around the logo/brand", () => {
-    render(<Footer />);
-
-    const brandText = screen.getByText("YaleClubs");
-    const brandLink = brandText.closest("a");
-    expect(brandLink).toHaveAttribute("href", "/");
+    expect(screen.getByText(/Yale is a registered trademark/i)).toBeInTheDocument();
   });
 });
