@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-latency-analytics
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+      - default
+    labelSelectors:
+      app: analytics
+  delay:
+    latency: "2000ms"
+    correlation: "100"
+    jitter: "500ms"
+  duration: "60s"
+  direction: to
