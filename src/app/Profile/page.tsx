@@ -7,9 +7,10 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import EventCard from "../../components/events/catalog/EventCard";
 import EventModal from "../../components/events/catalog/EventModal";
-
+import SkeletonClubCard from "@/components/catalog/SkeletonClubCard";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SkeletonEventCard from "@/components/events/catalog/SkeletonEventCard";
 
 import { IEvent } from "@/lib/models/Event";
 import { IClub } from "@/lib/models/Club";
@@ -25,7 +26,7 @@ import { BiCheckCircle } from "react-icons/bi";
 export default function ProfilePage() {
   const [, setEvents] = useState<IEvent[]>([]);
   const [clubs, setClubs] = useState<IClub[]>([]);
-  const [followedClubs2, setFollowedClubs2] = useState<IClub[]>([]);
+  const [followedClubsDetails, setFollowedClubsDetails] = useState<IClub[]>([]);
   const [, setIsInitialLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -71,57 +72,60 @@ export default function ProfilePage() {
 
   const renderClubItem = (club: IClub) => (
     <ClubCard
-      key={club._id}
+      key={club._id.toString()}
       club={club}
       setFollowedClubs={setFollowedClubs}
       followedClubs={followedClubs}
       onClick={() => setSelectedClub(club)}
-      initialFollowing={followedClubs.includes(club._id)}
+      initialFollowing={followedClubs.includes(club._id.toString())}
     />
   );
 
-  useEffect(() => {
-    const fetchApiMessage = async () => {
-      try {
-        const clubsResponse = await axios.get<IClub[]>("/api/clubs");
 
-        setClubs(clubsResponse.data);
-      } catch (error) {
-        console.error("Error fetching API data:", error);
-      } finally {
-        setTimeout(() => setIsLoading(false), 2); // delay because setClubs is async
-      }
-    };
 
-    fetchApiMessage();
-  }, [setFollowedClubs, setClubs, setIsLoading]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsInitialLoading(true);
-        setError(null);
-        const [eventsResponse, clubsResponse] = await Promise.all([
-          axios.get<IEvent[]>("/api/events/", {}),
-          axios.get<IClub[]>("/api/clubs"),
-        ]);
+  // useEffect(() => {
+  //   const fetchApiMessage = async () => {
+  //     try {
+  //       const clubsResponse = await axios.get<IClub[]>("/api/clubs");
 
-        const yaleCollegeClubs = clubsResponse.data
-          .filter((club) => club.school === "Yale College")
-          .sort((a, b) => a.name.localeCompare(b.name));
+  //       setClubs(clubsResponse.data);
+  //     } catch (error) {
+  //       console.error("Error fetching API data:", error);
+  //     } finally {
+  //       setTimeout(() => setIsLoading(false), 2); // delay because setClubs is async
+  //     }
+  //   };
 
-        setEvents(eventsResponse.data);
-        setClubs(yaleCollegeClubs);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setError("Failed to load events. Please try reloading the page.");
-      } finally {
-        setIsInitialLoading(false);
-      }
-    };
+  //   fetchApiMessage();
+  // }, [setFollowedClubs, setClubs, setIsLoading]);
 
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       setIsInitialLoading(true);
+  //       setError(null);
+  //       const [eventsResponse, clubsResponse] = await Promise.all([
+  //         axios.get<IEvent[]>("/api/events/", {}),
+  //         axios.get<IClub[]>("/api/clubs"),
+  //       ]);
+
+  //       const yaleCollegeClubs = clubsResponse.data
+  //         .filter((club) => club.school === "Yale College")
+  //         .sort((a, b) => a.name.localeCompare(b.name));
+
+  //       setEvents(eventsResponse.data);
+  //       setClubs(yaleCollegeClubs);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //       setError("Failed to load events. Please try reloading the page.");
+  //     } finally {
+  //       setIsInitialLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
 
   const { user } = useAuth();
   const netid = user?.netid;
@@ -130,7 +134,8 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get("/api/users", {
+        const response = await axios.get("/api/users"
+          , {
           params: { netid: netid },
         });
         return response.data; // Return the user data
@@ -144,7 +149,7 @@ export default function ProfilePage() {
       if (!userData) return;
 
       try {
-        setIsInitialLoading(true);
+        // setIsInitialLoading(true);
         setError(null);
 
         const [eventsResponse, clubsResponse] = await Promise.all([
@@ -153,8 +158,9 @@ export default function ProfilePage() {
         ]);
 
         const yaleCollegeClubs = clubsResponse.data
-          .filter((club) => club.school === "Yale College")
-          .sort((a, b) => a.name.localeCompare(b.name));
+        // do we want to only have yale college clubs?
+          // .filter((club) => club.school === "Yale College")
+          // .sort((a, b) => a.name.localeCompare(b.name));
 
         setFollowedClubs(userData.user.followedClubs);
 
@@ -177,7 +183,7 @@ export default function ProfilePage() {
 
         // Clubs the user follows
         const followedClubsList = yaleCollegeClubs
-          .filter((club) => userData.user.followedClubs.includes(club._id))
+          .filter((club) => userData.user.followedClubs.includes(club._id.toString()))
           .filter((club) => !officerClubsList.includes(club))
           .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -190,29 +196,34 @@ export default function ProfilePage() {
           .filter((event) => new Date(event.start).getTime() > new Date().getTime())
           .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 
-        setFollowedClubs2(followedClubsList);
+        setFollowedClubsDetails(followedClubsList);
         setFollowingEvents(followingEv);
         setOfficerClubs(officerClubsList);
         setOfficerEvents(officerEventsList);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError("Failed to load events. Please try reloading the page.");
+      } 
+    };
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+
+        const userData = await fetchUser();
+        await fetchData(userData);
+
+      } catch (e) {
+        console.error(e);
       } finally {
-        setIsInitialLoading(false);
+        setIsLoading(false);
       }
     };
-
-    const loadData = async () => {
-      const userData = await fetchUser();
-      await fetchData(userData);
-    };
-
-    if (netid) {
+    if (netid && email) {
       loadData();
     }
-  }, [netid]);
+  }, [netid, email]);
 
-  if (!isLoggedIn) {
+  if (!isLoading && !isLoggedIn) {
     return (
       <div className="min-h-screen">
         <Header />
@@ -245,6 +256,22 @@ export default function ProfilePage() {
     );
   }
 
+  const EventGridStyle = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6";
+  const renderClubSkeletons = () => (
+    <div className={`${gridStyle} py-5`}>
+      {[...Array(3)].map((_, i) => (
+        <SkeletonClubCard key={i} />
+      ))}
+    </div>
+  );
+  const renderEventSkeletons = () => (
+    <div className={`${EventGridStyle} py-5`}>
+      {[...Array(4)].map((_, i) => (
+        <SkeletonEventCard key={i} />
+      ))}
+    </div>
+  );
+
   return (
     <>
       <main className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-white">
@@ -264,7 +291,7 @@ export default function ProfilePage() {
                     Manage your clubs and discover exciting events in your community
                   </p>
                 </div>
-                {(officerClubs.length != 0 || followedClubs2.length == 0) && (
+                {(officerClubs.length != 0 || followedClubsDetails.length == 0) && (
                   <div className="flex items-center">
                     <CreateEventButton />
                   </div>
@@ -278,134 +305,9 @@ export default function ProfilePage() {
               </div>
             )}
 
-            {officerClubs.length > 0 && (
-              <section className="mb-16">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-clubPurple to-clubBlurple rounded-xl flex items-center justify-center">
-                      <HiUserGroup className="w-5 h-5 text-white" />
-                    </div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Your Club Leaderships</h2>
-                  </div>
-                  <div className="flex-1 h-px bg-gradient-to-r from-clubPurple/30 to-transparent"></div>
-                  <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                    {officerClubs.length} {officerClubs.length === 1 ? "Club" : "Clubs"}
-                  </span>
-                </div>
-                <div className={gridStyle}>
-                  {officerClubs.slice(0, visibleClubs).map(renderClubItem)}
-                  {selectedClub && (
-                    <ClubModal
-                      club={selectedClub}
-                      onClose={handleCloseClubModal}
-                      setFollowedClubs={setFollowedClubs}
-                      followedClubs={followedClubs}
-                      initialFollowing={followedClubs.includes(selectedClub._id)}
-                    />
-                  )}
-                </div>
-                {visibleClubs < officerClubs.length && (
-                  <div className="flex justify-center items-center mt-10">
-                    <div className="w-8 h-8 border-4 border-clubPurple/30 border-t-clubPurple rounded-full animate-spin"></div>
-                  </div>
-                )}
-              </section>
-            )}
-
-            {officerEvents.length > 0 && (
-              <section className="mb-16">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
-                      <MdCalendarToday className="w-5 h-5 text-white" />
-                    </div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Your Club&apos;s Events</h2>
-                  </div>
-                  <div className="flex-1 h-px bg-gradient-to-r from-emerald-500/30 to-transparent"></div>
-                  <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                    {officerEvents.length} {officerEvents.length === 1 ? "Event" : "Events"}
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                  {officerEvents.map((event) => (
-                    <EventCard key={event._id} event={event} onClick={() => handleClickEvent(event)} />
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Followed Clubs Section */}
-            {followedClubs2.length > 0 && (
-              <section className="mb-16">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-rose-500 to-pink-500 rounded-xl flex items-center justify-center">
-                      <AiOutlineHeart className="w-5 h-5 text-white" />
-                    </div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Clubs You Follow</h2>
-                  </div>
-                  <div className="flex-1 h-px bg-gradient-to-r from-rose-500/30 to-transparent"></div>
-                  <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                    {followedClubs2.length} {followedClubs2.length === 1 ? "Club" : "Clubs"}
-                  </span>
-                </div>
-                <div className={gridStyle}>
-                  {followedClubs2.slice(0, visibleClubs).map(renderClubItem)}
-                  {selectedClub && (
-                    <ClubModal
-                      club={selectedClub}
-                      onClose={handleCloseClubModal}
-                      setFollowedClubs={setFollowedClubs}
-                      followedClubs={followedClubs}
-                      initialFollowing={followedClubs.includes(selectedClub._id)}
-                    />
-                  )}
-                </div>
-                {visibleClubs < followedClubs2.length && (
-                  <div className="flex justify-center items-center mt-10">
-                    <div className="w-8 h-8 border-4 border-rose-500/30 border-t-rose-500 rounded-full animate-spin"></div>
-                  </div>
-                )}
-              </section>
-            )}
-
-            {/* Following Events Section */}
-            {followingEvents.length > 0 && (
-              <section className="mb-16">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
-                      <BiCheckCircle className="w-5 h-5 text-white" />
-                    </div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Events from Followed Clubs</h2>
-                  </div>
-                  <div className="flex-1 h-px bg-gradient-to-r from-amber-500/30 to-transparent"></div>
-                  <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                    {followingEvents.length} {followingEvents.length === 1 ? "Event" : "Events"}
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                  {followingEvents.map((event) => (
-                    <EventCard key={event._id} event={event} onClick={() => handleClickEvent(event)} />
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {selectedEvent && (
-              <EventModal
-                associatedClubLeaders={clubs
-                  .filter((club) => selectedEvent.clubs?.includes(club.name))
-                  .flatMap((club) => club.leaders)}
-                event={selectedEvent}
-                onClose={handleCloseEventModal}
-                associatedClubs={clubs.filter((club) => selectedEvent.clubs?.includes(club.name))}
-              />
-            )}
-
-            {officerClubs.length == 0 &&
+            {!isLoading && officerClubs.length == 0 &&
               officerEvents.length == 0 &&
-              followedClubs2.length == 0 &&
+              followedClubsDetails.length == 0 &&
               followingEvents.length == 0 && (
                 <div className="text-center py-20">
                   <div className="max-w-md mx-auto">
@@ -442,7 +344,7 @@ export default function ProfilePage() {
                         </button>
                       </Link>
 
-                      <Link href="/Clubs">
+                      <Link href="/">
                         <button className="group flex items-center font-semibold justify-center gap-2 flex-row rounded-2xl text-lg border-2 border-clubPurple text-clubPurple hover:bg-clubPurple hover:text-white transition-all duration-300 hover:shadow-lg hover:scale-105 px-8 py-4 w-full sm:w-auto">
                           <svg
                             className="w-5 h-5 group-hover:scale-110 transition-transform duration-300"
@@ -461,6 +363,168 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 </div>
+              )}
+              
+            <section className="mb-16">
+              {(isLoading || officerClubs.length > 0) ? (
+                 <div className="flex items-center gap-4 mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-clubPurple to-clubBlurple rounded-xl flex items-center justify-center">
+                      <HiUserGroup className="w-5 h-5 text-white" />
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Your Club Leaderships</h2>
+                  </div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-clubPurple/30 to-transparent"></div>
+                    {isLoading ? (
+                        <div className="h-8 w-20 bg-gray-200 rounded-full animate-pulse" />
+                      ) : (
+                        <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                          {officerClubs.length} {officerClubs.length === 1 ? "Club" : "Clubs"}
+                        </span>
+                    )}
+                </div>
+              ) : null}
+              {isLoading ? (
+                  renderClubSkeletons()
+                  ) : officerClubs.length > 0 ? (
+                    <>
+                      <div className={gridStyle}>
+                        {officerClubs.slice(0, visibleClubs).map(renderClubItem)}
+                        {/* {selectedClub && (
+                          <ClubModal
+                            club={selectedClub}
+                            onClose={handleCloseClubModal}
+                            setFollowedClubs={setFollowedClubs}
+                            followedClubs={followedClubs}
+                            initialFollowing={followedClubs.includes(selectedClub._id.toString())}
+                          />
+                        )} */}
+                      </div>
+                      {visibleClubs < officerClubs.length && (
+                        <div className="flex justify-center items-center mt-10">
+                          <div className="w-8 h-8 border-4 border-clubPurple/30 border-t-clubPurple rounded-full animate-spin"></div>
+                        </div>
+                      )}
+                    </>
+              ) : null}
+          </section>
+
+          <section className="mb-16">
+            {(isLoading || officerEvents.length > 0) ? (
+              <div className="flex items-center gap-4 mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
+                    <MdCalendarToday className="w-5 h-5 text-white" />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Your Club&apos;s Events</h2>
+                </div>
+                <div className="flex-1 h-px bg-gradient-to-r from-emerald-500/30 to-transparent"></div>
+                {isLoading ? (
+                  <div className="h-8 w-20 bg-gray-200 rounded-full animate-pulse" />
+                ) : (
+                  <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                    {officerEvents.length} {officerEvents.length === 1 ? "Event" : "Events"}
+                  </span>
+                )}
+              </div>
+            ) : null }
+            {isLoading ? (
+              renderEventSkeletons()
+            ) : officerEvents.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {officerEvents.map((event) => (
+                    <EventCard key={event._id.toString()} event={event} onClick={() => handleClickEvent(event)} />
+                  ))}
+                </div>
+            ) : null}
+          </section>
+
+          {/* Followed Clubs Section */}
+          <section className="mb-16">
+            {(isLoading || followedClubsDetails.length > 0) ? (
+              <div className="flex items-center gap-4 mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-rose-500 to-pink-500 rounded-xl flex items-center justify-center">
+                    <AiOutlineHeart className="w-5 h-5 text-white" />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Clubs You Follow</h2>
+                </div>
+                <div className="flex-1 h-px bg-gradient-to-r from-rose-500/30 to-transparent"></div>
+                {isLoading ? (
+                    <div className="h-8 w-20 bg-gray-200 rounded-full animate-pulse" />
+                  ) : (
+                  <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                    {followedClubsDetails.length} {followedClubsDetails.length === 1 ? "Club" : "Clubs"}
+                  </span>
+                )}
+              </div>
+            ) : null}
+            {isLoading ? (
+              renderClubSkeletons()
+            ) : followedClubsDetails.length > 0 ? (
+              <>
+                <div className={gridStyle}>
+                  {followedClubsDetails.slice(0, visibleClubs).map(renderClubItem)}
+                </div>
+                {visibleClubs < followedClubsDetails.length && (
+                  <div className="flex justify-center items-center mt-10">
+                    <div className="w-8 h-8 border-4 border-rose-500/30 border-t-rose-500 rounded-full animate-spin"></div>
+                  </div>
+                )}
+                </>
+            ) : null}
+          </section>
+
+            {/* Following Events Section */}
+          <section className="mb-16">
+            {(isLoading || followingEvents.length > 0) ? (
+              <div className="flex items-center gap-4 mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
+                    <BiCheckCircle className="w-5 h-5 text-white" />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Events from Followed Clubs</h2>
+                </div>
+                <div className="flex-1 h-px bg-gradient-to-r from-amber-500/30 to-transparent"></div>
+                {isLoading ? ( 
+                  <div className="h-8 w-20 bg-gray-200 rounded-full animate-pulse" />
+                ) : (
+                  <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                    {followingEvents.length} {followingEvents.length === 1 ? "Event" : "Events"}
+                  </span>
+                )}
+              </div>
+            ) : null}
+            {isLoading ? (
+                renderEventSkeletons()
+            ) : followingEvents.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {followingEvents.map((event) => (
+                      <EventCard key={event._id.toString()} event={event} onClick={() => handleClickEvent(event)} />
+                    ))}
+                  </div>
+            ) : null }
+          </section>
+
+            {selectedEvent && (
+              <EventModal
+                associatedClubLeaders={clubs
+                  .filter((club) => selectedEvent.clubs?.includes(club.name))
+                  .flatMap((club) => club.leaders)}
+                event={selectedEvent}
+                onClose={handleCloseEventModal}
+                associatedClubs={clubs.filter((club) => selectedEvent.clubs?.includes(club.name))}
+              />
+            )}
+
+            {selectedClub && (
+                <ClubModal
+                  club={selectedClub}
+                  onClose={handleCloseClubModal}
+                  setFollowedClubs={setFollowedClubs}
+                  followedClubs={followedClubs}
+                  initialFollowing={followedClubs.includes(selectedClub._id.toString())}
+                />
               )}
           </div>
         </div>

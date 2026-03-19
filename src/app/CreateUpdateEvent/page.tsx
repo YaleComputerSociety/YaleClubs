@@ -161,7 +161,7 @@ const CreateUpdateEventPage = () => {
         .map((club) => club.name);
       setAvailHostClubs(availableClubs);
     }
-  }, [clubs, userEmail]);
+  }, [isAdmin, clubs, userEmail]);
 
   useEffect(() => {
     const fetchEventsCount = async () => {

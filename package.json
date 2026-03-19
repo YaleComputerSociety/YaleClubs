@@ -13,14 +13,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.782.0",
     "@aws-sdk/s3-request-presigner": "^3.744.0",
-<<<<<<< HEAD
     "@next/third-parties": "^16.0.0",
-=======
-    "@heroui/button": "^2.2.17",
-    "@heroui/dropdown": "^2.3.17",
-    "@heroui/theme": "^2.4.26",
-    "@next/third-parties": "^15.1.4",
->>>>>>> 843407e (Profile)
     "@types/js-cookie": "^3.0.6",
     "axios": "^1.7.7",
     "cookies-next": "^5.0.2",
