@@ -1,4 +1,3 @@
-
 const Rectangle = () => {
   return (
     <svg width="100%" height="40">

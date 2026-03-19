@@ -8,8 +8,8 @@ import { usePathname } from "next/navigation";
 import Banner from "./Banner";
 import { CgProfile } from "react-icons/cg";
 
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/dropdown";
-import { Button } from "@heroui/button";
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/react";
+import { Button } from "@heroui/react";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -176,10 +176,14 @@ const Header = () => {
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Link Actions" className="bg-white rounded-lg shadow-md p-2">
-                  <DropdownItem key="profile" className="px-2 py-2 text-lg">
+                  <DropdownItem key="profile" className="hover:text-clubPurple px-2 py-2 text-lg">
                     <Link href="/Profile">Profile</Link>
                   </DropdownItem>
-                  <DropdownItem key="signout" className="px-2 py-2 text-lg" onPress={handleLogout}>
+                  <DropdownItem
+                    key="signout"
+                    className="hover:text-clubPurple px-2 py-2 text-lg"
+                    onPress={handleLogout}
+                  >
                     Sign Out
                   </DropdownItem>
                 </DropdownMenu>
