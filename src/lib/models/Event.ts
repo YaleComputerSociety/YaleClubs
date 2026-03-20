@@ -33,9 +33,9 @@ export interface IEventInput {
 }
 
 export interface IEvent extends Document {
-  _id: string;
-  createdAt: string;
-  updatedAt: string;
+  _id: mongoose.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
   createdBy: string;
 
   name: string;

@@ -2,19 +2,20 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePathname } from "next/navigation";
 import Banner from "./Banner";
 import { CgProfile } from "react-icons/cg";
 
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/dropdown";
-import { Button } from "@heroui/button";
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/react";
+import { Button } from "@heroui/react";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [bannerHeight, setBannerHeight] = useState(0);
   const { isLoggedIn, logout } = useAuth();
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const pathname = usePathname();
 
@@ -28,14 +29,28 @@ const Header = () => {
     const mediaQuery = window.matchMedia("(max-width: 767px)");
     const updateIsMobile = () => setIsMobile(mediaQuery.matches);
 
-    // Set the initial value
     updateIsMobile();
 
-    // Add event listener for changes
     mediaQuery.addEventListener("change", updateIsMobile);
 
     return () => mediaQuery.removeEventListener("change", updateIsMobile);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   const handleLogout = async () => {
     try {
@@ -71,7 +86,7 @@ const Header = () => {
         </Link>
 
         {isMobile ? (
-          <div className="relative">
+          <div className="relative" ref={menuRef}>
             <button onClick={() => setIsMenuOpen((prev) => !prev)} className="text-4xl focus:outline-none">
               ☰
             </button>
@@ -124,13 +139,13 @@ const Header = () => {
                         </DropdownMenu>
                       </Dropdown>
                     ) : (
-                      <Link
+                      <a
                         href="/api/auth/redirect"
                         onClick={() => setIsMenuOpen(false)}
                         className={authButton + " bg-clubPurple text-white"}
                       >
                         Sign In
-                      </Link>
+                      </a>
                     )}
                   </li>
                 </ul>
@@ -161,18 +176,22 @@ const Header = () => {
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Link Actions" className="bg-white rounded-lg shadow-md p-2">
-                  <DropdownItem key="profile" className="px-2 py-2 text-lg">
+                  <DropdownItem key="profile" className="hover:text-clubPurple px-2 py-2 text-lg">
                     <Link href="/Profile">Profile</Link>
                   </DropdownItem>
-                  <DropdownItem key="signout" className="px-2 py-2 text-lg" onPress={handleLogout}>
+                  <DropdownItem
+                    key="signout"
+                    className="hover:text-clubPurple px-2 py-2 text-lg"
+                    onPress={handleLogout}
+                  >
                     Sign Out
                   </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             ) : (
-              <Link href="/api/auth/redirect" className={authButton + " bg-clubPurple text-white"}>
+              <a href="/api/auth/redirect" className={authButton + " bg-clubPurple text-white"}>
                 Sign In
-              </Link>
+              </a>
             )}
           </div>
         )}

@@ -1,5 +1,5 @@
 import { ClubLeader } from "@/lib/models/Club";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function ScrollableLeaders({ leaders, isLoggedIn }: { leaders: ClubLeader[]; isLoggedIn: boolean }) {
   const [isScrolledToStart, setIsScrolledToStart] = useState(true);

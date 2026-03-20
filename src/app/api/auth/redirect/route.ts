@@ -59,23 +59,45 @@ export async function GET(request: Request): Promise<NextResponse> {
         },
         body: JSON.stringify({ filters: { netid } }),
       });
+
+      // Check if the Yalies API request was successful
+      if (!yaliesResponse.ok) {
+        const errorText = await yaliesResponse.text();
+        console.error(`Yalies API error (${yaliesResponse.status}):`, errorText);
+        return NextResponse.json(
+          {
+            error: "Failed to fetch user information from Yale directory. Please contact support.",
+          },
+          { status: 500 },
+        );
+      }
+
       const yaliesJSON = await yaliesResponse.json();
+
+      // Check if yaliesJSON is an array and has at least one element
+      if (!Array.isArray(yaliesJSON) || yaliesJSON.length === 0) {
+        console.error(`No user found in Yalies API for NetID: ${netid}`);
+        return NextResponse.json({ error: "User not found in Yale directory" }, { status: 404 });
+      }
+
       const email = yaliesJSON[0].email;
 
       await connectToDatabase();
-      const existingUser = await Users.findOne({ netid });
+      let existingUser = await Users.findOne({ netid });
+      console.log("Here 2");
       if (!existingUser) {
         console.log(`Creating new user for NetID: ${netid}`);
-        await Users.create({
+        existingUser = await Users.create({
           netid,
         });
       } else {
+        console.log("Here 3");
         console.log(`User already exists for NetID: ${netid}`);
       }
-      const token = jwt.sign({ netid, email, role: existingUser.role || "user" }, JWT_SECRET, {
+      const token = jwt.sign({ netid, email, role: existingUser?.role || "user" }, JWT_SECRET, {
         expiresIn: "7d",
       });
-
+      console.log("Here 4");
       const redirectPath = from && from.includes("/Events") ? "/Events" : "/";
 
       const response = NextResponse.redirect(`${process.env.BASE_URL}${redirectPath}`);

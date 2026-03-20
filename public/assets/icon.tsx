@@ -1,5 +1,3 @@
-import React from "react";
-
 const Rectangle = () => {
   return (
     <svg width="100%" height="40">

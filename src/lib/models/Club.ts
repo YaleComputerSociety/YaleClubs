@@ -131,9 +131,9 @@ export interface IClubInput {
 
 // Use this when fetching a club
 export interface IClub extends Document {
-  _id: string;
-  createdAt: string;
-  updatedAt: string;
+  _id: mongoose.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 
   name: string;
   subheader?: string;

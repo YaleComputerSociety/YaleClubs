@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Tag } from "@/lib/models/Event";
 import { ClubLeader } from "@/lib/models/Club";
 import Image from "next/image";
@@ -67,7 +67,7 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
       <div className="absolute top-3 right-3 z-50">
         {canEdit && isLoggedIn && false && (
           <div className="flex flex-row space-x-3">
-            <Link href={`/CreateUpdateEvent?eventId=${event._id}`}>
+            <Link href={`/CreateUpdateEvent?eventId=${event._id.toString()}`}>
               <button
                 className={`${editButtonStyle} bg-clubPurple text-white hover:bg-clubBlurple transition-all duration-300 hover:scale-105`}
               >
@@ -79,7 +79,7 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
               onClick={async () => {
                 if (window.confirm("Are you sure you want to delete this event? This action cannot be undone.")) {
                   try {
-                    await axios.delete(`/api/events?id=${event._id}`, {
+                    await axios.delete(`/api/events?id=${event._id.toString()}`, {
                       data: event,
                     });
                     onClose();
@@ -158,6 +158,50 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
                 <Link href={generateGoogleCalendarLink(event)} target="_blank" rel="noopener noreferrer">
                   <button className="bg-violet-600 p-2 rounded-lg text-white font-bold">Add to Calendar</button>
                 </Link>
+                <button
+                  className="bg-gray-100 p-2 rounded-lg text-gray-900 font-bold hover:bg-gray-200"
+                  onClick={async () => {
+                    const shareUrl = `${window.location.origin}/Events/${event._id.toString()}`;
+                    const title = `${event.name} | YaleClubs`;
+                    const text = `${new Date(event.start).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })} • ${event.location}`;
+
+                    // Try Web Share API with image file support (use flyer directly to avoid OG fetch)
+                    try {
+                      const imgUrl =
+                        event.flyer && event.flyer.trim() !== "" ? event.flyer : "/assets/default-background.png";
+                      const res = await fetch(imgUrl, { cache: "no-store" });
+                      if (res.ok) {
+                        const blob = await res.blob();
+                        const fileName = `event-${event._id.toString()}${blob.type === "image/jpeg" ? ".jpg" : ".png"}`;
+                        // Some browsers require a concrete content-type
+                        const file = new File([blob], fileName, { type: blob.type || "image/png" });
+
+                        const canShareFiles =
+                          typeof (navigator as any).canShare === "function" &&
+                          (navigator as any).canShare({ files: [file] });
+                        if (canShareFiles && typeof (navigator as any).share === "function") {
+                          // Pass the link via the url field only to avoid duplicate links in some apps
+                          await (navigator as any).share({ title, text, url: shareUrl, files: [file] });
+                          return;
+                        }
+                      }
+                    } catch (err) {
+                      console.warn("Image share not supported or failed, falling back to link share.", err);
+                    }
+
+                    // Fallback to link-only share
+                    try {
+                      if (navigator.share && typeof navigator.share === "function") {
+                        await navigator.share({ title, text, url: shareUrl });
+                        return;
+                      }
+                    } catch (err) {
+                      console.error("Link share failed, falling back to clipboard.", err);
+                    }
+                  }}
+                >
+                  Share
+                </button>
               </div>
             </div>
 
@@ -186,7 +230,9 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
           <div className="text-gray-700 text-sm sm:text-base mt-3 break-words">{event.description}</div>
 
           <div className="flex flex-wrap gap-2 mt-3">
-            {event.tags?.map((tag: Tag, index) => <TagBlock key={index} tag={tag} />)}
+            {event.tags?.map((tag: Tag, index) => (
+              <TagBlock key={index} tag={tag} />
+            ))}
           </div>
         </div>
       </div>

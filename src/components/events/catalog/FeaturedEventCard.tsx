@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { IEvent, Tag } from "@/lib/models/Event";
 import Image from "next/image";
 import { TagBlock } from "./TagBlock";
@@ -42,7 +41,9 @@ const FeaturedEventCard = ({ event, onClick }: FeaturedEventCardProps) => {
           </div>
         </div>
         <div className="flex gap-2 mb-3 overflow-x-auto scrollbar-hide whitespace-nowrap">
-          {event.tags?.slice(0, 3).map((tag: Tag, index) => <TagBlock key={index} tag={tag} />)}
+          {event.tags?.slice(0, 3).map((tag: Tag, index) => (
+            <TagBlock key={index} tag={tag} />
+          ))}
         </div>
       </div>
     </div>

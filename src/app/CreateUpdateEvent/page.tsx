@@ -104,7 +104,7 @@ const CreateUpdateEventPage = () => {
 
         if (eventId) {
           setUpdatingAlreadyMadeEvent(true);
-          const specificEvent = allEvents.find((event: IEvent) => event._id === eventId);
+          const specificEvent = allEvents.find((event: IEvent) => event._id.toString() === eventId);
           if (specificEvent) {
             const eventInput: IEventInput = {
               name: specificEvent.name || "",
@@ -161,7 +161,7 @@ const CreateUpdateEventPage = () => {
         .map((club) => club.name);
       setAvailHostClubs(availableClubs);
     }
-  }, [clubs, userEmail]);
+  }, [isAdmin, clubs, userEmail]);
 
   useEffect(() => {
     const fetchEventsCount = async () => {

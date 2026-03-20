@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
 import {
   IClub,
   IClubInput,
@@ -142,7 +142,7 @@ const UpdatePage = () => {
 
         const clubId = searchParams.get("clubId");
         if (clubId) {
-          const specificClub = allClubs.find((club: IClub) => club._id === clubId);
+          const specificClub = allClubs.find((club: IClub) => club._id?.toString() === clubId);
           if (specificClub) {
             const clubInput: IClubInput = {
               name: specificClub.name || "",

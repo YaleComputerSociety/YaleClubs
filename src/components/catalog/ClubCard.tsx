@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { IClub, RecruitmentStatus } from "@/lib/models/Club";
 import Image from "next/image";
 import FollowButton from "./FollowButton";
@@ -15,7 +15,7 @@ type ClubCardProps = {
 };
 
 const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollowing }: ClubCardProps) => {
-  const isFollowing = followedClubs.includes(club._id);
+  const isFollowing = followedClubs.includes(club._id.toString());
 
   const adjustedFollowers = club.followers
     ? String(club.followers + (isFollowing === initialFollowing ? 0 : isFollowing ? 1 : -1))
@@ -166,7 +166,7 @@ const ClubCard = ({ club, onClick, followedClubs, setFollowedClubs, initialFollo
             <div className="flex flex-col items-center">
               <FollowButton
                 isFollowing={isFollowing}
-                clubId={club._id}
+                clubId={club._id.toString()}
                 followedClubs={followedClubs}
                 setFollowedClubs={setFollowedClubs}
                 className="w-[60px] sm:w-[80.1px] my-2 text-xs sm:text-sm"

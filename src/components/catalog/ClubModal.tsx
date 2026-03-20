@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { IClub } from "@/lib/models/Club";
 import Image from "next/image";
 import { getAdjustedNumMembers, getInstagramLink } from "@/lib/utils";
@@ -25,7 +25,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
   const [errorMessage, setErrorMessage] = useState("");
   const { isLoggedIn, user } = useAuth();
 
-  const isFollowing = followedClubs.includes(club._id);
+  const isFollowing = followedClubs.includes(club._id.toString());
 
   const adjustedFollowers = club.followers
     ? String(club.followers + (isFollowing === initialFollowing ? 0 : isFollowing ? 1 : -1))
@@ -139,7 +139,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
       if (isLoggedIn) {
         if (canEdit) {
           return {
-            href: `/update?clubId=${club._id}`,
+            href: `/update?clubId=${club._id.toString()}`,
             text: "Edit Club",
             className: `${editButtonStyle} bg-clubPurple text-white hover:bg-clubBlurple transition-all duration-300 hover:scale-105`,
           };
@@ -221,7 +221,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
                 />
                 <FollowButton
                   isFollowing={isFollowing}
-                  clubId={club._id}
+                  clubId={club._id.toString()}
                   followedClubs={followedClubs}
                   setFollowedClubs={setFollowedClubs}
                   className="w-[90px] min-w-[90px] max-w-[90px] px-0"
