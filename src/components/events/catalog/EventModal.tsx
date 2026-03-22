@@ -65,7 +65,7 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
   const EditDeleteButton = () => {
     return (
       <div className="absolute top-3 right-3 z-50">
-        {canEdit && isLoggedIn && false && (
+        {canEdit && isLoggedIn && (
           <div className="flex flex-row space-x-3">
             <Link href={`/CreateUpdateEvent?eventId=${event._id.toString()}`}>
               <button

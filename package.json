@@ -7,7 +7,7 @@
     "devprod": "npm run lint && dotenv -e .env.prod next dev",
     "build": "dotenv -e .env.prod next build",
     "start": "dotenv -e .env.prod next start",
-    "lint": "eslint --ext .ts,.tsx,.js,.jsx src",
+    "lint": "eslint src",
     "test": "jest --watchAll=false"
   },
   "dependencies": {
@@ -55,8 +55,8 @@
     "@types/passport": "^1.0.17",
     "@types/react": "^18",
     "@types/xml2js": "^0.4.14",
-    "@typescript-eslint/eslint-plugin": "^8.13.0",
-    "@typescript-eslint/parser": "^8.13.0",
+    "@typescript-eslint/eslint-plugin": "^8.57.1",
+    "@typescript-eslint/parser": "^8.57.1",
     "dotenv-cli": "^7.4.2",
     "eslint": "^8.57.1",
     "eslint-config-next": "15.0.1",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
@@ -42,32 +42,12 @@ export default function ProfilePage() {
   const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
   const handleClickEvent = (event: IEvent) => setSelectedEvent(event);
 
-  const [, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 767px)");
-    const updateIsMobile = () => setIsMobile(mediaQuery.matches);
-
-    updateIsMobile();
-
-    mediaQuery.addEventListener("change", updateIsMobile);
-
-    return () => mediaQuery.removeEventListener("change", updateIsMobile);
-  }, []);
-
   const [visibleClubs] = useState(50);
-  const hasLoadedDataRef = useRef(false);
 
   const gridStyle = "grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 justify-items-center";
 
   const handleCloseClubModal = () => setSelectedClub(null);
   const handleCloseEventModal = () => setSelectedEvent(null);
-
-  useEffect(() => {
-    if (!isLoading && clubs.length > 0) {
-      hasLoadedDataRef.current = true;
-    }
-  }, [isLoading, clubs.length]);
 
   const renderClubItem = (club: IClub) => (
     <ClubCard
@@ -218,7 +198,6 @@ export default function ProfilePage() {
     </div>
   );
 
-
   return (
     <>
       <main className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-white">
@@ -313,7 +292,6 @@ export default function ProfilePage() {
                 </div>
               )}
 
-
             <section className="mb-16">
               {isLoading || officerClubs.length > 0 ? (
                 <div className="flex items-center gap-4 mb-8">
@@ -337,9 +315,7 @@ export default function ProfilePage() {
                 renderClubSkeletons()
               ) : officerClubs.length > 0 ? (
                 <>
-                  <div className={gridStyle}>
-                    {officerClubs.slice(0, visibleClubs).map(renderClubItem)}
-                  </div>
+                  <div className={gridStyle}>{officerClubs.slice(0, visibleClubs).map(renderClubItem)}</div>
                   {visibleClubs < officerClubs.length && (
                     <div className="flex justify-center items-center mt-10">
                       <div className="w-8 h-8 border-4 border-clubPurple/30 border-t-clubPurple rounded-full animate-spin"></div>
