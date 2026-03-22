@@ -1,6 +1,7 @@
 # A/B Testing Configuration
 
 ## Overview
+
 This directory contains configuration files for A/B testing infrastructure.
 
 ## Configuration File: tests.json
@@ -79,11 +80,13 @@ When a test is complete:
 ## Monitoring
 
 View analytics for all active tests:
+
 ```bash
 GET /api/abtest/analytics
 ```
 
 View analytics for a specific test:
+
 ```bash
 GET /api/abtest/analytics?testName=homepage_layout
 ```

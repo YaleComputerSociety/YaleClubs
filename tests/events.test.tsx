@@ -35,9 +35,7 @@ function calculateSkeletonCount(windowWidth: number, windowHeight: number): numb
 }
 
 function filterYaleCollegeClubs(clubs: any[]): any[] {
-  return clubs
-    .filter((club) => club.school === "Yale College")
-    .sort((a, b) => a.name.localeCompare(b.name));
+  return clubs.filter((club) => club.school === "Yale College").sort((a, b) => a.name.localeCompare(b.name));
 }
 
 function splitEventsByTime(events: IEvent[], now: Date) {
@@ -76,11 +74,7 @@ describe("getRandomThree", () => {
   });
 
   it("returns all events when array has exactly 3 events", () => {
-    const events = [
-      createMockEvent("1", "Event 1"),
-      createMockEvent("2", "Event 2"),
-      createMockEvent("3", "Event 3"),
-    ];
+    const events = [createMockEvent("1", "Event 1"), createMockEvent("2", "Event 2"), createMockEvent("3", "Event 3")];
     const result = getRandomThree(events);
     expect(result).toHaveLength(3);
   });
@@ -265,10 +259,7 @@ describe("filterYaleCollegeClubs", () => {
   });
 
   it("returns empty array when no Yale College clubs exist", () => {
-    const clubs = [
-      createMockClub("Law Society", "Law School"),
-      createMockClub("Med Students", "School of Medicine"),
-    ];
+    const clubs = [createMockClub("Law Society", "Law School"), createMockClub("Med Students", "School of Medicine")];
 
     const result = filterYaleCollegeClubs(clubs);
     expect(result).toHaveLength(0);

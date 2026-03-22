@@ -4,6 +4,17 @@ import jwt from "jsonwebtoken";
 import connectToDatabase from "../../../../lib/mongodb";
 import Users from "../../../../lib/models/Users";
 
+/** Validates that a redirect target is a same-origin path (starts with "/"). */
+function sanitizeRedirectPath(from: string | null): string {
+  if (!from) return "/";
+  // Only allow relative paths to prevent open-redirect attacks
+  const trimmed = from.trim();
+  if (trimmed.startsWith("/") && !trimmed.startsWith("//")) {
+    return trimmed;
+  }
+  return "/";
+}
+
 export async function GET(request: Request): Promise<NextResponse> {
   const BASE_URL = process.env.BASE_URL as string;
   if (!BASE_URL) {
@@ -21,10 +32,13 @@ export async function GET(request: Request): Promise<NextResponse> {
 
   const { searchParams } = new URL(request.url);
   const ticket = searchParams.get("ticket");
-  const from = searchParams.get("from") || "/"; // Default to home if no 'from' parameter
+  const redirectPath = sanitizeRedirectPath(searchParams.get("from"));
+
+  // URL-encode the full service URL so CAS handles it correctly
+  const serviceURL = encodeURIComponent(`${BASE_URL}/api/auth/redirect?from=${redirectPath}`);
 
   if (ticket) {
-    const ticketQuery = `https://secure.its.yale.edu/cas/serviceValidate?ticket=${ticket}&service=${process.env.BASE_URL}/api/auth/redirect?from=${from}`;
+    const ticketQuery = `https://secure.its.yale.edu/cas/serviceValidate?ticket=${ticket}&service=${serviceURL}`;
     const response = await fetch(ticketQuery);
     const xml = await response.text();
 
@@ -60,21 +74,17 @@ export async function GET(request: Request): Promise<NextResponse> {
         body: JSON.stringify({ filters: { netid } }),
       });
 
-      // Check if the Yalies API request was successful
       if (!yaliesResponse.ok) {
         const errorText = await yaliesResponse.text();
         console.error(`Yalies API error (${yaliesResponse.status}):`, errorText);
         return NextResponse.json(
-          {
-            error: "Failed to fetch user information from Yale directory. Please contact support.",
-          },
+          { error: "Failed to fetch user information from Yale directory. Please contact support." },
           { status: 500 },
         );
       }
 
       const yaliesJSON = await yaliesResponse.json();
 
-      // Check if yaliesJSON is an array and has at least one element
       if (!Array.isArray(yaliesJSON) || yaliesJSON.length === 0) {
         console.error(`No user found in Yalies API for NetID: ${netid}`);
         return NextResponse.json({ error: "User not found in Yale directory" }, { status: 404 });
@@ -84,24 +94,16 @@ export async function GET(request: Request): Promise<NextResponse> {
 
       await connectToDatabase();
       let existingUser = await Users.findOne({ netid });
-      console.log("Here 2");
       if (!existingUser) {
-        console.log(`Creating new user for NetID: ${netid}`);
-        existingUser = await Users.create({
-          netid,
-        });
-      } else {
-        console.log("Here 3");
-        console.log(`User already exists for NetID: ${netid}`);
+        existingUser = await Users.create({ netid });
       }
+
       const token = jwt.sign({ netid, email, role: existingUser?.role || "user" }, JWT_SECRET, {
         expiresIn: "7d",
       });
-      console.log("Here 4");
-      const redirectPath = from && from.includes("/Events") ? "/Events" : "/";
 
-      const response = NextResponse.redirect(`${process.env.BASE_URL}${redirectPath}`);
-      response.cookies.set("token", token, {
+      const redirectResponse = NextResponse.redirect(`${BASE_URL}${redirectPath}`);
+      redirectResponse.cookies.set("token", token, {
         secure: true,
         path: "/",
         maxAge: 60 * 60 * 24 * 7,
@@ -109,13 +111,12 @@ export async function GET(request: Request): Promise<NextResponse> {
         sameSite: "strict",
       });
 
-      return response;
+      return redirectResponse;
     } catch (e) {
-      return NextResponse.json({ error: "Authentication failed: " + e }, { status: 401 });
+      console.error("Authentication error:", e);
+      return NextResponse.json({ error: "Authentication failed" }, { status: 401 });
     }
   } else {
-    return NextResponse.redirect(
-      `https://secure.its.yale.edu/cas/login?service=${BASE_URL}/api/auth/redirect?from=${from}`,
-    );
+    return NextResponse.redirect(`https://secure.its.yale.edu/cas/login?service=${serviceURL}`);
   }
 }

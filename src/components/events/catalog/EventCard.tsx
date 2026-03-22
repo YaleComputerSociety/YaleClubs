@@ -1,4 +1,3 @@
-
 import Image from "next/image";
 import { IEvent, Tag } from "@/lib/models/Event";
 import { TagBlock } from "./TagBlock";
@@ -37,7 +36,9 @@ const EventCard = ({ event, onClick }: EventCardProps) => {
           </div>
         </div>
         <div className="flex gap-1 scrollbar-hide overflow-x-auto">
-          {event.tags?.slice(0, 2).map((tag: Tag, index) => <TagBlock key={index} tag={tag} />)}
+          {event.tags?.slice(0, 2).map((tag: Tag, index) => (
+            <TagBlock key={index} tag={tag} />
+          ))}
         </div>
       </div>
     </div>

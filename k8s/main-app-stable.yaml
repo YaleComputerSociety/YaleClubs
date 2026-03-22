@@ -20,7 +20,7 @@ spec:
       containers:
         - name: main-app
           image: main-app:stable
-          imagePullPolicy: Never   # use local Minikube image cache
+          imagePullPolicy: Never # use local Minikube image cache
           ports:
             - containerPort: 3000
           env:
@@ -42,7 +42,7 @@ metadata:
   name: main-app
 spec:
   selector:
-    app: main-app          # routes to BOTH stable and canary pods
+    app: main-app # routes to BOTH stable and canary pods
   ports:
     - port: 80
       targetPort: 3000

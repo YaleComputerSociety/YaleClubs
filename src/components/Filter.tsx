@@ -106,6 +106,8 @@ const Filter = ({ selectedItems, setSelectedItems, allItems, label, aliasMapping
           >
             &#x2715;
           </button>
+        ) : showDropdown ? (
+          <span className="ml-2 text-xs">&#x25B2;</span>
         ) : (
           <span className="ml-2 text-xs">&#x25BC;</span>
         )}

@@ -486,7 +486,6 @@ February 11, 2025
 #### Follow/Unfollow Endpoint (`POST /api/follow`)
 
 - **Baseline Test (10 concurrent users)**:
-
   - Total Requests: 1,200
   - Successful (200): 1,198 (99.83%)
   - Errors (500): 2 (0.17%)
@@ -512,7 +511,6 @@ February 11, 2025
 #### A/B Test Event Endpoint (`POST /api/abtest/event`)
 
 - **Baseline Test (20 concurrent users)**:
-
   - Total Requests: 2,400
   - Successful (200): 2,400 (100%)
   - Average Response Time: 85ms
@@ -569,7 +567,6 @@ After running 6,000 concurrent follow/unfollow operations:
 #### Throughput
 
 - **Follow/Unfollow Endpoint**:
-
   - Baseline: ~120 requests/second
   - Under Load (50 users): ~50 requests/second
   - **Bottleneck**: Database transaction overhead
@@ -582,7 +579,6 @@ After running 6,000 concurrent follow/unfollow operations:
 #### Response Time Distribution
 
 - **Follow/Unfollow**:
-
   - Median: 320ms
   - 95th percentile: 1,200ms
   - 99th percentile: 2,800ms
