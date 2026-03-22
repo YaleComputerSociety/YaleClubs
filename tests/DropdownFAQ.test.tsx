@@ -51,13 +51,7 @@ describe("Dropdown", () => {
 
   it("renders links within the answer text", () => {
     const links = [{ label: "YClubs", url: "https://yclubs.com" }];
-    render(
-      <Dropdown
-        question="Where can I find clubs?"
-        answer="Visit YClubs to find clubs."
-        links={links}
-      />
-    );
+    render(<Dropdown question="Where can I find clubs?" answer="Visit YClubs to find clubs." links={links} />);
 
     const button = screen.getByText("Where can I find clubs?");
     fireEvent.click(button);

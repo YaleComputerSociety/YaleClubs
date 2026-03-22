@@ -62,9 +62,7 @@ describe("getAdjustedWebsite", () => {
   });
 
   it("preserves path and query params", () => {
-    expect(getAdjustedWebsite("https://example.com/path?query=1")).toBe(
-      "example.com/path?query=1"
-    );
+    expect(getAdjustedWebsite("https://example.com/path?query=1")).toBe("example.com/path?query=1");
   });
 });
 
@@ -89,15 +87,11 @@ describe("getInstagramLink", () => {
   });
 
   it("creates Instagram URL from username", () => {
-    expect(getInstagramLink("yaleclubs")).toBe(
-      "https://www.instagram.com/yaleclubs/"
-    );
+    expect(getInstagramLink("yaleclubs")).toBe("https://www.instagram.com/yaleclubs/");
   });
 
   it("removes @ symbol from username", () => {
-    expect(getInstagramLink("@yaleclubs")).toBe(
-      "https://www.instagram.com/yaleclubs/"
-    );
+    expect(getInstagramLink("@yaleclubs")).toBe("https://www.instagram.com/yaleclubs/");
   });
 });
 

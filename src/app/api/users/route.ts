@@ -1,17 +1,28 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "../../../lib/mongodb";
 import User from "../../../lib/models/Users";
-import { checkIfAdmin } from "@/lib/serverUtils";
+import { checkIfAdmin, getAuthenticatedNetId } from "@/lib/serverUtils";
 
 export async function GET(req: Request): Promise<NextResponse> {
   try {
     const url = new URL(req.url);
     const netid = url.searchParams.get("netid");
 
+    const requesterNetId = await getAuthenticatedNetId();
+    const isAdmin = await checkIfAdmin();
+
+    if (!requesterNetId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     await connectToDatabase();
 
     if (netid) {
-      // Logic for fetching a single user
+      // Only the user themselves or an admin may fetch a user record
+      if (requesterNetId !== netid && !isAdmin) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+
       const user = await User.findOne({ netid });
 
       if (!user) {
@@ -20,7 +31,11 @@ export async function GET(req: Request): Promise<NextResponse> {
 
       return NextResponse.json({ user }, { status: 200 });
     } else {
-      // Logic for fetching all users
+      // Listing all users is admin-only
+      if (!isAdmin) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+
       const users = await User.find({});
       return NextResponse.json(users, { status: 200 });
     }

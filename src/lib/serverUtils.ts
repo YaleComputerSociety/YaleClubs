@@ -66,6 +66,25 @@ export async function deleteImage(fileUrl: string): Promise<boolean> {
   }
 }
 
+/**
+ * Returns the netid from the verified JWT token, or null if unauthenticated.
+ */
+export async function getAuthenticatedNetId(): Promise<string | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token");
+
+  if (!token?.value || !process.env.JWT_SECRET) {
+    return null;
+  }
+
+  try {
+    const verified = jwt.verify(token.value, process.env.JWT_SECRET) as { netid: string };
+    return verified.netid ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function checkIfAdmin(): Promise<boolean> {
   const cookieStore = await cookies();
   const token = cookieStore.get("token");

@@ -65,7 +65,7 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
   const EditDeleteButton = () => {
     return (
       <div className="absolute top-3 right-3 z-50">
-        {canEdit && isLoggedIn && false && (
+        {canEdit && isLoggedIn && (
           <div className="flex flex-row space-x-3">
             <Link href={`/CreateUpdateEvent?eventId=${event._id.toString()}`}>
               <button
@@ -230,7 +230,9 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
           <div className="text-gray-700 text-sm sm:text-base mt-3 break-words">{event.description}</div>
 
           <div className="flex flex-wrap gap-2 mt-3">
-            {event.tags?.map((tag: Tag, index) => <TagBlock key={index} tag={tag} />)}
+            {event.tags?.map((tag: Tag, index) => (
+              <TagBlock key={index} tag={tag} />
+            ))}
           </div>
         </div>
       </div>

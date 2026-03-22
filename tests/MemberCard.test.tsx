@@ -2,7 +2,6 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import MemberCard from "@/components/about/MemberCard";
 
-
 describe("MemberCard", () => {
   it("renders member name and role", () => {
     const member = { name: "John Doe", role: "President" };

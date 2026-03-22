@@ -1,4 +1,3 @@
-// resolving git error
 import { render, screen, fireEvent, act } from "@testing-library/react";
 
 jest.mock("next/link", () => {
@@ -15,6 +14,20 @@ jest.mock("next/image", () => {
     return <img alt={props.alt} src={src} width={props.width} height={props.height} />;
   };
 });
+
+// Flatten the heroui dropdown into always-visible elements so tests can
+// interact with menu items without simulating hover/focus events.
+jest.mock("@heroui/react", () => ({
+  Dropdown: ({ children }: any) => <div>{children}</div>,
+  DropdownTrigger: ({ children }: any) => <div>{children}</div>,
+  DropdownMenu: ({ children }: any) => <div>{children}</div>,
+  DropdownItem: ({ children, onPress, ...props }: any) => (
+    <button onClick={onPress} {...props}>
+      {children}
+    </button>
+  ),
+  Button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
+}));
 
 const mockUsePathname = jest.fn(() => "/");
 const mockLogout = jest.fn();
@@ -74,12 +87,12 @@ describe("Header", () => {
     expect(signIn).toHaveAttribute("href", "/api/auth/redirect");
   });
 
-  it("renders Sign Out button when logged in (desktop)", () => {
+  it("renders profile dropdown with Profile link and Sign Out when logged in (desktop)", () => {
     mockUseAuth.mockReturnValue({ isLoggedIn: true, logout: mockLogout });
     (window.matchMedia as jest.Mock).mockReturnValue(DESKTOP_MEDIA);
     render(<Header />);
-    const signOut = screen.getByRole("button", { name: "Sign Out" });
-    expect(signOut).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Profile" })).toHaveAttribute("href", "/Profile");
+    expect(screen.getByRole("button", { name: "Sign Out" })).toBeInTheDocument();
   });
 
   it("renders hamburger button and hides desktop nav when mobile", () => {
@@ -107,11 +120,12 @@ describe("Header", () => {
     expect(signIn).toHaveAttribute("href", "/api/auth/redirect");
   });
 
-  it("shows Sign Out in mobile menu when logged in", () => {
+  it("shows Profile link and Sign Out in mobile menu when logged in", () => {
     mockUseAuth.mockReturnValue({ isLoggedIn: true, logout: mockLogout });
     (window.matchMedia as jest.Mock).mockReturnValue(MOBILE_MEDIA);
     render(<Header />);
     fireEvent.click(screen.getByRole("button", { name: /☰/ }));
+    expect(screen.getByRole("link", { name: "Profile" })).toHaveAttribute("href", "/Profile");
     expect(screen.getByRole("button", { name: "Sign Out" })).toBeInTheDocument();
   });
 

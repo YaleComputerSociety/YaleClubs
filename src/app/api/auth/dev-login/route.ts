@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
+import connectToDatabase from "@/lib/mongodb";
+import Users from "@/lib/models/Users";
 
 export async function GET(request: Request): Promise<NextResponse> {
   // Only enable in development
@@ -25,16 +27,28 @@ export async function GET(request: Request): Promise<NextResponse> {
   const email = url.searchParams.get("email") || (process.env.USER_EMAIL as string);
   const role = url.searchParams.get("role") || (process.env.USER_ROLE as string);
 
-  const token = jwt.sign({ netid, email, role }, JWT_SECRET, {
+  // Upsert the user in the database, mirroring what the real CAS login does
+  await connectToDatabase();
+  let existingUser = await Users.findOne({ netid });
+  if (!existingUser) {
+    existingUser = await Users.create({ netid });
+  }
+
+  const resolvedRole = existingUser?.role || role || "user";
+
+  const token = jwt.sign({ netid, email, role: resolvedRole }, JWT_SECRET, {
     expiresIn: "7d",
   });
 
   let redirectTarget = `${BASE_URL}/`;
   if (redirectParam) {
     try {
-      // Validate full URL; if invalid, fall back to BASE_URL
-      new URL(redirectParam);
-      redirectTarget = redirectParam;
+      const parsed = new URL(redirectParam);
+      const base = new URL(BASE_URL);
+      // Only allow redirects to the same origin to prevent open-redirect attacks
+      if (parsed.origin === base.origin) {
+        redirectTarget = redirectParam;
+      }
     } catch {
       redirectTarget = `${BASE_URL}/`;
     }
