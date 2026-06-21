@@ -23,6 +23,17 @@ import { MdCalendarToday, MdArrowForward, MdLockOutline } from "react-icons/md";
 import { AiOutlineHeart } from "react-icons/ai";
 import { BiCheckCircle } from "react-icons/bi";
 
+type ApplicationRecord = {
+  _id: string;
+  clubId: string;
+  clubName: string;
+  applicantEmail: string;
+  applicantName?: string;
+  status: string;
+  createdAt: string;
+  reviewerNote?: string;
+};
+
 export default function ProfilePage() {
   const [, setEvents] = useState<IEvent[]>([]);
   const [clubs, setClubs] = useState<IClub[]>([]);
@@ -35,6 +46,7 @@ export default function ProfilePage() {
   const [followedClubs, setFollowedClubs] = useState<string[]>([]);
   const [officerEvents, setOfficerEvents] = useState<IEvent[]>([]);
   const [officerClubs, setOfficerClubs] = useState<IClub[]>([]);
+  const [myApplications, setMyApplications] = useState<ApplicationRecord[]>([]);
 
   const [error, setError] = useState<string | null>(null);
   const { isLoggedIn } = useAuth();
@@ -94,10 +106,12 @@ export default function ProfilePage() {
         setEvents(eventsResponse.data);
         setClubs(yaleCollegeClubs);
 
-        const officerClubsList = yaleCollegeClubs
-          //.filter((club) => club.leaders.some((leader) => leader.netId == netid))
-          .filter((club) => club.leaders.some((leader) => leader.email == email))
-          .sort((a, b) => a.name.localeCompare(b.name));
+        const officerClubsList =
+          email && typeof email === "string"
+            ? yaleCollegeClubs
+                .filter((club) => club.leaders.some((leader) => leader.email === email))
+                .sort((a, b) => a.name.localeCompare(b.name))
+            : [];
 
         const officerEventsList = eventsResponse.data
           .filter(
@@ -127,6 +141,9 @@ export default function ProfilePage() {
         setFollowingEvents(followingEv);
         setOfficerClubs(officerClubsList);
         setOfficerEvents(officerEventsList);
+
+        const myApplicationResponse = await axios.get<ApplicationRecord[]>("/api/applications");
+        setMyApplications(myApplicationResponse.data);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError("Failed to load events. Please try reloading the page.");
@@ -147,7 +164,7 @@ export default function ProfilePage() {
     if (netid && email) {
       loadData();
     }
-  }, [netid, email]);
+  }, [netid, email, user?.role]);
 
   if (!isLoading && !isLoggedIn) {
     return (
@@ -324,6 +341,132 @@ export default function ProfilePage() {
                 </>
               ) : null}
             </section>
+
+            {/* My Applications */}
+            {(isLoading || myApplications.length > 0) && (
+              <section className="mb-16">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-xl flex items-center justify-center">
+                      <BiCheckCircle className="w-5 h-5 text-white" />
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Your Applications</h2>
+                  </div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-indigo-500/30 to-transparent"></div>
+                  {!isLoading && (
+                    <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                      {myApplications.length} {myApplications.length === 1 ? "Application" : "Applications"}
+                    </span>
+                  )}
+                </div>
+                {isLoading ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {[...Array(2)].map((_, i) => (
+                      <div key={i} className="h-24 bg-gray-100 rounded-xl animate-pulse" />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {myApplications.map((application) => {
+                      const statusColors: Record<string, string> = {
+                        submitted: "bg-blue-100 text-blue-700",
+                        in_review: "bg-yellow-100 text-yellow-700",
+                        accepted: "bg-green-100 text-green-700",
+                        rejected: "bg-red-100 text-red-700",
+                      };
+                      const badge = statusColors[application.status] ?? "bg-gray-100 text-gray-700";
+                      return (
+                        <div
+                          key={application._id}
+                          className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col gap-2"
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="font-semibold text-gray-800">{application.clubName}</p>
+                            <span className={`flex-shrink-0 text-xs font-medium px-2.5 py-1 rounded-full ${badge}`}>
+                              {application.status.replace("_", " ")}
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-400">
+                            Submitted{" "}
+                            {new Date(application.createdAt).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })}
+                          </p>
+                          {application.reviewerNote && (
+                            <p className="text-sm text-gray-600 bg-gray-50 rounded-lg p-2 mt-1">
+                              <span className="font-medium">Note: </span>
+                              {application.reviewerNote}
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </section>
+            )}
+
+            {/* Applications to Review (for leaders/admins) */}
+            {(officerClubs.length > 0 || user?.role === "admin") && (
+              <section className="mb-16">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-fuchsia-500 rounded-xl flex items-center justify-center">
+                      <HiUserGroup className="w-5 h-5 text-white" />
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Applications to Review</h2>
+                  </div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-purple-500/30 to-transparent"></div>
+                </div>
+                {officerClubs.length === 0 && user?.role === "admin" ? (
+                  <p className="text-gray-500 text-sm">
+                    As admin, open any club modal and click &quot;Review Applications&quot; to manage applications.
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {officerClubs.map((club) => (
+                      <Link
+                        key={club._id.toString()}
+                        href={`/applications/review/${club._id.toString()}`}
+                        className="bg-white border border-gray-200 rounded-xl p-4 hover:border-clubPurple hover:shadow-md transition-all group"
+                      >
+                        <div className="flex items-center gap-3">
+                          {club.logo && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={club.logo}
+                              alt={club.name}
+                              className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                              onError={(e) => {
+                                (e.currentTarget as HTMLImageElement).style.display = "none";
+                              }}
+                            />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-gray-800 truncate group-hover:text-clubPurple transition-colors">
+                              {club.name}
+                            </p>
+                            <p className="text-xs text-gray-400">
+                              {club.applicationForm?.enabled ? "Applications open" : "Form disabled"}
+                            </p>
+                          </div>
+                          <svg
+                            className="w-4 h-4 text-gray-400 group-hover:text-clubPurple flex-shrink-0 transition-colors"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </section>
+            )}
 
             <section className="mb-16">
               {isLoading || officerEvents.length > 0 ? (

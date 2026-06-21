@@ -224,6 +224,14 @@ const UpdatePage = () => {
       formDataObject.backgroundImage = undefined;
     }
 
+    // Clear applyForm when the recruitment status doesn't use it
+    if (
+      formDataObject.recruitmentStatus !== RecruitmentStatus.APPENDS &&
+      formDataObject.recruitmentStatus !== RecruitmentStatus.APPOPENS
+    ) {
+      formDataObject.applyForm = "";
+    }
+
     const errors = Object.keys(formDataObject).reduce(
       (acc, field) => {
         const value = formDataObject[field as keyof IClubInput];

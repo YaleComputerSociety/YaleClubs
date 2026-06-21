@@ -78,6 +78,26 @@ export enum RecruitmentStatus {
   APPOPENS = "Opens on...",
 }
 
+export enum ApplicationQuestionType {
+  SHORT_ANSWER = "short_answer",
+  LONG_ANSWER = "long_answer",
+  FILE_DROP = "file_drop",
+}
+
+export interface ApplicationQuestion {
+  id: string;
+  label: string;
+  type: ApplicationQuestionType;
+  required: boolean;
+}
+
+export interface ClubApplicationForm {
+  enabled: boolean;
+  title: string;
+  description?: string;
+  questions: ApplicationQuestion[];
+}
+
 export interface ClubLeader {
   email: string;
   name: string;
@@ -127,6 +147,7 @@ export interface IClubInput {
   recruitmentStartDate?: Date | undefined;
   recruitmentEndDate?: Date | undefined;
   aliases?: string[];
+  applicationForm?: ClubApplicationForm;
 }
 
 // Use this when fetching a club
@@ -163,7 +184,28 @@ export interface IClub extends Document {
   recruitmentEndDate?: Date;
   followers: number;
   aliases?: string[];
+  applicationForm?: ClubApplicationForm;
 }
+
+const ApplicationQuestionSchema = new Schema<ApplicationQuestion>(
+  {
+    id: { type: String, required: true },
+    label: { type: String, required: true },
+    type: { type: String, enum: Object.values(ApplicationQuestionType), required: true },
+    required: { type: Boolean, required: true, default: false },
+  },
+  { _id: false },
+);
+
+const ClubApplicationFormSchema = new Schema<ClubApplicationForm>(
+  {
+    enabled: { type: Boolean, required: true, default: false },
+    title: { type: String, required: true, default: "Club Application" },
+    description: { type: String },
+    questions: { type: [ApplicationQuestionSchema], default: [] },
+  },
+  { _id: false },
+);
 
 // Club Schema
 const clubSchema = new Schema<IClub>(
@@ -196,6 +238,7 @@ const clubSchema = new Schema<IClub>(
     recruitmentEndDate: { type: Date },
     followers: { type: Number, required: true, default: 0 },
     aliases: { type: [String], default: [] },
+    applicationForm: { type: ClubApplicationFormSchema, default: undefined },
   },
   { timestamps: true },
 );

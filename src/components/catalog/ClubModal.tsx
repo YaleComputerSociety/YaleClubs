@@ -26,14 +26,13 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
   const { isLoggedIn, user } = useAuth();
 
   const isFollowing = followedClubs.includes(club._id.toString());
+  const clubIdStr = club._id.toString();
 
   const adjustedFollowers = club.followers
     ? String(club.followers + (isFollowing === initialFollowing ? 0 : isFollowing ? 1 : -1))
     : isFollowing
       ? "1"
       : "0";
-
-  // console.table(club);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -73,7 +72,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
 
   useEffect(() => {
     const payload = JSON.stringify({
-      clubId: club._id.toString(),
+      clubId: clubIdStr,
       eventType: "modal_view",
     });
     fetch("/api/analytics/event", {
@@ -82,7 +81,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
       body: payload,
       keepalive: true,
     }).catch(() => {});
-  }, [club._id]);
+  }, [clubIdStr]);
 
   type RightLinkProps = {
     content: string;
@@ -97,7 +96,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
       if (!link) return;
       navigator.clipboard.writeText(link).then(() => {
         setCopied(true);
-        setTimeout(() => setCopied(false), 2000); // Reset "copied" state after 2 seconds
+        setTimeout(() => setCopied(false), 2000);
       });
     };
 
@@ -133,7 +132,17 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
     return <div className="text-gray-500 text-sm sm:text-base">{content}</div>;
   };
 
-  const EditButton = ({ href, text, onClick, className }: any) =>
+  const EditButton = ({
+    href,
+    text,
+    onClick,
+    className,
+  }: {
+    href?: string;
+    text: string;
+    onClick?: () => void;
+    className: string;
+  }) =>
     href ? (
       <Link href={href}>
         <button className={className}>{text}</button>
@@ -152,7 +161,7 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
       if (isLoggedIn) {
         if (canEdit) {
           return {
-            href: `/update?clubId=${club._id.toString()}`,
+            href: `/update?clubId=${clubIdStr}`,
             text: "Edit Club",
             className: `${editButtonStyle} bg-clubPurple text-white hover:bg-clubBlurple transition-all duration-300 hover:scale-105`,
           };
@@ -177,6 +186,8 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
   };
 
   const buttonProps = getButtonProps();
+  const applicationForm = club.applicationForm;
+  const hasActiveForm = applicationForm?.enabled && (applicationForm?.questions?.length ?? 0) > 0;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -234,17 +245,52 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
                 />
                 <FollowButton
                   isFollowing={isFollowing}
-                  clubId={club._id.toString()}
+                  clubId={clubIdStr}
                   followedClubs={followedClubs}
                   setFollowedClubs={setFollowedClubs}
                   className="w-[90px] min-w-[90px] max-w-[90px] px-0"
                 />
                 <div className="flex flex-col mt-4 gap-2">
+                  {/* External apply link (old-style) */}
                   {club.applyForm &&
                     (club.recruitmentEndDate === undefined ||
                       new Date(club.recruitmentEndDate).getTime() >= new Date().setHours(-24, 0, 0, 0)) && (
                       <RightLink content="Application" link={club.applyForm} />
                     )}
+
+                  {/* Apply via YaleClubs */}
+                  {isLoggedIn && hasActiveForm && (
+                    <Link
+                      href={`/apply/${clubIdStr}`}
+                      className="text-clubPurple hover:text-clubBlurple text-sm sm:text-base font-medium"
+                      onClick={onClose}
+                    >
+                      Apply on YaleClubs →
+                    </Link>
+                  )}
+
+                  {/* Leader/admin: manage form */}
+                  {canEdit && (
+                    <Link
+                      href={`/applications/builder/${clubIdStr}`}
+                      className="text-clubPurple hover:text-clubBlurple text-sm sm:text-base"
+                      onClick={onClose}
+                    >
+                      {hasActiveForm ? "Edit Application Form" : "Create Application Form"}
+                    </Link>
+                  )}
+
+                  {/* Leader/admin: review */}
+                  {canEdit && (
+                    <Link
+                      href={`/applications/review/${clubIdStr}`}
+                      className="text-clubPurple hover:text-clubBlurple text-sm sm:text-base"
+                      onClick={onClose}
+                    >
+                      Review Applications
+                    </Link>
+                  )}
+
                   <RightLink content="Website" link={club.website} />
                   <RightLink content="Email" link={club.email} isEmail />
                   {club.instagram && <RightLink content="Instagram" link={getInstagramLink(club.instagram)} />}
