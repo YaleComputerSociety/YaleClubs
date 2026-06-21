@@ -1,11 +1,18 @@
-import { S3Client, PutObjectCommand, ObjectCannedACL, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  ObjectCannedACL,
+  DeleteObjectCommand,
+  GetObjectCommand,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
 const s3 = new S3Client({
   region: "us-east-1",
-  endpoint: "https://nyc3.digitaloceanspaces.com",
+  endpoint: process.env.DO_SPACES_ENDPOINT ?? "https://nyc3.digitaloceanspaces.com",
   credentials: {
     accessKeyId: process.env.DO_SPACES_KEY!,
     secretAccessKey: process.env.DO_SPACES_SECRET!,
@@ -46,6 +53,24 @@ export async function uploadImage(file: Blob, folderPath: string, isPrivate: boo
  * @param fileUrl - The full URL of the file to delete
  * @returns `true` if deletion was successful, `false` otherwise
  */
+export async function getPresignedFileUrl(fileUrl: string, expiresIn = 3600): Promise<string | null> {
+  try {
+    const bucketName = process.env.DO_SPACES_BUCKET || "yaleclubs";
+    const url = new URL(fileUrl);
+    const key = url.pathname.substring(1);
+
+    const command = new GetObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+    });
+
+    return await getSignedUrl(s3, command, { expiresIn });
+  } catch (err) {
+    console.error("Failed to generate presigned URL:", err);
+    return null;
+  }
+}
+
 export async function deleteImage(fileUrl: string): Promise<boolean> {
   try {
     const bucketName = process.env.DO_SPACES_BUCKET || "yaleclubs";

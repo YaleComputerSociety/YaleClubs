@@ -37,13 +37,12 @@ export async function middleware(request: NextRequest) {
       response.cookies.delete("token");
       response.cookies.delete("auth_netid");
       response.cookies.delete("auth_email");
-      console.log("bad token");
       return response;
     }
   }
 
   // For /api/clubs GET requests, we need to allow unauthenticated access
-  if (["/api/clubs"].includes(request.nextUrl.pathname) && request.method === "GET") {
+  if (request.nextUrl.pathname.startsWith("/api/clubs") && request.method === "GET") {
     const response = NextResponse.next();
 
     if (decodedToken) {

@@ -98,7 +98,7 @@ const FilterModal = ({
       </button>
 
       {isOpen && (
-        <div ref={modalRef} onClick={onBackdropClick} className="fixed inset-0 z-50 bg-black/40">
+        <div ref={modalRef} onClick={onBackdropClick} className="fixed inset-0 z-[60] bg-black/40">
           <div
             className="absolute top-[100px] left-1/2 transform -translate-x-1/2 w-full max-w-sm bg-white rounded-lg shadow-lg p-4"
             role="dialog"

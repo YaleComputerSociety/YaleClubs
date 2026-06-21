@@ -166,6 +166,7 @@ const IClubInputKeys = {
   recruitmentStartDate: undefined,
   recruitmentEndDate: undefined,
   aliases: [],
+  applicationForm: undefined,
 };
 
 export async function PUT(req: Request): Promise<NextResponse> {
