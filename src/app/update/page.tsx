@@ -1,16 +1,7 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import {
-  IClub,
-  IClubInput,
-  Category,
-  Affiliation,
-  ClubLeader,
-  Intensity,
-  School,
-  RecruitmentStatus,
-} from "@/lib/models/Club";
+import { IClub, IClubInput, Category, Affiliation, ClubLeader, Intensity, School } from "@/lib/models/Club";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useSearchParams } from "next/navigation";
@@ -19,7 +10,7 @@ import EditableImageSection from "@/components/update/EditImage";
 import ClubLeadersSection from "@/components/update/EditLeaders";
 import SchoolDropdown from "@/components/update/SchoolDropdown";
 
-import RecruitmentStatusDropdown from "@/components/update/RecruitmentDropdown";
+import CreateApplicationModal from "@/components/update/CreateApplicationModal";
 import AliasesDropdown from "@/components/update/ClubAliases";
 import Filter from "@/components/Filter";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,6 +19,7 @@ import { objectToFormData } from "@/lib/utils";
 const UpdatePage = () => {
   const searchParams = useSearchParams();
   const [club, setClub] = useState<IClub | null>(null);
+  const [isCreateApplicationOpen, setIsCreateApplicationOpen] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [formDataObject, setFormDataObject] = useState<IClubInput>({
     name: "",
@@ -43,7 +35,6 @@ const UpdatePage = () => {
     website: "",
     email: "",
     instagram: "",
-    applyForm: "",
     mailingListForm: "",
     meeting: "",
     calendarLink: "",
@@ -53,9 +44,6 @@ const UpdatePage = () => {
     school: School.COLLEGE,
     inactive: false,
     scraped: false,
-    recruitmentStatus: RecruitmentStatus.NOSELECTION,
-    recruitmentStartDate: undefined,
-    recruitmentEndDate: undefined,
     aliases: [],
   });
   const [isLoading, setIsLoading] = useState(true);
@@ -111,10 +99,6 @@ const UpdatePage = () => {
       case "description":
         if (value && value.length > 1500) return "Description must not exceed 1500 characters.";
         return "";
-      case "applyForm":
-        if (value && value.length > 200) return "Application form must not exceed 200 characters.";
-        if (value && !isValidUrl(value)) return "Invalid URL.";
-        return "";
       case "mailingListForm":
         if (value && value.length > 200) return "Mailing list form must not exceed 200 characters.";
         if (value && !isValidUrl(value)) return "Invalid URL.";
@@ -158,7 +142,6 @@ const UpdatePage = () => {
               website: specificClub.website || "",
               email: specificClub.email || "",
               instagram: specificClub.instagram || "",
-              applyForm: specificClub.applyForm || "",
               mailingListForm: specificClub.mailingListForm || "",
               meeting: specificClub.meeting || "",
               calendarLink: specificClub.calendarLink || "",
@@ -168,9 +151,6 @@ const UpdatePage = () => {
               school: specificClub.school || School.COLLEGE,
               inactive: specificClub.inactive || false,
               scraped: specificClub.scraped || false,
-              recruitmentStatus: specificClub.recruitmentStatus || RecruitmentStatus.NOSELECTION,
-              recruitmentStartDate: specificClub.recruitmentStartDate || undefined,
-              recruitmentEndDate: specificClub.recruitmentEndDate || undefined,
               aliases: specificClub.aliases || [],
             };
             setClub(specificClub);
@@ -200,7 +180,6 @@ const UpdatePage = () => {
       | Category[]
       | School
       | Intensity
-      | RecruitmentStatus
       | Date
       | string[],
   ) => {
@@ -402,69 +381,23 @@ const UpdatePage = () => {
 
               {/* Right Section */}
               <div className="space-y-2">
-                <RecruitmentStatusDropdown
-                  selectedRecruitment={formDataObject.recruitmentStatus as RecruitmentStatus}
-                  handleChange={handleChange}
-                />
-                {(formDataObject.recruitmentStatus === RecruitmentStatus.APPENDS ||
-                  formDataObject.recruitmentStatus === RecruitmentStatus.APPOPENS) && (
-                  <div className="bg-gray-300 rounded-lg p-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Application Form
-                        <input
-                          type="text"
-                          value={formDataObject.applyForm ?? ""}
-                          onChange={(e) => handleChange("applyForm", e.target.value)}
-                          className="w-full border border-gray-300 rounded-lg p-2"
-                          placeholder="Link to application form"
-                        />
-                      </label>
-                      {validationErrors.applyForm && <p className="text-red-500">{validationErrors.applyForm}</p>}
-                    </div>
-                    {formDataObject.recruitmentStatus === RecruitmentStatus.APPOPENS && (
-                      <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          {formDataObject.recruitmentStatus === RecruitmentStatus.APPOPENS && "Application Opens"}
-                          <input
-                            type="date"
-                            value={
-                              formDataObject.recruitmentStartDate
-                                ? new Date(formDataObject.recruitmentStartDate).toISOString().split("T")[0]
-                                : ""
-                            }
-                            onChange={(e) => handleChange("recruitmentStartDate", e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg p-2"
-                          />
-                        </label>
-                        {validationErrors.applicationDeadline && (
-                          <p className="text-red-500">{validationErrors.applicationDeadline}</p>
-                        )}
-                      </div>
-                    )}
-                    <div className="mt-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {formDataObject.recruitmentStatus === RecruitmentStatus.APPOPENS &&
-                          "Application Closes (Midnight of)"}
-                        {formDataObject.recruitmentStatus === RecruitmentStatus.APPENDS &&
-                          "Application Closes (Midnight of)"}
-                        <input
-                          type="date"
-                          value={
-                            formDataObject.recruitmentEndDate
-                              ? new Date(formDataObject.recruitmentEndDate).toISOString().split("T")[0]
-                              : ""
-                          }
-                          onChange={(e) => handleChange("recruitmentEndDate", e.target.value)}
-                          className="w-full border border-gray-300 rounded-lg p-2"
-                        />
-                      </label>
-                      {validationErrors.applicationDeadline && (
-                        <p className="text-red-500">{validationErrors.applicationDeadline}</p>
-                      )}
-                    </div>
-                  </div>
-                )}
+                <div className="flex flex-col gap-2 pb-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsCreateApplicationOpen(true)}
+                    className="w-full rounded-lg bg-clubPurple px-4 py-2 font-medium text-white transition-colors hover:bg-clubBlurple"
+                  >
+                    Create Application
+                  </button>
+                  <button
+                    type="button"
+                    disabled
+                    title="Coming soon"
+                    className="w-full cursor-not-allowed rounded-lg border border-gray-300 bg-white px-4 py-2 font-medium text-gray-400"
+                  >
+                    View Applications
+                  </button>
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Instagram
@@ -589,6 +522,7 @@ const UpdatePage = () => {
         </main>
         <Footer />
       </div>
+      {isCreateApplicationOpen && <CreateApplicationModal onClose={() => setIsCreateApplicationOpen(false)} />}
     </>
   );
 };
