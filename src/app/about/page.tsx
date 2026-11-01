@@ -40,6 +40,17 @@ const AboutPage: React.FC = () => {
             ))}
           </div>
         </div>
+
+        <div className="max-w-6xl text-center">
+          <h2 className="text-3xl font-bold mb-6">Previously on the Team</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {previousTeamMembers.map((member) => (
+              <div key={member.name} className="bg-white p-6 rounded-lg shadow-md">
+                <MemberCard member={member}></MemberCard>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
       <Footer />
     </div>
@@ -47,14 +58,6 @@ const AboutPage: React.FC = () => {
 };
 
 const teamMembers = [
-  {
-    name: "Addison Goolsbee",
-    role: "CEO",
-    website: "https://addisongoolsbee.com",
-    headshot: "/assets/people/addison.jpg",
-    linkedin: "https://www.linkedin.com/in/addisongoolsbee/",
-    github: "https://github.com/addisongoolsbee",
-  },
   {
     name: "Lauren Lee",
     role: "Developer",
@@ -64,18 +67,29 @@ const teamMembers = [
   },
   {
     name: "Grady Yu",
-    role: "Developer",
+    role: "Co Team Lead",
     headshot: "/assets/people/grady.jpg",
     linkedin: "https://www.linkedin.com/in/gradyyu/",
     github: "https://github.com/Ragyudy",
   },
   {
     name: "Francis Fan",
-    role: "Developer",
+    role: "Co Team Lead",
     headshot: "/assets/people/francis.jpg",
     website: "https://francis-fan05.onrender.com/",
     linkedin: "https://www.linkedin.com/in/francis-fan-51293a236/",
     github: "https://github.com/francisfan0",
+  },
+];
+
+const previousTeamMembers = [
+  {
+    name: "Addison Goolsbee",
+    role: "Team Lead",
+    website: "https://addisongoolsbee.com",
+    headshot: "/assets/people/addison.jpg",
+    linkedin: "https://www.linkedin.com/in/addisongoolsbee/",
+    github: "https://github.com/addisongoolsbee",
   },
   {
     name: "Ethan Mathieu",
