@@ -42,7 +42,7 @@ const AboutPage: React.FC = () => {
         </div>
 
         <div className="max-w-6xl text-center">
-          <h2 className="text-3xl font-bold mb-6">Previously on the Team</h2>
+          <h2 className="text-3xl font-bold mb-6">Alumni</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {previousTeamMembers.map((member) => (
               <div key={member.name} className="bg-white p-6 rounded-lg shadow-md">
@@ -60,7 +60,7 @@ const AboutPage: React.FC = () => {
 const teamMembers = [
   {
     name: "Francis Fan",
-    role: "Co Team Lead",
+    role: "Team Lead",
     headshot: "/assets/people/francis.jpg",
     website: "https://francis-fan05.onrender.com/",
     linkedin: "https://www.linkedin.com/in/francis-fan-51293a236/",
@@ -68,7 +68,7 @@ const teamMembers = [
   },
   {
     name: "Grady Yu",
-    role: "Co Team Lead",
+    role: "Team Lead",
     headshot: "/assets/people/grady.jpg",
     linkedin: "https://www.linkedin.com/in/gradyyu/",
     github: "https://github.com/Ragyudy",
