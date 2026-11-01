@@ -59,11 +59,12 @@ const AboutPage: React.FC = () => {
 
 const teamMembers = [
   {
-    name: "Lauren Lee",
-    role: "Developer",
-    headshot: "/assets/people/lauren.jpg",
-    linkedin: "https://www.linkedin.com/in/laurenwylee/",
-    github: "https://github.com/laurenwylee",
+    name: "Francis Fan",
+    role: "Co Team Lead",
+    headshot: "/assets/people/francis.jpg",
+    website: "https://francis-fan05.onrender.com/",
+    linkedin: "https://www.linkedin.com/in/francis-fan-51293a236/",
+    github: "https://github.com/francisfan0",
   },
   {
     name: "Grady Yu",
@@ -73,12 +74,11 @@ const teamMembers = [
     github: "https://github.com/Ragyudy",
   },
   {
-    name: "Francis Fan",
-    role: "Co Team Lead",
-    headshot: "/assets/people/francis.jpg",
-    website: "https://francis-fan05.onrender.com/",
-    linkedin: "https://www.linkedin.com/in/francis-fan-51293a236/",
-    github: "https://github.com/francisfan0",
+    name: "Lauren Lee",
+    role: "Developer",
+    headshot: "/assets/people/lauren.jpg",
+    linkedin: "https://www.linkedin.com/in/laurenwylee/",
+    github: "https://github.com/laurenwylee",
   },
 ];
 
