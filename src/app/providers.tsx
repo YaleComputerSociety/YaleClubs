@@ -1,9 +1,16 @@
 "use client";
 
 import { AuthProvider } from "@/contexts/AuthContext";
+import type { AuthUser } from "@/lib/authUser";
 import { useEffect, useState } from "react";
 
-export default function Providers({ children }: { children: React.ReactNode }) {
+export default function Providers({
+  children,
+  initialUser,
+}: {
+  children: React.ReactNode;
+  initialUser: AuthUser | null;
+}) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -14,5 +21,5 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     return null;
   }
 
-  return <AuthProvider>{children}</AuthProvider>;
+  return <AuthProvider initialUser={initialUser}>{children}</AuthProvider>;
 }

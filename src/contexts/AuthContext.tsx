@@ -1,18 +1,11 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
-
-interface User {
-  netid: string;
-  email: string;
-  role: string;
-  iat?: number;
-  exp?: number;
-}
+import type { AuthUser } from "@/lib/authUser";
 
 interface AuthContextType {
   isLoggedIn: boolean;
-  user: User | null;
+  user: AuthUser | null;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
 }
@@ -29,9 +22,16 @@ const LOGOUT_KEY = "logout_version";
 
 let authCheckPromise: Promise<void> | null = null;
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+export function AuthProvider({
+  children,
+  initialUser = null,
+}: {
+  children: ReactNode;
+  /** Session from the request cookie, so the first paint matches sign-in status. */
+  initialUser?: AuthUser | null;
+}) {
+  const [isLoggedIn, setIsLoggedIn] = useState(initialUser !== null);
+  const [user, setUser] = useState<AuthUser | null>(initialUser);
 
   const logout = useCallback(async () => {
     if (!isLoggedIn) return;
@@ -52,9 +52,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const storedVersion = localStorage.getItem(LOGOUT_KEY);
 
     if (storedVersion !== LOGOUT_VERSION) {
+      localStorage.setItem(LOGOUT_KEY, LOGOUT_VERSION);
+    }
+
+    // Only an explicit older version should clear a session. A missing key is a first visit,
+    // and logging out here would wipe the server-provided signed-in state before verify runs.
+    if (storedVersion !== null && storedVersion !== LOGOUT_VERSION) {
       console.log("Forcing logout due to version change");
       await logout();
-      localStorage.setItem(LOGOUT_KEY, LOGOUT_VERSION); // Mark logout as done
       return;
     }
 
@@ -104,5 +109,5 @@ export const useAuth = () => {
 
 export type AuthState = {
   isLoggedIn: boolean;
-  user: User | null;
+  user: AuthUser | null;
 };

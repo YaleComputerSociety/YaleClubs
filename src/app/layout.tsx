@@ -3,6 +3,7 @@ import CustomFont from "next/font/local";
 import "./globals.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import Providers from "./providers";
+import { getSessionUser } from "@/lib/session";
 
 const geistSans = CustomFont({
   src: "../../public/fonts/GeistVF.woff",
@@ -23,15 +24,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const initialUser = await getSessionUser();
+
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Providers>{children}</Providers>
+        <Providers initialUser={initialUser}>{children}</Providers>
       </body>
       <GoogleAnalytics gaId="G-XCG2T9LY5T" />
     </html>
