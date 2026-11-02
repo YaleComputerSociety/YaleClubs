@@ -24,7 +24,6 @@ const Catalog = ({
   const [visibleClubs, setVisibleClubs] = useState(50);
   const firstRef = useRef(true);
   const initialFollowedClubsRef = useRef<string[]>([]);
-  const hasLoadedDataRef = useRef(false);
 
   const handleCloseModal = () => setSelectedClub(null);
 
@@ -34,12 +33,6 @@ const Catalog = ({
       firstRef.current = false;
     }
   }, [followedClubs]);
-
-  useEffect(() => {
-    if (!isLoading && clubs.length > 0) {
-      hasLoadedDataRef.current = true;
-    }
-  }, [isLoading, clubs.length]);
 
   const initialFollowedClubs = initialFollowedClubsRef.current;
 
@@ -67,7 +60,7 @@ const Catalog = ({
     };
   }, [clubs.length]);
 
-  const gridStyle = "grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 justify-items-center";
+  const gridStyle = "club-grid";
 
   const renderSkeletons = () => (
     <div className={`${gridStyle} py-5`}>
@@ -77,7 +70,7 @@ const Catalog = ({
     </div>
   );
 
-  if (isLoading || !hasLoadedDataRef.current) {
+  if (isLoading) {
     return renderSkeletons();
   }
 

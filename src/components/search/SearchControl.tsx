@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SearchBar from "./SearchBar";
 import FilterModal from "./FilterModal";
 import { Affiliation, Category, IClub, School } from "@/lib/models/Club";
 import Trie from "./Trie";
+import Image from "next/image";
+import { ArrowUp } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface SearchControlProps {
+  children: React.ReactNode;
+  resultCount: number;
   clubs: IClub[];
 
   setCurrentClubs: React.Dispatch<React.SetStateAction<IClub[]>>;
@@ -17,11 +21,14 @@ interface SearchControlProps {
 
 const SearchControl = ({
   clubs,
+  children,
+  resultCount,
   setCurrentClubs,
   setIsLoading,
   followedClubs,
   setSelectedClub,
 }: SearchControlProps) => {
+  const [filtersOpen, setFiltersOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSchools, setSelectedSchools] = useState<string[]>([School.COLLEGE]);
@@ -32,6 +39,29 @@ const SearchControl = ({
   const [showFollowedOnly, setShowFollowedOnly] = useState(false);
   const [searchKeyToClubName, setSearchKeyToClubName] = useState<Record<string, string[]>>({});
   const { isLoggedIn } = useAuth();
+
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const filterToggleRef = useRef<HTMLButtonElement>(null);
+  const activeCount =
+    selectedSchools.length +
+    selectedCategories.length +
+    selectedAffiliations.length +
+    selectedIntensity.length +
+    selectedApplicationStatus.length +
+    Number(showFollowedOnly);
+  useEffect(() => {
+    let previousY = window.scrollY;
+    let upwardDistance = 0;
+    const onScroll = () => {
+      const y = window.scrollY;
+      upwardDistance = y < previousY ? upwardDistance + previousY - y : 0;
+      if (y < 300 || y > previousY) setShowBackToTop(false);
+      else if (upwardDistance > 40) setShowBackToTop(true);
+      previousY = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // Initialize Trie with club names and aliases along with a mapping for lookups.
   useEffect(() => {
@@ -120,6 +150,16 @@ const SearchControl = ({
             )
           : true,
       )
+      .filter(
+        (club) =>
+          selectedAffiliations.length === 0 ||
+          selectedAffiliations.some((affiliation) => club.affiliations?.includes(affiliation as Affiliation)),
+      )
+      .filter((club) => selectedIntensity.length === 0 || selectedIntensity.includes(club.intensity || ""))
+      .filter(
+        (club) =>
+          selectedApplicationStatus.length === 0 || selectedApplicationStatus.includes(club.recruitmentStatus || ""),
+      )
       .filter((club) => (showFollowedOnly ? followedClubs.includes(club._id.toString()) : true));
 
     const sortedFilteredClubs = filteredClubs.sort((a, b) => {
@@ -135,6 +175,9 @@ const SearchControl = ({
     searchQuery,
     selectedCategories,
     selectedSchools,
+    selectedAffiliations,
+    selectedIntensity,
+    selectedApplicationStatus,
     trie,
     clubs,
     setCurrentClubs,
@@ -145,45 +188,84 @@ const SearchControl = ({
   ]);
 
   return (
-    <div
-      className="search-control flex flex-wrap sm:gap-2 items-center pb-4 pt-2 bg-gray-100 w-full px-5 md:px-20"
-      style={{
-        position: "sticky",
-        top: `84px`, // Adjust "80px" based on Header's height
-        zIndex: 20,
-      }}
-    >
-      <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      <div className="flex gap-2 pt-4 sm:pt-0 sm:flex-wrap sm:flex-row sm:gap-4 items-center">
-        <FilterModal
-          selectedSchools={selectedSchools}
-          setSelectedSchools={setSelectedSchools}
-          selectedAffiliations={selectedAffiliations}
-          setSelectedAffiliations={setSelectedAffiliations}
-          selectedIntensity={selectedIntensity}
-          setSelectedIntensity={setSelectedIntensity}
-          selectedApplicationStatus={selectedApplicationStatus}
-          setSelectedApplicationStatus={setSelectedApplicationStatus}
-          selectedCategories={selectedCategories}
-          setSelectedCategories={setSelectedCategories}
-          showFollowedOnly={showFollowedOnly}
-          setShowFollowedOnly={setShowFollowedOnly}
-          isLoggedIn={isLoggedIn}
-        />
-
+    <div className={`browse-layout ${filtersOpen ? "filters-visible" : "filters-hidden"}`}>
+      {filtersOpen && (
+        <div className="filter-sidebar-slot">
+          <FilterModal
+            clubs={clubs}
+            resultCount={resultCount}
+            onClose={() => {
+              setFiltersOpen(false);
+              requestAnimationFrame(() => filterToggleRef.current?.focus());
+            }}
+            selectedSchools={selectedSchools}
+            setSelectedSchools={setSelectedSchools}
+            selectedAffiliations={selectedAffiliations}
+            setSelectedAffiliations={setSelectedAffiliations}
+            selectedIntensity={selectedIntensity}
+            setSelectedIntensity={setSelectedIntensity}
+            selectedApplicationStatus={selectedApplicationStatus}
+            setSelectedApplicationStatus={setSelectedApplicationStatus}
+            selectedCategories={selectedCategories}
+            setSelectedCategories={setSelectedCategories}
+            showFollowedOnly={showFollowedOnly}
+            setShowFollowedOnly={setShowFollowedOnly}
+            isLoggedIn={isLoggedIn}
+          />
+        </div>
+      )}
+      {!filtersOpen && (
+        <div className="collapsed-filter-rail">
+          <div className="collapsed-filter-control">
+            <button
+              ref={filterToggleRef}
+              className="filter-reopen"
+              onClick={() => setFiltersOpen(true)}
+              aria-expanded="false"
+              aria-controls="browse-filters"
+              aria-label={`Show filters${activeCount ? `, ${activeCount} active` : ""}`}
+            >
+              <Image src="/assets/filters/sidebar.svg" alt="" width={24} height={24} />
+              {activeCount > 0 && <span className="filter-count">{activeCount}</span>}
+            </button>
+          </div>
+        </div>
+      )}
+      <div className="browse-results">
+        <div className="search-control flex flex-wrap items-center w-full">
+          <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+          <div>
+            <button
+              className="text-blue-500 hover:text-blue-700 hidden md:inline-block"
+              onClick={() => {
+                const collegeClubs = clubs.filter((club) => club.school?.includes(School.COLLEGE));
+                if (collegeClubs.length > 0) {
+                  const randomClub = collegeClubs[Math.floor(Math.random() * collegeClubs.length)];
+                  setSelectedClub(randomClub); // Set the randomly selected club
+                }
+              }}
+            >
+              I&apos;m feeling lucky
+            </button>
+          </div>
+        </div>
+        {children}
+      </div>
+      {showBackToTop && (
         <button
-          className="text-blue-500 hover:text-blue-700 hidden md:inline-block"
+          className="browse-back-to-top"
           onClick={() => {
-            const collegeClubs = clubs.filter((club) => club.school?.includes(School.COLLEGE));
-            if (collegeClubs.length > 0) {
-              const randomClub = collegeClubs[Math.floor(Math.random() * collegeClubs.length)];
-              setSelectedClub(randomClub); // Set the randomly selected club
-            }
+            window.scrollTo({
+              top: 0,
+              behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+            });
+            setShowBackToTop(false);
           }}
         >
-          I&apos;m feeling lucky
+          <ArrowUp size={18} aria-hidden="true" />
+          Back to top
         </button>
-      </div>
+      )}
     </div>
   );
 };

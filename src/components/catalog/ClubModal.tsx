@@ -5,8 +5,24 @@ import { getAdjustedNumMembers, getInstagramLink } from "@/lib/utils";
 import { useMediaQuery } from "react-responsive";
 import Link from "next/link";
 import FollowButton from "./FollowButton";
-import { FiCopy } from "react-icons/fi";
-import Board from "./Board";
+import {
+  ArrowLeft,
+  Maximize,
+  Minimize,
+  Pencil,
+  Users,
+  UserPlus,
+  Clock,
+  Globe,
+  Mail,
+  Instagram,
+  Calendar,
+  Link as LinkIcon,
+  MapPin,
+  Copy,
+} from "lucide-react";
+import type { IEvent } from "@/lib/models/Event";
+import DisplayFooter from "./DisplayFooter";
 import { LabelList } from "./LabelList";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -34,24 +50,6 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
       : "0";
 
   // console.table(club);
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onClose]);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -84,197 +82,270 @@ const ClubModal = ({ club, onClose, followedClubs, setFollowedClubs, initialFoll
     }).catch(() => {});
   }, [club._id]);
 
-  type RightLinkProps = {
-    content: string;
-    link: string | undefined;
-    isEmail?: boolean;
-  };
+  const [expanded, setExpanded] = useState(false);
+  const [events, setEvents] = useState<IEvent[]>([]);
+  const [eventsState, setEventsState] = useState("loading");
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
-  const RightLink = ({ content, link, isEmail }: RightLinkProps) => {
-    const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    dialog?.showModal();
+    return () => dialog?.close();
+  }, []);
 
-    const handleCopy = () => {
-      if (!link) return;
-      navigator.clipboard.writeText(link).then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000); // Reset "copied" state after 2 seconds
-      });
-    };
-
-    if (!link) return <div className="text-gray-500">No {content.toLowerCase()}</div>;
-
-    return (
-      <div className="flex items-center space-x-2 text-sm sm:text-base">
-        <a
-          href={isEmail ? "mailto:" + link : link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-clubPurple hover:text-clubBlurple"
-        >
-          {content}
-        </a>
-        <button
-          onClick={handleCopy}
-          className="text-clubPurple hover:text-clubBlurple focus:outline-none"
-          aria-label="Copy link"
-        >
-          <FiCopy />
-        </button>
-        {copied && <span className="text-green-500 text-sm">Copied!</span>}
-      </div>
-    );
-  };
-
-  type RightLabelProps = {
-    content: string;
-  };
-
-  const RightLabel = ({ content }: RightLabelProps) => {
-    return <div className="text-gray-500 text-sm sm:text-base">{content}</div>;
-  };
-
-  const EditButton = ({ href, text, onClick, className }: any) =>
-    href ? (
-      <Link href={href}>
-        <button className={className}>{text}</button>
-      </Link>
-    ) : (
-      <button onClick={onClick} className={className}>
-        {text}
-      </button>
-    );
-
-  const editButtonStyle =
-    "px-3 sm:px-4 py-1 text-base sm:text-lg font-medium rounded-xl shadow absolute top-3 right-3 z-50";
-
-  const getButtonProps = () => {
-    if (!isSm) {
-      if (isLoggedIn) {
-        if (canEdit) {
-          return {
-            href: `/update?clubId=${club._id.toString()}`,
-            text: "Edit Club",
-            className: `${editButtonStyle} bg-clubPurple text-white hover:bg-clubBlurple transition-all duration-300 hover:scale-105`,
-          };
+  useEffect(() => {
+    let active = true;
+    setEventsState("loading");
+    fetch("/api/events")
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Events unavailable");
+        const data: IEvent[] = await response.json();
+        if (active) {
+          setEvents(
+            data
+              .filter(
+                (event) => event.clubs.includes(club._id.toString()) && new Date(event.start).getTime() >= Date.now(),
+              )
+              .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()),
+          );
+          setEventsState("ready");
         }
-        return {
-          onClick: () => setErrorMessage("You do not have permission to edit this club."),
-          text: "Edit Club",
-          className: `${editButtonStyle} text-gray-500 bg-gray-300 cursor-not-allowed`,
-        };
-      }
-      return {
-        onClick: () => setErrorMessage("You need to log in to edit this club."),
-        text: "Log in to Edit",
-        className: `${editButtonStyle} text-gray-500 bg-gray-300 cursor-not-allowed`,
-      };
-    }
-    return {
-      onClick: () => setErrorMessage("You must be logged in on a computer to edit a club."),
-      text: "Edit",
-      className: `${editButtonStyle} text-gray-500 bg-gray-300 cursor-not-allowed`,
+      })
+      .catch(() => {
+        if (active) setEventsState("unavailable");
+      });
+    return () => {
+      active = false;
     };
-  };
+  }, [club._id]);
 
-  const buttonProps = getButtonProps();
+  const contacts = [
+    ...(club.applyForm &&
+    (!club.recruitmentEndDate || new Date(club.recruitmentEndDate).getTime() >= new Date().setHours(-24, 0, 0, 0))
+      ? [{ label: "Application", href: club.applyForm, icon: <LinkIcon size={14} /> }]
+      : []),
+    { label: club.website, href: club.website, icon: <Globe size={14} /> },
+    { label: club.email, href: club.email ? `mailto:${club.email}` : undefined, icon: <Mail size={14} /> },
+    {
+      label: club.instagram,
+      href: club.instagram ? getInstagramLink(club.instagram) : undefined,
+      icon: <Instagram size={14} />,
+    },
+    { label: "Calendar", href: club.calendarLink, icon: <Calendar size={14} /> },
+    { label: "Mailing List", href: club.mailingListForm, icon: <LinkIcon size={14} /> },
+  ].filter((contact) => contact.href);
+
+  const editClub = () =>
+    setErrorMessage(
+      !isLoggedIn
+        ? "You need to log in to edit this club."
+        : !canEdit
+          ? "You do not have permission to edit this club."
+          : "You must be logged in on a computer to edit a club.",
+    );
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div
-        ref={modalRef}
-        className="relative bg-white rounded-2xl max-w-3xl w-full lg:mx-auto h-5/6 max-h-[1000px] overflow-y-auto flex flex-col m-2 sm:m-0"
-      >
-        <div className="bg-white z-50 absolute top-4 left-4 h-5 w-5 rounded-full"></div>
-        <Image
-          onClick={onClose}
-          src="/assets/icons/cancel.svg"
-          alt="cancel"
-          width={35}
-          height={35}
-          unoptimized
-          className="cursor-pointer z-50 absolute top-2 left-2"
-        />
-        <EditButton {...buttonProps} />
-        <div className="flex flex-col items-center w-full min-h-full">
-          <div className="w-full h-[140px] sm:h-[30%] relative">
+    <dialog
+      ref={dialogRef}
+      className={`club-dialog ${expanded ? "expanded" : "compact"}`}
+      aria-labelledby="modal-title"
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div className="modal-inner" ref={modalRef}>
+        <div className="modal-body">
+          <div className="modal-toolbar">
+            <button className="icon-btn" onClick={onClose} aria-label="Back to all clubs" autoFocus>
+              <ArrowLeft size={18} />
+            </button>
+            <button
+              className="icon-btn modal-expand"
+              onClick={() => setExpanded(!expanded)}
+              aria-label={expanded ? "Restore window size" : "Expand modal"}
+            >
+              {expanded ? <Minimize size={18} /> : <Maximize size={18} />}
+            </button>
+          </div>
+          <div className="banner">
             <Image
               src={club.backgroundImage || "/assets/default-background.png"}
-              alt="bg"
-              className="object-cover h-full"
-              width={768}
-              height={768}
-              onError={(e) => {
-                e.currentTarget.src = "/assets/default-background.png";
+              alt=""
+              width={1100}
+              height={190}
+              onError={(event) => {
+                event.currentTarget.src = "/assets/default-background.png";
               }}
             />
           </div>
-
-          <div className="flex flex-col w-full overflow-y-auto overflow-x-hidden p-4 sm:p-6 sm:pb-0 mb-4 sm:mb-6">
-            <div className="flex flex-row w-full gap-4 sm:gap-20">
-              <div className="flex flex-col w-full gap-2 flex-[3.5]">
-                <div
-                  className="text-2xl sm:text-3xl font-bold tracking-tight sm:relative sm:-top-1"
-                  style={{ lineHeight: "1" }}
-                >
-                  {club.name}
-                </div>
-                <p className="text-lg sm:text-xl font-semibold text-gray-700 -mt-2">
-                  {adjustedFollowers} follower{adjustedFollowers == "1" ? "" : "s"}{" "}
-                </p>
-                <p className="text-gray-700 mt-2 text-sm sm:text-base">{club.description}</p>
-                {!isSm && <LabelList club={club} className="whitespace-nowrap flex-wrap sm:text-sm mt-4" />}
+          <Image
+            className="club-avatar"
+            src={club.logo?.trim() || "/assets/default-logo.png"}
+            alt="Club logo"
+            width={64}
+            height={64}
+          />
+          <div className="edit-row">
+            {isLoggedIn && canEdit && !isSm ? (
+              <Link className="edit-btn" href={`/update?clubId=${club._id.toString()}`}>
+                <Pencil size={12} />
+                Edit Club
+              </Link>
+            ) : (
+              <button className="edit-btn" onClick={editClub}>
+                <Pencil size={12} />
+                {isLoggedIn ? "Edit Club" : "Log in to Edit"}
+              </button>
+            )}
+          </div>
+          {errorMessage && (
+            <div className="modal-error" role="alert">
+              {errorMessage}{" "}
+              <button onClick={() => setErrorMessage("")} aria-label="Dismiss message">
+                ×
+              </button>
+            </div>
+          )}
+          <div className="modal-cols">
+            <div>
+              <div className="club-head">
+                <h2 id="modal-title">{club.name}</h2>
+                <p>{club.description}</p>
+                <LabelList club={club} className="pills" />
               </div>
-              <div className="flex flex-col w-full gap-2 flex-1">
-                <Image
-                  src={club.logo ?? "/assets/default-logo.png"}
-                  alt="Club Logo"
-                  width={90}
-                  height={90}
-                  className={`rounded-xl flex-shrink-0 object-cover w-[90px] h-[90px]`}
-                />
+              <section className="section plain">
+                <h3>Upcoming Events</h3>
+                {eventsState === "loading" ? (
+                  <p className="no-events">Loading events…</p>
+                ) : eventsState === "unavailable" ? (
+                  <p className="no-events">
+                    {isLoggedIn ? "Events are currently unavailable." : "Sign in to see upcoming events."}
+                  </p>
+                ) : events.length === 0 ? (
+                  <p className="no-events">No upcoming events.</p>
+                ) : (
+                  events.map((event, index) => {
+                    const date = new Date(event.start);
+                    const previous = index > 0 ? new Date(events[index - 1].start) : null;
+                    return (
+                      <div key={event._id.toString()}>
+                        {(!previous || previous.toDateString() !== date.toDateString()) && (
+                          <div className="ev-date">
+                            {date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                            <span>{date.toLocaleDateString("en-US", { weekday: "long" })}</span>
+                          </div>
+                        )}
+                        <div className="ev">
+                          <span className="ev-time">
+                            {date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                          </span>
+                          <div>
+                            <Link className="ev-title" href={`/Events/${event._id.toString()}`}>
+                              {event.name}
+                            </Link>
+                            <div className="ev-loc">
+                              <MapPin size={12} />
+                              {event.location}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </section>
+            </div>
+            <aside>
+              <section className="section">
+                <h3>Profile</h3>
+                <ul className="info-list">
+                  {club.numMembers ? (
+                    <li>
+                      <Users size={14} />
+                      {getAdjustedNumMembers(club.numMembers)} members
+                    </li>
+                  ) : null}
+                  {club.recruitmentStatus && club.recruitmentStatus !== "No Selection" && (
+                    <li>
+                      <UserPlus size={14} />
+                      {club.recruitmentStatus}
+                    </li>
+                  )}
+                  {club.intensity && (
+                    <li>
+                      <Clock size={14} />
+                      {club.intensity}
+                    </li>
+                  )}
+                </ul>
+                <p className="modal-followers">
+                  {adjustedFollowers} follower{adjustedFollowers === "1" ? "" : "s"}
+                </p>
                 <FollowButton
                   isFollowing={isFollowing}
                   clubId={club._id.toString()}
                   followedClubs={followedClubs}
                   setFollowedClubs={setFollowedClubs}
-                  className="w-[90px] min-w-[90px] max-w-[90px] px-0"
+                  className="follow-btn mt-4"
                 />
-                <div className="flex flex-col mt-4 gap-2">
-                  {club.applyForm &&
-                    (club.recruitmentEndDate === undefined ||
-                      new Date(club.recruitmentEndDate).getTime() >= new Date().setHours(-24, 0, 0, 0)) && (
-                      <RightLink content="Application" link={club.applyForm} />
-                    )}
-                  <RightLink content="Website" link={club.website} />
-                  <RightLink content="Email" link={club.email} isEmail />
-                  {club.instagram && <RightLink content="Instagram" link={getInstagramLink(club.instagram)} />}
-                  {club.calendarLink && <RightLink content="Calendar" link={club.calendarLink} />}
-                  {club.mailingListForm && <RightLink content="Mailing List" link={club.mailingListForm} />}
-                  {club.numMembers && <RightLabel content={getAdjustedNumMembers(club.numMembers) + " members"} />}
-                </div>
-              </div>
-            </div>
-            {isSm && <LabelList club={club} className="whitespace-nowrap flex-wrap mt-4" />}
-            <Board isLoggedIn={isLoggedIn} leaders={club.leaders} />
+              </section>
+              <section className="section">
+                <h3>Contacts</h3>
+                <ul className="info-list">
+                  {contacts.map((contact, index) => (
+                    <li key={index}>
+                      <a href={contact.href} target="_blank" rel="noopener noreferrer">
+                        {contact.icon}
+                        {contact.label} ↗
+                      </a>
+                      <button
+                        className="icon-btn"
+                        aria-label={`Copy ${contact.label}`}
+                        onClick={() => {
+                          void navigator.clipboard
+                            .writeText(contact.href!.replace(/^mailto:/, ""))
+                            .then(() => setErrorMessage("Copied to clipboard."))
+                            .catch(() => setErrorMessage("Unable to copy this link."));
+                        }}
+                      >
+                        <Copy size={12} />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                {contacts.length === 0 && <p className="no-events">No contact details provided.</p>}
+              </section>
+              {club.leaders.length > 0 && (
+                <section className="section">
+                  <h3>Board Members</h3>
+                  <ul className="board">
+                    {club.leaders.map((leader, index) => (
+                      <li key={index}>
+                        <div className="board-name">
+                          {leader.name}
+                          {leader.year ? ` '${leader.year % 100}` : ""}
+                          {leader.role && <span className="role">{leader.role}</span>}
+                        </div>
+                        {isLoggedIn && (
+                          <a className="board-email" href={`mailto:${leader.email}`}>
+                            {leader.email}
+                          </a>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+            </aside>
           </div>
-
-          {errorMessage && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg p-6 max-w-md mx-auto shadow-lg">
-                <h2 className="text-lg font-semibold text-gray-800">Error</h2>
-                <p className="mt-2 text-gray-600">{errorMessage}</p>
-                <button
-                  onClick={() => setErrorMessage("")}
-                  className="mt-4 px-4 py-2 text-white bg-indigo-600 rounded shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          )}
         </div>
+        <DisplayFooter />
       </div>
-    </div>
+    </dialog>
   );
 };
 

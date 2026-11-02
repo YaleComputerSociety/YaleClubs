@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import SearchBar from "@/components/search/SearchBar";
+import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import Filter from "@/components/Filter";
 import { IClub } from "@/lib/models/Club";
 import { IEvent } from "@/lib/models/Event";
@@ -19,6 +20,22 @@ const SearchControlEvent = ({
   setCurrentUpcomingEvents,
   setCurrentPastEvents,
 }: SearchControlProps) => {
+  const router = useRouter();
+  const searchRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (
+        (event.metaKey || event.ctrlKey) &&
+        event.key.toLowerCase() === "k" &&
+        !document.querySelector("dialog[open]")
+      ) {
+        event.preventDefault();
+        searchRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
@@ -138,8 +155,34 @@ const SearchControlEvent = ({
   ]);
 
   return (
-    <div className="search-control w-full flex flex-col sm:flex-row flex-wrap gap-2 items-center pb-4">
-      <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+    <div className="events-search-controls">
+      <div className="events-search-row">
+        <label className="events-search-field">
+          <span className="events-search-icon">
+            <Image src="/assets/events-header/search.svg" alt="" width={14} height={14} />
+          </span>
+          <input
+            ref={searchRef}
+            type="search"
+            placeholder="Search events"
+            aria-label="Search events"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
+        </label>
+        <button
+          className="events-lucky"
+          disabled={events.length === 0}
+          onClick={() => {
+            const upcoming = events.filter((event) => new Date(event.start).getTime() >= Date.now());
+            const candidates = upcoming.length ? upcoming : events;
+            if (candidates.length)
+              router.push(`/Events/${candidates[Math.floor(Math.random() * candidates.length)]._id.toString()}`);
+          }}
+        >
+          I’m feeling lucky
+        </button>
+      </div>
       <div className="flex flex-wrap gap-2 sm:flex-row sm:gap-4 justify-start">
         <Filter
           selectedItems={selectedClubs}

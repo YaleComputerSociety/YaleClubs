@@ -1,0 +1,150 @@
+@font-face {
+  font-family: "Events Sen";
+  src: url("/fonts/Sen-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+.events-top {
+  padding-top: 48px;
+  font-family: "Lexend", system-ui, sans-serif;
+  color: black;
+}
+.events-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.events-intro h1 {
+  font-family: "Lexend", system-ui, sans-serif;
+  font-size: 30px;
+  line-height: 38px;
+  letter-spacing: -0.6px;
+  font-weight: 600;
+  margin: 0;
+}
+.events-intro p {
+  font-size: 16px;
+  line-height: 24px;
+  margin: 2px 0 0;
+}
+.events-create button {
+  background: white;
+  color: #4e4e4e;
+  border: 1px solid #babcbf;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  box-shadow: none;
+  transform: none;
+  gap: 8px;
+}
+.events-create button:hover {
+  background: #f5f5f9;
+}
+.events-search-controls {
+  width: 100%;
+}
+.events-search-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  margin-bottom: 12px;
+}
+.events-search-field {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  height: 58px;
+  padding: 16px;
+  border: 1px solid #e3e4e5;
+  border-radius: 32px;
+  background: white;
+  box-shadow: 0 0 2px #babcbf0d;
+}
+.events-search-icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.events-search-field input {
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  outline: none;
+  font: inherit;
+  font-size: 16px;
+  letter-spacing: -0.64px;
+}
+.events-search-field input::placeholder {
+  color: #babcbf;
+  opacity: 1;
+}
+.events-search-field:focus-within {
+  outline: 2px solid #8aa8d8;
+  outline-offset: 2px;
+}
+.events-lucky {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 15px;
+  font-weight: 400;
+  white-space: nowrap;
+  color: #3f5f8f;
+  background: none;
+}
+.events-lucky:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.events-lucky:focus-visible {
+  outline: 2px solid #8aa8d8;
+  outline-offset: 4px;
+}
+@media (max-width: 767px) {
+  .events-top {
+    padding-top: 28px;
+  }
+  .events-intro {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .events-intro h1 {
+    font-size: 28px;
+    line-height: 36px;
+  }
+  .events-intro p {
+    font-size: 16px;
+  }
+  .events-search-row {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .events-search-field {
+    flex-basis: 100%;
+  }
+}
+
+/* Keep the white design surface confined to the Events introduction. */
+.events-top {
+  background: white;
+  margin-inline: -80px;
+  padding-inline: 80px;
+}
+@media (max-width: 767px) {
+  .events-top {
+    margin-inline: -20px;
+    padding-inline: 20px;
+  }
+}
+
+.events-lucky:hover {
+  text-decoration: underline;
+}

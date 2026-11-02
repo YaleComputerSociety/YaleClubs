@@ -2,18 +2,19 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import DisplayHeader from "../components/catalog/DisplayHeader";
+import Footer from "../components/catalog/DisplayFooter";
 import Catalog from "../components/catalog/Catalog";
 import { IClub } from "@/lib/models/Club";
 import SearchControl from "@/components/search/SearchControl";
 import { useAuth } from "@/contexts/AuthContext";
-import Link from "next/link";
+import "./display.css";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [clubs, setClubs] = useState<IClub[]>([]);
 
+  const [sortAZ, setSortAZ] = useState(false);
   const [currentClubs, setCurrentClubs] = useState<IClub[]>([]);
   const [followedClubs, setFollowedClubs] = useState<string[]>([]);
   const [selectedClub, setSelectedClub] = useState<IClub | null>(null);
@@ -55,41 +56,36 @@ export default function Home() {
   }, [netid]);
 
   return (
-    <main className=" flex flex-col min-h-screen">
+    <main className="club-display flex flex-col min-h-screen">
       <div className="flex-grow">
-        <Header />
-        <div className="flex flex-col w-full px-5 md:px-20">
-          <div className="mt-20 md:mt-24"></div>
-          <div className="flex flex-col md:flex-row justify-between items-start w-full mt-4 space-y-3 md:space-y-0 md:space-x-12 mb-4">
-            <div className="flex flex-col">
-              <h1 className="text-3xl font-bold text-black">Browse Clubs</h1>
-              <h2 className="text-xl">Finding Clubs has Never Been Easier.</h2>
-            </div>
-            <Link
-              href="/Events"
-              className="relative w-full md:w-auto px-4 py-4  text-lg font-bold text-white bg-gradient-to-r from-clubPurple to-clubTaro transition duration-300 hover:scale-105"
-            >
-              Check out our events page!
-            </Link>
-          </div>
-        </div>
+        <DisplayHeader />
         <SearchControl
           clubs={clubs}
+          resultCount={currentClubs.length}
           setCurrentClubs={setCurrentClubs}
           setIsLoading={setIsLoading}
           followedClubs={followedClubs}
           setSelectedClub={setSelectedClub}
-        />
-        <div className="flex flex-col w-full px-5 md:px-20">
-          <Catalog
-            clubs={currentClubs}
-            isLoading={isLoading}
-            followedClubs={followedClubs}
-            setFollowedClubs={setFollowedClubs}
-            selectedClub={selectedClub}
-            setSelectedClub={setSelectedClub}
-          />
-        </div>
+        >
+          <div className="display-catalog">
+            <div className="meta-row">
+              <span>
+                Showing {currentClubs.length} of {clubs.length} clubs
+              </span>
+              <button className="sort" onClick={() => setSortAZ(!sortAZ)}>
+                Sort: {sortAZ ? "A–Z" : "Recommended"} ↓
+              </button>
+            </div>
+            <Catalog
+              clubs={sortAZ ? [...currentClubs].sort((a, b) => a.name.localeCompare(b.name)) : currentClubs}
+              isLoading={isLoading}
+              followedClubs={followedClubs}
+              setFollowedClubs={setFollowedClubs}
+              selectedClub={selectedClub}
+              setSelectedClub={setSelectedClub}
+            />
+          </div>
+        </SearchControl>
       </div>
       <Footer />
     </main>

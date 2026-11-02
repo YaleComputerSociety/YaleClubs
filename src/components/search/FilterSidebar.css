@@ -1,0 +1,359 @@
+.club-display .browse-layout {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 40px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px 24px 0;
+  align-items: start;
+}
+.club-display .browse-layout.filters-hidden {
+  grid-template-columns: minmax(0, 1fr);
+}
+.club-display .browse-results {
+  min-width: 0;
+}
+.club-display .browse-results .search-control {
+  padding: 8px 0 20px;
+}
+.club-display .browse-results .display-catalog {
+  padding: 0 0 48px;
+}
+.club-display .filters-visible .club-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.club-display .filter-sidebar {
+  position: relative;
+  padding: 0 12px 24px 0;
+  background: #fff;
+  min-width: 0;
+}
+.club-display .filter-sidebar-toggle {
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  top: 0;
+  right: 12px;
+}
+.club-display .filter-sidebar-toggle button {
+  padding: 0;
+}
+.club-display .filter-sidebar-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  padding-right: 36px;
+  margin-bottom: 20px;
+}
+.club-display .filter-sidebar-heading h2 {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.club-display .filter-sidebar-heading p {
+  font-size: 12px;
+  color: #595959;
+}
+.club-display .filter-sidebar-heading > button {
+  background: #d9d9d9;
+  border-radius: 3px;
+  padding: 5px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.club-display .filter-group {
+  border-top: 1px solid #babcbf;
+  padding: 18px 0;
+}
+.club-display .filter-group summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  list-style: none;
+  gap: 8px;
+}
+.club-display .filter-group summary::-webkit-details-marker {
+  display: none;
+}
+.club-display .filter-group:not([open]) summary img {
+  transform: rotate(-90deg);
+}
+.club-display .filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 12px;
+}
+.club-display .filter-options label,
+.club-display .filter-followed {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.club-display .filter-options input,
+.club-display .filter-followed input {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  accent-color: #594bc8;
+  cursor: pointer;
+}
+.club-display .filter-options small {
+  padding: 3px 5px;
+  border-radius: 2px;
+  background: #f0f0fb;
+  color: #1c1451;
+  font-size: 12px;
+}
+.club-display .filter-see-all {
+  text-align: left;
+  font-size: 14px;
+  text-decoration: underline;
+  width: fit-content;
+}
+.club-display .filter-followed {
+  border-top: 1px solid #babcbf;
+  padding-top: 24px;
+}
+.club-display .filter-reopen {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.club-display .filters-visible .filter-reopen {
+  display: none;
+}
+.club-display .filter-sidebar button:focus-visible,
+.club-display .filter-group summary:focus-visible,
+.club-display .filter-reopen:focus-visible {
+  outline: 2px solid #594bc8;
+  outline-offset: 4px;
+}
+@media (max-width: 1000px) {
+  .club-display .browse-layout {
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 24px;
+  }
+  .club-display .filters-visible .club-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 700px) {
+  .club-display .browse-layout {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0 12px;
+    gap: 16px;
+  }
+  .club-display .filter-sidebar {
+    max-height: 60dvh;
+    overflow-y: auto;
+    border: 1px solid #babcbf;
+    padding: 16px;
+    border-radius: 8px;
+  }
+  .club-display .browse-results .club-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1600px) {
+  .club-display .browse-layout {
+    grid-template-columns: 300px minmax(0, 1fr);
+    gap: 56px;
+    padding-inline: 32px;
+  }
+}
+@media (max-width: 700px) {
+  .club-display .filter-sidebar-toggle {
+    top: 16px;
+    right: 16px;
+  }
+}
+
+/* Keep the collapsed filter control at the same left edge as the sidebar. */
+.club-display .filters-hidden .browse-results .search-control {
+  max-width: none;
+  margin-inline: 0;
+}
+.club-display .filters-hidden .browse-results .display-catalog {
+  max-width: none;
+  margin-inline: 0;
+}
+.club-display .filters-hidden .filter-reopen {
+  flex-shrink: 0;
+  justify-content: flex-start;
+}
+
+/* Browse interactions */
+.club-display .filter-sidebar {
+  position: sticky;
+  top: 16px;
+  /* Account for the header and browse padding before the sidebar becomes sticky. */
+  max-height: calc(100dvh - var(--nav-h, 56px) - 36px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.club-display .browse-layout.filters-hidden {
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  gap: 20px;
+}
+.club-display .collapsed-filter-rail {
+  position: sticky;
+  top: 16px;
+  z-index: 25;
+  padding-top: 8px;
+}
+.club-display .collapsed-filter-control {
+  position: relative;
+}
+.club-display .collapsed-filter-control .filter-reopen {
+  position: relative;
+  display: flex;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+}
+.club-display .filter-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #594bc8;
+  color: white;
+  font-size: 11px;
+}
+.club-display .browse-back-to-top {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: white;
+  border: 1px solid var(--line);
+  box-shadow: 0 3px 12px #0002;
+  z-index: 30;
+  font-size: 14px;
+}
+.club-display .search-input-wrap {
+  display: block;
+  position: relative;
+  min-width: 0;
+  flex: 1;
+}
+.club-display .search-input-wrap input {
+  width: 100%;
+  background: transparent;
+  outline: none;
+}
+.club-display .search-suggestion {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  animation: search-suggestion-in 450ms ease both;
+}
+@keyframes search-suggestion-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (min-width: 1001px) {
+  .club-display .filters-hidden .club-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .club-display .browse-results .club-card {
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease;
+  }
+  .club-display .browse-results .club-card:hover {
+    transform: translateY(-4px);
+  }
+}
+@media (max-width: 700px) {
+  .club-display .filter-sidebar {
+    position: relative;
+    top: auto;
+    max-height: 60dvh;
+  }
+  .club-display .browse-layout.filters-hidden {
+    gap: 12px;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .club-display .search-suggestion {
+    animation: none;
+  }
+}
+
+/* Keep desktop filters anchored to the viewport, independently of page scrolling. */
+@media (min-width: 701px) {
+  .club-display .browse-layout {
+    --sidebar-width: 280px;
+    --sidebar-left: 24px;
+  }
+  .club-display .filter-sidebar-slot {
+    min-width: 0;
+  }
+  .club-display .filter-sidebar {
+    position: fixed;
+    top: var(--nav-h, 56px);
+    bottom: 0;
+    left: var(--sidebar-left);
+    width: var(--sidebar-width);
+    height: auto;
+    max-height: none;
+    padding: 20px 12px 24px 0;
+    border-right: 1px solid var(--line);
+    z-index: 25;
+  }
+  .club-display .filter-sidebar-toggle {
+    top: 20px;
+  }
+  .club-display .collapsed-filter-control {
+    position: fixed;
+    top: calc(var(--nav-h, 56px) + 20px);
+    left: var(--sidebar-left);
+  }
+}
+@media (min-width: 701px) and (max-width: 1000px) {
+  .club-display .browse-layout {
+    --sidebar-width: 260px;
+  }
+}
+@media (min-width: 1600px) {
+  .club-display .browse-layout {
+    --sidebar-width: 300px;
+    --sidebar-left: 32px;
+  }
+}
