@@ -1,0 +1,91 @@
+/**
+ * @jest-environment node
+ */
+import { htmlToPlainText, isPublicEvent, mapTags, mapYaleConnectItem, parseYaleConnectRss } from "@/lib/yaleconnect";
+import { Tag } from "@/lib/models/Event";
+
+const item = (fields: string) => `<item>
+  <eventId>2328015</eventId>
+  <groupId>37808</groupId>
+  <group>Urban Resources Initiative</group>
+  <title>New Haven Greenspace &amp; Volunteering</title>
+  <fullDescription>&lt;p&gt;Weeding &amp;amp; planting.&lt;br&gt;Bring water.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Hats&lt;/li&gt;&lt;/ul&gt;</fullDescription>
+  <eventStartDateTime>2026-08-29T09:00:00.0000000-04:00</eventStartDateTime>
+  <eventEndDateTime>2026-08-29T12:00:00.0000000-04:00</eventEndDateTime>
+  <eventLocation>Kensington Playground</eventLocation>
+  <eventPhotoFullUrl>https://yaleconnect.yale.edu/upload/photo.jpeg</eventPhotoFullUrl>
+  <eventFlyerFullUrl></eventFlyerFullUrl>
+  <eventLink>https://yaleconnect.yale.edu/URI/rsvp?id=2328015</eventLink>
+  <eventExternalRegistrationLink>tinyurl.com/NHVgreenspace</eventExternalRegistrationLink>
+  <eventType>Commmunity Service &amp; Volunteer</eventType>
+  <eventTopicsSeparated><eventTopic>Community</eventTopic><eventTopic>Free Food </eventTopic><eventTopic></eventTopic></eventTopicsSeparated>
+  <privacyLevel>0</privacyLevel>
+  <approvalStatus>1</approvalStatus>
+  <eventDelete>0</eventDelete>
+  ${fields}
+</item>`;
+
+const feed = (...items: string[]) =>
+  `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>yale Events</title>${items.join(
+    "",
+  )}</channel></rss>`;
+
+describe("YaleConnect feed", () => {
+  it("parses a feed with a single item", async () => {
+    const items = await parseYaleConnectRss(feed(item("")));
+    expect(items).toHaveLength(1);
+    expect(items[0].eventId).toBe("2328015");
+  });
+
+  it("returns no items for an empty channel", async () => {
+    expect(await parseYaleConnectRss(feed())).toEqual([]);
+  });
+
+  it("maps an item onto the Event shape", async () => {
+    const [raw] = await parseYaleConnectRss(feed(item("")));
+    const mapped = mapYaleConnectItem(raw, new Map([[37808, "URI (YaleClubs name)"]]));
+
+    expect(mapped).toMatchObject({
+      externalId: "2328015",
+      name: "New Haven Greenspace & Volunteering",
+      clubs: ["URI (YaleClubs name)"],
+      location: "Kensington Playground",
+      registrationLink: "https://tinyurl.com/NHVgreenspace",
+      externalLink: "https://yaleconnect.yale.edu/URI/rsvp?id=2328015",
+      flyer: "https://yaleconnect.yale.edu/upload/photo.jpeg",
+      topics: ["Community", "Free Food"],
+    });
+    expect(mapped?.start.toISOString()).toBe("2026-08-29T13:00:00.000Z");
+    expect(mapped?.end?.toISOString()).toBe("2026-08-29T16:00:00.000Z");
+    expect(mapped?.description).toBe("Weeding & planting.\nBring water.\n\n• Hats");
+    expect(mapped?.tags).toEqual(expect.arrayContaining([Tag.CommunityService, Tag.FreeFood]));
+  });
+
+  it("falls back to the YaleConnect group name when no club matches", async () => {
+    const [raw] = await parseYaleConnectRss(feed(item("")));
+    expect(mapYaleConnectItem(raw)?.clubs).toEqual(["Urban Resources Initiative"]);
+  });
+
+  it("rejects items without a start time", () => {
+    expect(mapYaleConnectItem({ eventId: "1", title: "x" })).toBeNull();
+  });
+
+  it("only treats public, approved, non-deleted events as public", () => {
+    expect(isPublicEvent({ privacyLevel: "0", approvalStatus: "1", eventDelete: "0" })).toBe(true);
+    expect(isPublicEvent({ privacyLevel: "13", approvalStatus: "1", eventDelete: "0" })).toBe(false);
+    expect(isPublicEvent({ privacyLevel: "0", approvalStatus: "0", eventDelete: "0" })).toBe(false);
+    expect(isPublicEvent({ privacyLevel: "0", approvalStatus: "1", eventDelete: "1" })).toBe(false);
+  });
+
+  it("maps event types to tags", () => {
+    expect(mapTags("Lecture, Talk, or Panel", [])).toEqual([Tag.Speaker]);
+    expect(mapTags("Group Meeting", [])).toEqual([]);
+  });
+
+  it("strips HTML and decodes entities", () => {
+    expect(htmlToPlainText("<p>Hi&nbsp;there &#8212; <strong>all</strong></p>")).toBe("Hi there — all");
+    expect(htmlToPlainText("Use this link: < tinyurl.com/x > to sign up<!-- note -->")).toBe(
+      "Use this link: < tinyurl.com/x > to sign up",
+    );
+  });
+});
