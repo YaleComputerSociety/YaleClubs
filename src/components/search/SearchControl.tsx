@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import SearchBar from "./SearchBar";
 import FilterModal from "./FilterModal";
 import { Affiliation, Category, IClub, School } from "@/lib/models/Club";
 import Trie from "./Trie";
 import { useAuth } from "@/contexts/AuthContext";
+import { buildPreferenceScorer } from "@/lib/clubPreferences";
 
 interface SearchControlProps {
   clubs: IClub[];
@@ -32,6 +33,14 @@ const SearchControl = ({
   const [showFollowedOnly, setShowFollowedOnly] = useState(false);
   const [searchKeyToClubName, setSearchKeyToClubName] = useState<Record<string, string[]>>({});
   const { isLoggedIn } = useAuth();
+
+  const preferenceScores = useMemo(() => {
+    if (!isLoggedIn || followedClubs.length === 0) return null;
+    const followedIds = new Set(followedClubs);
+    const scorer = buildPreferenceScorer(clubs.filter((club) => followedIds.has(club._id.toString())));
+    if (!scorer) return null;
+    return new Map(clubs.map((club) => [club._id.toString(), scorer(club)]));
+  }, [clubs, followedClubs, isLoggedIn]);
 
   // Initialize Trie with club names and aliases along with a mapping for lookups.
   useEffect(() => {
@@ -123,6 +132,11 @@ const SearchControl = ({
       .filter((club) => (showFollowedOnly ? followedClubs.includes(club._id.toString()) : true));
 
     const sortedFilteredClubs = filteredClubs.sort((a, b) => {
+      if (preferenceScores) {
+        const difference =
+          (preferenceScores.get(b._id.toString()) ?? 0) - (preferenceScores.get(a._id.toString()) ?? 0);
+        if (difference !== 0) return difference;
+      }
       if (b.followers !== a.followers) {
         return b.followers - a.followers;
       }
@@ -142,6 +156,7 @@ const SearchControl = ({
     followedClubs,
     showFollowedOnly,
     searchKeyToClubName,
+    preferenceScores,
   ]);
 
   return (
