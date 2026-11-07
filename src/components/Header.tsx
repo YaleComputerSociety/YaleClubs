@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePathname } from "next/navigation";
+import { casSignInHref } from "@/lib/devLogin";
 import Banner from "./Banner";
 import { CgProfile } from "react-icons/cg";
 
@@ -18,6 +19,7 @@ const Header = () => {
   const menuRef = useRef<HTMLDivElement>(null);
 
   const pathname = usePathname();
+  const signInHref = casSignInHref(pathname);
 
   const links = [
     { href: "/", label: "Clubs" },
@@ -148,7 +150,7 @@ const Header = () => {
                       </Dropdown>
                     ) : (
                       <a
-                        href="/api/auth/redirect"
+                        href={signInHref}
                         onClick={() => setIsMenuOpen(false)}
                         className={authButton + " bg-clubPurple text-white"}
                       >
@@ -197,7 +199,7 @@ const Header = () => {
                 </DropdownMenu>
               </Dropdown>
             ) : (
-              <a href="/api/auth/redirect" className={authButton + " bg-clubPurple text-white"}>
+              <a href={signInHref} className={authButton + " bg-clubPurple text-white"}>
                 Sign In
               </a>
             )}

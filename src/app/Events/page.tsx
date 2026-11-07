@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import axios from "axios";
 import { useAuth } from "@/contexts/AuthContext";
+import { casSignInHref } from "@/lib/devLogin";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -143,7 +144,7 @@ export default function EventsPage() {
               <p className="text-gray-700">
                 Please{" "}
                 <a
-                  href={`/api/auth/redirect?from=${pathname}`}
+                  href={casSignInHref(pathname)}
                   className="inline-flex items-center font-semibold text-violet-600 hover:text-violet-500 transition-colors"
                 >
                   log in
