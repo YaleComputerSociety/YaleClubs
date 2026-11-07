@@ -1,5 +1,5 @@
 import { parseStringPromise } from "xml2js";
-import { Tag } from "@/lib/models/Event";
+import { EventLocationType, Tag } from "@/lib/models/Event";
 
 /**
  * Reads events from YaleConnect's public RSS feed (YaleConnect runs on CampusGroups).
@@ -30,6 +30,9 @@ export interface YaleConnectRssItem {
   eventId?: string;
   groupId?: string;
   group?: string;
+  groupType?: string;
+  cohostingGroupIds?: string;
+  cohostingGroupNames?: string;
   title?: string;
   description?: string;
   fullDescription?: string;
@@ -38,9 +41,13 @@ export interface YaleConnectRssItem {
   eventLocation?: string;
   eventPhotoFullUrl?: string;
   eventFlyerFullUrl?: string;
+  eventPhotoAltText?: string;
+  iCalLink?: string;
   eventLink?: string;
   eventExternalRegistrationLink?: string;
   eventType?: string;
+  locationType?: string;
+  foodProvided?: string;
   eventTopics?: string;
   eventTopicsSeparated?: { eventTopic?: string | string[] } | string;
   privacyLevel?: string;
@@ -60,7 +67,13 @@ export interface MappedYaleConnectEvent {
   registrationLink?: string | undefined;
   externalLink?: string | undefined;
   locationHidden: boolean;
+  locationType?: EventLocationType | undefined;
   flyer?: string | undefined;
+  imageAlt?: string | undefined;
+  icalLink?: string | undefined;
+  eventType?: string | undefined;
+  hostCategory?: string | undefined;
+  foodProvided: boolean;
   tags: Tag[];
   topics: string[];
 }
@@ -172,13 +185,41 @@ const TAG_RULES: [RegExp, Tag][] = [
   [/career|professional development|networking/i, Tag.ProfessionalDevelopment],
 ];
 
-export function mapTags(eventType: string | undefined, topics: string[]): Tag[] {
+export function mapTags(eventType: string | undefined, topics: string[], foodProvided = false): Tag[] {
   const labels = [eventType ?? "", ...topics].filter(Boolean);
   const tags = new Set<Tag>();
   for (const [pattern, tag] of TAG_RULES) {
     if (labels.some((label) => pattern.test(label))) tags.add(tag);
   }
+  if (foodProvided) tags.add(Tag.FreeFood);
   return Array.from(tags);
+}
+
+const LOCATION_TYPES: Record<string, EventLocationType> = {
+  "on-campus": EventLocationType.OnCampus,
+  "off-campus": EventLocationType.OffCampus,
+  virtual: EventLocationType.Virtual,
+};
+
+function cleanText(value?: string): string | undefined {
+  const v = value ? decodeEntities(value).trim() : "";
+  return v || undefined;
+}
+
+/**
+ * Host plus co-hosts, as club names. Co-host ids and names arrive as parallel
+ * comma-separated lists, e.g. ids "74323,32717" and names "Office A,Group B".
+ */
+function hostClubs(item: YaleConnectRssItem, clubNameByYaleConnectId: Map<number, string>): string[] {
+  const resolve = (id: string | undefined, fallbackName: string | undefined) => {
+    const n = Number(id);
+    return (Number.isFinite(n) ? clubNameByYaleConnectId.get(n) : undefined) ?? cleanText(fallbackName);
+  };
+  const ids = (item.cohostingGroupIds ?? "").split(",").map((s) => s.trim());
+  const names = (item.cohostingGroupNames ?? "").split(",");
+  const cohosts = ids.map((id, i) => (id ? resolve(id, names[i]) : undefined));
+  const clubs = [resolve(item.groupId, item.group), ...cohosts].filter((c): c is string => Boolean(c));
+  return Array.from(new Set(clubs));
 }
 
 /**
@@ -196,10 +237,9 @@ export function mapYaleConnectItem(
   const start = parseDate(item.eventStartDateTime);
   if (!externalId || !name || !start) return null;
 
-  const groupId = Number(item.groupId);
-  const clubName = Number.isFinite(groupId) ? clubNameByYaleConnectId.get(groupId) : undefined;
-  const fallbackClub = item.group ? decodeEntities(item.group).trim() : "";
-  const clubs = clubName ? [clubName] : fallbackClub ? [fallbackClub] : [];
+  const clubs = hostClubs(item, clubNameByYaleConnectId);
+  const foodProvided = item.foodProvided === "1";
+  const eventType = cleanText(item.eventType);
 
   const topics = extractTopics(item);
   const description = htmlToPlainText(item.fullDescription || item.description || "");
@@ -217,10 +257,17 @@ export function mapYaleConnectItem(
     // Our schema requires a location, so hidden ones get a placeholder that the UI renders as a link.
     location: locationHidden ? HIDDEN_LOCATION_TEXT : (item.eventLocation ?? "").trim(),
     locationHidden,
-    registrationLink: normalizeUrl(item.eventExternalRegistrationLink) ?? externalLink,
+    locationType: LOCATION_TYPES[(item.locationType ?? "").trim().toLowerCase()],
+    // Only a real sign-up link; the YaleConnect page itself is externalLink.
+    registrationLink: normalizeUrl(item.eventExternalRegistrationLink),
     externalLink,
     flyer: normalizeUrl(item.eventFlyerFullUrl) ?? normalizeUrl(item.eventPhotoFullUrl),
-    tags: mapTags(item.eventType, topics),
+    imageAlt: cleanText(item.eventPhotoAltText),
+    icalLink: normalizeUrl(item.iCalLink),
+    eventType,
+    hostCategory: cleanText(item.groupType),
+    foodProvided,
+    tags: mapTags(eventType, topics, foodProvided),
     topics,
   };
 }

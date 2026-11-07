@@ -10,12 +10,19 @@ import {
   mapYaleConnectItem,
   parseYaleConnectRss,
 } from "@/lib/yaleconnect";
-import { Tag } from "@/lib/models/Event";
+import { EventLocationType, Tag } from "@/lib/models/Event";
 
 const item = (fields: string) => `<item>
   <eventId>2328015</eventId>
   <groupId>37808</groupId>
   <group>Urban Resources Initiative</group>
+  <groupType>Yale School of the Environment</groupType>
+  <cohostingGroupIds>74323,32717</cohostingGroupIds>
+  <cohostingGroupNames>Office of Educational Opportunity,FGLI Thrive</cohostingGroupNames>
+  <locationType>Off-Campus</locationType>
+  <foodProvided>1</foodProvided>
+  <eventPhotoAltText>volunteers in Kensington Playground</eventPhotoAltText>
+  <iCalLink>https://yaleconnect.yale.edu/vcal?source=rss_feed&amp;type=ical&amp;school=yale&amp;uid=abc</iCalLink>
   <title>New Haven Greenspace &amp; Volunteering</title>
   <fullDescription>&lt;p&gt;Weeding &amp;amp; planting.&lt;br&gt;Bring water.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Hats&lt;/li&gt;&lt;/ul&gt;</fullDescription>
   <eventStartDateTime>2026-08-29T09:00:00.0000000-04:00</eventStartDateTime>
@@ -56,7 +63,7 @@ describe("YaleConnect feed", () => {
     expect(mapped).toMatchObject({
       externalId: "2328015",
       name: "New Haven Greenspace & Volunteering",
-      clubs: ["URI (YaleClubs name)"],
+      clubs: ["URI (YaleClubs name)", "Office of Educational Opportunity", "FGLI Thrive"],
       location: "Kensington Playground",
       registrationLink: "https://tinyurl.com/NHVgreenspace",
       externalLink: "https://yaleconnect.yale.edu/URI/rsvp?id=2328015",
@@ -69,9 +76,43 @@ describe("YaleConnect feed", () => {
     expect(mapped?.tags).toEqual(expect.arrayContaining([Tag.CommunityService, Tag.FreeFood]));
   });
 
-  it("falls back to the YaleConnect group name when no club matches", async () => {
+  it("lists host and co-hosts, using our club names where they match", async () => {
     const [raw] = await parseYaleConnectRss(feed(item("")));
-    expect(mapYaleConnectItem(raw)?.clubs).toEqual(["Urban Resources Initiative"]);
+    expect(mapYaleConnectItem(raw)?.clubs).toEqual([
+      "Urban Resources Initiative",
+      "Office of Educational Opportunity",
+      "FGLI Thrive",
+    ]);
+    expect(mapYaleConnectItem(raw, new Map([[32717, "FGLI on YaleClubs"]]))?.clubs).toEqual([
+      "Urban Resources Initiative",
+      "Office of Educational Opportunity",
+      "FGLI on YaleClubs",
+    ]);
+  });
+
+  it("keeps the extra YaleConnect details", async () => {
+    const [raw] = await parseYaleConnectRss(feed(item("")));
+    expect(mapYaleConnectItem(raw)).toMatchObject({
+      eventType: "Commmunity Service & Volunteer",
+      locationType: EventLocationType.OffCampus,
+      hostCategory: "Yale School of the Environment",
+      foodProvided: true,
+      imageAlt: "volunteers in Kensington Playground",
+      icalLink: "https://yaleconnect.yale.edu/vcal?source=rss_feed&type=ical&school=yale&uid=abc",
+    });
+  });
+
+  it("only uses a real sign-up link as the registration link", async () => {
+    const [raw] = await parseYaleConnectRss(
+      feed(item("")).replace(/<eventExternalRegistrationLink>.*<\/eventExternalRegistrationLink>/, ""),
+    );
+    const mapped = mapYaleConnectItem(raw);
+    expect(mapped?.registrationLink).toBeUndefined();
+    expect(mapped?.externalLink).toBe("https://yaleconnect.yale.edu/URI/rsvp?id=2328015");
+  });
+
+  it("tags events with food provided as Free Food", () => {
+    expect(mapTags("Group Meeting", [], true)).toEqual([Tag.FreeFood]);
   });
 
   it("keeps real locations visible", async () => {

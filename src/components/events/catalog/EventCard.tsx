@@ -14,7 +14,7 @@ const EventCard = ({ event, onClick }: EventCardProps) => {
       <div className="aspect-square relative mb-4 border border-gray-100 rounded-lg">
         <Image
           src={event.flyer && event.flyer.trim() !== "" ? event.flyer : "/assets/default-background.png"}
-          alt="Event Flyer"
+          alt={event.imageAlt || "Event Flyer"}
           fill
           className="rounded-xl object-cover"
           priority

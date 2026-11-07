@@ -68,9 +68,12 @@ export function generateGoogleCalendarLink(event: IEvent): string {
   const baseUrl = "https://calendar.google.com/calendar/render?action=TEMPLATE";
 
   const startDate = new Date(event.start);
-  const endDate = new Date(startDate);
-  // one hour long event by default -- maybe we have custom end times in the future.
-  endDate.setHours(startDate.getHours() + 1);
+  let endDate = event.end ? new Date(event.end) : new Date(NaN);
+  if (isNaN(endDate.getTime()) || endDate <= startDate) {
+    // One hour long by default when there's no valid end time.
+    endDate = new Date(startDate);
+    endDate.setHours(startDate.getHours() + 1);
+  }
 
   const params = new URLSearchParams({
     text: event.name,
@@ -113,3 +116,18 @@ export const objectToFormData = (formDataObject: Record<string, any>): FormData 
   });
   return formData;
 };
+
+/**
+ * Formats an event's time as e.g. "7:00 PM – 9:00 PM", or with dates when it spans days:
+ * "Aug 29, 9:00 AM – Dec 19, 12:00 PM". Without an end time it returns just the start time.
+ */
+export function formatEventTimeRange(start: Date | string, end?: Date | string): string {
+  const s = new Date(start);
+  const time = (d: Date) => d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  const e = end ? new Date(end) : undefined;
+  if (!e || isNaN(e.getTime()) || e <= s) return time(s);
+  if (s.toDateString() === e.toDateString()) return `${time(s)} – ${time(e)}`;
+  const dateTime = (d: Date) =>
+    d.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  return `${dateTime(s)} – ${dateTime(e)}`;
+}

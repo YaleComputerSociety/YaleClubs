@@ -19,6 +19,12 @@ export enum Tag {
   ProfessionalDevelopment = "Professional Development",
 }
 
+export enum EventLocationType {
+  OnCampus = "On-Campus",
+  OffCampus = "Off-Campus",
+  Virtual = "Virtual",
+}
+
 export enum EventSource {
   YaleClubs = "yaleclubs",
   YaleConnect = "yaleconnect",
@@ -59,6 +65,15 @@ export interface IEvent extends Document {
   externalLink?: string;
   /** True when the source hides the real location (e.g. YaleConnect's "Private Location"). */
   locationHidden?: boolean;
+  locationType?: EventLocationType;
+  /** The source's own category, e.g. YaleConnect's "Lecture, Talk, or Panel". */
+  eventType?: string;
+  /** The host's category on the source, e.g. "Politics and Society (Yale College RSO)". */
+  hostCategory?: string;
+  foodProvided?: boolean;
+  imageAlt?: string;
+  /** Link to an .ics file for Apple Calendar / Outlook. */
+  icalLink?: string;
   topics?: string[];
   lastSyncedAt?: Date;
 }
@@ -79,6 +94,12 @@ const eventSchema = new Schema<IEvent>(
     end: { type: Date, required: false },
     externalLink: { type: String, required: false },
     locationHidden: { type: Boolean, required: false },
+    locationType: { type: String, enum: Object.values(EventLocationType), required: false },
+    eventType: { type: String, required: false },
+    hostCategory: { type: String, required: false },
+    foodProvided: { type: Boolean, required: false },
+    imageAlt: { type: String, required: false },
+    icalLink: { type: String, required: false },
     topics: { type: [String], default: undefined },
     lastSyncedAt: { type: Date, required: false },
   },

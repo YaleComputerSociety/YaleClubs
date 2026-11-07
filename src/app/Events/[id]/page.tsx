@@ -3,6 +3,8 @@ import Event, { IEvent } from "@/lib/models/Event";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import EventSourceDetails from "@/components/events/EventSourceDetails";
+import { formatEventTimeRange } from "@/lib/utils";
 import EventLocation from "@/components/events/EventLocation";
 
 type PageProps = {
@@ -68,7 +70,7 @@ export default async function EventDetailPage({ params }: PageProps) {
           <div className="relative w-full aspect-[2/1] bg-gray-100">
             <Image
               src={event.flyer && event.flyer.trim() !== "" ? event.flyer : "/assets/default-background.png"}
-              alt="Event Flyer"
+              alt={event.imageAlt || "Event Flyer"}
               fill
               className="object-cover"
               priority
@@ -77,7 +79,10 @@ export default async function EventDetailPage({ params }: PageProps) {
           <div className="p-6">
             <h1 className="text-2xl font-bold mb-2">{event.name}</h1>
             <div className="text-gray-700 mb-3">
-              <div>{new Date(event.start).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}</div>
+              <div>
+                {new Date(event.start).toLocaleDateString(undefined, { dateStyle: "medium" })},{" "}
+                {formatEventTimeRange(event.start, event.end)}
+              </div>
               <EventLocation
                 event={{
                   location: event.location,
@@ -88,6 +93,17 @@ export default async function EventDetailPage({ params }: PageProps) {
               <div className="font-medium">{event.clubs?.length ? event.clubs.join(" x ") : "No clubs listed"}</div>
             </div>
             <p className="text-gray-800 whitespace-pre-wrap">{event.description}</p>
+            <EventSourceDetails
+              event={{
+                source: event.source,
+                eventType: event.eventType,
+                locationType: event.locationType,
+                foodProvided: event.foodProvided,
+                hostCategory: event.hostCategory,
+                topics: event.topics ? [...event.topics] : [],
+                externalLink: event.externalLink,
+              }}
+            />
           </div>
         </div>
       </main>
