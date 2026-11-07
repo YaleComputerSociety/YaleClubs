@@ -1,4 +1,13 @@
-import { dateWindow, DEFAULT_FILTERS, eventTypesIn, filterEvents, sortEvents } from "@/lib/eventFilters";
+import {
+  dateWindow,
+  DEFAULT_PAGE_STATE,
+  pageStateToQuery,
+  queryToPageState,
+  DEFAULT_FILTERS,
+  eventTypesIn,
+  filterEvents,
+  sortEvents,
+} from "@/lib/eventFilters";
 
 // Wednesday, Nov 11 2026, 3:00 PM local time
 const now = new Date(2026, 10, 11, 15, 0);
@@ -94,4 +103,35 @@ describe("sortEvents", () => {
 
 it("lists distinct event types", () => {
   expect(eventTypesIn(events)).toEqual(["Lecture, Talk, or Panel", "Performance", "Social"]);
+});
+
+describe("saving filters in the page address", () => {
+  it("leaves the address clean when nothing is filtered", () => {
+    expect(pageStateToQuery(DEFAULT_PAGE_STATE)).toBe("");
+    expect(queryToPageState("")).toEqual(DEFAULT_PAGE_STATE);
+  });
+
+  it("round-trips every control, including names with commas and spaces", () => {
+    const state = {
+      search: "trivia night",
+      sort: "name",
+      date: "week",
+      source: "yaleconnect",
+      where: ["On campus", "Virtual"],
+      types: ["Social", "Lecture, Talk, or Panel"],
+      clubs: ["Yale Postgraduate Association (YPGA)", "Dwight Hall"],
+      tags: ["Free Food"],
+    };
+    const query = pageStateToQuery(state);
+    expect(query).toContain("date=week");
+    expect(query).toContain("type=Lecture%2C+Talk%2C+or+Panel");
+    expect(queryToPageState(query)).toEqual(state);
+  });
+
+  it("ignores invalid values from a hand-edited address", () => {
+    expect(queryToPageState("?sort=bogus&date=yesterday&source=x&where=Mars&type=Social")).toEqual({
+      ...DEFAULT_PAGE_STATE,
+      types: ["Social"],
+    });
+  });
 });

@@ -8,6 +8,8 @@ import {
   DEFAULT_FILTERS,
   eventTypesIn,
   filterEvents,
+  pageStateToQuery,
+  queryToPageState,
   SORT_OPTIONS,
   SortOption,
   sortEvents,
@@ -43,6 +45,41 @@ const SearchControlEvent = ({
   const [selectedWhere, setSelectedWhere] = useState<string[]>([]); // labels, e.g. "On campus"
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [resultCount, setResultCount] = useState<number | null>(null);
+  const [urlLoaded, setUrlLoaded] = useState(false);
+
+  // Restore search, sort and filters from the page address (e.g. a shared or bookmarked link).
+  // Read after mount so the server render and first client render match.
+  useEffect(() => {
+    const saved = queryToPageState(window.location.search);
+    setSearchQuery(saved.search);
+    setSort(saved.sort);
+    setDate(saved.date);
+    setSource(saved.source);
+    setSelectedWhere(saved.where);
+    setSelectedTypes(saved.types);
+    setSelectedClubs(saved.clubs);
+    setSelectedTags(saved.tags);
+    setUrlLoaded(true);
+  }, []);
+
+  // Keep the address in sync as filters change. replaceState: no new history entry per keystroke.
+  useEffect(() => {
+    if (!urlLoaded) return;
+    const query = pageStateToQuery({
+      search: searchQuery,
+      sort,
+      date,
+      source,
+      where: selectedWhere,
+      types: selectedTypes,
+      clubs: selectedClubs,
+      tags: selectedTags,
+    });
+    const url = `${window.location.pathname}${query}${window.location.hash}`;
+    if (url !== `${window.location.pathname}${window.location.search}${window.location.hash}`) {
+      window.history.replaceState(window.history.state, "", url);
+    }
+  }, [urlLoaded, searchQuery, sort, date, source, selectedWhere, selectedTypes, selectedClubs, selectedTags]);
 
   // Clubs filter: our clubs plus hosts that only appear on imported (YaleConnect) events.
   const clubNamesForFilter = useMemo(() => {

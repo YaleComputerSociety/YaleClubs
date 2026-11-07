@@ -195,6 +195,14 @@ export function mapTags(eventType: string | undefined, topics: string[], foodPro
   return Array.from(tags);
 }
 
+// Misspellings in YaleConnect's own category names, fixed on import.
+const EVENT_TYPE_FIXES: [RegExp, string][] = [[/\bCommmunity\b/g, "Community"]];
+
+export function normalizeEventType(value?: string): string | undefined {
+  const cleaned = cleanText(value);
+  return cleaned && EVENT_TYPE_FIXES.reduce((text, [pattern, fix]) => text.replace(pattern, fix), cleaned);
+}
+
 const LOCATION_TYPES: Record<string, EventLocationType> = {
   "on-campus": EventLocationType.OnCampus,
   "off-campus": EventLocationType.OffCampus,
@@ -239,7 +247,7 @@ export function mapYaleConnectItem(
 
   const clubs = hostClubs(item, clubNameByYaleConnectId);
   const foodProvided = item.foodProvided === "1";
-  const eventType = cleanText(item.eventType);
+  const eventType = normalizeEventType(item.eventType);
 
   const topics = extractTopics(item);
   const description = htmlToPlainText(item.fullDescription || item.description || "");

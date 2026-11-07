@@ -123,3 +123,68 @@ export function eventTypesIn(events: FilterableEvent[]): string[] {
   const types = new Set(events.map((e) => e.eventType).filter((t): t is string => Boolean(t)));
   return Array.from(types).sort((a, b) => a.localeCompare(b));
 }
+
+/** Everything the Events page's search bar controls, as saved in the page address. */
+export interface EventPageState {
+  search: string;
+  sort: SortOption;
+  date: DateOption;
+  source: SourceOption;
+  /** "Where" labels as shown, e.g. "On campus". */
+  where: string[];
+  types: string[];
+  clubs: string[];
+  tags: string[];
+}
+
+export const DEFAULT_PAGE_STATE: EventPageState = {
+  search: "",
+  sort: "soonest",
+  date: "any",
+  source: "all",
+  where: [],
+  types: [],
+  clubs: [],
+  tags: [],
+};
+
+const isKey = <T extends object>(options: T, value: string | null): value is Extract<keyof T, string> =>
+  value !== null && Object.prototype.hasOwnProperty.call(options, value);
+
+/**
+ * Page state -> query string, e.g. "?date=week&type=Social&sort=name".
+ * Defaults are left out; lists repeat their key (club names can contain commas).
+ */
+export function pageStateToQuery(state: EventPageState): string {
+  const params = new URLSearchParams();
+  if (state.search.trim()) params.set("q", state.search.trim());
+  if (state.sort !== DEFAULT_PAGE_STATE.sort) params.set("sort", state.sort);
+  if (state.date !== DEFAULT_PAGE_STATE.date) params.set("date", state.date);
+  if (state.source !== DEFAULT_PAGE_STATE.source) params.set("source", state.source);
+  state.where.forEach((v) => params.append("where", v));
+  state.types.forEach((v) => params.append("type", v));
+  state.clubs.forEach((v) => params.append("club", v));
+  state.tags.forEach((v) => params.append("tag", v));
+  const query = params.toString();
+  return query ? `?${query}` : "";
+}
+
+/** Query string -> page state. Unknown or invalid values fall back to the defaults. */
+export function queryToPageState(query: string): EventPageState {
+  const params = new URLSearchParams(query);
+  const sort = params.get("sort");
+  const date = params.get("date");
+  const source = params.get("source");
+  const whereLabels: string[] = Object.values(WHERE_LABELS);
+  const unique = (values: string[]) => Array.from(new Set(values.map((v) => v.trim()).filter(Boolean)));
+  return {
+    search: params.get("q") ?? "",
+    sort: isKey(SORT_OPTIONS, sort) ? sort : DEFAULT_PAGE_STATE.sort,
+    date: isKey(DATE_OPTIONS, date) ? date : DEFAULT_PAGE_STATE.date,
+    source: isKey(SOURCE_OPTIONS, source) ? source : DEFAULT_PAGE_STATE.source,
+    where: unique(params.getAll("where")).filter((v) => whereLabels.includes(v)),
+    types: unique(params.getAll("type")),
+    clubs: unique(params.getAll("club")),
+    tags: unique(params.getAll("tag")),
+  };
+}

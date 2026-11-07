@@ -93,7 +93,7 @@ describe("YaleConnect feed", () => {
   it("keeps the extra YaleConnect details", async () => {
     const [raw] = await parseYaleConnectRss(feed(item("")));
     expect(mapYaleConnectItem(raw)).toMatchObject({
-      eventType: "Commmunity Service & Volunteer",
+      eventType: "Community Service & Volunteer", // YaleConnect spells it "Commmunity"
       locationType: EventLocationType.OffCampus,
       hostCategory: "Yale School of the Environment",
       foodProvided: true,
