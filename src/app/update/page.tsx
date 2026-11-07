@@ -11,6 +11,7 @@ import ClubLeadersSection from "@/components/update/EditLeaders";
 import SchoolDropdown from "@/components/update/SchoolDropdown";
 
 import CreateApplicationModal from "@/components/update/CreateApplicationModal";
+import ViewApplicationsModal from "@/components/update/ViewApplicationsModal";
 import AliasesDropdown from "@/components/update/ClubAliases";
 import Filter from "@/components/Filter";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,6 +21,8 @@ const UpdatePage = () => {
   const searchParams = useSearchParams();
   const [club, setClub] = useState<IClub | null>(null);
   const [isCreateApplicationOpen, setIsCreateApplicationOpen] = useState(false);
+  const [isViewApplicationsOpen, setIsViewApplicationsOpen] = useState(false);
+  const [savedApplicationTitle, setSavedApplicationTitle] = useState("");
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [formDataObject, setFormDataObject] = useState<IClubInput>({
     name: "",
@@ -389,11 +392,15 @@ const UpdatePage = () => {
                   >
                     Create Application
                   </button>
+                  {savedApplicationTitle && (
+                    <p role="status" className="text-sm text-green-700">
+                      Application “{savedApplicationTitle}” saved.
+                    </p>
+                  )}
                   <button
                     type="button"
-                    disabled
-                    title="Coming soon"
-                    className="w-full cursor-not-allowed rounded-lg border border-gray-300 bg-white px-4 py-2 font-medium text-gray-400"
+                    onClick={() => setIsViewApplicationsOpen(true)}
+                    className="w-full rounded-lg border border-purple-200 bg-white px-4 py-2 font-medium text-clubPurple transition-colors hover:bg-purple-50"
                   >
                     View Applications
                   </button>
@@ -522,7 +529,24 @@ const UpdatePage = () => {
         </main>
         <Footer />
       </div>
-      {isCreateApplicationOpen && <CreateApplicationModal onClose={() => setIsCreateApplicationOpen(false)} />}
+      {isCreateApplicationOpen && (
+        <CreateApplicationModal
+          clubId={club._id.toString()}
+          onSaved={(form) => setSavedApplicationTitle(form.title)}
+          onClose={() => setIsCreateApplicationOpen(false)}
+        />
+      )}
+      {isViewApplicationsOpen && (
+        <ViewApplicationsModal
+          clubId={club._id.toString()}
+          clubName={club.name}
+          onClose={() => setIsViewApplicationsOpen(false)}
+          onCreate={() => {
+            setIsViewApplicationsOpen(false);
+            setIsCreateApplicationOpen(true);
+          }}
+        />
+      )}
     </>
   );
 };

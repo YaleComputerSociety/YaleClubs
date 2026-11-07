@@ -56,7 +56,8 @@ export async function GET(request: Request): Promise<NextResponse> {
 
   const response = NextResponse.redirect(redirectTarget);
   response.cookies.set("token", token, {
-    secure: true,
+    // Local development uses HTTP; HTTPS development still gets a Secure cookie.
+    secure: url.protocol === "https:",
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
     httpOnly: true,

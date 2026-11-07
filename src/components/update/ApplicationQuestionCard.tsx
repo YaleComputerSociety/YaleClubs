@@ -1,6 +1,7 @@
 "use client";
 
 import { RefObject, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { Reorder, useDragControls, useReducedMotion } from "framer-motion";
 import { GripVertical, Trash2 } from "lucide-react";
 import { ApplicationQuestion, validateApplicationQuestion } from "./applicationQuestions";
@@ -10,78 +11,41 @@ type ApplicationQuestionCardProps = {
   question: ApplicationQuestion;
   index: number;
   dragBounds: RefObject<HTMLUListElement>;
-  dragEnabled: boolean;
-  animateReorder: boolean;
-  onDragStateChange: (active: boolean) => void;
   showAllErrors: boolean;
   onChange: (question: ApplicationQuestion) => void;
   onRemove: () => void;
   onKeyboardMove: (direction: -1 | 1) => void;
 };
 
-const MAX_EDGE_STRETCH = 24;
-const EDGE_DRAG_DISTANCE = 160;
-
-// The top of the list is a firm boundary; only the bottom allows a resisted stretch.
-function resistAtEdge(offset: number, top: number, bottom: number): number {
-  if (offset < top) return top;
-  if (offset <= bottom) return offset;
-  const progress = Math.min((offset - bottom) / EDGE_DRAG_DISTANCE, 1);
-  return bottom + MAX_EDGE_STRETCH * (1 - (1 - progress) ** 3);
-}
-
 export default function ApplicationQuestionCard({
   question,
   index,
   dragBounds,
-  dragEnabled,
-  animateReorder,
-  onDragStateChange,
   showAllErrors,
   onChange,
   onRemove,
   onKeyboardMove,
 }: ApplicationQuestionCardProps) {
   const dragControls = useDragControls();
+  const cardRef = useRef<HTMLLIElement>(null);
+  const [dragLimits, setDragLimits] = useState({ top: 0, bottom: 0 });
   const reduceMotion = useReducedMotion();
-  const [isDragging, setIsDragging] = useState(false);
-  const edgeBounds = useRef({ top: 0, bottom: 0 });
   const hasErrors = showAllErrors && Object.keys(validateApplicationQuestion(question)).length > 0;
 
   return (
     <Reorder.Item
-      value={question.id}
+      ref={cardRef}
+      value={question}
       dragControls={dragControls}
       dragListener={false}
-      // Ref constraints track resize events; enable them only during a drag so
-      // editing a question cannot move an otherwise stationary card.
-      dragConstraints={dragEnabled ? dragBounds : false}
+      dragConstraints={dragLimits}
       dragElastic={0}
       dragMomentum={false}
-      onMeasureDragConstraints={(bounds) => {
-        edgeBounds.current = { top: bounds.top, bottom: bounds.bottom };
-        return { ...bounds, bottom: bounds.bottom + EDGE_DRAG_DISTANCE };
-      }}
-      transformTemplate={(values, generatedTransform) => {
-        if (typeof values.y !== "number") return generatedTransform;
-        const { top, bottom } = edgeBounds.current;
-        const correction = resistAtEdge(values.y, top, bottom) - values.y;
-        if (!correction) return generatedTransform;
-        return `${generatedTransform === "none" ? "" : generatedTransform} translateY(${correction}px)`;
-      }}
       layout="position"
-      transition={{ layout: { duration: !reduceMotion && animateReorder ? 0.2 : 0 } }}
-      onDragStart={() => setIsDragging(true)}
-      onDragEnd={() => {
-        setIsDragging(false);
-        onDragStateChange(false);
-      }}
+      transition={{ layout: { duration: reduceMotion ? 0 : 0.2 } }}
+      whileDrag={{ boxShadow: "0 8px 24px rgba(0, 0, 0, 0.12)" }}
       className={`relative scroll-my-4 space-y-3 rounded-xl border bg-white p-4 ${
-        isDragging
-          ? "border-clubPurple shadow-lg ring-2 ring-purple-100"
-          : hasErrors
-            ? "border-red-300"
-            : "border-gray-200"
+        hasErrors ? "border-red-300" : "border-gray-200"
       }`}
     >
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 pb-3">
@@ -104,8 +68,19 @@ export default function ApplicationQuestionCard({
             aria-keyshortcuts="ArrowUp ArrowDown"
             title="Drag to reorder, or use the up and down arrow keys"
             onPointerDown={(event) => {
+              if (!event.isPrimary || event.button !== 0) return;
+              const card = cardRef.current?.getBoundingClientRect();
+              const list = dragBounds.current?.getBoundingClientRect();
+              if (!card || !list) return;
               event.currentTarget.focus({ preventScroll: true });
-              onDragStateChange(true);
+              // Measure once per gesture. Ref constraints also react to field
+              // resizing and can move cards while someone is editing them.
+              flushSync(() =>
+                setDragLimits({
+                  top: Math.min(0, list.top - card.top),
+                  bottom: Math.max(0, list.bottom - card.bottom),
+                }),
+              );
               dragControls.start(event);
             }}
             onKeyDown={(event) => {
@@ -114,8 +89,7 @@ export default function ApplicationQuestionCard({
                 onKeyboardMove(event.key === "ArrowUp" ? -1 : 1);
               }
             }}
-            className="inline-flex touch-none select-none items-center gap-1 rounded-lg p-2 text-sm text-gray-500 hover:bg-purple-50 hover:text-clubPurple active:cursor-grabbing"
-            style={{ cursor: isDragging ? "grabbing" : "grab" }}
+            className="inline-flex touch-none cursor-grab select-none items-center gap-1 rounded-lg p-2 text-sm text-gray-500 hover:bg-purple-50 hover:text-clubPurple active:cursor-grabbing"
           >
             <GripVertical size={16} aria-hidden="true" />
             Drag
