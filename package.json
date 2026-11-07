@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npm run lint && dotenv -e .env.dev next dev",
+    "dev": "npm run lint && dotenv -e .env.dev -v ALLOW_DEV_LOGIN=true -- next dev -H 127.0.0.1",
     "devprod": "npm run lint && dotenv -e .env.prod next dev",
     "build": "dotenv -e .env.prod next build",
     "start": "dotenv -e .env.prod next start",
