@@ -13,6 +13,18 @@ export const YALECONNECT_BASE_URL = "https://yaleconnect.yale.edu";
 export const YALECONNECT_RSS_URL = `${YALECONNECT_BASE_URL}/rss_events`;
 export const YALECONNECT_SYNC_USER = "yaleconnect-sync";
 
+/** Shown as the location when YaleConnect hides it; the UI turns it into a link to the event page. */
+export const HIDDEN_LOCATION_TEXT = "View location on YaleConnect";
+
+/**
+ * YaleConnect only reveals some locations to signed-in or registered users. The public feed
+ * then contains placeholder text like "Private Location (sign in to display)".
+ */
+export function isHiddenLocation(location?: string): boolean {
+  const v = location?.trim() ?? "";
+  return v === "" || /^private location\b/i.test(v);
+}
+
 /** The subset of a feed <item> that we use. Every value arrives as a string. */
 export interface YaleConnectRssItem {
   eventId?: string;
@@ -47,6 +59,7 @@ export interface MappedYaleConnectEvent {
   location: string;
   registrationLink?: string | undefined;
   externalLink?: string | undefined;
+  locationHidden: boolean;
   flyer?: string | undefined;
   tags: Tag[];
   topics: string[];
@@ -191,16 +204,19 @@ export function mapYaleConnectItem(
   const topics = extractTopics(item);
   const description = htmlToPlainText(item.fullDescription || item.description || "");
   const externalLink = normalizeUrl(item.eventLink);
+  const locationHidden = isHiddenLocation(item.eventLocation);
 
   return {
     externalId,
     name,
-    // Our schema requires a non-empty description and location.
+    // Our schema requires a non-empty description.
     description: description || "See YaleConnect for details.",
     clubs,
     start,
     end: parseDate(item.eventEndDateTime),
-    location: item.eventLocation?.trim() || "See YaleConnect for location",
+    // Our schema requires a location, so hidden ones get a placeholder that the UI renders as a link.
+    location: locationHidden ? HIDDEN_LOCATION_TEXT : (item.eventLocation ?? "").trim(),
+    locationHidden,
     registrationLink: normalizeUrl(item.eventExternalRegistrationLink) ?? externalLink,
     externalLink,
     flyer: normalizeUrl(item.eventFlyerFullUrl) ?? normalizeUrl(item.eventPhotoFullUrl),

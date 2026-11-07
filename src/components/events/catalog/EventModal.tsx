@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { IEvent } from "@/lib/models/Event";
 import { TagBlock } from "./TagBlock";
+import EventLocation from "@/components/events/EventLocation";
 import { generateGoogleCalendarLink } from "@/lib/utils";
 import { IClub } from "@/lib/models/Club";
 import { useAuth } from "@/contexts/AuthContext";
@@ -147,7 +148,7 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
                   })}
                 </div>
                 <div>{new Date(event.start).toLocaleString(undefined, { timeStyle: "short" })}</div>
-                <div>{event.location}</div>
+                <EventLocation event={event} />
               </div>
               <div className="flex flex-wrap gap-2 text-xs mt-2">
                 {event.registrationLink && (

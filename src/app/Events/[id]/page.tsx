@@ -3,6 +3,7 @@ import Event, { IEvent } from "@/lib/models/Event";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import EventLocation from "@/components/events/EventLocation";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -77,7 +78,13 @@ export default async function EventDetailPage({ params }: PageProps) {
             <h1 className="text-2xl font-bold mb-2">{event.name}</h1>
             <div className="text-gray-700 mb-3">
               <div>{new Date(event.start).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}</div>
-              <div>{event.location}</div>
+              <EventLocation
+                event={{
+                  location: event.location,
+                  locationHidden: event.locationHidden,
+                  externalLink: event.externalLink,
+                }}
+              />
               <div className="font-medium">{event.clubs?.length ? event.clubs.join(" x ") : "No clubs listed"}</div>
             </div>
             <p className="text-gray-800 whitespace-pre-wrap">{event.description}</p>

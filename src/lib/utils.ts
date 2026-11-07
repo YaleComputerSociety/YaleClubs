@@ -75,7 +75,8 @@ export function generateGoogleCalendarLink(event: IEvent): string {
   const params = new URLSearchParams({
     text: event.name,
     details: event.description || "",
-    location: event.location || "",
+    // For hidden YaleConnect locations, put the event page link in the calendar entry instead.
+    location: (event.locationHidden ? event.externalLink : event.location) || "",
     dates: formatDateTime(event.start) + "/" + formatDateTime(endDate),
   });
 

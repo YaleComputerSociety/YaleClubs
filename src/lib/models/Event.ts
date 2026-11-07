@@ -57,6 +57,8 @@ export interface IEvent extends Document {
   externalId?: string;
   end?: Date;
   externalLink?: string;
+  /** True when the source hides the real location (e.g. YaleConnect's "Private Location"). */
+  locationHidden?: boolean;
   topics?: string[];
   lastSyncedAt?: Date;
 }
@@ -76,6 +78,7 @@ const eventSchema = new Schema<IEvent>(
     externalId: { type: String, required: false },
     end: { type: Date, required: false },
     externalLink: { type: String, required: false },
+    locationHidden: { type: Boolean, required: false },
     topics: { type: [String], default: undefined },
     lastSyncedAt: { type: Date, required: false },
   },

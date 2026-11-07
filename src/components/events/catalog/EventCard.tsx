@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { IEvent, Tag } from "@/lib/models/Event";
 import { TagBlock } from "./TagBlock";
+import EventLocation from "@/components/events/EventLocation";
 
 type EventCardProps = {
   event: IEvent;
@@ -27,7 +28,7 @@ const EventCard = ({ event, onClick }: EventCardProps) => {
         </div>
 
         <div className="flex flex-col text-sm mb-2">
-          <div className="truncate">{event.location}</div>
+          <EventLocation event={event} className="truncate" />
           <div className="truncate">
             {new Date(event.start).toLocaleString(undefined, {
               dateStyle: "medium",

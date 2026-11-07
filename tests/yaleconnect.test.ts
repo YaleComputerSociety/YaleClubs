@@ -1,7 +1,15 @@
 /**
  * @jest-environment node
  */
-import { htmlToPlainText, isPublicEvent, mapTags, mapYaleConnectItem, parseYaleConnectRss } from "@/lib/yaleconnect";
+import {
+  HIDDEN_LOCATION_TEXT,
+  htmlToPlainText,
+  isHiddenLocation,
+  isPublicEvent,
+  mapTags,
+  mapYaleConnectItem,
+  parseYaleConnectRss,
+} from "@/lib/yaleconnect";
 import { Tag } from "@/lib/models/Event";
 
 const item = (fields: string) => `<item>
@@ -64,6 +72,33 @@ describe("YaleConnect feed", () => {
   it("falls back to the YaleConnect group name when no club matches", async () => {
     const [raw] = await parseYaleConnectRss(feed(item("")));
     expect(mapYaleConnectItem(raw)?.clubs).toEqual(["Urban Resources Initiative"]);
+  });
+
+  it("keeps real locations visible", async () => {
+    const [raw] = await parseYaleConnectRss(feed(item("")));
+    expect(mapYaleConnectItem(raw)).toMatchObject({ location: "Kensington Playground", locationHidden: false });
+  });
+
+  it("replaces hidden locations with a YaleConnect link placeholder", async () => {
+    const xml = feed(item("")).replace(
+      "<eventLocation>Kensington Playground</eventLocation>",
+      "<eventLocation>Private Location (sign in to display)</eventLocation>",
+    );
+    const [raw] = await parseYaleConnectRss(xml);
+    expect(mapYaleConnectItem(raw)).toMatchObject({
+      location: HIDDEN_LOCATION_TEXT,
+      locationHidden: true,
+      externalLink: "https://yaleconnect.yale.edu/URI/rsvp?id=2328015",
+    });
+  });
+
+  it("detects YaleConnect's hidden-location placeholders", () => {
+    expect(isHiddenLocation("Private Location (sign in to display)")).toBe(true);
+    expect(isHiddenLocation("Private Location (register to display)")).toBe(true);
+    expect(isHiddenLocation("")).toBe(true);
+    expect(isHiddenLocation(undefined)).toBe(true);
+    expect(isHiddenLocation("Online Event")).toBe(false);
+    expect(isHiddenLocation("Battell Chapel, 400 College Street")).toBe(false);
   });
 
   it("rejects items without a start time", () => {
