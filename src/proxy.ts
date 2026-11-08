@@ -25,7 +25,7 @@ const SECURE_COOKIE_OPTIONS = {
   maxAge: 3600,
 };
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // The YaleConnect sync is called by a scheduled job, not a logged-in user.
   // The route checks its own Bearer SYNC_SECRET, so skip cookie auth here.
   if (request.nextUrl.pathname === "/api/events/sync") {

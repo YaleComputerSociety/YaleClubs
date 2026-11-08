@@ -3,6 +3,7 @@ import { parseString } from "xml2js";
 import jwt from "jsonwebtoken";
 import connectToDatabase from "../../../../lib/mongodb";
 import Users from "../../../../lib/models/Users";
+import { establishDevLogin, isDevLoginEnabled } from "@/lib/establishDevLogin";
 
 /** Validates that a redirect target is a same-origin path (starts with "/"). */
 function sanitizeRedirectPath(from: string | null): string {
@@ -16,6 +17,14 @@ function sanitizeRedirectPath(from: string | null): string {
 }
 
 export async function GET(request: Request): Promise<NextResponse> {
+  const requestUrl = new URL(request.url);
+  const ticket = requestUrl.searchParams.get("ticket");
+
+  // Localhost has no Yale CAS callback. Sign In creates a dev session instead.
+  if (!ticket && isDevLoginEnabled(requestUrl)) {
+    return establishDevLogin(request);
+  }
+
   const BASE_URL = process.env.BASE_URL as string;
   if (!BASE_URL) {
     throw new Error("Please define the BASE_URL environment variable");
@@ -30,8 +39,7 @@ export async function GET(request: Request): Promise<NextResponse> {
     throw new Error("Please define the YALIES_API_KEY environment variable");
   }
 
-  const { searchParams } = new URL(request.url);
-  const ticket = searchParams.get("ticket");
+  const { searchParams } = requestUrl;
   const redirectPath = sanitizeRedirectPath(searchParams.get("from"));
 
   // URL-encode the full service URL so CAS handles it correctly

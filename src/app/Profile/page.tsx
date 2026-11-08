@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
+import { casSignInHref } from "@/lib/devLogin";
 import EventCard from "../../components/events/catalog/EventCard";
 import EventModal from "../../components/events/catalog/EventModal";
 import SkeletonClubCard from "@/components/catalog/SkeletonClubCard";
@@ -166,7 +167,7 @@ export default function ProfilePage() {
               <p className="text-gray-700">
                 Please{" "}
                 <a
-                  href={`/api/auth/redirect?from=${pathname}`}
+                  href={casSignInHref(pathname)}
                   className="inline-flex items-center font-semibold text-violet-600 hover:text-violet-500 transition-colors"
                 >
                   log in
