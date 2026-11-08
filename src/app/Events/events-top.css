@@ -32,7 +32,7 @@
 }
 .events-create button {
   background: white;
-  color: #4e4e4e;
+  color: #3d3b8e;
   border: 1px solid #babcbf;
   border-radius: 8px;
   padding: 10px 16px;
@@ -50,7 +50,7 @@
 .events-search-row {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
   width: 100%;
   margin-bottom: 12px;
 }
@@ -59,18 +59,19 @@
   align-items: center;
   flex: 1;
   min-width: 0;
-  height: 58px;
-  padding: 16px;
-  border: 1px solid #e3e4e5;
-  border-radius: 32px;
-  background: white;
-  box-shadow: 0 0 2px #babcbf0d;
+  height: 44px;
+  padding: 0 0.9rem;
+  gap: 0.7rem;
+  border: 0;
+  border-radius: 6px;
+  background: #ededee;
+  color: #7a808a;
 }
 .events-search-icon {
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
 }
 .events-search-field input {
@@ -80,16 +81,15 @@
   border: 0;
   outline: none;
   font: inherit;
-  font-size: 16px;
-  letter-spacing: -0.64px;
+  font-size: 15px;
+  color: #1f2328;
 }
 .events-search-field input::placeholder {
-  color: #babcbf;
+  color: #9ca3af;
   opacity: 1;
 }
 .events-search-field:focus-within {
-  outline: 2px solid #8aa8d8;
-  outline-offset: 2px;
+  outline: 3px solid #8aa8d8;
 }
 .events-lucky {
   font-family: "Source Serif 4", Georgia, serif;
@@ -147,4 +147,14 @@
 
 .events-lucky:hover {
   text-decoration: underline;
+}
+
+.events-search-field kbd {
+  flex-shrink: 0;
+  font-family: inherit;
+  font-size: 0.7rem;
+  background: #c9c9cc;
+  color: white;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
 }

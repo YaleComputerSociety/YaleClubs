@@ -109,7 +109,7 @@ const Catalog = ({
             <h1 className="text-2xl font-bold mb-4">Upcoming Events</h1>
             No upcoming events found -- if you are a club officer, click the{" "}
             <a href="/CreateUpdateEvent">
-              <span className="text-purple-400">Create Event</span>
+              <span className="text-[#3d3b8e]">Create Event</span>
             </a>{" "}
             button!
           </div>

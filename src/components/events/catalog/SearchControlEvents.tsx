@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Filter from "@/components/Filter";
 import { IClub } from "@/lib/models/Club";
@@ -159,16 +159,17 @@ const SearchControlEvent = ({
       <div className="events-search-row">
         <label className="events-search-field">
           <span className="events-search-icon">
-            <Image src="/assets/events-header/search.svg" alt="" width={14} height={14} />
+            <Search size={16} aria-hidden="true" />
           </span>
           <input
             ref={searchRef}
             type="search"
-            placeholder="Search events"
+            placeholder="Search Events"
             aria-label="Search events"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
           />
+          <kbd>⌘ + K</kbd>
         </label>
         <button
           className="events-lucky"

@@ -56,7 +56,7 @@ export default function Home() {
   }, [netid]);
 
   return (
-    <main className="club-display flex flex-col min-h-screen">
+    <main className="club-display discover-page flex flex-col min-h-screen">
       <div className="flex-grow">
         <DisplayHeader />
         <SearchControl

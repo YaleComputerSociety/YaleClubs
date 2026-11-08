@@ -106,6 +106,9 @@
   cursor: pointer;
 }
 .club-display .filter-options small {
+  display: inline-block;
+  vertical-align: baseline;
+  white-space: nowrap;
   padding: 3px 5px;
   border-radius: 2px;
   background: #f0f0fb;
@@ -318,7 +321,7 @@
 
 /* Keep desktop filters anchored to the viewport, independently of page scrolling. */
 @media (min-width: 701px) {
-  .club-display .browse-layout {
+  .club-display.discover-page {
     --sidebar-width: 280px;
     --sidebar-left: 24px;
   }
@@ -347,12 +350,12 @@
   }
 }
 @media (min-width: 701px) and (max-width: 1000px) {
-  .club-display .browse-layout {
+  .club-display.discover-page {
     --sidebar-width: 260px;
   }
 }
 @media (min-width: 1600px) {
-  .club-display .browse-layout {
+  .club-display.discover-page {
     --sidebar-width: 300px;
     --sidebar-left: 32px;
   }

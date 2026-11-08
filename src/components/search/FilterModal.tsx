@@ -64,8 +64,15 @@ function FilterGroup({
                 );
               }}
             />
-            <span>{option}</span>
-            {counts && <small>{counts[option] || 0}</small>}
+            <span>
+              {option}
+              {counts && (
+                <>
+                  {" "}
+                  <small>{counts[option] || 0}</small>
+                </>
+              )}
+            </span>
           </label>
         ))}
         {options.length > 6 && (

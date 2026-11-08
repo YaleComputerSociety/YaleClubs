@@ -1143,6 +1143,29 @@
 .club-display .card-membership .accepting {
   gap: 4px;
 }
-.club-display .card-membership .status { color: #000; }
-.club-display .card-membership .accepting { color: #559368; }
-.club-display .card-membership img { flex-shrink: 0; }
+.club-display .card-membership .status {
+  color: #000;
+}
+.club-display .card-membership .accepting {
+  color: #559368;
+}
+.club-display .card-membership img {
+  flex-shrink: 0;
+}
+
+/* Page footers use the available page width, including when filters are collapsed. */
+.club-display.discover-page > .site-footer .footer-inner,
+.club-display.discover-page > .site-footer .copyright,
+.club-display.page-footer > .site-footer .footer-inner,
+.club-display.page-footer > .site-footer .copyright {
+  max-width: none;
+  margin-inline: 0;
+}
+.club-display.page-footer {
+  margin-top: auto;
+}
+@media (min-width: 701px) {
+  .club-display.discover-page:has(.browse-layout.filters-visible) > .site-footer {
+    margin-left: calc(var(--sidebar-left) + var(--sidebar-width));
+  }
+}
