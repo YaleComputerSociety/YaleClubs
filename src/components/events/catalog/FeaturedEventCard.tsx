@@ -3,6 +3,7 @@
 import { IEvent, Tag } from "@/lib/models/Event";
 import Image from "next/image";
 import { TagBlock } from "./TagBlock";
+import EventLocation from "@/components/events/EventLocation";
 
 type FeaturedEventCardProps = {
   event: IEvent;
@@ -14,7 +15,7 @@ const FeaturedEventCard = ({ event, onClick }: FeaturedEventCardProps) => {
     <div className="relative w-full h-96 rounded-xl overflow-hidden cursor-pointer group" onClick={onClick}>
       <Image
         src={event?.flyer && event?.flyer.trim() !== "" ? event?.flyer : "/assets/default-background.png"}
-        alt="Event Flyer"
+        alt={event.imageAlt || "Event Flyer"}
         fill
         className="object-cover transition-transform duration-300 group-hover:scale-105"
         priority
@@ -32,7 +33,7 @@ const FeaturedEventCard = ({ event, onClick }: FeaturedEventCardProps) => {
         </div>
 
         <div className="flex flex-col text-sm text-white mb-2">
-          <div className="truncate">{event.location}</div>
+          <EventLocation event={event} className="truncate" />
           <div className="truncate">
             {new Date(event.start).toLocaleString(undefined, {
               dateStyle: "medium",

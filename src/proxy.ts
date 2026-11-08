@@ -26,6 +26,12 @@ const SECURE_COOKIE_OPTIONS = {
 };
 
 export async function proxy(request: NextRequest) {
+  // The YaleConnect sync is called by a scheduled job, not a logged-in user.
+  // The route checks its own Bearer SYNC_SECRET, so skip cookie auth here.
+  if (request.nextUrl.pathname === "/api/events/sync") {
+    return NextResponse.next();
+  }
+
   const cookieStore = await cookies();
   const token = cookieStore.get("token");
   let decodedToken = null;

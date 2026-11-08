@@ -5,7 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { IEvent } from "@/lib/models/Event";
 import { TagBlock } from "./TagBlock";
-import { generateGoogleCalendarLink } from "@/lib/utils";
+import EventLocation from "@/components/events/EventLocation";
+import { formatEventTimeRange, generateGoogleCalendarLink } from "@/lib/utils";
+import EventSourceDetails from "@/components/events/EventSourceDetails";
 import { IClub } from "@/lib/models/Club";
 import { useAuth } from "@/contexts/AuthContext";
 import { FaTrash } from "react-icons/fa";
@@ -124,7 +126,7 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
         <div className="relative w-full aspect-square shadow-lg">
           <Image
             src={event.flyer || "/assets/default-background.png"}
-            alt="Flyer"
+            alt={event.imageAlt || "Flyer"}
             className="object-cover"
             fill
             priority
@@ -146,18 +148,30 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
                     day: "numeric",
                   })}
                 </div>
-                <div>{new Date(event.start).toLocaleString(undefined, { timeStyle: "short" })}</div>
-                <div>{event.location}</div>
+                <div>{formatEventTimeRange(event.start, event.end)}</div>
+                <EventLocation event={event} />
               </div>
               <div className="flex flex-wrap gap-2 text-xs mt-2">
                 {event.registrationLink && (
-                  <Link href={event.registrationLink}>
+                  <Link href={event.registrationLink} target="_blank" rel="noopener noreferrer">
                     <button className="bg-blue-500 p-2 rounded-lg text-white font-bold">Register for Event</button>
+                  </Link>
+                )}
+                {event.externalLink && (
+                  <Link href={event.externalLink} target="_blank" rel="noopener noreferrer">
+                    <button className="bg-sky-700 p-2 rounded-lg text-white font-bold">View on YaleConnect</button>
                   </Link>
                 )}
                 <Link href={generateGoogleCalendarLink(event)} target="_blank" rel="noopener noreferrer">
                   <button className="bg-violet-600 p-2 rounded-lg text-white font-bold">Add to Calendar</button>
                 </Link>
+                {event.icalLink && (
+                  <Link href={event.icalLink} target="_blank" rel="noopener noreferrer">
+                    <button className="bg-gray-100 p-2 rounded-lg text-gray-900 font-bold hover:bg-gray-200">
+                      Apple / Outlook (.ics)
+                    </button>
+                  </Link>
+                )}
                 <button
                   className="bg-gray-100 p-2 rounded-lg text-gray-900 font-bold hover:bg-gray-200"
                   onClick={async () => {
@@ -234,6 +248,8 @@ const EventModal = ({ event, associatedClubLeaders, onClose, associatedClubs }: 
               <TagBlock key={index} tag={tag} />
             ))}
           </div>
+
+          <EventSourceDetails event={event} />
         </div>
       </div>
     </div>
