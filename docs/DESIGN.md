@@ -13,7 +13,7 @@ Non-goals: members-only YaleConnect events, RSVP counts, writing anything back t
 
 ```
 YaleConnect RSS feed ──(hourly)──> POST /api/events/sync ──> MongoDB Event collection ──> /api/events ──> Events page
-  rss_events (public)    k8s CronJob, Bearer SYNC_SECRET     upsert by (source, externalId)                 cards, popup, filters
+  rss_events (public)    cron job, Bearer SYNC_SECRET         upsert by (source, externalId)                 cards, popup, filters
 ```
 
 | Layer | File |
@@ -21,7 +21,7 @@ YaleConnect RSS feed ──(hourly)──> POST /api/events/sync ──> MongoDB
 | Fetch, parse, map (no DB access, unit-tested) | `src/lib/yaleconnect.ts` |
 | Upsert / delete in MongoDB | `src/lib/yaleconnectSync.ts` |
 | HTTP trigger | `src/app/api/events/sync/route.ts` |
-| Schedule | `k8s/yaleconnect-sync-cron.yaml` |
+| Schedule | crontab on the production server; `k8s/yaleconnect-sync-cron.yaml` for the k8s setup |
 | Model | `src/lib/models/Event.ts` |
 | Sorting, filtering, URL state (pure, unit-tested) | `src/lib/eventFilters.ts` |
 | UI | `src/components/events/**`, `src/components/SelectFilter.tsx`, `src/app/Events/**` |
@@ -87,11 +87,17 @@ The sync is idempotent; running it twice in a row inserts and deletes nothing.
 
 - `POST /api/events/sync` requires `Authorization: Bearer <SYNC_SECRET>`. Comparison hashes both
   values and uses `timingSafeEqual`. Missing secret on the server = 500, never open.
-- `src/middleware.ts` exempts exactly this path from cookie auth; the route does its own check.
-- Concurrency: CronJob `concurrencyPolicy: Forbid`, plus an in-process flag returning 409. The
-  flag is per pod; the CronJob setting is what prevents overlaps across replicas.
-- CronJob: `17 * * * *` America/New_York, `backoffLimit: 2`, `activeDeadlineSeconds: 600`,
-  calls `http://main-app/api/events/sync` with `curl --fail-with-body`.
+- `src/proxy.ts` exempts exactly this path from cookie auth; the route does its own check.
+- Concurrency: an in-process flag returns 409 while a sync runs. With several app processes or
+  pods, the schedule itself must not overlap runs (k8s `concurrencyPolicy: Forbid`; hourly cron
+  runs finish in about 20 s).
+- Production (DigitalOcean server, deployed by `.github/workflows/main.yml` with pm2): schedule it
+  with a crontab entry on that server, for example
+  `17 * * * * curl -fsS -X POST -H "Authorization: Bearer $SYNC_SECRET" https://yaleclubs.io/api/events/sync`,
+  and add `SYNC_SECRET` to `.env.prod` there.
+- Kubernetes setup (`k8s/`): `k8s/yaleconnect-sync-cron.yaml`, `17 * * * *` America/New_York,
+  `backoffLimit: 2`, `activeDeadlineSeconds: 600`, calls `http://main-app/api/events/sync` with
+  `curl --fail-with-body`.
 
 ## Events page
 
