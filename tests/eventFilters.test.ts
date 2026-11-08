@@ -1,6 +1,7 @@
 import {
   dateWindow,
   DEFAULT_PAGE_STATE,
+  EventPageState,
   pageStateToQuery,
   queryToPageState,
   DEFAULT_FILTERS,
@@ -112,7 +113,7 @@ describe("saving filters in the page address", () => {
   });
 
   it("round-trips every control, including names with commas and spaces", () => {
-    const state = {
+    const state: EventPageState = {
       search: "trivia night",
       sort: "name",
       date: "week",
