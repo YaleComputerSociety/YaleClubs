@@ -4,10 +4,12 @@
 import {
   HIDDEN_LOCATION_TEXT,
   htmlToPlainText,
+  fetchYaleConnectRss,
   isHiddenLocation,
   isPublicEvent,
   mapTags,
   mapYaleConnectItem,
+  mergeSignedInLocations,
   parseYaleConnectRss,
 } from "@/lib/yaleconnect";
 import { EventLocationType, Tag } from "@/lib/models/Event";
@@ -140,6 +142,43 @@ describe("YaleConnect feed", () => {
     expect(isHiddenLocation(undefined)).toBe(true);
     expect(isHiddenLocation("Online Event")).toBe(false);
     expect(isHiddenLocation("Battell Chapel, 400 College Street")).toBe(false);
+  });
+
+  it("uses a cookie only for the optional signed-in request", async () => {
+    const fetchMock = jest.spyOn(global, "fetch").mockResolvedValue({
+      ok: true,
+      text: async () => "<rss/>",
+    } as Response);
+    try {
+      await fetchYaleConnectRss();
+      await fetchYaleConnectRss("https://yaleconnect.yale.edu/rss_events", 1000, "session=abc");
+      expect(fetchMock.mock.calls[0][1]?.headers).not.toHaveProperty("Cookie");
+      expect(fetchMock.mock.calls[1][1]?.headers).toHaveProperty("Cookie", "session=abc");
+    } finally {
+      fetchMock.mockRestore();
+    }
+  });
+
+  it("reveals only sign-in locations for events in the public feed", () => {
+    const publicItems = [
+      { eventId: "1", privacyLevel: "0", approvalStatus: "1", eventLocation: "Private Location (sign in to display)" },
+      { eventId: "2", privacyLevel: "0", approvalStatus: "1", eventLocation: "Private Location (register to display)" },
+      { eventId: "3", privacyLevel: "0", approvalStatus: "1", eventLocation: "Public Hall" },
+    ];
+    const signedInItems = [
+      { eventId: "1", privacyLevel: "0", approvalStatus: "1", eventLocation: "Room 101" },
+      { eventId: "2", privacyLevel: "0", approvalStatus: "1", eventLocation: "Room 202" },
+      { eventId: "3", privacyLevel: "0", approvalStatus: "1", eventLocation: "Other Hall" },
+      { eventId: "4", privacyLevel: "13", approvalStatus: "1", eventLocation: "Private Club Room" },
+    ];
+    const merged = mergeSignedInLocations(publicItems, signedInItems);
+    expect(merged.revealedLocations).toBe(1);
+    expect(merged.items.map((event) => event.eventLocation)).toEqual([
+      "Room 101",
+      "Private Location (register to display)",
+      "Public Hall",
+    ]);
+    expect(publicItems[0].eventLocation).toBe("Private Location (sign in to display)");
   });
 
   it("rejects items without a start time", () => {

@@ -5,13 +5,16 @@ import {
   fetchYaleConnectRss,
   isPublicEvent,
   mapYaleConnectItem,
+  mergeSignedInLocations,
   parseYaleConnectRss,
+  YALECONNECT_RSS_URL,
   YALECONNECT_SYNC_USER,
 } from "@/lib/yaleconnect";
 
 export interface YaleConnectSyncResult {
   feedItems: number;
   publicItems: number;
+  authenticatedLocations: number;
   skippedInvalid: number;
   matchedToClub: number;
   inserted: number;
@@ -37,11 +40,29 @@ export async function syncYaleConnectEvents(): Promise<YaleConnectSyncResult> {
 
   const xml = await fetchYaleConnectRss();
   const items = await parseYaleConnectRss(xml);
-  const publicItems = items.filter(isPublicEvent);
+  let publicItems = items.filter(isPublicEvent);
 
   // Guard against wiping our copy if YaleConnect returns an empty or broken feed.
   if (publicItems.length === 0) {
     throw new Error(`YaleConnect feed returned no public events (${items.length} items total); aborting sync.`);
+  }
+
+  // A YaleConnect session may expose locations marked "sign in to display".
+  // Keep the anonymous feed as the event allowlist and preserve registration-only
+  // and member-only restrictions even when this session can see more.
+  let authenticatedLocations = 0;
+  const cookie = process.env.YALECONNECT_COOKIE?.trim();
+  if (cookie) {
+    try {
+      const signedInXml = await fetchYaleConnectRss(YALECONNECT_RSS_URL, 60_000, cookie);
+      const signedInItems = await parseYaleConnectRss(signedInXml);
+      const merged = mergeSignedInLocations(publicItems, signedInItems);
+      publicItems = merged.items;
+      authenticatedLocations = merged.revealedLocations;
+    } catch {
+      // An expired session should not prevent the public event sync.
+      console.warn("YaleConnect authenticated feed unavailable; using public locations.");
+    }
   }
 
   await connectToDatabase();
@@ -99,6 +120,7 @@ export async function syncYaleConnectEvents(): Promise<YaleConnectSyncResult> {
   return {
     feedItems: items.length,
     publicItems: publicItems.length,
+    authenticatedLocations,
     skippedInvalid,
     matchedToClub,
     inserted: writeResult?.upsertedCount ?? 0,

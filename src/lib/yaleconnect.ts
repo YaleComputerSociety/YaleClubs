@@ -78,10 +78,18 @@ export interface MappedYaleConnectEvent {
   topics: string[];
 }
 
-/** Downloads the raw RSS feed. It is several MB, so allow a generous timeout. */
-export async function fetchYaleConnectRss(url = YALECONNECT_RSS_URL, timeoutMs = 60_000): Promise<string> {
+/** Downloads the raw RSS feed. The optional cookie is used only on the server. */
+export async function fetchYaleConnectRss(
+  url = YALECONNECT_RSS_URL,
+  timeoutMs = 60_000,
+  cookie?: string,
+): Promise<string> {
+  if (cookie && /[\r\n]/.test(cookie)) throw new Error("Invalid YaleConnect cookie configuration");
   const res = await fetch(url, {
-    headers: { Accept: "application/rss+xml, text/xml" },
+    headers: {
+      Accept: "application/rss+xml, text/xml",
+      ...(cookie ? { Cookie: cookie.trim() } : {}),
+    },
     signal: AbortSignal.timeout(timeoutMs),
     cache: "no-store",
   });
@@ -89,6 +97,30 @@ export async function fetchYaleConnectRss(url = YALECONNECT_RSS_URL, timeoutMs =
     throw new Error(`YaleConnect feed request failed: ${res.status} ${res.statusText}`);
   }
   return res.text();
+}
+
+/**
+ * Use a signed-in feed only to reveal locations explicitly marked "sign in to
+ * display" in the public feed. The public feed remains the authority for which
+ * events are eligible; registration-only and member-only details stay hidden.
+ */
+export function mergeSignedInLocations(
+  publicItems: YaleConnectRssItem[],
+  signedInItems: YaleConnectRssItem[],
+): { items: YaleConnectRssItem[]; revealedLocations: number } {
+  const signedInById = new Map(
+    signedInItems.filter((item) => item.eventId && isPublicEvent(item)).map((item) => [item.eventId, item]),
+  );
+  let revealedLocations = 0;
+  const items = publicItems.map((item) => {
+    if (!/^private location\s*\(sign in to display\)$/i.test(item.eventLocation?.trim() ?? "")) return item;
+    const candidate = signedInById.get(item.eventId);
+    const location = candidate?.eventLocation?.trim();
+    if (!location || isHiddenLocation(location)) return item;
+    revealedLocations++;
+    return { ...item, eventLocation: location };
+  });
+  return { items, revealedLocations };
 }
 
 /** Parses the feed XML into a list of raw items. */

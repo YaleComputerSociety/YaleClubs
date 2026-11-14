@@ -7,7 +7,7 @@ Status: implemented on `milind-events-overhaul` (not yet deployed).
 Show public YaleConnect events on the YaleClubs Events page next to events clubs post on
 YaleClubs, kept up to date automatically, and let students sort and filter them.
 
-Non-goals: members-only YaleConnect events, RSVP counts, writing anything back to YaleConnect.
+Non-goals: members-only YaleConnect events, registration-only locations, RSVP counts, writing anything back to YaleConnect.
 
 ## Architecture
 
@@ -41,9 +41,18 @@ Alternatives considered:
 - **Event pages / internal GraphQL API.** Event pages are a JS shell over a private API. Not used:
   undocumented, likely to break, and not something to scrape.
 
-Filtering: only items with `privacyLevel = 0`, `approvalStatus = 1` and `eventDelete != 1` are
-imported. About 600 public events have their location replaced with
+Filtering: only items with `privacyLevel = 0`, `approvalStatus = 1` and `eventDelete != 1` in
+the anonymous feed are imported. Some public events have their location replaced with
 `Private Location (sign in to display)`; these get `locationHidden: true`.
+
+An optional server-side `YALECONNECT_COOKIE` makes a second RSS request. Only a concrete
+location for the same public event replaces an anonymous `sign in to display` placeholder.
+Locations marked `register to display`, member-only events, and authenticated-only events
+remain excluded. If the cookie expires, the request fails, or the RSS feed ignores cookies,
+the sync retains the public location placeholder. Never commit a live session cookie.
+The sync result reports `authenticatedLocations` so deployment can verify whether the
+cookie actually reveals anything. This does not guarantee complete YaleConnect data; an
+institution-approved API would be needed for broader access.
 
 ## Data model
 
@@ -72,12 +81,14 @@ Mapping decisions:
 
 ## Sync algorithm
 
-1. Fetch the feed (60 s timeout) and parse with `xml2js`.
+1. Fetch the anonymous feed (60 s timeout) and parse with `xml2js`.
 2. Keep public items. If none remain, throw: never wipe our copy because of a bad feed.
-3. Load clubs whose `yaleConnectId` appears in the feed; map group ID -> club name.
-4. One unordered `bulkWrite` of `updateOne` upserts keyed on `(source, externalId)`. Fields are
+3. If configured, fetch the feed with a server-side session cookie and merge only eligible
+   sign-in-only locations by event ID; fall back to anonymous values on failure.
+4. Load clubs whose `yaleConnectId` appears in the feed; map group ID -> club name.
+5. One unordered `bulkWrite` of `updateOne` upserts keyed on `(source, externalId)`. Fields are
    `$set` (or `$unset` when now missing); `createdBy` is `$setOnInsert`.
-5. Delete `source: yaleconnect` events with `start >= now` whose `externalId` is not in the feed
+6. Delete `source: yaleconnect` events with `start >= now` whose `externalId` is not in the feed
    (cancelled, deleted or made private). Past events are kept because the feed only lists
    upcoming ones, and the Past Events list needs them.
 
