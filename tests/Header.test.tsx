@@ -20,7 +20,12 @@ jest.mock("next/image", () => {
 jest.mock("@heroui/react", () => ({
   Dropdown: ({ children }: any) => <div>{children}</div>,
   DropdownTrigger: ({ children }: any) => <div>{children}</div>,
-  DropdownMenu: ({ children }: any) => <div>{children}</div>,
+  DropdownMenu: ({ children, topContent }: any) => (
+    <div>
+      {topContent}
+      {children}
+    </div>
+  ),
   DropdownItem: ({ children, onPress, ...props }: any) => (
     <button onClick={onPress} {...props}>
       {children}
@@ -46,14 +51,23 @@ jest.mock("../src/components/Banner", () => ({
 }));
 
 import Header from "../src/components/Header";
+import { clearYaleMojiCache } from "../src/lib/yalemojiCache";
+
+const avatar = {
+  version: 2,
+  png_url: "https://cdn.example/avatar.png",
+  svg_url: "https://cdn.example/avatar.svg",
+  background_url: "https://cdn.example/background.svg",
+};
 
 const DESKTOP_MEDIA = { matches: false, addEventListener: jest.fn(), removeEventListener: jest.fn() };
 const MOBILE_MEDIA = { matches: true, addEventListener: jest.fn(), removeEventListener: jest.fn() };
 
 describe("Header", () => {
   beforeEach(() => {
+    clearYaleMojiCache();
     mockUsePathname.mockReturnValue("/");
-    mockUseAuth.mockReturnValue({ isLoggedIn: false, logout: mockLogout });
+    mockUseAuth.mockReturnValue({ isLoggedIn: false, logout: mockLogout, user: null });
     mockLogout.mockResolvedValue(undefined);
     Object.defineProperty(window, "matchMedia", {
       writable: true,
@@ -88,7 +102,7 @@ describe("Header", () => {
   });
 
   it("renders profile dropdown with Profile link and Sign Out when logged in (desktop)", () => {
-    mockUseAuth.mockReturnValue({ isLoggedIn: true, logout: mockLogout });
+    mockUseAuth.mockReturnValue({ isLoggedIn: true, logout: mockLogout, user: null });
     (window.matchMedia as jest.Mock).mockReturnValue(DESKTOP_MEDIA);
     render(<Header />);
     expect(screen.getByRole("link", { name: "Profile" })).toHaveAttribute("href", "/Profile");
@@ -121,7 +135,7 @@ describe("Header", () => {
   });
 
   it("shows Profile link and Sign Out in mobile menu when logged in", () => {
-    mockUseAuth.mockReturnValue({ isLoggedIn: true, logout: mockLogout });
+    mockUseAuth.mockReturnValue({ isLoggedIn: true, logout: mockLogout, user: null });
     (window.matchMedia as jest.Mock).mockReturnValue(MOBILE_MEDIA);
     render(<Header />);
     fireEvent.click(screen.getByRole("button", { name: /☰/ }));
@@ -139,7 +153,7 @@ describe("Header", () => {
     const mockFetch = jest.fn().mockResolvedValue({ ok: false });
     global.fetch = mockFetch;
     const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
-    mockUseAuth.mockReturnValue({ isLoggedIn: true, logout: mockLogout });
+    mockUseAuth.mockReturnValue({ isLoggedIn: true, logout: mockLogout, user: null });
     (window.matchMedia as jest.Mock).mockReturnValue(DESKTOP_MEDIA);
     render(<Header />);
     const signOut = screen.getByRole("button", { name: "Sign Out" });
@@ -150,12 +164,52 @@ describe("Header", () => {
   });
 
   it("calls logout from context when Sign Out is clicked in mobile menu", async () => {
-    mockUseAuth.mockReturnValue({ isLoggedIn: true, logout: mockLogout });
+    mockUseAuth.mockReturnValue({ isLoggedIn: true, logout: mockLogout, user: null });
     (window.matchMedia as jest.Mock).mockReturnValue(MOBILE_MEDIA);
     render(<Header />);
     fireEvent.click(screen.getByRole("button", { name: /☰/ }));
     fireEvent.click(screen.getByRole("button", { name: "Sign Out" }));
     await act(async () => {});
     expect(mockLogout).toHaveBeenCalled();
+  });
+
+  it("shows the signed-in Yalemoji in the profile menu", async () => {
+    mockUseAuth.mockReturnValue({
+      isLoggedIn: true,
+      logout: mockLogout,
+      user: { netid: "abc123", email: "abc123@yale.edu", role: "user" },
+    });
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ netid: "abc123", yalemoji: avatar }),
+    });
+    (window.matchMedia as jest.Mock).mockReturnValue(DESKTOP_MEDIA);
+
+    render(<Header />);
+
+    expect(await screen.findByAltText("Your Yalemoji")).toHaveAttribute("src", avatar.png_url);
+    expect(screen.getByRole("link", { name: "Edit your Yalemoji" })).toHaveAttribute(
+      "href",
+      "https://yalemoji.com/editor?ref=yaleclubs&mode=light",
+    );
+  });
+
+  it("prompts a signed-in student who has no Yalemoji to create one", async () => {
+    mockUseAuth.mockReturnValue({
+      isLoggedIn: true,
+      logout: mockLogout,
+      user: { netid: "abc123", email: "abc123@yale.edu", role: "user" },
+    });
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ netid: "abc123", yalemoji: null }),
+    });
+    (window.matchMedia as jest.Mock).mockReturnValue(DESKTOP_MEDIA);
+
+    render(<Header />);
+
+    const links = await screen.findAllByRole("link", { name: "Make your Yalemoji" });
+    expect(links.length).toBeGreaterThan(0);
+    expect(links[0]).toHaveAttribute("href", "https://yalemoji.com/create?ref=yaleclubs&mode=light");
   });
 });

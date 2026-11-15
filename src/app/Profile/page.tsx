@@ -23,6 +23,8 @@ import { HiUserGroup } from "react-icons/hi";
 import { MdCalendarToday, MdArrowForward, MdLockOutline } from "react-icons/md";
 import { AiOutlineHeart } from "react-icons/ai";
 import { BiCheckCircle } from "react-icons/bi";
+import YaleMojiIdentity from "@/components/yalemoji/YaleMojiIdentity";
+import { useYaleMoji } from "@/components/yalemoji/useYaleMoji";
 
 export default function ProfilePage() {
   const [, setEvents] = useState<IEvent[]>([]);
@@ -64,6 +66,7 @@ export default function ProfilePage() {
   const { user } = useAuth();
   const netid = user?.netid;
   const email = user?.email;
+  const yalemoji = useYaleMoji(netid);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -217,6 +220,12 @@ export default function ProfilePage() {
                   <p className="text-lg md:text-xl text-gray-600 mt-6 leading-relaxed">
                     Manage your clubs and discover exciting events in your community
                   </p>
+                  <YaleMojiIdentity
+                    variant="profile"
+                    avatar={yalemoji.avatar}
+                    showPrompt={yalemoji.showPrompt}
+                    onError={yalemoji.hideAvatar}
+                  />
                 </div>
                 {(officerClubs.length != 0 || followedClubsDetails.length == 0) && (
                   <div className="flex items-center">

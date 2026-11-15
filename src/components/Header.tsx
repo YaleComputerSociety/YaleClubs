@@ -2,20 +2,61 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, forwardRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePathname } from "next/navigation";
 import { casSignInHref } from "@/lib/devLogin";
+import { clearYaleMojiCache, yalemojiBackgroundStyle } from "@/lib/yalemojiCache";
+import { YALEMOJI_CREATE_URL, type YaleMojiAvatar } from "@/lib/yalemojiTypes";
+import YaleMojiIdentity from "@/components/yalemoji/YaleMojiIdentity";
+import YaleMojiLink from "@/components/yalemoji/YaleMojiLink";
+import { useYaleMoji } from "@/components/yalemoji/useYaleMoji";
 import Banner from "./Banner";
 import { CgProfile } from "react-icons/cg";
 
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/react";
 import { Button } from "@heroui/react";
+
+const ProfileButtonFace = forwardRef<
+  HTMLButtonElement,
+  { avatar: YaleMojiAvatar | null; onError: () => void } & Record<string, any>
+>(function ProfileButtonFace({ avatar, onError, className, style, ...props }, ref) {
+  const face = avatar
+    ? "h-11 w-11 min-w-11 overflow-hidden rounded-[9px] bg-clubBlurple p-0 shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400"
+    : "h-11 w-11 min-w-11 rounded-full px-0 text-lg shadow-md hover:bg-clubBlurple focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300";
+
+  return (
+    <Button
+      {...props}
+      ref={ref}
+      aria-label="Profile menu"
+      variant="bordered"
+      className={`${className ?? ""} ${face}`}
+      style={avatar ? { ...style, ...yalemojiBackgroundStyle(avatar.background_url, 44) } : style}
+    >
+      {avatar ? (
+        <Image
+          src={avatar.png_url}
+          alt=""
+          width={44}
+          height={44}
+          unoptimized
+          className="pointer-events-none h-full w-full object-contain"
+          onError={onError}
+        />
+      ) : (
+        <CgProfile size={28} />
+      )}
+    </Button>
+  );
+});
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [bannerHeight, setBannerHeight] = useState(0);
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, logout, user } = useAuth();
+  const { avatar, showPrompt, hideAvatar } = useYaleMoji(isLoggedIn ? user?.netid : undefined);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const pathname = usePathname();
@@ -63,6 +104,7 @@ const Header = () => {
       });
 
       if (response.ok) {
+        clearYaleMojiCache();
         window.location.reload();
         window.location.href = "/";
       } else {
@@ -75,6 +117,31 @@ const Header = () => {
 
   const authButton =
     "px-6 py-2 rounded-full shadow-md hover:bg-clubBlurple focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap";
+
+  const yalemojiIdentity =
+    avatar || showPrompt ? (
+      <YaleMojiIdentity variant="menu" avatar={avatar} showPrompt={showPrompt} onError={hideAvatar} />
+    ) : undefined;
+
+  const accountMenu = (onSignOut: () => void, itemClassName: string) => (
+    <Dropdown>
+      <DropdownTrigger>
+        <ProfileButtonFace avatar={avatar} onError={hideAvatar} />
+      </DropdownTrigger>
+      <DropdownMenu
+        aria-label="Link Actions"
+        className="bg-white rounded-lg shadow-md p-2"
+        topContent={yalemojiIdentity}
+      >
+        <DropdownItem key="profile" className={itemClassName}>
+          <Link href="/Profile">Profile</Link>
+        </DropdownItem>
+        <DropdownItem key="signout" className={itemClassName} onPress={onSignOut}>
+          Sign Out
+        </DropdownItem>
+      </DropdownMenu>
+    </Dropdown>
+  );
 
   return (
     <div
@@ -118,36 +185,26 @@ const Header = () => {
                       </Link>
                     </li>
                   )}
+                  {isLoggedIn && showPrompt && (
+                    <li>
+                      <YaleMojiLink
+                        href={YALEMOJI_CREATE_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="whitespace-nowrap text-center text-clubPurple"
+                      >
+                        Make your Yalemoji
+                      </YaleMojiLink>
+                    </li>
+                  )}
                   <li>
                     {isLoggedIn ? (
-                      <Dropdown>
-                        <DropdownTrigger>
-                          <Button
-                            className="w-11 h-11 px-6 py-6 text-lg rounded-full shadow-md hover:bg-clubBlurple focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
-                            variant="bordered"
-                          >
-                            <div>
-                              <CgProfile size={35}></CgProfile>
-                            </div>
-                          </Button>
-                        </DropdownTrigger>
-                        <DropdownMenu aria-label="Link Actions" className="bg-white rounded-lg shadow-md p-2">
-                          <DropdownItem key="profile" className="px-2 py-2 text-lg">
-                            <Link href="/Profile">Profile</Link>
-                          </DropdownItem>
-                          <DropdownItem
-                            key="signout"
-                            className="px-2 py-2 text-lg"
-                            onPress={() => {
-                              logout().then(() => {
-                                setIsMenuOpen(false);
-                              });
-                            }}
-                          >
-                            Sign Out
-                          </DropdownItem>
-                        </DropdownMenu>
-                      </Dropdown>
+                      accountMenu(() => {
+                        logout().then(() => {
+                          setIsMenuOpen(false);
+                        });
+                      }, "px-2 py-2 text-lg")
                     ) : (
                       <a
                         href={signInHref}
@@ -173,31 +230,18 @@ const Header = () => {
                 </div>
               </Link>
             ))}
+            {isLoggedIn && showPrompt && (
+              <YaleMojiLink
+                href={YALEMOJI_CREATE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full bg-clubPurple px-4 py-2 text-sm font-semibold text-white shadow-md hover:bg-clubBlurple"
+              >
+                Make your Yalemoji
+              </YaleMojiLink>
+            )}
             {isLoggedIn ? (
-              <Dropdown>
-                <DropdownTrigger>
-                  <Button
-                    className="w-11 h-11 px-6 py-6 text-lg rounded-full shadow-md hover:bg-clubBlurple focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-300 whitespace-nowrap"
-                    variant="bordered"
-                  >
-                    <div>
-                      <CgProfile size={35}></CgProfile>
-                    </div>
-                  </Button>
-                </DropdownTrigger>
-                <DropdownMenu aria-label="Link Actions" className="bg-white rounded-lg shadow-md p-2">
-                  <DropdownItem key="profile" className="hover:text-clubPurple px-2 py-2 text-lg">
-                    <Link href="/Profile">Profile</Link>
-                  </DropdownItem>
-                  <DropdownItem
-                    key="signout"
-                    className="hover:text-clubPurple px-2 py-2 text-lg"
-                    onPress={handleLogout}
-                  >
-                    Sign Out
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
+              accountMenu(handleLogout, "hover:text-clubPurple px-2 py-2 text-lg")
             ) : (
               <a href={signInHref} className={authButton + " bg-clubPurple text-white"}>
                 Sign In
