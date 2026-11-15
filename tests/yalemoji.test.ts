@@ -99,7 +99,7 @@ describe("getYaleMojiAvatar", () => {
 
   it("permits a local Yalemoji server in development and refuses insecure remote endpoints", async () => {
     const fetch = respond({ avatar });
-    process.env.NODE_ENV = "development";
+    (process.env as { NODE_ENV?: string }).NODE_ENV = "development";
     process.env.YALEMOJI_API_URL = "http://localhost:3002";
 
     await expect(getYaleMojiAvatar("abc123")).resolves.toEqual(avatar);
@@ -108,7 +108,7 @@ describe("getYaleMojiAvatar", () => {
     process.env.YALEMOJI_API_URL = "http://yalemoji.com";
     await expect(getYaleMojiAvatar("abc123")).resolves.toBeUndefined();
 
-    process.env.NODE_ENV = "production";
+    (process.env as { NODE_ENV?: string }).NODE_ENV = "production";
     process.env.YALEMOJI_API_URL = "http://localhost:3002";
     await expect(getYaleMojiAvatar("abc123")).resolves.toBeUndefined();
     expect(fetch).toHaveBeenCalledTimes(1);

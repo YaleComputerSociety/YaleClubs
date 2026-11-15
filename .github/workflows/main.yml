@@ -22,6 +22,7 @@ jobs:
       - name: Deploy to DigitalOcean Droplet
         run: |
           ssh root@45.55.236.241 << 'EOF'
+              set -e
               export NVM_DIR="/root/.nvm"
               [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
               export PATH=$NVM_DIR/versions/node/v18.20.7/bin:$PATH
