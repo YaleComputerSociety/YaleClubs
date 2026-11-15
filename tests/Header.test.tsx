@@ -40,7 +40,13 @@ jest.mock("next/navigation", () => ({
   usePathname: () => mockUsePathname(),
 }));
 
-const mockUseAuth = jest.fn(() => ({ isLoggedIn: false, logout: mockLogout }));
+const mockUseAuth = jest.fn(
+  (): {
+    isLoggedIn: boolean;
+    logout: typeof mockLogout;
+    user: { netid: string; email: string; role: string } | null;
+  } => ({ isLoggedIn: false, logout: mockLogout, user: null }),
+);
 jest.mock("@/contexts/AuthContext", () => ({
   useAuth: () => mockUseAuth(),
 }));

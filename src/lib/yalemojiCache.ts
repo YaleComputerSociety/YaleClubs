@@ -86,7 +86,7 @@ function refresh(netid: string, entry: Entry): Promise<void> {
     } catch {
       // Keep the last avatar on network failures.
     } finally {
-      entry.inflight = undefined;
+      delete entry.inflight;
     }
   })();
   return entry.inflight;
