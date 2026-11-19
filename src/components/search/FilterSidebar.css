@@ -360,3 +360,89 @@
     --sidebar-left: 32px;
   }
 }
+
+@media (max-width: 700px) {
+  .club-display .browse-layout,
+  .club-display .browse-layout.filters-hidden {
+    display: block;
+    padding: 0 16px;
+  }
+  .club-display .filter-sidebar-slot,
+  .club-display .collapsed-filter-rail {
+    display: none;
+  }
+  .club-display .mobile-filter-dialog {
+    position: fixed;
+    inset: 0;
+    margin: 0;
+    width: 100%;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    background: white;
+    color: var(--text);
+    overflow-y: auto;
+  }
+  .club-display .mobile-filter-dialog .filter-sidebar {
+    position: relative;
+    top: auto;
+    border: 0;
+    border-radius: 0;
+    max-height: none;
+    overflow: visible;
+    padding: 16px;
+  }
+  .club-display .mobile-filter-dialog .filter-sidebar-toggle {
+    top: 6px;
+    right: 6px;
+  }
+  .club-display .mobile-filter-dialog .filter-sidebar-toggle button {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    color: #111;
+  }
+  .club-display .filter-sidebar-heading {
+    min-height: 0;
+    margin-bottom: 0;
+    padding-right: 0;
+    align-items: flex-end;
+    gap: 8px;
+  }
+  .club-display .filter-sidebar-heading > div {
+    min-width: 0;
+  }
+  .club-display .filter-sidebar-heading > button {
+    margin: 32px 0 0 auto;
+  }
+  .club-display .filter-sidebar-heading + .filter-group {
+    border-top: 0;
+    padding-top: 16px;
+  }
+  .club-display .filter-group {
+    padding: 24px 0;
+  }
+  .club-display .filter-group summary {
+    font-size: 16px;
+  }
+  .club-display .filter-options label {
+    font-size: 13px;
+    min-height: 24px;
+  }
+}
+
+@media (max-width: 700px) {
+  .club-display .mobile-filter-dialog .filter-sidebar-heading h2 {
+    font-size: 21px;
+  }
+  .club-display .mobile-filter-dialog .filter-sidebar-heading p,
+  .club-display .mobile-filter-dialog .filter-sidebar-heading > button,
+  .club-display .mobile-filter-dialog .filter-options small {
+    font-size: 13px;
+  }
+  .club-display .mobile-filter-dialog .filter-see-all,
+  .club-display .mobile-filter-dialog .filter-followed {
+    font-size: 15px;
+  }
+}

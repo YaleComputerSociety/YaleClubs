@@ -2,10 +2,12 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import { X } from "lucide-react";
 import { Affiliation, Category, Intensity, School, RecruitmentStatus, IClub } from "@/lib/models/Club";
 import "./FilterSidebar.css";
 
 type Props = {
+  mobile?: boolean;
   selectedSchools: string[];
   setSelectedSchools: React.Dispatch<React.SetStateAction<string[]>>;
 
@@ -86,6 +88,7 @@ function FilterGroup({
 }
 
 const FilterModal = ({
+  mobile = false,
   selectedSchools,
   setSelectedSchools,
   selectedAffiliations,
@@ -118,10 +121,23 @@ const FilterModal = ({
     setShowFollowedOnly(false);
   };
   return (
-    <aside id="browse-filters" className="filter-sidebar" aria-label="Club filters">
+    <aside
+      id={mobile ? "mobile-browse-filters" : "browse-filters"}
+      className="filter-sidebar"
+      aria-label="Club filters"
+    >
       <div className="filter-sidebar-toggle">
-        <button onClick={onClose} aria-label="Hide filters" aria-expanded="true" aria-controls="browse-filters">
-          <Image src="/assets/filters/sidebar.svg" alt="" width={24} height={24} />
+        <button
+          onClick={onClose}
+          aria-label={mobile ? "Close filters" : "Hide filters"}
+          aria-expanded="true"
+          aria-controls={mobile ? "mobile-browse-filters" : "browse-filters"}
+        >
+          {mobile ? (
+            <X size={22} aria-hidden="true" />
+          ) : (
+            <Image src="/assets/filters/sidebar.svg" alt="" width={24} height={24} />
+          )}
         </button>
       </div>
       <div className="filter-sidebar-heading">

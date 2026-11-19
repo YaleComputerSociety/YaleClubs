@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import DisplayHeader from "../components/catalog/DisplayHeader";
-import Footer from "../components/catalog/DisplayFooter";
 import Catalog from "../components/catalog/Catalog";
 import { IClub } from "@/lib/models/Club";
 import SearchControl from "@/components/search/SearchControl";
@@ -58,7 +56,6 @@ export default function Home() {
   return (
     <main className="club-display discover-page flex flex-col min-h-screen">
       <div className="flex-grow">
-        <DisplayHeader />
         <SearchControl
           clubs={clubs}
           resultCount={currentClubs.length}
@@ -87,7 +84,6 @@ export default function Home() {
           </div>
         </SearchControl>
       </div>
-      <Footer />
     </main>
   );
 }

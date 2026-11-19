@@ -158,3 +158,35 @@
   padding: 0.1rem 0.45rem;
   border-radius: 4px;
 }
+
+.events-catalog {
+  width: 100%;
+  padding-bottom: 48px;
+  font-family: "Lexend", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #1f2328;
+}
+.events-catalog .events-section-title {
+  margin: 0 0 16px;
+  font-size: 22px;
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  color: #1f2328;
+}
+.events-catalog .events-empty-message {
+  margin: 0;
+  color: #626872;
+  font-size: 14px;
+}
+.events-catalog .events-empty-message a {
+  color: #3d3b8e;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+@media (max-width: 767px) {
+  .events-catalog .events-section-title {
+    font-size: 20px;
+  }
+}

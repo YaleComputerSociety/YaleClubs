@@ -7,7 +7,6 @@ import { useAuth } from "@/contexts/AuthContext";
 
 import EventsHeader from "@/components/events/EventsHeader";
 import "./events-top.css";
-import Footer from "@/components/catalog/DisplayFooter";
 import SearchControlEvent from "@/components/events/catalog/SearchControlEvents";
 import Catalog from "@/components/events/catalog/Catalog";
 
@@ -157,9 +156,6 @@ export default function EventsPage() {
             </div>
           </div>
         </main>
-        <div className="club-display page-footer">
-          <Footer />
-        </div>
       </div>
     );
   }
@@ -205,9 +201,6 @@ export default function EventsPage() {
               />
             </div>
           </div>
-        </div>
-        <div className="club-display page-footer">
-          <Footer />
         </div>
       </main>
     </>

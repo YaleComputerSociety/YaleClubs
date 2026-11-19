@@ -12,7 +12,6 @@ import {
   RecruitmentStatus,
 } from "@/lib/models/Club";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import EditableImageSection from "@/components/update/EditImage";
@@ -298,7 +297,6 @@ const UpdatePage = () => {
             <p className="text-xl font-semibold text-gray-700">Loading...</p>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -315,7 +313,6 @@ const UpdatePage = () => {
             </Link>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -587,7 +584,6 @@ const UpdatePage = () => {
             </div>
           </div>
         </main>
-        <Footer />
       </div>
     </>
   );

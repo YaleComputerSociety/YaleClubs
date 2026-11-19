@@ -1,7 +1,18 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import SearchBar from "@/components/search/SearchBar";
 
 describe("SearchBar", () => {
+  it("expands mobile search, focuses the input, and preserves the query when closed", async () => {
+    render(<SearchBar searchQuery="debate" setSearchQuery={jest.fn()} collapsible />);
+    fireEvent.click(screen.getByRole("button", { name: "Open search" }));
+    expect(screen.getByRole("button", { name: "Close search" })).toHaveAttribute("aria-expanded", "true");
+    const input = screen.getByRole("searchbox");
+    await waitFor(() => expect(input).toHaveFocus());
+    fireEvent.keyDown(input, { key: "Escape" });
+    expect(screen.getByRole("button", { name: "Open search" })).toHaveFocus();
+    expect(input).toHaveValue("debate");
+  });
+
   it("shows a static placeholder and accepts a query", () => {
     const setSearchQuery = jest.fn();
     render(<SearchBar searchQuery="" setSearchQuery={setSearchQuery} />);

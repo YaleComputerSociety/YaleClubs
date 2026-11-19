@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import Header from "@/components/catalog/DisplayHeader";
+import "@/app/display.css";
+import "@/app/supporting-pages.css";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface ClubAnalytics {
@@ -46,79 +47,68 @@ export default function AnalyticsPage() {
 
   if (!isLoggedIn) {
     return (
-      <div className="flex flex-col min-h-screen">
+      <div className="club-display supporting-page analytics-page">
         <Header />
-        <main className="flex-grow bg-gray-100 flex items-center justify-center mt-24">
-          <div className="bg-white rounded-lg shadow-md p-6 text-center max-w-md">
-            <p className="text-xl font-semibold text-gray-700">Log in to view analytics.</p>
-            <a
-              href="/api/auth/redirect"
-              className="inline-block mt-4 px-6 py-2 rounded-full bg-clubPurple text-white font-semibold hover:opacity-90"
-            >
+        <main className="supporting-content analytics-sign-in">
+          <div className="analytics-sign-in-card">
+            <p className="analytics-sign-in-title">Log in to view analytics.</p>
+            <a href="/api/auth/redirect" className="supporting-button">
               Sign In
             </a>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="club-display supporting-page analytics-page">
       <Header />
-      <main className="flex-grow flex py-6 justify-center mt-24">
-        <div className="bg-gray-100 rounded-lg shadow-md p-8 w-full max-w-6xl">
-          <div className="flex items-center justify-between px-0 mb-6">
-            <Link href="/">
-              <button className="text-gray-400 py-2 px-4 rounded-lg hover:bg-gray-200">Back</button>
-            </Link>
-            <h1 className="text-3xl font-bold text-center flex-grow">Club Analytics</h1>
-            <div className="w-20" />
+      <main className="supporting-content">
+        <div className="analytics-content">
+          <div className="analytics-heading">
+            <h1 className="supporting-title">Club Analytics</h1>
           </div>
 
           {loading && (
-            <div className="flex justify-center py-12">
-              <div className="w-8 h-8 border-4 border-gray-500 border-t-transparent rounded-full animate-spin" />
+            <div className="analytics-loading" role="status" aria-label="Loading analytics">
+              <div className="analytics-spinner" />
             </div>
           )}
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+            <div className="analytics-error" role="alert">
               {error}
             </div>
           )}
 
           {!loading && !error && clubs.length === 0 && (
-            <div className="text-center py-12 text-gray-600">
+            <div className="analytics-empty">
               You are not a leader of any club. Analytics are available for clubs you lead.
             </div>
           )}
 
           {!loading && !error && clubs.length > 0 && (
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse bg-white rounded-lg shadow">
+            <div className="analytics-table-wrap" tabIndex={0} role="region" aria-label="Club analytics">
+              <table className="analytics-table">
                 <thead>
-                  <tr className="border-b border-gray-200 bg-gray-50">
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Club</th>
-                    <th className="text-right py-3 px-4 font-semibold text-gray-700">Followers</th>
-                    <th className="text-right py-3 px-4 font-semibold text-gray-700">Modal views (7d)</th>
-                    <th className="text-right py-3 px-4 font-semibold text-gray-700">Modal views (30d)</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700">Actions</th>
+                  <tr>
+                    <th className="analytics-text">Club</th>
+                    <th className="analytics-number">Followers</th>
+                    <th className="analytics-number">Modal views (7d)</th>
+                    <th className="analytics-number">Modal views (30d)</th>
+                    <th className="analytics-text">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {clubs.map((club) => (
-                    <tr key={club.clubId} className="border-b border-gray-100 hover:bg-gray-50">
-                      <td className="py-3 px-4 font-medium text-gray-900">{club.name}</td>
-                      <td className="py-3 px-4 text-right text-gray-700">{club.followers}</td>
-                      <td className="py-3 px-4 text-right text-gray-700">{club.modalViews7d}</td>
-                      <td className="py-3 px-4 text-right text-gray-700">{club.modalViews30d}</td>
-                      <td className="py-3 px-4">
-                        <Link
-                          href={`/update?clubId=${club.clubId}`}
-                          className="text-clubPurple hover:underline font-medium"
-                        >
+                    <tr key={club.clubId}>
+                      <td className="analytics-club-name">{club.name}</td>
+                      <td className="analytics-number">{club.followers}</td>
+                      <td className="analytics-number">{club.modalViews7d}</td>
+                      <td className="analytics-number">{club.modalViews30d}</td>
+                      <td className="analytics-actions">
+                        <Link href={`/update?clubId=${club.clubId}`} className="analytics-edit">
                           Edit club
                         </Link>
                       </td>
@@ -130,7 +120,6 @@ export default function AnalyticsPage() {
           )}
         </div>
       </main>
-      <Footer />
     </div>
   );
 }
