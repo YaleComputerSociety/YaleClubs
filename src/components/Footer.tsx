@@ -9,7 +9,7 @@ export default function Footer() {
           {/* Logo Section */}
           <div className="basis-1/3 text-black">
             <Link href="/" className="flex flex-row items-cente">
-              <Image src="/assets/logo.svg" alt="Logo" width={35} height={35} unoptimized />
+              <Image src="/assets/logo.svg" alt="Logo" width={35} height={35} className="w-[35px] h-[35px]" unoptimized />
               <div className="ml-5 font-semibold text-xl">YaleClubs</div>
             </Link>
             <h2 className="text-xs mt-3">
