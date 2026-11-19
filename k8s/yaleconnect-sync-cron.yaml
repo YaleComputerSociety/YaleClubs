@@ -1,0 +1,56 @@
+# Periodically imports events from YaleConnect's public RSS feed by calling
+# POST /api/events/sync on the main app (see src/app/api/events/sync/route.ts).
+#
+# Requires SYNC_SECRET in the app-secrets Secret (see k8s/secrets.yaml).
+#
+#   kubectl apply -f k8s/yaleconnect-sync-cron.yaml
+#   kubectl create job --from=cronjob/yaleconnect-sync yaleconnect-sync-manual   # run once now
+#   kubectl logs job/yaleconnect-sync-manual
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: yaleconnect-sync
+  labels:
+    app: yaleconnect-sync
+spec:
+  schedule: "17 * * * *" # every hour at :17 (the feed itself refreshes hourly)
+  timeZone: "America/New_York"
+  concurrencyPolicy: Forbid # never run two syncs at once
+  startingDeadlineSeconds: 600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 600
+      ttlSecondsAfterFinished: 86400
+      template:
+        metadata:
+          labels:
+            app: yaleconnect-sync
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: sync
+              image: curlimages/curl:8.10.1
+              env:
+                - name: SYNC_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: app-secrets
+                      key: SYNC_SECRET
+                - name: SYNC_URL
+                  value: http://main-app/api/events/sync # main-app Service, port 80
+              command: ["sh", "-c"]
+              # --fail-with-body makes non-2xx responses fail the job (so it retries) while still logging the error.
+              args:
+                - >-
+                  curl --silent --show-error --fail-with-body --max-time 300
+                  -X POST -H "Authorization: Bearer $SYNC_SECRET"
+                  "$SYNC_URL"
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 16Mi
+                limits:
+                  memory: 64Mi

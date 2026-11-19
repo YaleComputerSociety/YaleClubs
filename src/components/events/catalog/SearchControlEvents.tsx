@@ -1,6 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import SearchBar from "@/components/search/SearchBar";
 import Filter from "@/components/Filter";
+import SelectFilter from "@/components/SelectFilter";
+import {
+  DATE_OPTIONS,
+  DateOption,
+  DEFAULT_FILTERS,
+  eventTypesIn,
+  filterEvents,
+  pageStateToQuery,
+  queryToPageState,
+  SORT_OPTIONS,
+  SortOption,
+  sortEvents,
+  SOURCE_OPTIONS,
+  SourceOption,
+  WHERE_LABELS,
+  WHERE_OPTIONS,
+} from "@/lib/eventFilters";
 import { IClub } from "@/lib/models/Club";
 import { IEvent } from "@/lib/models/Event";
 import Trie from "@/components/search/Trie";
@@ -22,6 +39,74 @@ const SearchControlEvent = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
+  const [sort, setSort] = useState<SortOption>("soonest");
+  const [date, setDate] = useState<DateOption>(DEFAULT_FILTERS.date);
+  const [source, setSource] = useState<SourceOption>(DEFAULT_FILTERS.source);
+  const [selectedWhere, setSelectedWhere] = useState<string[]>([]); // labels, e.g. "On campus"
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [resultCount, setResultCount] = useState<number | null>(null);
+  const [urlLoaded, setUrlLoaded] = useState(false);
+
+  // Restore search, sort and filters from the page address (e.g. a shared or bookmarked link).
+  // Read after mount so the server render and first client render match.
+  useEffect(() => {
+    const saved = queryToPageState(window.location.search);
+    setSearchQuery(saved.search);
+    setSort(saved.sort);
+    setDate(saved.date);
+    setSource(saved.source);
+    setSelectedWhere(saved.where);
+    setSelectedTypes(saved.types);
+    setSelectedClubs(saved.clubs);
+    setSelectedTags(saved.tags);
+    setUrlLoaded(true);
+  }, []);
+
+  // Keep the address in sync as filters change. replaceState: no new history entry per keystroke.
+  useEffect(() => {
+    if (!urlLoaded) return;
+    const query = pageStateToQuery({
+      search: searchQuery,
+      sort,
+      date,
+      source,
+      where: selectedWhere,
+      types: selectedTypes,
+      clubs: selectedClubs,
+      tags: selectedTags,
+    });
+    const url = `${window.location.pathname}${query}${window.location.hash}`;
+    if (url !== `${window.location.pathname}${window.location.search}${window.location.hash}`) {
+      window.history.replaceState(window.history.state, "", url);
+    }
+  }, [urlLoaded, searchQuery, sort, date, source, selectedWhere, selectedTypes, selectedClubs, selectedTags]);
+
+  // Clubs filter: our clubs plus hosts that only appear on imported (YaleConnect) events.
+  const clubNamesForFilter = useMemo(() => {
+    const names = new Set(clubsForFilter.map((club) => club.name));
+    events.forEach((event) => event.clubs?.forEach((name) => names.add(name)));
+    return Array.from(names).sort((a, b) => a.localeCompare(b));
+  }, [clubsForFilter, events]);
+  const eventTypes = useMemo(() => eventTypesIn(events), [events]);
+
+  const filtersActive =
+    searchQuery.trim() !== "" ||
+    selectedTags.length > 0 ||
+    selectedClubs.length > 0 ||
+    date !== DEFAULT_FILTERS.date ||
+    source !== DEFAULT_FILTERS.source ||
+    selectedWhere.length > 0 ||
+    selectedTypes.length > 0;
+
+  const clearFilters = () => {
+    setSearchQuery("");
+    setSelectedTags([]);
+    setSelectedClubs([]);
+    setDate(DEFAULT_FILTERS.date);
+    setSource(DEFAULT_FILTERS.source);
+    setSelectedWhere([]);
+    setSelectedTypes([]);
+  };
   const [trie, setTrie] = useState<Trie | null>(null);
   const [, setIsSearching] = useState(false);
   const [aliasMap, setAliasMap] = useState<Record<string, string[]>>({});
@@ -105,8 +190,16 @@ const SearchControlEvent = ({
       });
     }
 
+    // Filter by date, source, where and type
+    const whereValues = WHERE_OPTIONS.filter((value) => selectedWhere.includes(WHERE_LABELS[value]));
+    const filteredByOptions = filterEvents(
+      filteredBySearch,
+      { date, source, where: whereValues, eventTypes: selectedTypes },
+      now,
+    );
+
     // Filter by clubs and tags
-    const filteredEvents = filteredBySearch
+    const filteredEvents = filteredByOptions
       .filter((event) =>
         selectedClubs.length > 0 ? selectedClubs.some((club) => event.clubs?.includes?.(club)) : true,
       )
@@ -114,15 +207,18 @@ const SearchControlEvent = ({
         selectedTags.length > 0 ? selectedTags.some((tag) => event.tags?.includes(tag as Tag)) : true,
       );
 
-    // Split filtered events into upcoming and past
-    const upcoming = filteredEvents
-      .filter((event) => new Date(event.start) >= now)
-      .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+    // Split filtered events into upcoming and past, then sort each
+    const upcoming = sortEvents(
+      filteredEvents.filter((event) => new Date(event.start) >= now),
+      sort,
+    );
+    const past = sortEvents(
+      filteredEvents.filter((event) => new Date(event.start) < now),
+      sort,
+      true,
+    );
 
-    const past = filteredEvents
-      .filter((event) => new Date(event.start) < now)
-      .sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime());
-
+    setResultCount(upcoming.length);
     setCurrentUpcomingEvents(upcoming);
     setCurrentPastEvents(past);
     setIsSearching(false);
@@ -130,6 +226,11 @@ const SearchControlEvent = ({
     searchQuery,
     selectedTags,
     selectedClubs,
+    sort,
+    date,
+    source,
+    selectedWhere,
+    selectedTypes,
     trie,
     setCurrentUpcomingEvents,
     setCurrentPastEvents,
@@ -141,10 +242,18 @@ const SearchControlEvent = ({
     <div className="search-control w-full flex flex-col sm:flex-row flex-wrap gap-2 items-center pb-4">
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <div className="flex flex-wrap gap-2 sm:flex-row sm:gap-4 justify-start">
+        <SelectFilter label="Sort" value={sort} options={SORT_OPTIONS} onChange={setSort} defaultValue="soonest" />
+        <SelectFilter
+          label="Date"
+          value={date}
+          options={DATE_OPTIONS}
+          onChange={setDate}
+          defaultValue={DEFAULT_FILTERS.date}
+        />
         <Filter
           selectedItems={selectedClubs}
           setSelectedItems={setSelectedClubs}
-          allItems={clubsForFilter.map((club) => club.name)}
+          allItems={clubNamesForFilter}
           label="Clubs"
           aliasMapping={aliasMap}
         />
@@ -154,7 +263,40 @@ const SearchControlEvent = ({
           allItems={Object.values(Tag).slice(1)}
           label="Tags"
         />
+        {eventTypes.length > 0 && (
+          <Filter
+            selectedItems={selectedTypes}
+            setSelectedItems={setSelectedTypes}
+            allItems={eventTypes}
+            label="Type"
+          />
+        )}
+        <Filter
+          selectedItems={selectedWhere}
+          setSelectedItems={setSelectedWhere}
+          allItems={WHERE_OPTIONS.map((value) => WHERE_LABELS[value])}
+          label="Where"
+        />
+        <SelectFilter
+          label="Source"
+          value={source}
+          options={SOURCE_OPTIONS}
+          onChange={setSource}
+          defaultValue={DEFAULT_FILTERS.source}
+        />
       </div>
+      {filtersActive && (
+        <div className="flex items-center gap-3 text-sm text-gray-600 sm:ml-2">
+          {resultCount !== null && (
+            <span>
+              {resultCount} upcoming {resultCount === 1 ? "event" : "events"}
+            </span>
+          )}
+          <button onClick={clearFilters} className="text-violet-600 font-semibold hover:text-violet-500">
+            Clear filters
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { IEvent, Tag } from "@/lib/models/Event";
 import { TagBlock } from "./TagBlock";
+import EventLocation from "@/components/events/EventLocation";
 
 type EventCardProps = {
   event: IEvent;
@@ -13,7 +14,7 @@ const EventCard = ({ event, onClick }: EventCardProps) => {
       <div className="aspect-square relative mb-4 border border-gray-100 rounded-lg">
         <Image
           src={event.flyer && event.flyer.trim() !== "" ? event.flyer : "/assets/default-background.png"}
-          alt="Event Flyer"
+          alt={event.imageAlt || "Event Flyer"}
           fill
           className="rounded-xl object-cover"
           priority
@@ -27,7 +28,7 @@ const EventCard = ({ event, onClick }: EventCardProps) => {
         </div>
 
         <div className="flex flex-col text-sm mb-2">
-          <div className="truncate">{event.location}</div>
+          <EventLocation event={event} className="truncate" />
           <div className="truncate">
             {new Date(event.start).toLocaleString(undefined, {
               dateStyle: "medium",
