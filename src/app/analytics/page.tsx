@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Header from "@/components/catalog/DisplayHeader";
-import "@/app/display.css";
-import "@/app/supporting-pages.css";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { casSignInHref } from "@/lib/devLogin";
 
 interface ClubAnalytics {
   clubId: string;
@@ -17,6 +18,7 @@ interface ClubAnalytics {
 
 export default function AnalyticsPage() {
   const { isLoggedIn } = useAuth();
+  const pathname = usePathname();
   const [clubs, setClubs] = useState<ClubAnalytics[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -49,10 +51,13 @@ export default function AnalyticsPage() {
     return (
       <div className="club-display supporting-page analytics-page">
         <Header />
-        <main className="supporting-content analytics-sign-in">
-          <div className="analytics-sign-in-card">
-            <p className="analytics-sign-in-title">Log in to view analytics.</p>
-            <a href="/api/auth/redirect" className="supporting-button">
+        <main className="flex-grow bg-gray-100 flex items-center justify-center mt-24">
+          <div className="bg-white rounded-lg shadow-md p-6 text-center max-w-md">
+            <p className="text-xl font-semibold text-gray-700">Log in to view analytics.</p>
+            <a
+              href={casSignInHref(pathname)}
+              className="inline-block mt-4 px-6 py-2 rounded-full bg-clubPurple text-white font-semibold hover:opacity-90"
+            >
               Sign In
             </a>
           </div>

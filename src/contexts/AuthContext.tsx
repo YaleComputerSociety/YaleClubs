@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { clearYaleMojiCache } from "@/lib/yalemojiCache";
 
 interface User {
   netid: string;
@@ -39,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await fetch("/api/auth/logout");
       if (response.ok) {
+        clearYaleMojiCache();
         setIsLoggedIn(false);
         setUser(null);
         window.location.href = "/"; // Force reload after logout

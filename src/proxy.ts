@@ -25,7 +25,7 @@ const SECURE_COOKIE_OPTIONS = {
   maxAge: 3600,
 };
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const cookieStore = await cookies();
   const token = cookieStore.get("token");
   let decodedToken = null;

@@ -14,6 +14,7 @@ We LOVE feedback! Please give us your thoughts [here](https://forms.gle/APtJYSsz
 ## Development
 
 - `npm run dev` to run locally with live updates
+- With `npm run dev`, Sign In on localhost creates a local dev session and skips Yale CAS. Opening `/api/auth/dev-login` does the same thing. `npm run dev` binds to `127.0.0.1` so other machines can't reach it. Dev login is off under `npm run devprod`, which uses production secrets.
 - `npm run devprod` to run locally with the prod database, with live updates
 - `npm run build` to build for prod
 - `npm run start` to run a built project (after npm run build)

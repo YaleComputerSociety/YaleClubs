@@ -3,13 +3,14 @@ import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="global-footer">
-      <div className="global-footer-inner">
-        <div className="global-footer-grid">
-          <div className="global-footer-brand">
-            <Link href="/" className="global-footer-brand-link">
-              <Image src="/assets/logo.svg" alt="Logo" width={24} height={24} unoptimized />
-              <div className="global-footer-brand-name">YaleClubs</div>
+    <footer className="bg-gray-100 py-8">
+      <div className="container mx-auto px-8">
+        <div className="flex gap-5 flex-col sm:flex-row ">
+          {/* Logo Section */}
+          <div className="basis-1/3 text-black">
+            <Link href="/" className="flex flex-row items-cente">
+              <Image src="/assets/logo.svg" alt="Logo" width={35} height={35} className="w-[35px] h-[35px]" unoptimized />
+              <div className="ml-5 font-semibold text-xl">YaleClubs</div>
             </Link>
             <h2 className="global-footer-credit">
               a{" "}

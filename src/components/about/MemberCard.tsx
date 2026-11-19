@@ -41,7 +41,7 @@ const MemberCard = ({ member }: MemberCardProps) => {
         <Image
           src={member.headshot}
           alt="Member Headshot"
-          className="mt-5 aspect-square w-full"
+          className="mt-5 aspect-square w-full object-cover"
           width={500}
           height={500}
         />
