@@ -1,39 +1,31 @@
-import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import SearchBar from "@/components/search/SearchBar";
 
 describe("SearchBar", () => {
-  it("renders an input with placeholder text", () => {
-    const setSearchQuery = jest.fn();
-    render(<SearchBar searchQuery="" setSearchQuery={setSearchQuery} />);
-
-    const input = screen.getByPlaceholderText("Search...");
-    expect(input).toBeInTheDocument();
+  it("expands mobile search, focuses the input, and preserves the query when closed", async () => {
+    render(<SearchBar searchQuery="debate" setSearchQuery={jest.fn()} collapsible />);
+    fireEvent.click(screen.getByRole("button", { name: "Open search" }));
+    expect(screen.getByRole("button", { name: "Close search" })).toHaveAttribute("aria-expanded", "true");
+    const input = screen.getByRole("searchbox");
+    await waitFor(() => expect(input).toHaveFocus());
+    fireEvent.keyDown(input, { key: "Escape" });
+    expect(screen.getByRole("button", { name: "Open search" })).toHaveFocus();
+    expect(input).toHaveValue("debate");
   });
 
-  it("displays the current search query value", () => {
-    const setSearchQuery = jest.fn();
-    render(<SearchBar searchQuery="yale" setSearchQuery={setSearchQuery} />);
-
-    const input = screen.getByDisplayValue("yale");
-    expect(input).toBeInTheDocument();
-  });
-
-  it("calls setSearchQuery when user types", () => {
+  it("shows a static placeholder and accepts a query", () => {
     const setSearchQuery = jest.fn();
     render(<SearchBar searchQuery="" setSearchQuery={setSearchQuery} />);
-
-    const input = screen.getByPlaceholderText("Search...");
+    const input = screen.getByPlaceholderText("Search Communities");
     fireEvent.change(input, { target: { value: "debate" } });
-
     expect(setSearchQuery).toHaveBeenCalledWith("debate");
   });
 
-  it("renders as a text input", () => {
-    const setSearchQuery = jest.fn();
-    render(<SearchBar searchQuery="" setSearchQuery={setSearchQuery} />);
-
-    const input = screen.getByPlaceholderText("Search...");
-    expect(input).toHaveAttribute("type", "text");
+  it("preserves typed queries and the keyboard shortcut", () => {
+    render(<SearchBar searchQuery="yale" setSearchQuery={jest.fn()} />);
+    const input = screen.getByRole("searchbox");
+    expect(input).toHaveValue("yale");
+    fireEvent.keyDown(document, { key: "k", ctrlKey: true });
+    expect(input).toHaveFocus();
   });
 });

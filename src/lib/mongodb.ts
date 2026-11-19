@@ -1,11 +1,5 @@
 import mongoose, { Mongoose } from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI as string;
-
-if (!MONGODB_URI) {
-  throw new Error("Please define the MONGODB_URI environment variable");
-}
-
 /* eslint-disable no-var */
 declare global {
   var mongoose: { conn: Mongoose | null; promise: Promise<Mongoose> | null };
@@ -22,7 +16,12 @@ async function connectToDatabase(): Promise<Mongoose> {
   }
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI).then((mongoose) => {
+    const uri = process.env.MONGODB_URI;
+    if (!uri) {
+      throw new Error("Please define the MONGODB_URI environment variable");
+    }
+
+    cached.promise = mongoose.connect(uri).then((mongoose) => {
       return mongoose;
     });
   }

@@ -12,7 +12,7 @@ export default function Footer() {
               <Image src="/assets/logo.svg" alt="Logo" width={35} height={35} className="w-[35px] h-[35px]" unoptimized />
               <div className="ml-5 font-semibold text-xl">YaleClubs</div>
             </Link>
-            <h2 className="text-xs mt-3">
+            <h2 className="global-footer-credit">
               a{" "}
               <a className=" underline" href="https://yalecomputersociety.org/" target="_blank">
                 yale computer society (y/cs)
@@ -27,16 +27,13 @@ export default function Footer() {
                 product
               </span>
             </p>
-            {/* <div className="mt-8 text-right text-black"> */}
-            <p className="text-md mt-2">YaleClubs © {new Date().getFullYear()}</p>
-            {/* </div> */}
+            <p className="global-footer-copyright">YaleClubs © {new Date().getFullYear()}</p>
           </div>
 
-          <div className="basis-2/3 grid grid-cols-3 text-sm sm:text-md">
-            {/* Explore Section */}
+          <div className="global-footer-links">
             <div>
-              <h3 className="text-lg font-bold text-black">Explore</h3>
-              <ul className="mt-2 space-y-1">
+              <h3>Explore</h3>
+              <ul>
                 <li>
                   <Link href="/Events" className="hover:underline">
                     Events
@@ -49,11 +46,9 @@ export default function Footer() {
                 </li>
               </ul>
             </div>
-
-            {/* Support Section */}
             <div>
-              <h3 className="text-lg font-bold text-black ">Support</h3>
-              <ul className="mt-2 space-y-1">
+              <h3>Support</h3>
+              <ul>
                 <li>
                   <Link href="/faq" className="hover:underline">
                     FAQ
@@ -71,11 +66,9 @@ export default function Footer() {
                 </li>
               </ul>
             </div>
-
-            {/* About Section */}
             <div>
-              <h3 className="text-lg font-bold text-black">About</h3>
-              <ul className="mt-2 space-y-1">
+              <h3>About</h3>
+              <ul>
                 <li>
                   <Link href="/about" className="hover:underline">
                     Team
@@ -100,8 +93,7 @@ export default function Footer() {
           </div>
         </div>
       </div>
-      <br></br>
-      <div className="text-center text-xs w-4/5 mx-auto text-gray-300 ">
+      <div className="global-footer-legal">
         Yale is a registered trademark of Yale University. This website is student run and is maintained, hosted, and
         operated independently of Yale University. The activities on this website are not supervised or endorsed by Yale
         and information contained on this website does not necessarily reflect the opinions or official positions of the

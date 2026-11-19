@@ -58,7 +58,7 @@ const Catalog = ({
 
   if (isLoading) {
     return (
-      <div className="w-full">
+      <div className="events-catalog">
         <div className="flex flex-col gap-8">
           {showFeatured && (
             <div className="w-full">
@@ -66,7 +66,7 @@ const Catalog = ({
             </div>
           )}
           <div>
-            <h1 className="text-2xl font-bold mb-4">Upcoming Events</h1>
+            <h2 className="events-section-title">Upcoming Events</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {[...Array(skeletonCount)].map((_, i) => (
                 <SkeletonCard key={i} />
@@ -74,7 +74,7 @@ const Catalog = ({
             </div>
           </div>
           <div>
-            <h1 className="text-2xl font-bold mb-4">Past Events</h1>
+            <h2 className="events-section-title">Past Events</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {[...Array(skeletonCount)].map((_, i) => (
                 <SkeletonCard key={i} />
@@ -87,8 +87,8 @@ const Catalog = ({
   }
 
   return (
-    <div className="w-full">
-      <div className="flex flex-col gap-8 m-6 md:m-0">
+    <div className="events-catalog">
+      <div className="flex flex-col gap-8">
         {upcomingEvents.length > 0 ? (
           <>
             {showFeatured && !isMobile && (
@@ -96,7 +96,7 @@ const Catalog = ({
             )}
 
             <div>
-              <h1 className="text-2xl font-bold mb-4">Upcoming Events</h1>
+              <h2 className="events-section-title">Upcoming Events</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {upcomingEvents.map((event) => (
                   <EventCard key={event._id.toString()} event={event} onClick={() => handleClickEvent(event)} />
@@ -106,19 +106,18 @@ const Catalog = ({
           </>
         ) : (
           <div>
-            <h1 className="text-2xl font-bold mb-4">Upcoming Events</h1>
-            No upcoming events found -- if you are a club officer, click the{" "}
-            <a href="/CreateUpdateEvent">
-              <span className="text-purple-400">Create Event</span>
-            </a>{" "}
-            button!
+            <h2 className="events-section-title">Upcoming Events</h2>
+            <p className="events-empty-message">
+              No upcoming events found -- if you are a club officer, click the{" "}
+              <a href="/CreateUpdateEvent">Create Event</a> button!
+            </p>
           </div>
         )}
 
         {pastEvents.length > 0 ? (
-          <div className="opacity-60">
-            <h1 className="text-2xl font-bold mb-4">Past Events</h1>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div>
+            <h2 className="events-section-title">Past Events</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 opacity-60">
               {pastEvents.map((event) => (
                 <EventCard key={event._id.toString()} event={event} onClick={() => handleClickEvent(event)} />
               ))}
@@ -126,9 +125,9 @@ const Catalog = ({
           </div>
         ) : (
           <div>
-            <h1 className="text-2xl font-bold mb-4">Past Events</h1>
+            <h2 className="events-section-title">Past Events</h2>
 
-            <div>No past events found.</div>
+            <p className="events-empty-message">No past events found.</p>
           </div>
         )}
 

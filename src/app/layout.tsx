@@ -3,6 +3,8 @@ import CustomFont from "next/font/local";
 import "./globals.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import Providers from "./providers";
+import Footer from "@/components/Footer";
+import "@/components/footer.css";
 
 const geistSans = CustomFont({
   src: "../../public/fonts/GeistVF.woff",
@@ -30,8 +32,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Providers>{children}</Providers>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased site-shell`}>
+        <Providers>
+          <div className="site-content">{children}</div>
+          <Footer />
+        </Providers>
       </body>
       <GoogleAnalytics gaId="G-XCG2T9LY5T" />
     </html>

@@ -1,40 +1,39 @@
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
+import Header from "@/components/catalog/DisplayHeader";
+import "@/app/display.css";
+import "@/app/supporting-pages.css";
 import React from "react";
 import MemberCard from "@/components/about/MemberCard";
 
 const AboutPage: React.FC = () => {
   return (
-    <div>
-      <div className="fixed top-0 z-50">
-        <Header />
-      </div>
-      <div className="flex flex-col items-center min-h-screen p-6 mt-[10svh] gap-[5svh]">
-        <div className="max-w-3xl text-center">
-          <h1 className="text-4xl font-bold mb-4">Welcome to Yale Clubs 🎓</h1>
-          <p className="text-lg text-gray-700 mb-8 leading-relaxed">
+    <div className="club-display supporting-page about-page">
+      <Header />
+      <main className="supporting-content">
+        <div className="about-intro">
+          <h1 className="supporting-title">Welcome to Yale Clubs 🎓</h1>
+          <p className="about-description">
             YaleClubs provides a streamlined platform to explore student organizations at Yale University. Whether you
             are a first-year seeking your niche or looking for activities to balance academics, YaleClubs connects you
             to student reviews, organization descriptions, and club details—all in one place.
           </p>
-          <p className="text-lg text-gray-700 mb-8 leading-relaxed">
+          <p className="about-description">
             YaleClubs is a project of the{" "}
             <a
               href={"https://yalecomputersociety.org/"}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-500"
+              className="supporting-link"
             >
               Yale Computer Society
             </a>
           </p>
         </div>
 
-        <div className="max-w-6xl text-center mt-10">
-          <h2 className="text-3xl font-bold mb-6">Meet the Team</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="about-team">
+          <h2 className="supporting-section-title">Meet the Team</h2>
+          <div className="team-grid">
             {teamMembers.map((member) => (
-              <div key={member.name} className="bg-white p-6 rounded-lg shadow-md">
+              <div key={member.name} className="team-card">
                 <MemberCard member={member}></MemberCard>
               </div>
             ))}

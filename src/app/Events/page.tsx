@@ -6,8 +6,8 @@ import axios from "axios";
 import { useAuth } from "@/contexts/AuthContext";
 import { casSignInHref } from "@/lib/devLogin";
 
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import EventsHeader from "@/components/events/EventsHeader";
+import "./events-top.css";
 import SearchControlEvent from "@/components/events/catalog/SearchControlEvents";
 import Catalog from "@/components/events/catalog/Catalog";
 
@@ -129,7 +129,7 @@ export default function EventsPage() {
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-white">
         {/* <Header /> */}
         <main className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] px-4">
           <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
@@ -157,37 +157,35 @@ export default function EventsPage() {
             </div>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
 
   return (
     <>
-      <main className="flex flex-col min-h-screen">
-        <Header />
+      <main className="flex flex-col min-h-screen bg-white">
+        <EventsHeader />
         <div className="flex-grow">
           <div className="flex flex-col w-full px-5 md:px-20">
-            <div className="mt-20 md:mt-24"></div>
-
-            <div className="flex flex-col md:flex-row items-center justify-between w-full gap-4 md:gap-0">
-              <div className="flex-1 text-center md:text-left w-full">
-                <h1 className="text-3xl font-bold text-black">Discover Events</h1>
-                <h2 className="text-xl mb-0 md:mb-4">Finding Upcoming Campus Events has Never Been Easier.</h2>
+            <section className="events-top" aria-label="Find events">
+              <div className="events-intro">
+                <div className="events-intro-copy">
+                  <h1>Events</h1>
+                </div>
+                <div className="events-create">
+                  <CreateEventButton />
+                </div>
               </div>
-              <div className="flex items-center mb-4 md:mb-0">
-                <CreateEventButton />
-              </div>
-            </div>
 
-            <div className="flex flex-col md:flex-row lg:flex-row items-center justify-between mb-0 md:mb-6">
-              <SearchControlEvent
-                clubsForFilter={clubs}
-                events={events}
-                setCurrentUpcomingEvents={setCurrentUpcomingEvents}
-                setCurrentPastEvents={setCurrentPastEvents}
-              />
-            </div>
+              <div className="flex flex-col md:flex-row lg:flex-row items-center justify-between mb-0 md:mb-6">
+                <SearchControlEvent
+                  clubsForFilter={clubs}
+                  events={events}
+                  setCurrentUpcomingEvents={setCurrentUpcomingEvents}
+                  setCurrentPastEvents={setCurrentPastEvents}
+                />
+              </div>
+            </section>
 
             {error && <div className="w-full p-4 mb-4 text-red-700 bg-red-100 rounded-lg">{error}</div>}
 
@@ -205,7 +203,6 @@ export default function EventsPage() {
             </div>
           </div>
         </div>
-        <Footer />
       </main>
     </>
   );

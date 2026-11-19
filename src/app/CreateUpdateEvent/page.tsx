@@ -7,7 +7,6 @@ import { IEvent, IEventInput, Tag } from "@/lib/models/Event";
 import Header from "@/components/Header";
 import AddFlyerSection from "@/components/events/update/AddFlyerSection";
 import axios from "axios";
-import Footer from "@/components/Footer";
 import Filter from "@/components/Filter";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSearchParams } from "next/navigation";
@@ -432,7 +431,6 @@ const CreateUpdateEventPage = () => {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

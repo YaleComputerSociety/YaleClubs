@@ -9,8 +9,10 @@ import { casSignInHref } from "@/lib/devLogin";
 import EventCard from "../../components/events/catalog/EventCard";
 import EventModal from "../../components/events/catalog/EventModal";
 import SkeletonClubCard from "@/components/catalog/SkeletonClubCard";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import Header from "@/components/catalog/DisplayHeader";
+import "@/app/display.css";
+import "@/app/supporting-pages.css";
+import "./profile.css";
 import SkeletonEventCard from "@/components/events/catalog/SkeletonEventCard";
 
 import { IEvent } from "@/lib/models/Event";
@@ -47,7 +49,7 @@ export default function ProfilePage() {
 
   const [visibleClubs] = useState(50);
 
-  const gridStyle = "grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 justify-items-center";
+  const gridStyle = "club-grid profile-club-grid";
 
   const handleCloseClubModal = () => setSelectedClub(null);
   const handleCloseEventModal = () => setSelectedEvent(null);
@@ -153,18 +155,18 @@ export default function ProfilePage() {
     }
   }, [netid, email]);
 
-  if (!isLoading && !isLoggedIn) {
+  if (!isLoggedIn) {
     return (
-      <div className="min-h-screen">
+      <div className="club-display supporting-page profile-page">
         <Header />
-        <main className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] px-4">
-          <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
+        <main className="supporting-content analytics-sign-in">
+          <div className="analytics-sign-in-card profile-sign-in-card">
             <div className="flex flex-col items-center text-center space-y-4">
-              <div className="p-3 bg-violet-100 rounded-full">
-                <MdLockOutline className="w-8 h-8 text-violet-600" />
+              <div className="profile-empty-icon">
+                <MdLockOutline className="w-6 h-6" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-900">Welcome to YaleClubs Profile</h1>
-              <p className="text-lg text-gray-600">View and manage your clubs and events</p>
+              <h1 className="analytics-sign-in-title">Welcome to YaleClubs Profile</h1>
+              <p className="profile-description">View and manage your clubs and events</p>
             </div>
             <div className="p-4 rounded-md text-center">
               <p className="text-gray-700">
@@ -181,12 +183,11 @@ export default function ProfilePage() {
             </div>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
 
-  const EventGridStyle = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6";
+  const EventGridStyle = "profile-event-grid";
   const renderClubSkeletons = () => (
     <div className={`${gridStyle} py-5`}>
       {[...Array(3)].map((_, i) => (
@@ -204,20 +205,17 @@ export default function ProfilePage() {
 
   return (
     <>
-      <main className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-white">
+      <main className="club-display supporting-page profile-page">
         <Header />
-        <div className="flex-grow mt-10">
-          <div className="flex flex-col w-full px-5 md:px-20 max-w-7xl mx-auto">
-            <div className="mt-16 md:mt-20 mb-12">
-              <div className="flex flex-col md:flex-row items-center justify-between w-full gap-6 md:gap-8">
-                <div className="flex-1 text-center md:text-left w-full">
-                  <div className="relative">
-                    <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-clubPurple to-clubBlurple bg-clip-text text-transparent mb-4">
-                      Welcome Back!
-                    </h1>
-                    <div className="absolute -bottom-2 left-0 md:left-0 right-0 md:right-auto h-1 bg-gradient-to-r from-clubPurple to-clubBlurple rounded-full w-24 mx-auto md:mx-0"></div>
+        <div className="supporting-content">
+          <div className="profile-content">
+            <div className="profile-intro">
+              <div className="profile-intro-row">
+                <div className="profile-intro-copy">
+                  <div className="profile-welcome">
+                    <h1 className="supporting-title">Welcome Back!</h1>
                   </div>
-                  <p className="text-lg md:text-xl text-gray-600 mt-6 leading-relaxed">
+                  <p className="profile-description">
                     Manage your clubs and discover exciting events in your community
                   </p>
                   <YaleMojiIdentity
@@ -228,28 +226,24 @@ export default function ProfilePage() {
                   />
                 </div>
                 {(officerClubs.length != 0 || followedClubsDetails.length == 0) && (
-                  <div className="flex items-center">
+                  <div className="profile-create">
                     <CreateEventButton />
                   </div>
                 )}
               </div>
             </div>
 
-            {error && (
-              <div className="w-full p-4 mb-8 text-red-700 bg-red-50 border border-red-200 rounded-xl shadow-sm">
-                {error}
-              </div>
-            )}
+            {error && <div className="analytics-error profile-error">{error}</div>}
 
             {!isLoading &&
               officerClubs.length == 0 &&
               officerEvents.length == 0 &&
               followedClubsDetails.length == 0 &&
               followingEvents.length == 0 && (
-                <div className="text-center py-20">
+                <div className="profile-empty">
                   <div className="max-w-md mx-auto">
-                    <div className="w-24 h-24 bg-gradient-to-r from-clubPurple to-clubBlurple rounded-full flex items-center justify-center mx-auto mb-8">
-                      <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="profile-empty-icon">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -258,14 +252,14 @@ export default function ProfilePage() {
                         />
                       </svg>
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-800 mb-4">Get Started</h3>
+                    <h3 className="profile-empty-title">Get Started</h3>
                     <p className="text-gray-600 mb-8 leading-relaxed">
                       Discover amazing clubs and events in your community. Follow clubs and attend events to personalize
                       your experience.
                     </p>
-                    <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+                    <div className="profile-empty-actions">
                       <Link href="/Events">
-                        <button className="group flex items-center font-semibold justify-center gap-2 flex-row rounded-2xl text-lg drop-shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 bg-gradient-to-r from-clubPurple to-clubBlurple text-white px-8 py-4 w-full sm:w-auto">
+                        <button className="profile-action">
                           <svg
                             className="w-5 h-5 group-hover:scale-110 transition-transform duration-300"
                             fill="currentColor"
@@ -282,7 +276,7 @@ export default function ProfilePage() {
                       </Link>
 
                       <Link href="/">
-                        <button className="group flex items-center font-semibold justify-center gap-2 flex-row rounded-2xl text-lg border-2 border-clubPurple text-clubPurple hover:bg-clubPurple hover:text-white transition-all duration-300 hover:shadow-lg hover:scale-105 px-8 py-4 w-full sm:w-auto">
+                        <button className="profile-action">
                           <svg
                             className="w-5 h-5 group-hover:scale-110 transition-transform duration-300"
                             fill="currentColor"
@@ -302,20 +296,19 @@ export default function ProfilePage() {
                 </div>
               )}
 
-            <section className="mb-16">
+            <section className="profile-section">
               {isLoading || officerClubs.length > 0 ? (
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-clubPurple to-clubBlurple rounded-xl flex items-center justify-center">
-                      <HiUserGroup className="w-5 h-5 text-white" />
+                <div className="profile-section-heading">
+                  <div className="profile-section-label">
+                    <div className="profile-section-icon">
+                      <HiUserGroup className="w-5 h-5" />
                     </div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Your Club Leaderships</h2>
+                    <h2 className="profile-section-title">Your Club Leaderships</h2>
                   </div>
-                  <div className="flex-1 h-px bg-gradient-to-r from-clubPurple/30 to-transparent"></div>
                   {isLoading ? (
                     <div className="h-8 w-20 bg-gray-200 rounded-full animate-pulse" />
                   ) : (
-                    <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                    <span className="profile-count">
                       {officerClubs.length} {officerClubs.length === 1 ? "Club" : "Clubs"}
                     </span>
                   )}
@@ -335,20 +328,19 @@ export default function ProfilePage() {
               ) : null}
             </section>
 
-            <section className="mb-16">
+            <section className="profile-section">
               {isLoading || officerEvents.length > 0 ? (
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
-                      <MdCalendarToday className="w-5 h-5 text-white" />
+                <div className="profile-section-heading">
+                  <div className="profile-section-label">
+                    <div className="profile-section-icon">
+                      <MdCalendarToday className="w-5 h-5" />
                     </div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Your Club&apos;s Events</h2>
+                    <h2 className="profile-section-title">Your Club&apos;s Events</h2>
                   </div>
-                  <div className="flex-1 h-px bg-gradient-to-r from-emerald-500/30 to-transparent"></div>
                   {isLoading ? (
                     <div className="h-8 w-20 bg-gray-200 rounded-full animate-pulse" />
                   ) : (
-                    <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                    <span className="profile-count">
                       {officerEvents.length} {officerEvents.length === 1 ? "Event" : "Events"}
                     </span>
                   )}
@@ -357,7 +349,7 @@ export default function ProfilePage() {
               {isLoading ? (
                 renderEventSkeletons()
               ) : officerEvents.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="profile-event-grid">
                   {officerEvents.map((event) => (
                     <EventCard key={event._id.toString()} event={event} onClick={() => handleClickEvent(event)} />
                   ))}
@@ -366,20 +358,19 @@ export default function ProfilePage() {
             </section>
 
             {/* Followed Clubs Section */}
-            <section className="mb-16">
+            <section className="profile-section">
               {isLoading || followedClubsDetails.length > 0 ? (
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-rose-500 to-pink-500 rounded-xl flex items-center justify-center">
-                      <AiOutlineHeart className="w-5 h-5 text-white" />
+                <div className="profile-section-heading">
+                  <div className="profile-section-label">
+                    <div className="profile-section-icon">
+                      <AiOutlineHeart className="w-5 h-5" />
                     </div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Clubs You Follow</h2>
+                    <h2 className="profile-section-title">Clubs You Follow</h2>
                   </div>
-                  <div className="flex-1 h-px bg-gradient-to-r from-rose-500/30 to-transparent"></div>
                   {isLoading ? (
                     <div className="h-8 w-20 bg-gray-200 rounded-full animate-pulse" />
                   ) : (
-                    <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                    <span className="profile-count">
                       {followedClubsDetails.length} {followedClubsDetails.length === 1 ? "Club" : "Clubs"}
                     </span>
                   )}
@@ -400,20 +391,19 @@ export default function ProfilePage() {
             </section>
 
             {/* Following Events Section */}
-            <section className="mb-16">
+            <section className="profile-section">
               {isLoading || followingEvents.length > 0 ? (
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
-                      <BiCheckCircle className="w-5 h-5 text-white" />
+                <div className="profile-section-heading">
+                  <div className="profile-section-label">
+                    <div className="profile-section-icon">
+                      <BiCheckCircle className="w-5 h-5" />
                     </div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Events from Followed Clubs</h2>
+                    <h2 className="profile-section-title">Events from Followed Clubs</h2>
                   </div>
-                  <div className="flex-1 h-px bg-gradient-to-r from-amber-500/30 to-transparent"></div>
                   {isLoading ? (
                     <div className="h-8 w-20 bg-gray-200 rounded-full animate-pulse" />
                   ) : (
-                    <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                    <span className="profile-count">
                       {followingEvents.length} {followingEvents.length === 1 ? "Event" : "Events"}
                     </span>
                   )}
@@ -422,7 +412,7 @@ export default function ProfilePage() {
               {isLoading ? (
                 renderEventSkeletons()
               ) : followingEvents.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="profile-event-grid">
                   {followingEvents.map((event) => (
                     <EventCard key={event._id.toString()} event={event} onClick={() => handleClickEvent(event)} />
                   ))}
@@ -452,7 +442,6 @@ export default function ProfilePage() {
             )}
           </div>
         </div>
-        <Footer />
       </main>
     </>
   );
