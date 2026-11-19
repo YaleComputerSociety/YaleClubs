@@ -80,6 +80,31 @@ const teamMembers = [
     linkedin: "https://www.linkedin.com/in/laurenwylee/",
     github: "https://github.com/laurenwylee",
   },
+  {
+    name: "Milind Kapadiya",
+    role: "Developer",
+    headshot: "/assets/people/milind.jpg",
+    website: "https://milindkapadiya.com",
+    linkedin: "https://www.linkedin.com/in/milind-kapadiya/",
+    github: "https://github.com/milindkapadiya-ctrl",
+  },
+  {
+    name: "Vihaan Sondhi",
+    role: "Developer",
+    headshot: "/assets/people/vihaan.jpg",
+  },
+  {
+    name: "Enisse Ndikumana",
+    role: "Developer",
+    headshot: "/assets/people/enisse.jpg",
+  },
+  {
+    name: "Helen Huang",
+    role: "Product Designer",
+    headshot: "/assets/people/helen.jpg",
+    website: "https://www.helens.design/",
+    linkedin: "https://www.linkedin.com/in/hailuen",
+  },
 ];
 
 const previousTeamMembers = [

@@ -151,7 +151,7 @@ const Header = () => {
       <Banner onHeightChange={(height) => setBannerHeight(height)} />
       <div className="flex flex-row w-full justify-between p-[22px] md:px-20 bg-background">
         <Link href="/" className="flex flex-row items-center">
-          <Image src="/assets/logo.svg" alt="Logo" width={30} height={30} unoptimized />
+          <Image src="/assets/logo.svg" alt="Logo" width={30} height={30} className="w-[30px] h-[30px]" unoptimized />
           <div className="ml-3 font-semibold text-xl">YaleClubs</div>
         </Link>
 
